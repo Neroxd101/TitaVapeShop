@@ -44,10 +44,10 @@ export default async function InventoryPage() {
     <main className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Inventory Management</h1>
+          <h1 className="text-4xl font-bold text-white drop-shadow-lg">Inventory Management</h1>
           <Link
             href="/inventory/add-item"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+            className="backdrop-blur-xl bg-white/20 dark:bg-white/10 border border-white/30 text-white font-semibold py-2 px-6 rounded-xl transition-all hover:bg-white/30 hover:border-white/50 hover:shadow-2xl hover:scale-105 shadow-lg"
           >
             + Add New Item
           </Link>

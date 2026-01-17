@@ -189,16 +189,16 @@ export default function EditItemForm({ item }: EditItemFormProps) {
   const totalImages = existingImages.length + selectedImages.length;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div className="backdrop-blur-xl bg-white/20 dark:bg-white/10 border border-white/30 rounded-2xl shadow-2xl p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded">
+          <div className="backdrop-blur-md bg-red-500/30 border border-red-400/50 text-white px-4 py-3 rounded-xl shadow-lg">
             {error}
           </div>
         )}
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
             Item Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -208,7 +208,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
             required
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            className="w-full px-4 py-2 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
             placeholder="Enter item name"
           />
         </div>
@@ -223,7 +223,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
             value={formData.description}
             onChange={handleChange}
             rows={3}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            className="w-full px-4 py-2 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
             placeholder="Enter item description (optional)"
           />
         </div>
@@ -241,7 +241,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
               min="0"
               value={formData.quantity}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-2 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
               placeholder="0"
             />
           </div>
@@ -259,7 +259,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
               step="0.01"
               value={formData.costing}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-2 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
               placeholder="0.00"
             />
           </div>
@@ -277,7 +277,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
               step="0.01"
               value={formData.sale_price}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-2 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
               placeholder="0.00"
             />
           </div>
@@ -293,7 +293,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
             required
             value={formData.category}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            className="w-full px-4 py-2 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
           >
             <option value="">Select category</option>
             <option value="Hardware">Hardware</option>
@@ -312,9 +312,9 @@ export default function EditItemForm({ item }: EditItemFormProps) {
             accept="image/*"
             multiple
             onChange={handleImageChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-600 dark:file:text-gray-200"
+            className="w-full px-4 py-2 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:backdrop-blur-md file:bg-white/30 file:text-white file:border file:border-white/30 hover:file:bg-white/40 transition-all"
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-white/80">
             PNG, JPG, GIF up to 5MB each. Maximum 5 images total.
             {totalImages > 0 && (
               <span className="ml-2 font-semibold text-blue-600 dark:text-blue-400">
@@ -335,7 +335,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
                     <img
                       src={imageUrl}
                       alt={`Existing ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                      className="w-full h-32 object-cover rounded-xl border border-white/30 backdrop-blur-sm bg-white/10"
                       onError={(e) => {
                         e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"%3E%3Crect x="3" y="3" width="18" height="18" rx="2"/%3E%3Cpath d="M9 9h6v6H9z"/%3E%3C/svg%3E';
                       }}
@@ -343,7 +343,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
                     <button
                       type="button"
                       onClick={() => removeExistingImage(index)}
-                      className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      className="absolute top-1 right-1 backdrop-blur-md bg-red-500/80 hover:bg-red-500 border border-white/30 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-lg transition-all"
                     >
                       ×
                     </button>
@@ -365,12 +365,12 @@ export default function EditItemForm({ item }: EditItemFormProps) {
                     <img
                       src={preview}
                       alt={`Preview ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                      className="w-full h-32 object-cover rounded-xl border border-white/30 backdrop-blur-sm bg-white/10"
                     />
                     <button
                       type="button"
                       onClick={() => removeNewImage(index)}
-                      className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      className="absolute top-1 right-1 backdrop-blur-md bg-red-500/80 hover:bg-red-500 border border-white/30 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-lg transition-all"
                     >
                       ×
                     </button>
@@ -385,7 +385,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            className="flex-1 backdrop-blur-md bg-blue-500/40 hover:bg-blue-500/60 disabled:bg-blue-500/20 border border-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-xl hover:scale-105 disabled:scale-100 shadow-lg"
           >
             {isUploading 
               ? `Uploading ${selectedImages.length} image${selectedImages.length > 1 ? 's' : ''}...` 
@@ -395,7 +395,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
           </button>
           <Link
             href="/inventory"
-            className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center inline-block"
+            className="flex-1 backdrop-blur-md bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-xl hover:scale-105 text-center inline-block shadow-lg"
           >
             Cancel
           </Link>

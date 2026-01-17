@@ -87,21 +87,21 @@ export default function ImageModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/60 p-4"
       onClick={onClose}
     >
       <div
-        className="relative max-w-4xl max-h-[90vh] w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden"
+        className="relative max-w-4xl max-h-[90vh] w-full backdrop-blur-2xl bg-white/20 dark:bg-white/10 border border-white/30 rounded-2xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between p-4 border-b border-white/20 backdrop-blur-md bg-white/10">
+          <h3 className="text-lg font-semibold text-white drop-shadow-lg">
             {title || 'Preview'}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-white/80 hover:text-white transition-colors backdrop-blur-sm bg-white/20 hover:bg-white/30 rounded-full p-1.5"
             aria-label="Close"
           >
             <svg
@@ -126,11 +126,11 @@ export default function ImageModal({
           {totalItems > 1 && (
             <button
               onClick={handlePrevious}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-700 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 backdrop-blur-md bg-white/30 hover:bg-white/50 border border-white/30 rounded-full p-2 shadow-xl hover:shadow-2xl transition-all z-10"
               aria-label="Previous"
             >
               <svg
-                className="w-6 h-6 text-gray-700 dark:text-gray-300"
+                className="w-6 h-6 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -166,12 +166,12 @@ export default function ImageModal({
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-                <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                <p className="mt-4 text-sm text-white/80">
                   QR Code
                 </p>
               </div>
             ) : displayImages.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400">No images available</p>
+              <p className="text-white/80">No images available</p>
             ) : null}
           </div>
 
@@ -179,11 +179,11 @@ export default function ImageModal({
           {totalItems > 1 && (
             <button
               onClick={handleNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-700 rounded-full p-2 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 backdrop-blur-md bg-white/30 hover:bg-white/50 border border-white/30 rounded-full p-2 shadow-xl hover:shadow-2xl transition-all z-10"
               aria-label="Next"
             >
               <svg
-                className="w-6 h-6 text-gray-700 dark:text-gray-300"
+                className="w-6 h-6 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

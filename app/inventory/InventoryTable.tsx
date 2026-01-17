@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { InventoryItem } from '@/types/inventory';
 import ImageModal from './ImageModal';
+import SearchBar from './SearchBar';
 
 interface InventoryTableProps {
   items: InventoryItem[];
@@ -18,6 +19,19 @@ export default function InventoryTable({ items }: InventoryTableProps) {
   const [modalTitle, setModalTitle] = useState<string>('');
   const [modalStartIndex, setModalStartIndex] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Filter items based on search query
+  const filteredItems = items.filter((item) => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    return (
+      item.name.toLowerCase().includes(query) ||
+      item.description?.toLowerCase().includes(query) ||
+      item.category?.toLowerCase().includes(query)
+    );
+  });
 
   const openImageModal = (item: InventoryItem, imageIndex?: number) => {
     setModalImages(item.image_urls || []);
@@ -69,6 +83,8 @@ export default function InventoryTable({ items }: InventoryTableProps) {
     );
   }
 
+  const displayItems = filteredItems;
+
   return (
     <>
       <ImageModal
@@ -79,36 +95,42 @@ export default function InventoryTable({ items }: InventoryTableProps) {
         title={modalTitle}
         currentIndex={modalStartIndex}
       />
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/20 dark:bg-white/10 border border-white/30 rounded-2xl shadow-2xl overflow-hidden">
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          resultsCount={displayItems.length}
+          totalCount={items.length}
+        />
         <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-900">
+          <thead className="backdrop-blur-md bg-white/30 dark:bg-white/10 border-b border-white/20">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 Image
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 Category
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 Quantity
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Sale Price
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 Costing Value
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
+                Sale Price
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 Date Added
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 Last Update
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-white/90 dark:text-white/80 uppercase tracking-wider">
                 QR Code
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -116,9 +138,18 @@ export default function InventoryTable({ items }: InventoryTableProps) {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {items.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <tbody className="backdrop-blur-sm bg-white/10 dark:bg-white/5 divide-y divide-white/20">
+            {displayItems.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="px-6 py-8 text-center">
+                  <p className="text-white/80 dark:text-white/70">
+                    No items found matching &quot;{searchQuery}&quot;
+                  </p>
+                </td>
+              </tr>
+            ) : (
+              displayItems.map((item) => (
+              <tr key={item.id} className="hover:bg-white/20 dark:hover:bg-white/10 transition-all">
                 <td className="px-6 py-4">
                   {item.image_urls && item.image_urls.length > 0 ? (
                     <button
@@ -173,35 +204,35 @@ export default function InventoryTable({ items }: InventoryTableProps) {
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  <div className="text-sm font-medium text-white dark:text-white/90">
                     {item.name}
                   </div>
                   {item.description && (
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-white/80 dark:text-white/70">
                       {item.description}
                     </div>
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full backdrop-blur-md bg-white/30 dark:bg-white/20 text-white border border-white/30">
                     {item.category || 'Uncategorized'}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-white dark:text-white/90">
                   {item.quantity}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                  ₱{item.sale_price.toFixed(2)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                   ₱{item.costing.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-white dark:text-white/90">
+                  ₱{item.sale_price.toFixed(2)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80 dark:text-white/70">
                   {item.date_added
                     ? new Date(item.date_added).toLocaleString()
                     : 'N/A'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-white/80 dark:text-white/70">
                   {item.last_update
                     ? new Date(item.last_update).toLocaleString()
                     : 'N/A'}
@@ -228,12 +259,12 @@ export default function InventoryTable({ items }: InventoryTableProps) {
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <Link
                     href={`/inventory/${item.id}/edit`}
-                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4"
+                    className="backdrop-blur-md bg-blue-500/30 hover:bg-blue-500/50 border border-white/30 text-white font-medium py-1.5 px-4 rounded-lg transition-all hover:shadow-lg mr-3"
                   >
                     Edit
                   </Link>
                   <button
-                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="backdrop-blur-md bg-red-500/30 hover:bg-red-500/50 border border-white/30 text-white font-medium py-1.5 px-4 rounded-lg transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={() => handleDelete(item.id, item.name)}
                     disabled={deletingId === item.id}
                   >
@@ -241,7 +272,8 @@ export default function InventoryTable({ items }: InventoryTableProps) {
                   </button>
                 </td>
               </tr>
-            ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>

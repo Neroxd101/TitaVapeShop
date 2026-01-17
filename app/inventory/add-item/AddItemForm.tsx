@@ -169,182 +169,233 @@ export default function AddItemForm() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="backdrop-blur-xl bg-gray-900/95 dark:bg-gray-800/95 border border-white/30 rounded-2xl shadow-2xl overflow-hidden">
+      <form onSubmit={handleSubmit} className="divide-y divide-white/10">
+        {/* Error Message */}
         {error && (
-          <div className="bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 px-4 py-3 rounded">
-            {error}
+          <div className="backdrop-blur-md bg-red-600/90 border-b border-red-400/50 text-white px-4 md:px-6 py-4">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{error}</span>
+            </div>
           </div>
         )}
 
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Item Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            required
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter item name"
-          />
-        </div>
+        {/* Main Form Content */}
+        <div className="p-4 md:p-6 space-y-6 md:space-y-8">
+          {/* Top Row: Name and Category */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="md:col-span-2">
+              <label htmlFor="name" className="block text-sm font-semibold text-white mb-2">
+                Item Name <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
+                placeholder="Enter item name"
+              />
+            </div>
+            <div>
+              <label htmlFor="category" className="block text-sm font-semibold text-white mb-2">
+                Category <span className="text-red-400">*</span>
+              </label>
+              <select
+                id="category"
+                name="category"
+                required
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-4 py-3 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white transition-all"
+              >
+                <option value="" className="bg-gray-800">Select category</option>
+                <option value="Hardware" className="bg-gray-800">Hardware</option>
+                <option value="Juices" className="bg-gray-800">Juices</option>
+              </select>
+            </div>
+          </div>
 
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter item description (optional)"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Description */}
           <div>
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Quantity <span className="text-red-500">*</span>
+            <label htmlFor="description" className="block text-sm font-semibold text-white mb-2">
+              Description
             </label>
-            <input
-              type="number"
-              id="quantity"
-              name="quantity"
-              required
-              min="0"
-              value={formData.quantity}
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="0"
+              rows={3}
+              className="w-full px-4 py-3 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all resize-none"
+              placeholder="Enter item description (optional)"
             />
           </div>
 
-          <div>
-            <label htmlFor="costing" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Costing Value (₱) <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              id="costing"
-              name="costing"
-              required
-              min="0"
-              step="0.01"
-              value={formData.costing}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="0.00"
-            />
+          {/* Pricing Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <div>
+              <label htmlFor="quantity" className="block text-sm font-semibold text-white mb-2">
+                Quantity <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                required
+                min="0"
+                value={formData.quantity}
+                onChange={handleChange}
+                className="w-full px-4 py-3 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <label htmlFor="costing" className="block text-sm font-semibold text-white mb-2">
+                Costing Value (₱) <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="number"
+                id="costing"
+                name="costing"
+                required
+                min="0"
+                step="0.01"
+                value={formData.costing}
+                onChange={handleChange}
+                className="w-full px-4 py-3 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
+                placeholder="0.00"
+              />
+            </div>
+            <div>
+              <label htmlFor="sale_price" className="block text-sm font-semibold text-white mb-2">
+                Sale Price (₱) <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="number"
+                id="sale_price"
+                name="sale_price"
+                required
+                min="0"
+                step="0.01"
+                value={formData.sale_price}
+                onChange={handleChange}
+                className="w-full px-4 py-3 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white placeholder-white/60 transition-all"
+                placeholder="0.00"
+              />
+            </div>
           </div>
 
+          {/* Images Section */}
           <div>
-            <label htmlFor="sale_price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Sale Price (₱) <span className="text-red-500">*</span>
+            <label htmlFor="images" className="block text-sm font-semibold text-white mb-3">
+              Product Images <span className="text-white/60 font-normal">(Max 5 images)</span>
             </label>
-            <input
-              type="number"
-              id="sale_price"
-              name="sale_price"
-              required
-              min="0"
-              step="0.01"
-              value={formData.sale_price}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              placeholder="0.00"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Category <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="category"
-            name="category"
-            required
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-          >
-            <option value="">Select category</option>
-            <option value="Hardware">Hardware</option>
-            <option value="Juices">Juices</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="images" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Images (Max 5)
-          </label>
-          <input
-            type="file"
-            id="images"
-            name="images"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-600 dark:file:text-gray-200"
-          />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            PNG, JPG, GIF up to 5MB each. Maximum 5 images.
-            {selectedImages.length > 0 && (
-              <span className="ml-2 font-semibold text-blue-600 dark:text-blue-400">
-                ({selectedImages.length} / 5 selected)
-              </span>
-            )}
-          </p>
-          {selectedImages.length > 0 && (
-            <div className="mt-4">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Image Previews ({selectedImages.length} / 5):
+            
+            {/* File Input */}
+            <div className="mb-4">
+              <input
+                type="file"
+                id="images"
+                name="images"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="w-full px-4 py-3 backdrop-blur-md bg-white/20 dark:bg-white/10 border border-white/30 rounded-xl focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:bg-white/30 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:backdrop-blur-md file:bg-white/30 file:text-white file:border file:border-white/30 hover:file:bg-white/40 transition-all cursor-pointer"
+              />
+              <p className="mt-2 text-xs text-white/70">
+                PNG, JPG, GIF up to 5MB each
+                {selectedImages.length > 0 && (
+                  <span className="ml-2 font-semibold text-white">
+                    • {selectedImages.length} / 5 selected
+                  </span>
+                )}
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            </div>
+
+            {/* Image Previews Grid */}
+            {selectedImages.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
                 {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative group aspect-square">
                     <img
                       src={preview}
                       alt={`Preview ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                      className="w-full h-full object-cover rounded-xl border-2 border-white/30 backdrop-blur-sm bg-white/10 transition-all group-hover:border-white/50 group-hover:scale-105"
                     />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                      className="absolute -top-2 -right-2 backdrop-blur-md bg-red-500/90 hover:bg-red-500 border-2 border-white/30 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow-xl transition-all hover:scale-110 z-10"
+                      aria-label="Remove image"
                     >
                       ×
                     </button>
+                    <div className="absolute bottom-2 left-2 backdrop-blur-md bg-black/60 text-white text-xs font-semibold px-2 py-1 rounded">
+                      {index + 1}
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Empty State */}
+            {selectedImages.length === 0 && (
+              <div className="border-2 border-dashed border-white/30 rounded-xl p-8 md:p-12 text-center">
+                <svg className="w-16 h-16 mx-auto text-white/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="text-sm text-white/60">No images selected yet</p>
+                <p className="text-xs text-white/40 mt-1">Upload up to 5 product images</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex gap-4 pt-4">
+        {/* Action Buttons Footer */}
+        <div className="px-4 md:px-6 py-4 backdrop-blur-md bg-gray-800/90 border-t border-white/20 flex flex-col sm:flex-row gap-3">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            className="flex-1 backdrop-blur-md bg-blue-500/40 hover:bg-blue-500/60 disabled:bg-blue-500/20 border border-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-xl hover:scale-105 disabled:scale-100 shadow-lg flex items-center justify-center gap-2 min-w-[140px]"
           >
-            {isUploading 
-              ? `Uploading ${selectedImages.length} image${selectedImages.length > 1 ? 's' : ''}...` 
-              : isSubmitting 
-              ? 'Adding...' 
-              : 'Add Item'}
+            {isUploading ? (
+              <>
+                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Uploading...
+              </>
+            ) : isSubmitting ? (
+              <>
+                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Adding...
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Item
+              </>
+            )}
           </button>
           <Link
             href="/inventory"
-            className="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center inline-block"
+            className="flex-1 backdrop-blur-md bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-xl hover:scale-105 text-center inline-flex items-center justify-center gap-2 shadow-lg min-w-[140px]"
           >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
             Cancel
           </Link>
         </div>

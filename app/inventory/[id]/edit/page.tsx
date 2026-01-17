@@ -44,13 +44,13 @@ export default async function EditItemPage({
         <div className="mb-6">
           <Link
             href="/inventory"
-            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+            className="backdrop-blur-md bg-white/20 hover:bg-white/30 border border-white/30 text-white font-medium py-2 px-4 rounded-xl transition-all hover:shadow-lg inline-block"
           >
             ← Back to Inventory
           </Link>
         </div>
 
-        <h1 className="text-4xl font-bold mb-8">Edit Item</h1>
+        <h1 className="text-4xl font-bold mb-8 text-white drop-shadow-lg">Edit Item</h1>
 
         <EditItemForm item={item} />
       </div>
