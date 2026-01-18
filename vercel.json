@@ -16,8 +16,24 @@
       "dest": "/main.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/auth/(.*)",
+      "dest": "/main.js"
+    },
+    {
+      "src": "/dashboard(.*)",
+      "dest": "/main.js"
+    },
+    {
+      "src": "/inventory(.*)",
+      "dest": "/main.js"
+    },
+    {
+      "src": "/(.*\\.(html|css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))",
       "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/main.js"
     }
   ]
 }

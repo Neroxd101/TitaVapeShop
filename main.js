@@ -29,5 +29,10 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found', path: req.path });
+});
+
 // Export for Vercel
 module.exports = app;
