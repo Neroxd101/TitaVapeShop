@@ -85,7 +85,7 @@ serve(async (req) => {
 
     // CREATE - Create new inventory item
     if (action === "create") {
-      const { category, name, quantity, cost_price, sale_price, qr_image_url, images } = body;
+      const { category, name, description, quantity, cost_price, sale_price, qr_image_url, images } = body;
 
       if (!category || !name) {
         return new Response(
@@ -99,6 +99,7 @@ serve(async (req) => {
         .insert({
           category,
           name,
+          description: description || null,
           quantity: quantity || 0,
           cost_price: cost_price || 0,
           sale_price: sale_price || 0,
@@ -123,7 +124,7 @@ serve(async (req) => {
 
     // UPDATE - Update inventory item
     if (action === "update") {
-      const { id, category, name, quantity, cost_price, sale_price, qr_image_url, images } = body;
+      const { id, category, name, description, quantity, cost_price, sale_price, qr_image_url, images } = body;
 
       if (!id) {
         return new Response(
@@ -135,6 +136,7 @@ serve(async (req) => {
       const updateData: Record<string, unknown> = {};
       if (category !== undefined) updateData.category = category;
       if (name !== undefined) updateData.name = name;
+      if (description !== undefined) updateData.description = description;
       if (quantity !== undefined) updateData.quantity = quantity;
       if (cost_price !== undefined) updateData.cost_price = cost_price;
       if (sale_price !== undefined) updateData.sale_price = sale_price;

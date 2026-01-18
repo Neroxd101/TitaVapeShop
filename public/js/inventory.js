@@ -357,8 +357,8 @@ function showLoading(show) {
   inventoryGrid.style.display = show ? 'none' : 'grid';
 }
 
-// Generate unique QR code based on product name
-function generateQrCode(productName) {
+// Generate unique product code
+function generateProductCode(productName) {
   const timestamp = Date.now().toString(36);
   const random = Math.random().toString(36).substring(2, 6);
   const safeName = productName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10).toUpperCase();
@@ -520,8 +520,8 @@ async function uploadPendingImages(productName) {
   }
 }
 
-// Upload QR code to Google Drive
-async function uploadQrCode(qrCode, productName) {
+// Upload QR code to Google Drive (backend fetches from QRtag.net API)
+async function uploadQrCode(productCode, productName) {
   if (!isGoogleConnected()) {
     console.log('Google not connected, skipping QR upload');
     return null;
@@ -534,6 +534,9 @@ async function uploadQrCode(qrCode, productName) {
   }
   
   try {
+    console.log('Uploading QR for product code:', productCode);
+    
+    // Backend will fetch QR from QRtag.net and upload to Google Drive
     const response = await fetch('/api/upload/qrcode', {
       method: 'POST',
       headers: {
@@ -541,7 +544,7 @@ async function uploadQrCode(qrCode, productName) {
         'X-Google-Token': googleToken,
       },
       body: JSON.stringify({
-        qrCode: qrCode,
+        qrCode: productCode,
         productName: productName,
       }),
     });
@@ -594,6 +597,7 @@ function editItem(id) {
   document.getElementById('itemId').value = item.id;
   document.getElementById('itemCategory').value = item.category;
   document.getElementById('itemName').value = item.name;
+  document.getElementById('itemDescription').value = item.description || '';
   document.getElementById('itemQuantity').value = item.quantity;
   document.getElementById('itemCostPrice').value = item.cost_price;
   document.getElementById('itemSalePrice').value = item.sale_price;
@@ -667,8 +671,9 @@ function viewItem(id) {
   categoryEl.textContent = item.category;
   categoryEl.className = `view-category ${item.category}`;
   
-  // Set name
+  // Set name and description
   document.getElementById('viewName').textContent = item.name;
+  document.getElementById('viewDescription').textContent = item.description || '';
   
   // Set stats
   const quantityEl = document.getElementById('viewQuantity');
@@ -745,21 +750,28 @@ async function saveItem(e) {
       .filter(img => img.url)
       .map(img => img.url);
     
+    const descriptionValue = document.getElementById('itemDescription').value.trim();
+    console.log('Description input value:', descriptionValue);
+    
     const itemData = {
       category: document.getElementById('itemCategory').value,
       name: productName,
+      description: descriptionValue || null,
       quantity: parseInt(document.getElementById('itemQuantity').value) || 0,
       cost_price: parseFloat(document.getElementById('itemCostPrice').value) || 0,
       sale_price: parseFloat(document.getElementById('itemSalePrice').value) || 0,
       images: imageUrls,
     };
     
+    console.log('Sending itemData:', JSON.stringify(itemData, null, 2));
+    
     // Generate and upload QR code for new items only
     if (!editingItemId) {
-      const qrCode = generateQrCode(productName);
+      const productCode = generateProductCode(productName);
+      console.log('Generated product code:', productCode);
       
-      // Upload QR code to Google Drive (in product folder)
-      const qrImageUrl = await uploadQrCode(qrCode, productName);
+      // Upload QR code to Google Drive (fetched from QRtag.net API)
+      const qrImageUrl = await uploadQrCode(productCode, productName);
       if (qrImageUrl) {
         itemData.qr_image_url = qrImageUrl;
       }
@@ -780,6 +792,10 @@ async function saveItem(e) {
     
     const result = await response.json();
     
+    // Remove loading state
+    saveBtn.classList.remove('loading');
+    saveBtn.disabled = false;
+    
     if (result.success) {
       closeItemModal();
       loadInventory();
@@ -789,7 +805,6 @@ async function saveItem(e) {
   } catch (error) {
     console.error('Error saving item:', error);
     alert('Failed to save item: ' + error.message);
-  } finally {
     saveBtn.classList.remove('loading');
     saveBtn.disabled = false;
   }

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS inventory (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   category VARCHAR(20) NOT NULL CHECK (category IN ('hardware', 'juices')),
   name VARCHAR(100) NOT NULL,
+  description TEXT,
   quantity INTEGER NOT NULL DEFAULT 0,
   cost_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
   sale_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
@@ -40,4 +41,6 @@ CREATE INDEX IF NOT EXISTS idx_inventory_name ON inventory(name);
 -- =============================================
 -- Run this if you already have the table without images column:
 -- ALTER TABLE inventory ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
+-- Run this if you already have the table without description column:
+-- ALTER TABLE inventory ADD COLUMN IF NOT EXISTS description TEXT;
 -- =============================================

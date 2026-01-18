@@ -192,7 +192,7 @@ router.post('/', async (req, res) => {
 // POST /api/upload/qrcode - Upload QR code image to Google Drive
 router.post('/qrcode', async (req, res) => {
   try {
-    const { qrCode, productName } = req.body;
+    const { qrCode, qrImage, productName } = req.body;
     const googleToken = req.headers['x-google-token'];
 
     if (!googleToken) {
@@ -203,17 +203,24 @@ router.post('/qrcode', async (req, res) => {
       return res.status(400).json({ error: 'QR code and product name are required' });
     }
 
-    // Generate QR code image using external API
-    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrCode)}`;
-    
-    // Fetch the QR code image
-    const qrResponse = await fetch(qrImageUrl);
-    if (!qrResponse.ok) {
-      throw new Error('Failed to generate QR code');
-    }
+    let base64Data;
 
-    const qrBuffer = await qrResponse.arrayBuffer();
-    const base64Data = Buffer.from(qrBuffer).toString('base64');
+    // If qrImage is provided (from frontend fetch of QRtag.net), use it
+    if (qrImage) {
+      base64Data = qrImage.replace(/^data:image\/\w+;base64,/, '');
+    } else {
+      // Fallback: Fetch QR from QRtag.net API on backend
+      const qrApiUrl = `https://qrtag.net/api/qr_6.png?url=${encodeURIComponent(qrCode)}`;
+      console.log('Fetching QR from QRtag.net:', qrApiUrl);
+      
+      const qrResponse = await fetch(qrApiUrl);
+      if (!qrResponse.ok) {
+        throw new Error('Failed to fetch QR code from QRtag.net');
+      }
+
+      const qrBuffer = await qrResponse.arrayBuffer();
+      base64Data = Buffer.from(qrBuffer).toString('base64');
+    }
 
     // Find or create folder structure
     const rootFolderId = await findOrCreateFolder(googleToken, 'Tita Vape Shop');
