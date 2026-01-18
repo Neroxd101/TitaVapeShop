@@ -1,0 +1,19 @@
+{
+  "name": "tita-vape-shop",
+  "version": "1.0.0",
+  "description": "Tita Vape Shop - Inventory Management System",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node main.js",
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@supabase/supabase-js": "^2.39.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
