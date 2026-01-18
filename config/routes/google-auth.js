@@ -6,6 +6,29 @@ const router = express.Router();
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
+// Helper function to get the correct redirect URI
+// For desktop OAuth apps, use explicit redirect URI from env
+// For web apps, construct from request headers
+function getRedirectUri(req) {
+  // If explicit redirect URI is set (required for desktop OAuth type)
+  if (process.env.GOOGLE_REDIRECT_URI) {
+    return process.env.GOOGLE_REDIRECT_URI;
+  }
+  
+  // Otherwise, construct from base URL (for web OAuth type)
+  let baseUrl;
+  if (process.env.GOOGLE_REDIRECT_URI_BASE) {
+    baseUrl = process.env.GOOGLE_REDIRECT_URI_BASE;
+  } else {
+    // Check for forwarded protocol (Vercel sets X-Forwarded-Proto)
+    const protocol = req.get('x-forwarded-proto') || req.protocol;
+    const host = req.get('x-forwarded-host') || req.get('host');
+    baseUrl = `${protocol}://${host}`;
+  }
+  
+  return `${baseUrl}/auth/google/callback`;
+}
+
 // GET /auth/google - Generate Google OAuth URL
 router.get('/', async (req, res) => {
   try {
@@ -13,7 +36,7 @@ router.get('/', async (req, res) => {
       return res.status(500).json({ error: 'Google OAuth not configured' });
     }
 
-    const redirectUri = `${req.protocol}://${req.get('host')}/auth/google/callback`;
+    const redirectUri = getRedirectUri(req);
     
     const scopes = [
       'https://www.googleapis.com/auth/drive.file',
@@ -49,7 +72,7 @@ router.post('/exchange', async (req, res) => {
     }
 
     const { code } = req.body;
-    const redirectUri = `${req.protocol}://${req.get('host')}/auth/google/callback`;
+    const redirectUri = getRedirectUri(req);
 
     // Exchange code for tokens
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
