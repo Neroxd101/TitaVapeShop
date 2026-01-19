@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const QRCode = require('qrcode');
 
 // Find or create folder in Google Drive
 async function findOrCreateFolder(googleToken, folderName, parentId = null) {
@@ -205,21 +206,28 @@ router.post('/qrcode', async (req, res) => {
 
     let base64Data;
 
-    // If qrImage is provided (from frontend fetch of QRtag.net), use it
+    // If qrImage is provided (from frontend), use it
     if (qrImage) {
       base64Data = qrImage.replace(/^data:image\/\w+;base64,/, '');
     } else {
-      // Fallback: Fetch QR from QRtag.net API on backend
-      const qrApiUrl = `https://qrtag.net/api/qr_6.png?url=${encodeURIComponent(qrCode)}`;
-      console.log('Fetching QR from QRtag.net:', qrApiUrl);
+      // Generate QR code directly using qrcode library
+      // This encodes the product code as plain text (not a URL)
       
-      const qrResponse = await fetch(qrApiUrl);
-      if (!qrResponse.ok) {
-        throw new Error('Failed to fetch QR code from QRtag.net');
+      try {
+        // Generate QR code as data URL (base64 PNG)
+        const qrDataUrl = await QRCode.toDataURL(qrCode, {
+          errorCorrectionLevel: 'M',
+          type: 'image/png',
+          width: 300,
+          margin: 1
+        });
+        
+        // Extract base64 data (remove data:image/png;base64, prefix)
+        base64Data = qrDataUrl.replace(/^data:image\/\w+;base64,/, '');
+      } catch (error) {
+        console.error('Error generating QR code:', error);
+        throw new Error('Failed to generate QR code: ' + error.message);
       }
-
-      const qrBuffer = await qrResponse.arrayBuffer();
-      base64Data = Buffer.from(qrBuffer).toString('base64');
     }
 
     // Find or create folder structure

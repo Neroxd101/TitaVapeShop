@@ -329,7 +329,7 @@ const InventoryImage = {
     }
   },
 
-  // Upload QR code to Google Drive (backend fetches from QRtag.net API)
+  // Upload QR code to Google Drive (backend generates QR code directly)
   async uploadQrCode(productCode, productName) {
     if (!InventoryGoogle.isConnected()) {
       console.log('Google not connected, skipping QR upload');
@@ -345,7 +345,7 @@ const InventoryImage = {
     try {
       console.log('Uploading QR for product code:', productCode);
       
-      // Backend will fetch QR from QRtag.net and upload to Google Drive
+      // Backend will generate QR code and upload to Google Drive
       const response = await fetch('/api/upload/qrcode', {
         method: 'POST',
         headers: {
