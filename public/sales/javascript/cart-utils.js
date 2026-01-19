@@ -163,7 +163,7 @@
     changeEl.textContent = formatCurrencySafe(change);
   }
 
-  function handleCompleteSale(state, renderProducts) {
+  async function handleCompleteSale(state, renderProducts) {
     if (!state || !state.cart.length) {
       alert('Add items to the cart first.');
       return;
@@ -179,14 +179,61 @@
     }
 
     const customerName = document.getElementById('customerName')?.value || 'Walk-in';
+    const customerEmail = document.getElementById('customerEmail')?.value?.trim();
+    const change = cash - total;
 
-    // For now, just show a confirmation and reset.
-    alert(`Sale completed for ${customerName}.\nTotal: ${formatCurrencySafe(total)}`);
+    // Show confirmation
+    const confirmMsg = `Complete sale for ${customerName}?\nTotal: ${formatCurrencySafe(total)}`;
+    if (!confirm(confirmMsg)) {
+      return;
+    }
 
+    // Send email receipt if email is provided
+    if (customerEmail) {
+      try {
+        const response = await fetch('/api/email/send-receipt', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            customerEmail,
+            customerName,
+            items: state.cart,
+            total,
+            cash,
+            change,
+            saleDate: new Date().toLocaleString('en-PH', {
+              timeZone: 'Asia/Manila',
+              dateStyle: 'medium',
+              timeStyle: 'short'
+            })
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(`Sale completed for ${customerName}.\nTotal: ${formatCurrencySafe(total)}\n\nReceipt sent to ${customerEmail}`);
+        } else {
+          console.error('Failed to send email:', result);
+          alert(`Sale completed for ${customerName}.\nTotal: ${formatCurrencySafe(total)}\n\nNote: Failed to send email receipt.`);
+        }
+      } catch (error) {
+        console.error('Error sending email:', error);
+        alert(`Sale completed for ${customerName}.\nTotal: ${formatCurrencySafe(total)}\n\nNote: Failed to send email receipt.`);
+      }
+    } else {
+      alert(`Sale completed for ${customerName}.\nTotal: ${formatCurrencySafe(total)}`);
+    }
+
+    // Reset cart
     state.cart = [];
     if (cashInput) cashInput.value = '';
     const nameInput = document.getElementById('customerName');
     if (nameInput) nameInput.value = '';
+    const emailInput = document.getElementById('customerEmail');
+    if (emailInput) emailInput.value = '';
     updateCartUI(state, renderProducts);
   }
 
