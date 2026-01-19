@@ -79,18 +79,6 @@ const InventoryAPI = {
       
       console.log('Sending itemData:', JSON.stringify(itemData, null, 2));
       
-      // Generate and upload QR code for new items only
-      if (!isEdit) {
-        const productCode = InventoryModal.generateProductCode(productName);
-        console.log('Generated product code:', productCode);
-        
-        // Upload QR code to Google Drive (fetched from QRtag.net API)
-        const qrImageUrl = await InventoryImage.uploadQrCode(productCode, productName);
-        if (qrImageUrl) {
-          itemData.qr_image_url = qrImageUrl;
-        }
-      }
-      
       if (isEdit) {
         itemData.id = InventoryState.editingItemId;
       }
@@ -159,6 +147,79 @@ const InventoryAPI = {
     } finally {
       deleteBtn.classList.remove('loading');
       deleteBtn.disabled = false;
+    }
+  },
+
+  // Generate QR code on demand and update item
+  async generateQrForItem(itemId) {
+    const item = InventoryState.inventoryItems.find(i => i.id === itemId);
+    if (!item) {
+      alert('Item not found');
+      return;
+    }
+
+    try {
+      const btn = document.getElementById('viewGenerateQrBtn');
+      if (btn) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+      }
+
+      const googleToken = InventoryGoogle.getToken();
+      if (!InventoryGoogle.isConnected() || !googleToken) {
+        alert('Please connect your Google account first');
+        return;
+      }
+
+      const productCode = InventoryModal.generateProductCode(item.name);
+      const qrImageUrl = await InventoryImage.uploadQrCode(productCode, item.name);
+      if (!qrImageUrl) {
+        alert('Failed to generate QR code');
+        return;
+      }
+
+      // Update item with qr_image_url (send full payload expected by backend)
+      const images = InventoryImage.parseImages(item);
+      const updatePayload = {
+        id: itemId,
+        category: item.category,
+        name: item.name,
+        description: item.description ?? null,
+        quantity: Number(item.quantity) || 0,
+        cost_price: Number(item.cost_price) || 0,
+        sale_price: Number(item.sale_price) || 0,
+        images,
+        qr_image_url: qrImageUrl,
+      };
+
+      const response = await fetch('/inventory/update-item', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify(updatePayload)
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        // Refresh inventory and view modal
+        await this.loadInventory();
+        if (InventoryState.viewingItemId === itemId) {
+          InventoryModal.viewItem(itemId);
+        }
+      } else {
+        alert(result.error || 'Failed to update item with QR code');
+      }
+    } catch (error) {
+      console.error('Error generating QR:', error);
+      alert('Failed to generate QR code: ' + error.message);
+    } finally {
+      const btn = document.getElementById('viewGenerateQrBtn');
+      if (btn) {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
     }
   }
 };

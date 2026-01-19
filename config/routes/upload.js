@@ -246,6 +246,61 @@ router.post('/qrcode', async (req, res) => {
   }
 });
 
+// GET /api/upload/drive-image/:fileId - Proxy Google Drive image with auth
+router.get('/drive-image/:fileId', async (req, res) => {
+  try {
+    const { fileId } = req.params;
+    // Check both header and query param for token
+    const googleToken = req.headers['x-google-token'] || req.headers['authorization']?.replace('Bearer ', '') || req.query.token;
+
+    if (!googleToken) {
+      return res.status(401).json({ error: 'Google account not connected' });
+    }
+
+    // Try to get the file metadata first
+    const metadataResponse = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${fileId}?fields=mimeType,name`,
+      {
+        headers: {
+          Authorization: `Bearer ${googleToken}`,
+        },
+      }
+    );
+
+    if (!metadataResponse.ok) {
+      return res.status(metadataResponse.status).json({ error: 'File not found or access denied' });
+    }
+
+    // Fetch the actual image file
+    const imageResponse = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+      {
+        headers: {
+          Authorization: `Bearer ${googleToken}`,
+        },
+      }
+    );
+
+    if (!imageResponse.ok) {
+      return res.status(imageResponse.status).json({ error: 'Failed to fetch image' });
+    }
+
+    // Get content type from metadata or response
+    const metadata = await metadataResponse.json();
+    const contentType = metadata.mimeType || imageResponse.headers.get('content-type') || 'image/jpeg';
+
+    // Stream the image to the client
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    
+    const imageBuffer = await imageResponse.arrayBuffer();
+    res.send(Buffer.from(imageBuffer));
+  } catch (error) {
+    console.error('Image proxy error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // DELETE /api/upload/:fileId - Delete image from Google Drive
 router.delete('/:fileId', async (req, res) => {
   try {

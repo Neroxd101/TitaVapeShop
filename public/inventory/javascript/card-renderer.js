@@ -27,6 +27,9 @@ const InventoryCard = {
   createCard(item) {
     const isLowStock = item.quantity <= 5;
     const images = InventoryImage.parseImages(item);
+    if (item.qr_image_url && !images.includes(item.qr_image_url)) {
+      images.push(item.qr_image_url); // include QR as part of the image set (unique)
+    }
     const hasMultipleImages = images.length > 1;
     
     // Use thumbnails for card display (faster loading)
@@ -34,11 +37,13 @@ const InventoryCard = {
       ? `
         <div class="card-images" data-current="0">
           <div class="card-images-track" style="width: ${images.length * 100}%">
-            ${images.map(url => {
-              const imgUrl = InventoryImage.getViewableUrl(url);
-              console.log('Loading image:', url, '->', imgUrl);
-              return `<img src="${imgUrl}" alt="${item.name}" loading="lazy" onerror="console.error('Image failed:', this.src); this.style.opacity='0.3'">`;
-            }).join('')}
+          ${images.map(url => {
+            const fallbacks = InventoryImage.getFallbackUrls(url, 800);
+            const firstSrc = fallbacks[0];
+            // Escape URL properly for onerror handler
+            const escapedUrl = url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            return `<img src="${firstSrc}" data-tried-index="0" data-original-url="${escapedUrl}" alt="${item.name}" loading="lazy" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)">`;
+          }).join('')}
           </div>
           ${hasMultipleImages ? `
             <button class="card-images-arrow prev" onclick="InventoryCard.slideImage(event, '${item.id}', -1)">
@@ -70,7 +75,11 @@ const InventoryCard = {
           <span class="card-category ${item.category}">${item.category}</span>
           <div class="card-qr">
             ${item.qr_image_url 
-              ? `<img src="${InventoryImage.getViewableUrl(item.qr_image_url)}" alt="QR" loading="lazy">`
+              ? (() => {
+                  const qrFallbacks = InventoryImage.getFallbackUrls(item.qr_image_url, 200);
+                  const qrEscaped = item.qr_image_url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                  return `<img src="${qrFallbacks[0]}" data-tried-index="0" data-original-url="${qrEscaped}" alt="QR" loading="lazy" onerror="InventoryImage.handleImageError(this, '${qrEscaped}', 200)">`;
+                })()
               : `<svg viewBox="0 0 24 24"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13 2h-2v2h2v2h-4v-4h2v-2h-2v-2h4v4zm2-4v2h2v4h-2v2h-2v-4h2v-2h-2v-2h2z"/></svg>`
             }
           </div>

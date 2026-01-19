@@ -66,10 +66,13 @@ const Inventory = {
     document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => InventoryAPI.confirmDelete());
     
     // View modal buttons
-    document.getElementById('viewModalClose')?.addEventListener('click', () => InventoryModal.closeViewModal());
     document.getElementById('viewEditBtn')?.addEventListener('click', () => {
-      InventoryModal.closeViewModal();
-      if (InventoryState.viewingItemId) InventoryModal.editItem(InventoryState.viewingItemId);
+      const id = InventoryState.viewingItemId;
+      InventoryModal.closeViewModal(false); // keep id so edit can use it
+      if (id) InventoryModal.editItem(id);
+    });
+    document.getElementById('viewGenerateQrBtn')?.addEventListener('click', () => {
+      if (InventoryState.viewingItemId) InventoryAPI.generateQrForItem(InventoryState.viewingItemId);
     });
     document.getElementById('viewDeleteBtn')?.addEventListener('click', () => {
       const item = InventoryState.inventoryItems.find(i => i.id === InventoryState.viewingItemId);

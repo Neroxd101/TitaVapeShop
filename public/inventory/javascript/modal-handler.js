@@ -164,15 +164,18 @@ const InventoryModal = {
     
     InventoryState.viewingItemId = id;
     const images = InventoryImage.parseImages(item);
+    if (item.qr_image_url && !images.includes(item.qr_image_url)) {
+      images.push(item.qr_image_url); // include QR in gallery (unique)
+    }
     const isLowStock = item.quantity <= 5;
-    
-    // Set modal title
-    document.getElementById('viewModalTitle').textContent = item.name;
     
     // Set main image
     const mainImageEl = document.getElementById('viewMainImage');
     if (images.length > 0) {
-      mainImageEl.innerHTML = `<img src="${InventoryImage.getViewableUrl(images[0])}" alt="${item.name}">`;
+      const imgUrl = images[0];
+      const fallbacks = InventoryImage.getFallbackUrls(imgUrl, 800);
+      const escapedUrl = imgUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      mainImageEl.innerHTML = `<img src="${fallbacks[0]}" data-tried-index="0" data-original-url="${escapedUrl}" alt="${item.name}" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)">`;
       mainImageEl.classList.remove('no-image');
     } else {
       mainImageEl.innerHTML = '';
@@ -182,24 +185,20 @@ const InventoryModal = {
     // Set thumbnails
     const thumbnailsEl = document.getElementById('viewThumbnails');
     if (images.length > 1) {
-      thumbnailsEl.innerHTML = images.map((url, index) => `
-        <div class="view-thumbnail ${index === 0 ? 'active' : ''}" onclick="InventoryModal.setViewMainImage('${url}', ${index})">
-          <img src="${InventoryImage.getThumbnailUrl(url, 100)}" alt="Thumbnail ${index + 1}">
-        </div>
-      `).join('');
+      thumbnailsEl.innerHTML = images.map((url, index) => {
+        const fallbacks = InventoryImage.getFallbackUrls(url, 100);
+        const escapedUrl = url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        return `
+          <div class="view-thumbnail ${index === 0 ? 'active' : ''}" onclick="InventoryModal.setViewMainImage('${escapedUrl}', ${index})">
+            <img src="${fallbacks[0]}" data-tried-index="0" data-original-url="${escapedUrl}" alt="Thumbnail ${index + 1}" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 100)">
+          </div>
+        `;
+      }).join('');
     } else {
       thumbnailsEl.innerHTML = '';
     }
     
-    // Set QR code
-    const qrEl = document.getElementById('viewQr');
-    if (item.qr_image_url) {
-      qrEl.innerHTML = `<img src="${InventoryImage.getViewableUrl(item.qr_image_url)}" alt="QR Code">`;
-      qrEl.classList.remove('no-qr');
-    } else {
-      qrEl.innerHTML = '';
-      qrEl.classList.add('no-qr');
-    }
+    // QR block removed from view modal; skip if not present
     
     // Set category
     const categoryEl = document.getElementById('viewCategory');
@@ -231,7 +230,9 @@ const InventoryModal = {
     const mainImageEl = document.getElementById('viewMainImage');
     const item = InventoryState.inventoryItems.find(i => i.id === InventoryState.viewingItemId);
     
-    mainImageEl.innerHTML = `<img src="${InventoryImage.getViewableUrl(url)}" alt="${item?.name || 'Product'}">`;
+    const fallbacks = InventoryImage.getFallbackUrls(url, 800);
+    const escapedUrl = url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    mainImageEl.innerHTML = `<img src="${fallbacks[0]}" data-tried-index="0" data-original-url="${escapedUrl}" alt="${item?.name || 'Product'}" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)">`;
     
     // Update active thumbnail
     const thumbnails = document.querySelectorAll('.view-thumbnail');
@@ -241,9 +242,11 @@ const InventoryModal = {
   },
 
   // Close view modal
-  closeViewModal() {
+  closeViewModal(clearId = true) {
     InventoryDOM.viewModal.classList.remove('show');
-    InventoryState.viewingItemId = null;
+    if (clearId) {
+      InventoryState.viewingItemId = null;
+    }
   },
 
   // Open delete confirmation

@@ -44,8 +44,9 @@ const InventoryImage = {
   getThumbnailUrl(url, size = 400) {
     const fileId = this.getGoogleDriveFileId(url);
     if (fileId) {
-      // Use Google Drive thumbnail API - most reliable for thumbnails
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`;
+      // Use export=view so <img> can render reliably
+      // (thumbnail endpoint often fails for private/not-fully-public files)
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
     }
     // Return original URL if not a Google Drive link
     return url;
@@ -55,8 +56,8 @@ const InventoryImage = {
   getViewableUrl(url) {
     const fileId = this.getGoogleDriveFileId(url);
     if (fileId) {
-      // Try thumbnail first as it's more reliable for display
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+      // Use export=view so <img> can render reliably
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
     }
     return url;
   },
@@ -70,6 +71,66 @@ const InventoryImage = {
     return url;
   },
 
+  /**
+   * Get proxy URL for Google Drive image (uses backend with auth token)
+   * This works even for private files because backend uses user's token
+   */
+  getProxyUrl(fileId) {
+    if (!fileId) return null;
+    const googleToken = InventoryGoogle.getToken();
+    if (!googleToken) return null;
+    // Pass token as query param (backend will also check X-Google-Token header)
+    return `/api/upload/drive-image/${fileId}?token=${encodeURIComponent(googleToken)}`;
+  },
+
+  /**
+   * Return a list of fallback URLs for a Drive (or other) image.
+   * Order: proxy (with auth) -> thumbnail -> export=view -> original
+   */
+  getFallbackUrls(url, size = 800) {
+    const fileId = this.getGoogleDriveFileId(url);
+    if (!fileId) return [url];
+    
+    const proxyUrl = this.getProxyUrl(fileId);
+    const fallbacks = [];
+    
+    // Try proxy first (works for private files)
+    if (proxyUrl) {
+      fallbacks.push(proxyUrl);
+    }
+    
+    // Then try public URLs
+    fallbacks.push(
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
+      `https://drive.google.com/uc?export=view&id=${fileId}`,
+      url
+    );
+    
+    return fallbacks;
+  },
+
+  /**
+   * Handle <img> onerror to try next fallback source or show a placeholder.
+   * Usage: onerror="InventoryImage.handleImageError(this, 'originalUrl')"
+   */
+  handleImageError(imgEl, originalUrl, size = 800) {
+    const fallbacks = this.getFallbackUrls(originalUrl, size);
+    const triedIndex = Number(imgEl.dataset.triedIndex || 0);
+    const nextIndex = triedIndex + 1;
+
+    if (nextIndex < fallbacks.length) {
+      imgEl.dataset.triedIndex = nextIndex;
+      imgEl.src = fallbacks[nextIndex];
+      return;
+    }
+
+    // No more fallbacks — show a simple placeholder
+    const parent = imgEl.parentElement;
+    if (parent) {
+      parent.innerHTML = `<div class="no-image-message"><i class="fas fa-image"></i><p>Image unavailable</p></div>`;
+    }
+  },
+
   // Render images grid in modal
   renderImagesGrid() {
     const grid = document.getElementById('imagesGrid');
@@ -77,10 +138,18 @@ const InventoryImage = {
     
     grid.innerHTML = InventoryState.currentImages.map((img, index) => {
       // Use thumbnail for existing images, preview for new uploads
-      const imgSrc = img.url ? this.getThumbnailUrl(img.url, 200) : img.preview;
+      let imgSrc, onErrorHandler = '';
+      if (img.url) {
+        const fallbacks = this.getFallbackUrls(img.url, 200);
+        imgSrc = fallbacks[0];
+        const escapedUrl = img.url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        onErrorHandler = `onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 200)" data-tried-index="0" data-original-url="${escapedUrl}"`;
+      } else {
+        imgSrc = img.preview;
+      }
       return `
         <div class="image-item ${img.uploading ? 'uploading' : ''}" data-index="${index}">
-          <img src="${imgSrc}" alt="Product image" loading="lazy">
+          <img src="${imgSrc}" alt="Product image" loading="lazy" ${onErrorHandler}>
           <button type="button" class="remove-image" onclick="InventoryImage.removeImage(${index})">
             <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
@@ -95,7 +164,9 @@ const InventoryImage = {
     if (!qrPreview) return;
     
     if (imageUrl) {
-      qrPreview.innerHTML = `<img src="${this.getViewableUrl(imageUrl)}" alt="QR Code" loading="lazy">`;
+      const fallbacks = this.getFallbackUrls(imageUrl, 200);
+      const escapedUrl = imageUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      qrPreview.innerHTML = `<img src="${fallbacks[0]}" data-tried-index="0" data-original-url="${escapedUrl}" alt="QR Code" loading="lazy" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 200)">`;
     } else {
       qrPreview.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13 2h-2v2h2v2h-4v-4h2v-2h-2v-2h4v4zm2-4v2h2v4h-2v2h-2v-4h2v-2h-2v-2h2z"/></svg>`;
     }

@@ -336,35 +336,62 @@
    Horizontal Modal Layout
    ============================================= */
 
+/* Make add/edit modal occupy more space (less scrolling) */
+.modal.modal-wide {
+  /* override global modal sizing */
+  max-width: min(1200px, 96vw);
+  max-height: 92vh;
+  overflow: hidden; /* avoid whole-modal scroll */
+  display: flex;
+  flex-direction: column;
+}
+
+.modal.modal-wide .modal-header {
+  padding: 18px 20px 0;
+}
+
+.modal.modal-wide .modal-form-horizontal {
+  flex: 1;
+  overflow: hidden;
+}
+
 .modal-form-horizontal {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  /* form on the left (wider), images on the right */
+  grid-template-columns: 1.2fr 1fr;
   gap: 0;
   padding: 0 !important;
 }
 
 .modal-col {
-  padding: 24px;
+  padding: 18px 20px;
 }
 
 .modal-col-images {
+  order: 2; /* move images to the right */
   background: var(--bg-secondary);
-  border-right: 1px solid var(--border);
-  border-radius: 0 0 0 20px;
+  border-left: 1px solid var(--border);
+  border-radius: 0 0 20px 0;
 }
 
 .modal-col-fields {
+  order: 1;
   display: flex;
   flex-direction: column;
 }
 
 .modal-col-fields .modal-actions {
   margin-top: auto;
-  padding: 24px 0 0;
+  padding: 16px 0 0;
 }
 
 .modal-col .form-group:last-child {
   margin-bottom: 0;
+}
+
+/* Tighten form spacing inside wide modal */
+.modal.modal-wide .form-group {
+  margin-bottom: 14px;
 }
 
 @media (max-width: 768px) {
@@ -373,9 +400,14 @@
   }
   
   .modal-col-images {
-    border-right: none;
+    order: 1;
+    border-left: none;
     border-bottom: 1px solid var(--border);
     border-radius: 0;
+  }
+  
+  .modal-col-fields {
+    order: 2;
   }
 }
 
@@ -395,6 +427,16 @@
   gap: 10px;
   margin-bottom: 16px;
   min-height: 100px;
+}
+
+/* On desktop, show more columns so the grid is shorter */
+@media (min-width: 1024px) {
+  .modal.modal-wide .images-grid {
+    grid-template-columns: repeat(5, 1fr);
+    min-height: 84px;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
 }
 
 .images-grid:empty {
@@ -646,7 +688,8 @@
 
 .view-modal-content {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  /* Details on left (wider), images on right */
+  grid-template-columns: 1.2fr 1fr;
   gap: 0;
 }
 
@@ -655,14 +698,17 @@
 }
 
 .view-col-images {
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border);
+  order: 2;
+  background: transparent;
+  border-left: none;
+  border-right: none;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .view-col-details {
+  order: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -670,7 +716,9 @@
 
 .view-main-image {
   width: 100%;
-  aspect-ratio: 4/3;
+  /* Make gallery bigger */
+  aspect-ratio: 1 / 1;
+  min-height: clamp(320px, 46vh, 560px);
   background: var(--bg-primary);
   border-radius: 12px;
   overflow: hidden;
@@ -707,8 +755,8 @@
 }
 
 .view-thumbnail {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   background: var(--bg-primary);
   border: 2px solid var(--border);
   border-radius: 8px;
@@ -899,10 +947,21 @@
   .view-modal-content {
     grid-template-columns: 1fr;
   }
+
+  .view-main-image {
+    /* Avoid being too tall on small screens */
+    aspect-ratio: 4 / 3;
+    min-height: 220px;
+  }
   
   .view-col-images {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+    order: 1;
+    border-left: none;
+    border-bottom: none;
+  }
+  
+  .view-col-details {
+    order: 2;
   }
   
   .view-stats {
