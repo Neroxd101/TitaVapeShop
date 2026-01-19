@@ -3,7 +3,7 @@ const InventoryImage = {
   // Parse images from item (can be JSON array or single URL)
   parseImages(item) {
     if (!item.images && !item.image_url) return [];
-    
+
     if (item.images) {
       try {
         const parsed = typeof item.images === 'string' ? JSON.parse(item.images) : item.images;
@@ -14,7 +14,7 @@ const InventoryImage = {
         return [];
       }
     }
-    
+
     // Fallback to single image_url
     return item.image_url ? [item.image_url] : [];
   },
@@ -22,7 +22,7 @@ const InventoryImage = {
   // Extract Google Drive file ID from URL
   getGoogleDriveFileId(url) {
     if (!url) return null;
-    
+
     // Match patterns: 
     // https://drive.google.com/uc?id=FILE_ID
     // https://drive.google.com/file/d/FILE_ID/view
@@ -31,12 +31,12 @@ const InventoryImage = {
       /[?&]id=([a-zA-Z0-9_-]+)/,
       /\/d\/([a-zA-Z0-9_-]+)/,
     ];
-    
+
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match) return match[1];
     }
-    
+
     return null;
   },
 
@@ -187,9 +187,8 @@ const InventoryImage = {
     if (InventoryState.currentImages.length < InventoryState.MAX_IMAGES) {
       tiles.push(`
         <label class="image-add-tile" for="itemImages">
-          <div class="add-tile-inner">
+          <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            <span>Add Images</span>
           </div>
         </label>
       `);
@@ -210,7 +209,7 @@ const InventoryImage = {
   updateQrPreview(imageUrl) {
     const qrPreview = document.getElementById('qrPreview');
     if (!qrPreview) return;
-    
+
     if (imageUrl) {
       const fallbacks = this.getFallbackUrls(imageUrl, 200);
       const escapedUrl = imageUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -224,36 +223,36 @@ const InventoryImage = {
   async handleImagesSelect(e) {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-    
+
     // Check max images limit
     const remainingSlots = InventoryState.MAX_IMAGES - InventoryState.currentImages.length;
     if (remainingSlots <= 0) {
       alert(`Maximum ${InventoryState.MAX_IMAGES} images allowed`);
       return;
     }
-    
+
     const filesToAdd = files.slice(0, remainingSlots);
-    
+
     for (const file of filesToAdd) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
         alert('Please select image files only');
         continue;
       }
-      
+
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         alert(`${file.name} is too large (max 5MB)`);
         continue;
       }
-      
+
       // Create preview
       const preview = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result);
         reader.readAsDataURL(file);
       });
-      
+
       InventoryState.currentImages.push({
         file,
         preview,
@@ -261,7 +260,7 @@ const InventoryImage = {
         uploading: false
       });
     }
-    
+
     this.renderImagesGrid();
     e.target.value = ''; // Reset input
   },
@@ -277,16 +276,16 @@ const InventoryImage = {
     if (!InventoryGoogle.isConnected()) {
       throw new Error('Please connect your Google account first');
     }
-    
+
     const googleToken = InventoryGoogle.getToken();
     if (!googleToken) {
       throw new Error('Google token not found');
     }
-    
+
     // Mark as uploading
     InventoryState.currentImages[index].uploading = true;
     this.renderImagesGrid();
-    
+
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
@@ -301,17 +300,17 @@ const InventoryImage = {
           productName: productName, // Upload to product folder
         }),
       });
-      
+
       const result = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(result.error || 'Upload failed');
       }
-      
+
       InventoryState.currentImages[index].url = result.imageUrl;
       InventoryState.currentImages[index].uploading = false;
       this.renderImagesGrid();
-      
+
       return result.imageUrl;
     } catch (error) {
       InventoryState.currentImages[index].uploading = false;
@@ -323,15 +322,15 @@ const InventoryImage = {
   // Upload all pending images to product folder
   async uploadPendingImages(productName) {
     const pendingImages = InventoryState.currentImages.filter((img) => img.file && !img.url);
-    
+
     if (pendingImages.length === 0) return;
-    
+
     const uploadingEl = document.getElementById('imageUploading');
     const hintEl = document.getElementById('imageHint');
-    
+
     if (uploadingEl) uploadingEl.style.display = 'flex';
     if (hintEl) hintEl.style.display = 'none';
-    
+
     try {
       for (let i = 0; i < InventoryState.currentImages.length; i++) {
         if (InventoryState.currentImages[i].file && !InventoryState.currentImages[i].url) {
@@ -350,16 +349,16 @@ const InventoryImage = {
       console.log('Google not connected, skipping QR upload');
       return null;
     }
-    
+
     const googleToken = InventoryGoogle.getToken();
     if (!googleToken) {
       console.log('No Google token, skipping QR upload');
       return null;
     }
-    
+
     try {
       console.log('Uploading QR for product code:', productCode);
-      
+
       // Backend will generate QR code and upload to Google Drive
       const response = await fetch('/api/upload/qrcode', {
         method: 'POST',
@@ -372,14 +371,14 @@ const InventoryImage = {
           productName: productName,
         }),
       });
-      
+
       const result = await response.json();
-      
+
       if (!response.ok) {
         console.error('QR upload failed:', result.error);
         return null;
       }
-      
+
       return result.imageUrl;
     } catch (error) {
       console.error('QR upload error:', error);

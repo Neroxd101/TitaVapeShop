@@ -454,9 +454,11 @@
   padding: 0;
 }
 
-.edit-thumbnails .image-add-tile .add-tile-inner {
-  gap: 4px;
-  font-size: 12px;
+.edit-thumbnails .image-add-tile svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  margin: auto;
 }
 
 .modal-col-fields {
@@ -589,8 +591,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  gap: 8px;
+  width: 100%;
+  aspect-ratio: 1;
   background: var(--bg-primary);
   border: 2px dashed var(--border);
   border-radius: 12px;
@@ -602,19 +604,16 @@
 
 .image-add-tile:hover {
   border-color: var(--accent);
-  color: var(--text-primary);
+  color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .image-add-tile svg {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   fill: currentColor;
-}
-
-.image-add-tile .add-tile-inner span {
-  font-size: 13px;
-  font-weight: 600;
+  display: block;
+  margin: auto;
 }
 
 .image-item.uploading::after {
