@@ -90,9 +90,10 @@ function initDashboard() {
   
   // User info is now set by sidebar.js
   
-  // Set current date
-  const currentDate = document.getElementById('currentDate');
-  if (currentDate) currentDate.textContent = formatDate(new Date());
+  // Header widgets (Google status + date/time)
+  if (window.HeaderStatus && HeaderStatus.init) {
+    HeaderStatus.init();
+  }
   
   // Check if admin needs to connect Google
   // Show modal after a brief delay to ensure DOM is ready
@@ -103,30 +104,10 @@ function initDashboard() {
     }, 500);
   }
   
-  // Update Google connection status in UI
-  updateGoogleStatus();
+  // Google connection status in header is handled by HeaderStatus
   
   // Load dashboard data
   loadDashboardData();
-}
-
-// Update Google connection status
-function updateGoogleStatus() {
-  const googleStatusEl = document.getElementById('googleStatus');
-  const googleUser = localStorage.getItem('google_user');
-  
-  if (googleStatusEl) {
-    if (isGoogleConnected() && googleUser) {
-      const user = JSON.parse(googleUser);
-      googleStatusEl.innerHTML = `
-        <div class="google-connected">
-          <img src="${user.picture}" alt="${user.name}" class="google-avatar">
-          <span>${user.email}</span>
-          <span class="google-badge">Connected</span>
-        </div>
-      `;
-    }
-  }
 }
 
 // Load dashboard data
@@ -163,7 +144,12 @@ function toggleSidebar() {
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize sidebar first
   await initSidebar('dashboard');
-  
+
+  // Main header (shared layout / design)
+  if (window.MainHeader && MainHeader.render) {
+    MainHeader.render({ page: 'dashboard', title: 'Dashboard' });
+  }
+
   // Then initialize dashboard
   initDashboard();
   

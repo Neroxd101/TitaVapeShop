@@ -11,6 +11,11 @@ const Inventory = {
     // Initialize sidebar first
     await initSidebar('inventory');
     
+    // Render shared main header
+    if (window.MainHeader && MainHeader.render) {
+      MainHeader.render({ page: 'inventory', title: 'Inventory' });
+    }
+    
     // Load modals
     await Promise.all([
       InventoryModal.loadItemModal(),
@@ -19,6 +24,10 @@ const Inventory = {
     ]);
     
     // User info is now set by sidebar.js
+    // Header widgets (Google status + date/time)
+    if (window.HeaderStatus && HeaderStatus.init) {
+      HeaderStatus.init();
+    }
     
     // Load inventory
     InventoryAPI.loadInventory();

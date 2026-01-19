@@ -20,24 +20,7 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <header class="main-header">
-      <div class="header-left">
-        <button class="menu-toggle" id="menuToggle">
-          <svg viewBox="0 0 24 24">
-            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-          </svg>
-        </button>
-        <h2>Inventory</h2>
-      </div>
-      <div class="header-right">
-        <button class="btn btn-primary" id="addItemBtn">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-          </svg>
-          <span>Add Item</span>
-        </button>
-      </div>
-    </header>
+    <header class="main-header"></header>
 
     <div class="inventory-content">
       <!-- Filters -->
@@ -88,6 +71,8 @@
   <div id="delete-modal-container"></div>
 
   <script src="/js/sidebar.js"></script>
+  <script src="/js/main-header.js"></script>
+  <script src="/js/header-status.js"></script>
   <!-- Inventory modules - load in dependency order -->
   <script src="/inventory/javascript/google.js"></script>
   <script src="/inventory/javascript/utils.js"></script>

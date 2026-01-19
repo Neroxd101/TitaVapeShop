@@ -451,6 +451,23 @@
   color: #000;
 }
 
+/* Header actions sizing (match header compact layout) */
+.main-header .header-right .btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.main-header .header-right .btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 @media (max-width: 1024px) {
   .pos-panel-body {
     max-height: none;
