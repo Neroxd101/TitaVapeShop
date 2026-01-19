@@ -100,19 +100,19 @@
   overflow-y: auto;
   padding-right: 4px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 /* POS Product Card (similar feel to inventory cards) */
 .pos-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 14px 14px 16px;
+  border-radius: 12px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   transition: all 0.2s ease;
 }
 
@@ -124,7 +124,7 @@
 
 .pos-card-image {
   width: 100%;
-  height: 130px;
+  aspect-ratio: 1 / 1;
   border-radius: 12px;
   background: var(--bg-secondary);
   overflow: hidden;
@@ -134,14 +134,14 @@
 .pos-card-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
 .pos-card-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .pos-card-header {
@@ -154,9 +154,9 @@
 .pos-card-category {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -175,7 +175,7 @@
 }
 
 .pos-card-stock {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-secondary);
 }
 
@@ -188,7 +188,7 @@
 }
 
 .pos-card-name {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
@@ -200,7 +200,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .pos-card-price-label {
@@ -214,34 +214,34 @@
 .pos-card-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .product-qty-input {
-  width: 72px;
+  width: 60px;
   padding: 4px 6px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #05050b;
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .product-add-btn {
   flex: 1;
   justify-content: center;
-  padding: 6px 10px;
+  padding: 5px 8px;
   border-radius: 999px;
   border: none;
   background: var(--accent);
   color: #000;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .product-add-btn:disabled {
@@ -250,8 +250,8 @@
 }
 
 .product-add-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
 }
 
 .cart-empty {
@@ -473,4 +473,3 @@
     max-height: none;
   }
 }
-
