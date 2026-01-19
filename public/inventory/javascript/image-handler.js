@@ -131,12 +131,43 @@ const InventoryImage = {
     }
   },
 
+  /**
+   * Set the main preview image in the add/edit modal
+   */
+  setEditMainImage(index = 0) {
+    const mainImageEl = document.getElementById('editMainImage');
+    if (!mainImageEl) return;
+
+    const imgData = InventoryState.currentImages[index];
+    if (!imgData) {
+      mainImageEl.innerHTML = '';
+      mainImageEl.classList.add('no-image');
+      return;
+    }
+
+    let imgSrc, onErrorHandler = '';
+    const originalUrl = imgData.url || imgData.preview;
+    if (imgData.url) {
+      const fallbacks = this.getFallbackUrls(imgData.url, 800);
+      imgSrc = fallbacks[0];
+      const escapedUrl = imgData.url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      onErrorHandler = `onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)" data-tried-index="0" data-original-url="${escapedUrl}"`;
+    } else {
+      imgSrc = imgData.preview;
+    }
+
+    mainImageEl.innerHTML = `<img src="${imgSrc}" alt="Product image" ${onErrorHandler}>`;
+    mainImageEl.classList.remove('no-image');
+  },
+
   // Render images grid in modal
   renderImagesGrid() {
-    const grid = document.getElementById('imagesGrid');
-    if (!grid) return;
-    
-    grid.innerHTML = InventoryState.currentImages.map((img, index) => {
+    const thumbs = document.getElementById('editThumbnails');
+    const mainImageEl = document.getElementById('editMainImage');
+    if (!thumbs || !mainImageEl) return;
+
+    // Build thumbnails
+    const tiles = InventoryState.currentImages.map((img, index) => {
       // Use thumbnail for existing images, preview for new uploads
       let imgSrc, onErrorHandler = '';
       if (img.url) {
@@ -148,14 +179,36 @@ const InventoryImage = {
         imgSrc = img.preview;
       }
       return `
-        <div class="image-item ${img.uploading ? 'uploading' : ''}" data-index="${index}">
+        <div class="image-item ${img.uploading ? 'uploading' : ''}" data-index="${index}" onclick="InventoryImage.setEditMainImage(${index})">
           <img src="${imgSrc}" alt="Product image" loading="lazy" ${onErrorHandler}>
           <button type="button" class="remove-image" onclick="InventoryImage.removeImage(${index})">
             <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
       `;
-    }).join('');
+    });
+
+    // Show add tile if under max images
+    if (InventoryState.currentImages.length < InventoryState.MAX_IMAGES) {
+      tiles.push(`
+        <label class="image-add-tile" for="itemImages">
+          <div class="add-tile-inner">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <span>Add Images</span>
+          </div>
+        </label>
+      `);
+    }
+
+    thumbs.innerHTML = tiles.join('');
+
+    // Update main preview
+    if (InventoryState.currentImages.length > 0) {
+      this.setEditMainImage(0);
+    } else {
+      mainImageEl.innerHTML = '';
+      mainImageEl.classList.add('no-image');
+    }
   },
 
   // Update QR preview image in modal

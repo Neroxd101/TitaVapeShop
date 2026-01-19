@@ -105,9 +105,6 @@ const InventoryModal = {
     
     InventoryImage.renderImagesGrid();
     
-    // Hide QR code section for new items
-    document.getElementById('qrGroup').style.display = 'none';
-    
     InventoryDOM.itemModal.classList.add('show');
   },
 
@@ -138,14 +135,6 @@ const InventoryModal = {
     document.getElementById('itemSalePrice').value = item.sale_price;
     
     InventoryImage.renderImagesGrid();
-    
-    // Show QR code for existing items
-    if (item.qr_image_url) {
-      document.getElementById('qrGroup').style.display = 'block';
-      InventoryImage.updateQrPreview(item.qr_image_url);
-    } else {
-      document.getElementById('qrGroup').style.display = 'none';
-    }
     
     InventoryDOM.itemModal.classList.add('show');
   },

@@ -369,9 +369,75 @@
 
 .modal-col-images {
   order: 2; /* move images to the right */
-  background: var(--bg-secondary);
-  border-left: 1px solid var(--border);
-  border-radius: 0 0 20px 0;
+  /* Match view modal look: no shaded background/borders */
+  background: transparent;
+  border-left: none;
+  border-radius: 0;
+}
+
+.edit-main-image {
+  width: 100%;
+  max-width: 426px;
+  height: 426px;
+  min-height: 426px;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.edit-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.edit-main-image.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-main-image.no-image::after {
+  content: 'No images';
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.edit-thumbnails {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Add spacing around the title in the edit modal (reuses view-name class) */
+.modal-col-fields .view-name {
+  margin-bottom: 42px;
+  padding-top: 4px;
+}
+
+/* Thumbnail sizing inside the edit modal */
+.edit-thumbnails .image-item {
+  width: 80px;
+  height: 80px;
+  min-height: 80px;
+  flex: 0 0 auto;
+}
+
+/* Make the add-image tile align with thumbnails */
+.edit-thumbnails .image-add-tile {
+  width: 80px;
+  height: 80px;
+  min-height: 80px;
+  flex: 0 0 auto;
+  padding: 0;
+}
+
+.edit-thumbnails .image-add-tile .add-tile-inner {
+  gap: 4px;
+  font-size: 12px;
 }
 
 .modal-col-fields {
@@ -381,8 +447,7 @@
 }
 
 .modal-col-fields .modal-actions {
-  margin-top: auto;
-  padding: 16px 0 0;
+  padding: 25px 0 0;
 }
 
 .modal-col .form-group:last-child {
@@ -423,19 +488,19 @@
 
 .images-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
   margin-bottom: 16px;
-  min-height: 100px;
+  min-height: 140px;
 }
 
-/* On desktop, show more columns so the grid is shorter */
+/* On desktop, keep generous tile sizes while filling space */
 @media (min-width: 1024px) {
   .modal.modal-wide .images-grid {
-    grid-template-columns: repeat(5, 1fr);
-    min-height: 84px;
-    gap: 8px;
-    margin-bottom: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    min-height: 160px;
+    gap: 14px;
+    margin-bottom: 14px;
   }
 }
 
@@ -499,6 +564,38 @@
 
 .image-item .remove-image:hover {
   background: var(--error);
+}
+
+.image-add-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-primary);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  min-height: 140px;
+}
+
+.image-add-tile:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.image-add-tile svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+.image-add-tile .add-tile-inner span {
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .image-item.uploading::after {
