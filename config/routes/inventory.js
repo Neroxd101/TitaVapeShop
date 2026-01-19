@@ -3,13 +3,25 @@ const path = require('path');
 const router = express.Router();
 const supabase = require('../database/supabase');
 
+/**
+ * 📋 INVENTORY API ROUTES
+ * 
+ * Quick Reference: See public/inventory/API-ROUTES.md for complete route mapping
+ * 
+ * Routes:
+ * - GET    /inventory/load-items      - Get all items
+ * - POST   /inventory/create-item     - Create new item
+ * - PUT    /inventory/update-item     - Update existing item
+ * - DELETE /inventory/delete-item/:id - Delete item by ID
+ */
+
 // GET /inventory - Serve inventory page
 router.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/inventory.html'));
+  res.sendFile(path.join(__dirname, '../../public/inventory/inventory.html'));
 });
 
-// GET /inventory/api - Get all inventory items
-router.get('/api', async (req, res) => {
+// GET /inventory/load-items - Get all inventory items
+router.get('/load-items', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
@@ -39,8 +51,8 @@ router.get('/api', async (req, res) => {
   }
 });
 
-// POST /inventory/api - Create new item
-router.post('/api', async (req, res) => {
+// POST /inventory/create-item - Create new item
+router.post('/create-item', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
@@ -78,8 +90,8 @@ router.post('/api', async (req, res) => {
   }
 });
 
-// PUT /inventory/api - Update item
-router.put('/api', async (req, res) => {
+// PUT /inventory/update-item - Update item
+router.put('/update-item', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
@@ -111,8 +123,8 @@ router.put('/api', async (req, res) => {
   }
 });
 
-// DELETE /inventory/api/:id - Delete item
-router.delete('/api/:id', async (req, res) => {
+// DELETE /inventory/delete-item/:id - Delete item
+router.delete('/delete-item/:id', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });

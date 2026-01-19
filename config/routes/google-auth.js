@@ -7,21 +7,22 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 // Helper function to get the correct redirect URI
-// For desktop OAuth apps, use explicit redirect URI from env
-// For web apps, construct from request headers
+// For web apps deployed on Vercel, construct from request headers
+// Desktop OAuth type doesn't support HTTPS redirects, so use Web Application type instead
 function getRedirectUri(req) {
-  // If explicit redirect URI is set (required for desktop OAuth type)
+  // If explicit redirect URI is set (useful for production)
   if (process.env.GOOGLE_REDIRECT_URI) {
     return process.env.GOOGLE_REDIRECT_URI;
   }
   
-  // Otherwise, construct from base URL (for web OAuth type)
+  // Construct from base URL (for web OAuth type)
   let baseUrl;
   if (process.env.GOOGLE_REDIRECT_URI_BASE) {
     baseUrl = process.env.GOOGLE_REDIRECT_URI_BASE;
   } else {
-    // Check for forwarded protocol (Vercel sets X-Forwarded-Proto)
+    // Check for forwarded protocol (Vercel sets X-Forwarded-Proto to 'https')
     const protocol = req.get('x-forwarded-proto') || req.protocol;
+    // Use X-Forwarded-Host if available (Vercel sets this), otherwise fall back to Host header
     const host = req.get('x-forwarded-host') || req.get('host');
     baseUrl = `${protocol}://${host}`;
   }

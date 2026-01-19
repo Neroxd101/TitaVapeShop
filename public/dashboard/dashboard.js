@@ -88,14 +88,7 @@ function initDashboard() {
   console.log('User role:', user.role); // Debug log
   console.log('Google connected:', isGoogleConnected()); // Debug log
   
-  // Set user info
-  const userName = document.getElementById('userName');
-  const userRole = document.getElementById('userRole');
-  const userAvatar = document.getElementById('userAvatar');
-  
-  if (userName) userName.textContent = user.username || user.email.split('@')[0];
-  if (userRole) userRole.textContent = user.role === 'admin' ? 'Administrator' : 'Staff';
-  if (userAvatar) userAvatar.textContent = (user.username || user.email)[0].toUpperCase();
+  // User info is now set by sidebar.js
   
   // Set current date
   const currentDate = document.getElementById('currentDate');
@@ -167,26 +160,12 @@ function toggleSidebar() {
 }
 
 // Event listeners
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize sidebar first
+  await initSidebar('dashboard');
+  
+  // Then initialize dashboard
   initDashboard();
-  
-  // Logout button
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', logout);
-  }
-  
-  // Menu toggle
-  const menuToggle = document.getElementById('menuToggle');
-  if (menuToggle) {
-    menuToggle.addEventListener('click', toggleSidebar);
-  }
-  
-  // Close sidebar when clicking overlay
-  const overlay = document.querySelector('.sidebar-overlay');
-  if (overlay) {
-    overlay.addEventListener('click', toggleSidebar);
-  }
   
   // Google connect button
   const googleConnectBtn = document.getElementById('googleConnectBtn');
