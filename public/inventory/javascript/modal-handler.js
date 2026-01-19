@@ -221,7 +221,17 @@ const InventoryModal = {
     // Set dates
     document.getElementById('viewCreatedAt').textContent = InventoryUtils.formatDate(item.created_at);
     document.getElementById('viewUpdatedAt').textContent = InventoryUtils.formatDate(item.updated_at);
-    
+
+    // Show/hide Generate QR button depending on whether QR already exists
+    const generateQrBtn = document.getElementById('viewGenerateQrBtn');
+    if (generateQrBtn) {
+      if (item.qr_image_url) {
+        generateQrBtn.style.display = 'none';
+      } else {
+        generateQrBtn.style.display = '';
+      }
+    }
+
     InventoryDOM.viewModal.classList.add('show');
   },
 
