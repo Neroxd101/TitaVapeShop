@@ -9,6 +9,8 @@ const salesRoutes = require('./config/routes/sales');
 const googleAuthRoutes = require('./config/routes/google-auth');
 const uploadRoutes = require('./config/routes/upload');
 const emailRoutes = require('./config/routes/email');
+const transactionsRoutes = require('./config/routes/transactions');
+const salesApiRoutes = require('./config/routes/sales-api');
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use('/sales', salesRoutes);          // Sales / POS page
 app.use('/auth/google', googleAuthRoutes); // Google OAuth routes
 app.use('/api/upload', uploadRoutes);    // Image upload to Google Drive
 app.use('/api/email', emailRoutes);      // Email service for receipts
+app.use('/api/transactions', transactionsRoutes); // Transaction logging and reports
+app.use('/api/sales', salesApiRoutes);   // Sales API (Checkout, etc.)
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {

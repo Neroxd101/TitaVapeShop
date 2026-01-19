@@ -3,16 +3,16 @@ const InventoryAPI = {
   // API Route: GET /inventory/load-items
   async loadInventory() {
     InventoryCard.showLoading(true);
-    
+
     try {
       const response = await fetch('/inventory/load-items', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         InventoryState.inventoryItems = result.data || [];
         InventoryCard.renderInventory();
@@ -33,40 +33,46 @@ const InventoryAPI = {
   // API Route: POST /inventory/create-item | PUT /inventory/update-item
   async saveItem(e) {
     e.preventDefault();
-    
+
     const saveBtn = document.getElementById('saveBtn');
     saveBtn.classList.add('loading');
     saveBtn.disabled = true;
-    
+
     // Get API route from form attribute
     const form = e.target;
     const isEdit = !!InventoryState.editingItemId;
-    const apiRoute = isEdit 
+    const apiRoute = isEdit
       ? form.getAttribute('data-api-route-update') || '/inventory/update-item'
       : form.getAttribute('data-api-route-create') || '/inventory/create-item';
     const method = isEdit ? 'PUT' : 'POST';
-    
+
+    // Capture old item state for logging (if edit)
+    let oldItem = null;
+    if (isEdit) {
+      oldItem = InventoryState.inventoryItems.find(i => i.id === InventoryState.editingItemId);
+    }
+
     const productName = document.getElementById('itemName').value.trim();
-    
+
     if (!productName) {
       alert('Product name is required');
       saveBtn.classList.remove('loading');
       saveBtn.disabled = false;
       return;
     }
-    
+
     try {
       // Upload any pending images to product folder
       await InventoryImage.uploadPendingImages(productName);
-      
+
       // Get all image URLs
       const imageUrls = InventoryState.currentImages
         .filter(img => img.url)
         .map(img => img.url);
-      
+
       const descriptionValue = document.getElementById('itemDescription').value.trim();
       console.log('Description input value:', descriptionValue);
-      
+
       const itemData = {
         category: document.getElementById('itemCategory').value,
         name: productName,
@@ -76,13 +82,13 @@ const InventoryAPI = {
         sale_price: parseFloat(document.getElementById('itemSalePrice').value) || 0,
         images: imageUrls,
       };
-      
+
       console.log('Sending itemData:', JSON.stringify(itemData, null, 2));
-      
+
       if (isEdit) {
         itemData.id = InventoryState.editingItemId;
       }
-      
+
       const response = await fetch(apiRoute, {
         method: method,
         headers: {
@@ -91,15 +97,30 @@ const InventoryAPI = {
         },
         body: JSON.stringify(itemData)
       });
-      
+
       const result = await response.json();
-      
+
       // Remove loading state
       saveBtn.classList.remove('loading');
       saveBtn.disabled = false;
-      
+
       if (result.success) {
         InventoryModal.closeItemModal();
+
+        // Log transaction
+        if (window.TransactionLogger) {
+          if (isEdit) {
+            // Log Edit
+            TransactionLogger.logInventoryEdit(itemData.id, oldItem, itemData);
+          } else {
+            // Log Add
+            // Use result.item or result.data if available, otherwise fallback to itemData
+            // Note: result.data usually contains the inserted row from supabase
+            const newItem = result.data || result.item || itemData;
+            TransactionLogger.logInventoryAdd(newItem);
+          }
+        }
+
         this.loadInventory();
       } else {
         alert(result.error || 'Failed to save item');
@@ -115,16 +136,19 @@ const InventoryAPI = {
   // API Route: DELETE /inventory/delete-item/:id
   async confirmDelete() {
     if (!InventoryState.deletingItemId) return;
-    
+
     const deleteBtn = document.getElementById('confirmDeleteBtn');
     deleteBtn.classList.add('loading');
     deleteBtn.disabled = true;
-    
+
+    // Get item details for logging before deletion
+    const deletingItem = InventoryState.inventoryItems.find(i => i.id === InventoryState.deletingItemId);
+
     // Get API route from modal actions container data attribute
     const modalActions = InventoryDOM.deleteModal?.querySelector('.modal-actions');
     const apiRoute = modalActions?.getAttribute('data-api-route') || '/inventory/delete-item';
     const deleteUrl = `${apiRoute}/${InventoryState.deletingItemId}`;
-    
+
     try {
       const response = await fetch(deleteUrl, {
         method: 'DELETE',
@@ -132,11 +156,17 @@ const InventoryAPI = {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         InventoryModal.closeDeleteModal();
+
+        // Log transaction
+        if (window.TransactionLogger && deletingItem) {
+          TransactionLogger.logInventoryDelete(deletingItem);
+        }
+
         this.loadInventory();
       } else {
         alert(result.error || 'Failed to delete item');

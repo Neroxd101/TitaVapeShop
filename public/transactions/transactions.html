@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions | Tita Vape Shop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/transactions/transactions.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Sidebar - Loaded dynamically -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="main-header"></header>
+
+        <div class="transactions-container">
+            <div class="page-header">
+                <h1>Activity Log</h1>
+                <p class="subtitle">Monitor system activities and sales transactions</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-card">
+                <div class="filter-group">
+                    <label for="filterAction">Action Type</label>
+                    <select id="filterAction">
+                        <option value="">All Actions</option>
+                        <option value="sale_complete">Sales</option>
+                        <option value="inventory_add">Inventory Add</option>
+                        <option value="inventory_edit">Inventory Edit</option>
+                        <option value="inventory_delete">Inventory Delete</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterDateStart">From</label>
+                    <input type="date" id="filterDateStart">
+                </div>
+
+                <div class="filter-group">
+                    <label for="filterDateEnd">To</label>
+                    <input type="date" id="filterDateEnd">
+                </div>
+
+                <div class="filter-actions">
+                    <button id="applyFiltersBtn" class="btn btn-primary">Apply Filters</button>
+                    <button id="resetFiltersBtn" class="btn btn-secondary">Reset</button>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="transactions-table-card">
+                <div class="table-responsive">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsList">
+                            <!-- Rows rendered by transactions.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination / Load More -->
+                <div class="pagination-controls">
+                    <button id="prevPageBtn" class="btn btn-small" disabled>Previous</button>
+                    <span id="pageInfo">Page 1</span>
+                    <button id="nextPageBtn" class="btn btn-small">Next</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/main-header.js"></script>
+    <script src="/js/header-status.js"></script>
+    <script src="/js/transaction-logger.js"></script>
+    <script src="/transactions/transactions.js"></script>
+</body>
+
+</html>

@@ -188,7 +188,37 @@
       return;
     }
 
-    // Send email receipt if email is provided
+    // 1. Deduct Inventory
+    try {
+      const checkoutResponse = await fetch('/api/sales/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({ items: state.cart })
+      });
+
+      const checkoutResult = await checkoutResponse.json();
+
+      if (!checkoutResult.success) {
+        console.error('Checkout failed:', checkoutResult);
+        let errorMsg = 'Failed to process sale (Inventory Error).\n';
+        if (checkoutResult.errors) {
+          errorMsg += checkoutResult.errors.map(e => `- ${e.name}: ${e.error}`).join('\n');
+        } else {
+          errorMsg += checkoutResult.message || 'Unknown error';
+        }
+        alert(errorMsg);
+        return; // Stop processing
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to process sale due to network or server error.');
+      return;
+    }
+
+    // 2. Send email receipt if email is provided
     if (customerEmail) {
       try {
         const response = await fetch('/api/email/send-receipt', {
@@ -225,6 +255,18 @@
       }
     } else {
       alert(`Sale completed for ${customerName}.\nTotal: ${formatCurrencySafe(total)}`);
+    }
+
+    // Log transaction
+    if (window.TransactionLogger) {
+      TransactionLogger.logSaleComplete({
+        total,
+        items: state.cart,
+        cash,
+        change,
+        customerName,
+        customerEmail
+      });
     }
 
     // Reset cart
