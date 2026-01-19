@@ -72,41 +72,21 @@ const InventoryImage = {
   },
 
   /**
-   * Get proxy URL for Google Drive image (uses backend with auth token)
-   * This works even for private files because backend uses user's token
-   */
-  getProxyUrl(fileId) {
-    if (!fileId) return null;
-    const googleToken = InventoryGoogle.getToken();
-    if (!googleToken) return null;
-    // Pass token as query param (backend will also check X-Google-Token header)
-    return `/api/upload/drive-image/${fileId}?token=${encodeURIComponent(googleToken)}`;
-  },
-
-  /**
    * Return a list of fallback URLs for a Drive (or other) image.
-   * Order: proxy (with auth) -> thumbnail -> export=view -> original
+   * Strategy (public images): thumbnail 800 -> thumbnail 400 -> uc?export=view -> preview -> original
    */
   getFallbackUrls(url, size = 800) {
     const fileId = this.getGoogleDriveFileId(url);
     if (!fileId) return [url];
-    
-    const proxyUrl = this.getProxyUrl(fileId);
-    const fallbacks = [];
-    
-    // Try proxy first (works for private files)
-    if (proxyUrl) {
-      fallbacks.push(proxyUrl);
-    }
-    
-    // Then try public URLs
-    fallbacks.push(
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
+
+    // Use multiple public strategies, similar to the provided method
+    return [
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`,
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`,
       `https://drive.google.com/uc?export=view&id=${fileId}`,
+      `https://drive.google.com/file/d/${fileId}/preview`,
       url
-    );
-    
-    return fallbacks;
+    ];
   },
 
   /**
