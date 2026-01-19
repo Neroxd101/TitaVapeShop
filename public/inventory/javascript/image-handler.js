@@ -73,20 +73,33 @@ const InventoryImage = {
 
   /**
    * Return a list of fallback URLs for a Drive (or other) image.
-   * Strategy (public images): thumbnail 800 -> thumbnail 400 -> uc?export=view -> preview -> original
+   * Strategy: authenticated proxy (most reliable) -> uc?export=view -> thumbnail -> preview -> original
    */
   getFallbackUrls(url, size = 800) {
     const fileId = this.getGoogleDriveFileId(url);
     if (!fileId) return [url];
 
-    // Use multiple public strategies, similar to the provided method
-    return [
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`,
+    const fallbacks = [];
+
+    // If we have a Google access token (stored by InventoryGoogle), use our proxy endpoint first.
+    // This forces Drive `alt=media` and returns real image bytes with proper Content-Type.
+    if (typeof InventoryGoogle !== 'undefined') {
+      const token = InventoryGoogle.getToken && InventoryGoogle.getToken();
+      if (token) {
+        fallbacks.push(`/api/upload/drive-image/${fileId}?token=${encodeURIComponent(token)}`);
+      }
+    }
+
+    // Public Google Drive URLs (can still work when truly public, but may return HTML/login pages)
+    fallbacks.push(
       `https://drive.google.com/uc?export=view&id=${fileId}`,
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`,
       `https://drive.google.com/file/d/${fileId}/preview`,
       url
-    ];
+    );
+
+    return fallbacks;
   },
 
   /**
@@ -99,12 +112,14 @@ const InventoryImage = {
     const nextIndex = triedIndex + 1;
 
     if (nextIndex < fallbacks.length) {
+      console.log(`[Image] Fallback ${nextIndex + 1}/${fallbacks.length} for:`, originalUrl, '→', fallbacks[nextIndex]);
       imgEl.dataset.triedIndex = nextIndex;
       imgEl.src = fallbacks[nextIndex];
       return;
     }
 
     // No more fallbacks — show a simple placeholder
+    console.error('[Image] All fallbacks exhausted for:', originalUrl);
     const parent = imgEl.parentElement;
     if (parent) {
       parent.innerHTML = `<div class="no-image-message"><i class="fas fa-image"></i><p>Image unavailable</p></div>`;

@@ -130,14 +130,34 @@ async function uploadFile(googleToken, base64Data, filename, mimeType, folderId 
   if (!permResponse.ok) {
     const permError = await permResponse.json().catch(() => ({}));
     console.error('Failed to set permissions:', permError);
-    // Continue anyway - file was uploaded, just might not be public
+    // Try to make it public again with a different approach
+    try {
+      await fetch(
+        `https://www.googleapis.com/drive/v3/files/${fileData.id}/permissions`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${googleToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            role: 'reader',
+            type: 'anyone',
+            allowFileDiscovery: false,
+          }),
+        }
+      );
+    } catch (retryError) {
+      console.error('Retry permission setting also failed:', retryError);
+    }
   } else {
     console.log('File permissions set to public');
   }
 
+  // Return URL using export=view format which is more reliable for public files
   return {
     fileId: fileData.id,
-    imageUrl: `https://drive.google.com/uc?id=${fileData.id}`,
+    imageUrl: `https://drive.google.com/uc?export=view&id=${fileData.id}`,
   };
 }
 

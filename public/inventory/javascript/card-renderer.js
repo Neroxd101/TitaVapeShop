@@ -27,10 +27,11 @@ const InventoryCard = {
   createCard(item) {
     const isLowStock = item.quantity <= 5;
     const images = InventoryImage.parseImages(item);
-    if (item.qr_image_url && !images.includes(item.qr_image_url)) {
-      images.push(item.qr_image_url); // include QR as part of the image set (unique)
-    }
-    const firstImage = images.length > 0 ? images[0] : null;
+    // Prefer a normal product image on the card; only fall back to QR if nothing else exists.
+    const nonQrImages = images.filter(url => url && url !== item.qr_image_url);
+    const firstImage = nonQrImages.length > 0
+      ? nonQrImages[0]
+      : (images.length > 0 ? images[0] : null);
     
     // Show only the first image (no slider/buttons)
     const imagesHtml = firstImage

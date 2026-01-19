@@ -142,7 +142,7 @@
       qrScanner = new Html5Qrcode('qrScanner');
       await qrScanner.start(
         { facingMode: 'environment' },
-        { fps: 10, qrbox: 250 },
+        { fps: 10 },
         (decodedText) => {
           handleQrDecoded(decodedText);
         },
