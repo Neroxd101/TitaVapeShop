@@ -3,20 +3,21 @@
   <div class="modal modal-wide">
     <!-- 📋 API Route: POST /inventory/create-item | PUT /inventory/update-item -->
     <!-- See API-ROUTES.md for details -->
-    <form id="itemForm" class="modal-form-horizontal" action="/inventory/create-item" method="POST" data-api-route-create="/inventory/create-item" data-api-route-update="/inventory/update-item">
+    <form id="itemForm" class="modal-form-horizontal" action="/inventory/create-item" method="POST"
+      data-api-route-create="/inventory/create-item" data-api-route-update="/inventory/update-item">
       <input type="hidden" id="itemId" name="id">
-      
+
       <!-- Left Column - Images -->
       <div class="modal-col modal-col-images">
         <div class="form-group">
           <label>Product Images <span class="label-hint">(up to 5)</span></label>
-          
+
           <div class="edit-main-image" id="editMainImage"></div>
-          
+
           <div class="edit-thumbnails" id="editThumbnails">
             <!-- Thumbnails + add tile rendered here -->
           </div>
-          
+
           <input type="file" id="itemImages" accept="image/*" multiple style="display: none;">
           <p class="image-hint" id="imageHint">JPG, PNG up to 5MB</p>
           <p class="image-uploading" id="imageUploading" style="display: none;">
@@ -51,7 +52,7 @@
 
         <div class="form-group">
           <label for="itemDescription">Description <span class="label-hint">(optional)</span></label>
-          <textarea id="itemDescription" placeholder="Enter product description..." rows="2"></textarea>
+          <textarea id="itemDescription" placeholder="Enter product description..." rows="7"></textarea>
         </div>
 
         <div class="form-row-2">

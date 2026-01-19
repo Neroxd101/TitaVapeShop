@@ -396,9 +396,9 @@
 
 .edit-main-image {
   width: 100%;
-  max-width: 426px;
-  height: 426px;
-  min-height: 426px;
+  max-width: 530px;
+  height: 530px;
+  min-height: 530px;
   aspect-ratio: 1 / 1;
   background: var(--bg-primary);
   border-radius: 12px;
