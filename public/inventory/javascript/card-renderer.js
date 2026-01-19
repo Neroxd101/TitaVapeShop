@@ -30,35 +30,20 @@ const InventoryCard = {
     if (item.qr_image_url && !images.includes(item.qr_image_url)) {
       images.push(item.qr_image_url); // include QR as part of the image set (unique)
     }
-    const hasMultipleImages = images.length > 1;
+    const firstImage = images.length > 0 ? images[0] : null;
     
-    // Use thumbnails for card display (faster loading)
-    const imagesHtml = images.length > 0 
-      ? `
-        <div class="card-images" data-current="0">
-          <div class="card-images-track" style="width: ${images.length * 100}%">
-          ${images.map(url => {
-            const fallbacks = InventoryImage.getFallbackUrls(url, 800);
-            const firstSrc = fallbacks[0];
-            // Escape URL properly for onerror handler
-            const escapedUrl = url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            return `<img src="${firstSrc}" data-tried-index="0" data-original-url="${escapedUrl}" alt="${item.name}" loading="lazy" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)">`;
-          }).join('')}
-          </div>
-          ${hasMultipleImages ? `
-            <button class="card-images-arrow prev" onclick="InventoryCard.slideImage(event, '${item.id}', -1)">
-              <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-            </button>
-            <button class="card-images-arrow next" onclick="InventoryCard.slideImage(event, '${item.id}', 1)">
-              <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            </button>
-            <div class="card-images-nav">
-              ${images.map((_, i) => `<span class="card-images-dot ${i === 0 ? 'active' : ''}" onclick="InventoryCard.goToImage(event, '${item.id}', ${i})"></span>`).join('')}
+    // Show only the first image (no slider/buttons)
+    const imagesHtml = firstImage
+      ? (() => {
+          const fallbacks = InventoryImage.getFallbackUrls(firstImage, 800);
+          const firstSrc = fallbacks[0];
+          const escapedUrl = firstImage.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          return `
+            <div class="card-images single">
+              <img src="${firstSrc}" data-tried-index="0" data-original-url="${escapedUrl}" alt="${item.name}" loading="lazy" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)">
             </div>
-            <span class="card-images-count">1/${images.length}</span>
-          ` : ''}
-        </div>
-      `
+          `;
+        })()
       : `
         <div class="card-images">
           <div class="card-images-placeholder">
@@ -73,16 +58,6 @@ const InventoryCard = {
         
         <div class="card-header">
           <span class="card-category ${item.category}">${item.category}</span>
-          <div class="card-qr">
-            ${item.qr_image_url 
-              ? (() => {
-                  const qrFallbacks = InventoryImage.getFallbackUrls(item.qr_image_url, 200);
-                  const qrEscaped = item.qr_image_url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                  return `<img src="${qrFallbacks[0]}" data-tried-index="0" data-original-url="${qrEscaped}" alt="QR" loading="lazy" onerror="InventoryImage.handleImageError(this, '${qrEscaped}', 200)">`;
-                })()
-              : `<svg viewBox="0 0 24 24"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13 2h-2v2h2v2h-4v-4h2v-2h-2v-2h4v4zm2-4v2h2v4h-2v2h-2v-4h2v-2h-2v-2h2z"/></svg>`
-            }
-          </div>
         </div>
         
         <h3 class="card-name">${item.name}</h3>
