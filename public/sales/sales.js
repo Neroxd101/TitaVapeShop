@@ -95,6 +95,12 @@
       completeSaleBtn.addEventListener('click', () => SalesCart.handleCompleteSale(state, renderProducts));
     }
 
+    // Update change display when cash input changes
+    const cashInput = document.getElementById('cashInput');
+    if (cashInput && window.SalesCart && SalesCart.updateChangeDisplay) {
+      cashInput.addEventListener('input', () => SalesCart.updateChangeDisplay(state));
+    }
+
     if (openCartModalBtn && cartModal) {
       openCartModalBtn.addEventListener('click', () => {
         cartModal.classList.add('show');
