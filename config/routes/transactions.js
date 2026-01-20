@@ -35,11 +35,11 @@ router.post('/log', async (req, res) => {
             return res.status(400).json({ error: 'action_type is required' });
         }
 
-        // Get user info from session
+        // Get user info from JWT
         let user_email = 'system';
 
-        if (req.session?.user?.username) {
-            user_email = req.session.user.username;
+        if (req.user?.username) {
+            user_email = req.user.username;
         }
 
         // Get IP and user agent

@@ -51,7 +51,7 @@ serve(async (req) => {
     }
 
     // 2. Verify password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = bcrypt.compareSync(password, user.password);
     if (!isMatch) {
       console.log(`Password mismatch for: ${username}`);
       return new Response(

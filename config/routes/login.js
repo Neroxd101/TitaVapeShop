@@ -1,21 +1,29 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const supabase = require('../database/supabase');
+const JWT_SECRET = process.env.JWT_SECRET || 'tita-vape-shop-jwt-secret';
 
 // GET /login - Serve login page
 router.get('/', (req, res) => {
-  // If already logged in, redirect based on role
-  if (req.session.user) {
-    const roles = req.session.user.roles || [];
-    if (roles.includes('staff')) return res.redirect('/inventory');
-    if (roles.includes('supplier')) return res.redirect('/supply');
-    return res.redirect('/dashboard');
+  // Check for JWT in cookie
+  const token = req.cookies?.token;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const roles = decoded.roles || [];
+      if (roles.includes('staff')) return res.redirect('/inventory');
+      if (roles.includes('supplier')) return res.redirect('/supply');
+      return res.redirect('/dashboard');
+    } catch (err) {
+      // Invalid token, just show login page
+    }
   }
   res.sendFile(path.join(__dirname, '../../public/login.html'));
 });
 
-// POST /login - Local session-based login via Edge Function
+// POST /login - JWT-based login via Edge Function
 router.post('/', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -32,7 +40,6 @@ router.post('/', async (req, res) => {
     });
 
     if (edgeError || !data || !data.success) {
-      // Edge function library might throw or return error in body
       const message = edgeError?.message || data?.error || 'Invalid credentials';
       console.log('Edge Function login failed:', message);
       return res.status(401).json({ error: message });
@@ -40,26 +47,27 @@ router.post('/', async (req, res) => {
 
     const { user } = data;
 
-    // 1. Store user info in session
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      roles: user.roles
-    };
+    // 1. Create JWT
+    const token = jwt.sign(
+      { id: user.id, username: user.username, roles: user.roles },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
 
-    // Explicitly save session before responding to ensure the cookie is set
-    req.session.save((err) => {
-      if (err) {
-        console.error('Session save error:', err);
-        return res.status(500).json({ error: 'Session could not be saved' });
+    // 2. Set Cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    res.json({
+      message: 'Login successful',
+      user: {
+        username: user.username,
+        roles: user.roles
       }
-      res.json({
-        message: 'Login successful',
-        user: {
-          username: user.username,
-          roles: user.roles
-        }
-      });
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -69,13 +77,8 @@ router.post('/', async (req, res) => {
 
 // POST /logout
 router.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Could not log out' });
-    }
-    res.clearCookie('connect.sid');
-    res.json({ message: 'Logged out' });
-  });
+  res.clearCookie('token');
+  res.json({ message: 'Logged out' });
 });
 
 module.exports = router;

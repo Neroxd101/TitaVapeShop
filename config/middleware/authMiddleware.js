@@ -1,24 +1,38 @@
-function isAuthenticated(req, res, next) {
-    if (req.session && req.session.user) {
-        return next();
-    }
-    console.log('Authentication failed for path:', req.path);
-    if (!req.session) console.log('No session object found');
-    else if (!req.session.user) console.log('No user in session');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'tita-vape-shop-jwt-secret';
 
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-        return res.status(401).json({ error: 'Unauthorized: Please log in' });
+function isAuthenticated(req, res, next) {
+    const token = req.cookies?.token;
+
+    if (!token) {
+        console.log('Authentication failed: No token found');
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+            return res.status(401).json({ error: 'Unauthorized: Please log in' });
+        }
+        return res.redirect('/');
     }
-    res.redirect('/');
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded; // Attach user info to request
+        return next();
+    } catch (err) {
+        console.error('Authentication failed: Invalid token', err.message);
+        res.clearCookie('token');
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+            return res.status(401).json({ error: 'Unauthorized: Session expired' });
+        }
+        res.redirect('/');
+    }
 }
 
 function hasRole(roles) {
     return (req, res, next) => {
-        if (!req.session || !req.session.user) {
+        if (!req.user) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const userRoles = req.session.user.roles || [];
+        const userRoles = req.user.roles || [];
         const hasRequiredRole = roles.some(role => userRoles.includes(role));
 
         if (hasRequiredRole) {
