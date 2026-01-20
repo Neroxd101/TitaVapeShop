@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
       // Invalid token, just show login page
     }
   }
-  res.sendFile(path.join(__dirname, '../../public/login.html'));
+  res.sendFile(path.join(__dirname, '../../public/login/login.html'));
 });
 
 // POST /login - JWT-based login via Edge Function
