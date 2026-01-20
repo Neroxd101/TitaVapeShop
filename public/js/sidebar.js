@@ -34,13 +34,13 @@ async function loadSidebar() {
 async function initSidebar(currentPage) {
   // Load sidebar HTML first
   await loadSidebar();
-  
+
   // Set active nav item based on current page
   setActiveNavItem(currentPage);
-  
+
   // Load user info
   loadUserInfo();
-  
+
   // Setup event listeners
   setupSidebarListeners();
 }
@@ -53,7 +53,7 @@ function setActiveNavItem(currentPage) {
   // Remove active class from all nav items
   const navItems = document.querySelectorAll('.nav-item');
   navItems.forEach(item => item.classList.remove('active'));
-  
+
   // Add active class to current page nav item
   const currentNavItem = document.querySelector(`.nav-item[data-page="${currentPage}"]`);
   if (currentNavItem) {
@@ -68,12 +68,12 @@ function loadUserInfo() {
   const userNameEl = document.getElementById('userName');
   const userRoleEl = document.getElementById('userRole');
   const userAvatarEl = document.getElementById('userAvatar');
-  
+
   // Get user info from localStorage
   const userStr = localStorage.getItem('user');
   let username = 'Admin';
   let role = 'Administrator';
-  
+
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
@@ -83,10 +83,10 @@ function loadUserInfo() {
       console.error('Error parsing user data:', e);
     }
   }
-  
+
   if (userNameEl) userNameEl.textContent = username;
   if (userRoleEl) userRoleEl.textContent = role;
-  
+
   // Set avatar initial
   if (userAvatarEl) {
     const initial = username.charAt(0).toUpperCase();
@@ -103,13 +103,13 @@ function setupSidebarListeners() {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', handleLogout);
   }
-  
+
   // Menu toggle (mobile)
   const menuToggle = document.getElementById('menuToggle');
   if (menuToggle) {
     menuToggle.addEventListener('click', toggleSidebar);
   }
-  
+
   // Close sidebar when clicking overlay (if exists)
   const overlay = document.querySelector('.sidebar-overlay');
   if (overlay) {
@@ -123,11 +123,11 @@ function setupSidebarListeners() {
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
-  
+
   if (sidebar) {
     sidebar.classList.toggle('open');
   }
-  
+
   if (overlay) {
     overlay.classList.toggle('show');
   }
@@ -136,18 +136,17 @@ function toggleSidebar() {
 /**
  * Handle logout
  */
-function handleLogout() {
+async function handleLogout() {
+  try {
+    // Call server-side logout to destroy session
+    await fetch('/logout', { method: 'POST' });
+  } catch (err) {
+    console.error('Logout error:', err);
+  }
+
   // Clear localStorage
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('user');
-  localStorage.removeItem('username');
-  localStorage.removeItem('role');
-  localStorage.removeItem('google_access_token');
-  localStorage.removeItem('google_refresh_token');
-  localStorage.removeItem('google_user');
-  localStorage.removeItem('google_connected');
-  
+  localStorage.clear();
+
   // Redirect to login
   window.location.href = '/';
 }

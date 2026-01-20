@@ -1,15 +1,14 @@
 // Utility functions namespace
 const InventoryUtils = {
-  // Check authentication
+  // Check authentication (Local check for UI purposes)
   checkAuth() {
-    const accessToken = localStorage.getItem('access_token');
     const user = localStorage.getItem('user');
-    
-    if (!accessToken || !user) {
+
+    if (!user) {
       window.location.href = '/';
       return null;
     }
-    
+
     return JSON.parse(user);
   },
 

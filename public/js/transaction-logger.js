@@ -90,19 +90,11 @@ const TransactionLogger = {
      */
     async log(transactionData) {
         try {
-            const headers = {
-                'Content-Type': 'application/json'
-            };
-
-            // Add auth token if available
-            const token = localStorage.getItem('access_token');
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-
             const response = await fetch('/api/transactions/log', {
                 method: 'POST',
-                headers: headers,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(transactionData)
             });
 

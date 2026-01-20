@@ -1,9 +1,9 @@
 // Transactions Page Logic
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check authentication
-    const token = localStorage.getItem('access_token');
-    if (!token) {
+    // Check authentication (Local check for UI purposes)
+    const user = localStorage.getItem('user');
+    if (!user) {
         window.location.href = '/';
         return;
     }

@@ -6,11 +6,7 @@
     if (!state) return;
 
     try {
-      const response = await fetch('/inventory/load-items', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
-        }
-      });
+      const response = await fetch('/inventory/load-items');
 
       const result = await response.json();
 

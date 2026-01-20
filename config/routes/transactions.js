@@ -5,6 +5,14 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+const path = require('path');
+
+/**
+ * GET /transactions - Serve transactions page
+ */
+router.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../public/transactions/transactions.html'));
+});
 
 /**
  * POST /api/transactions/log
@@ -27,21 +35,11 @@ router.post('/log', async (req, res) => {
             return res.status(400).json({ error: 'action_type is required' });
         }
 
-        // Get user email from session or auth header
+        // Get user info from session
         let user_email = 'system';
 
-        // Check Authorization header
-        const authHeader = req.headers.authorization;
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            const token = authHeader.split(' ')[1];
-            const { data: { user }, error } = await supabase.auth.getUser(token);
-
-            if (!error && user) {
-                user_email = user.email;
-            }
-        } else if (req.session?.user?.email) {
-            // Fallback to session if available
-            user_email = req.session.user.email;
+        if (req.session?.user?.username) {
+            user_email = req.session.user.username;
         }
 
         // Get IP and user agent

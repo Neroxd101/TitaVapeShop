@@ -5,11 +5,7 @@ const InventoryAPI = {
     InventoryCard.showLoading(true);
 
     try {
-      const response = await fetch('/inventory/load-items', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      });
+      const response = await fetch('/inventory/load-items');
 
       const result = await response.json();
 
@@ -92,8 +88,7 @@ const InventoryAPI = {
       const response = await fetch(apiRoute, {
         method: method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(itemData)
       });
@@ -151,10 +146,7 @@ const InventoryAPI = {
 
     try {
       const response = await fetch(deleteUrl, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
+        method: 'DELETE'
       });
 
       const result = await response.json();
@@ -225,8 +217,7 @@ const InventoryAPI = {
       const response = await fetch('/inventory/update-item', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(updatePayload)
       });

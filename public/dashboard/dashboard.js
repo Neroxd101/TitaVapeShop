@@ -1,26 +1,23 @@
-// Check authentication
+// Check authentication (Local check for UI purposes)
 function checkAuth() {
-  const accessToken = localStorage.getItem('access_token');
   const user = localStorage.getItem('user');
-  
-  if (!accessToken || !user) {
+
+  if (!user) {
     window.location.href = '/';
     return null;
   }
-  
+
   return JSON.parse(user);
 }
 
 // Logout function
 function logout() {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('user');
-  localStorage.removeItem('google_access_token');
-  localStorage.removeItem('google_refresh_token');
-  localStorage.removeItem('google_user');
-  localStorage.removeItem('google_connected');
-  window.location.href = '/';
+  if (typeof handleLogout === 'function') {
+    handleLogout();
+  } else {
+    localStorage.clear();
+    window.location.href = '/';
+  }
 }
 
 // Format currency
@@ -67,7 +64,7 @@ async function connectGoogleAccount() {
   try {
     const response = await fetch('/auth/google');
     const data = await response.json();
-    
+
     if (data.success && data.authUrl) {
       window.location.href = data.authUrl;
     } else {
@@ -83,18 +80,18 @@ async function connectGoogleAccount() {
 function initDashboard() {
   const user = checkAuth();
   if (!user) return;
-  
+
   console.log('User data:', user); // Debug log
   console.log('User role:', user.role); // Debug log
   console.log('Google connected:', isGoogleConnected()); // Debug log
-  
+
   // User info is now set by sidebar.js
-  
+
   // Header widgets (Google status + date/time)
   if (window.HeaderStatus && HeaderStatus.init) {
     HeaderStatus.init();
   }
-  
+
   // Check if admin needs to connect Google
   // Show modal after a brief delay to ensure DOM is ready
   if (user.role === 'admin' && !isGoogleConnected()) {
@@ -103,9 +100,9 @@ function initDashboard() {
       showGoogleConnectModal();
     }, 500);
   }
-  
+
   // Google connection status in header is handled by HeaderStatus
-  
+
   // Load dashboard data
   loadDashboardData();
 }
@@ -114,12 +111,12 @@ function initDashboard() {
 async function loadDashboardData() {
   // TODO: Fetch actual data from API
   // For now, display placeholder values
-  
+
   const totalProducts = document.getElementById('totalProducts');
   const todaySales = document.getElementById('todaySales');
   const lowStock = document.getElementById('lowStock');
   const monthSales = document.getElementById('monthSales');
-  
+
   if (totalProducts) totalProducts.textContent = '0';
   if (todaySales) todaySales.textContent = formatCurrency(0);
   if (lowStock) lowStock.textContent = '0';
@@ -130,11 +127,11 @@ async function loadDashboardData() {
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
-  
+
   if (sidebar) {
     sidebar.classList.toggle('open');
   }
-  
+
   if (overlay) {
     overlay.classList.toggle('show');
   }
@@ -152,25 +149,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Then initialize dashboard
   initDashboard();
-  
+
   // Google connect button
   const googleConnectBtn = document.getElementById('googleConnectBtn');
   if (googleConnectBtn) {
     googleConnectBtn.addEventListener('click', connectGoogleAccount);
   }
-  
+
   // Skip Google connect
   const skipGoogleBtn = document.getElementById('skipGoogleBtn');
   if (skipGoogleBtn) {
     skipGoogleBtn.addEventListener('click', closeGoogleConnectModal);
   }
-  
+
   // Close button (X) in modal header
   const closeGoogleModal = document.getElementById('closeGoogleModal');
   if (closeGoogleModal) {
     closeGoogleModal.addEventListener('click', closeGoogleConnectModal);
   }
-  
+
   // Close modal on overlay click
   const googleModal = document.getElementById('googleConnectModal');
   if (googleModal) {

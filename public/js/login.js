@@ -26,10 +26,10 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   hideError();
 
-  const email = document.getElementById('email').value.trim();
+  const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
 
-  if (!email || !password) {
+  if (!username || !password) {
     showError('Please fill in all fields');
     return;
   }
@@ -42,7 +42,7 @@ form.addEventListener('submit', async (e) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data = await response.json();
@@ -51,17 +51,20 @@ form.addEventListener('submit', async (e) => {
       throw new Error(data.error || 'Login failed');
     }
 
-    // Store the session
-    if (data.session) {
-      localStorage.setItem('access_token', data.session.access_token);
-      localStorage.setItem('refresh_token', data.session.refresh_token);
-    }
+    // Success! Redirect to dashboard (or special role-based path)
     if (data.user) {
       localStorage.setItem('user', JSON.stringify(data.user));
     }
 
-    // Redirect to dashboard
-    window.location.href = '/dashboard';
+    // Role-based redirection logic
+    const roles = data.user.roles || [];
+    if (roles.includes('staff')) {
+      window.location.href = '/inventory';
+    } else if (roles.includes('supplier')) {
+      window.location.href = '/supply';
+    } else {
+      window.location.href = '/dashboard';
+    }
 
   } catch (error) {
     showError(error.message);

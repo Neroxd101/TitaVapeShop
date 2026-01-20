@@ -193,8 +193,7 @@
       const checkoutResponse = await fetch('/api/sales/checkout', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ items: state.cart })
       });

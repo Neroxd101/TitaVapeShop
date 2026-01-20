@@ -11,6 +11,7 @@ const uploadRoutes = require('./config/routes/upload');
 const emailRoutes = require('./config/routes/email');
 const transactionsRoutes = require('./config/routes/transactions');
 const salesApiRoutes = require('./config/routes/sales-api');
+const { isAuthenticated, hasRole } = require('./config/middleware/authMiddleware');
 
 const app = express();
 
@@ -20,14 +21,15 @@ setupMiddleware(app);
 // Routes
 app.use('/', loginRoutes);               // GET / and POST / for login
 app.use('/api/login', loginRoutes);      // POST /api/login
-app.use('/dashboard', dashboardRoutes);  // GET /dashboard
-app.use('/inventory', inventoryRoutes);  // Inventory management
-app.use('/sales', salesRoutes);          // Sales / POS page
+app.use('/dashboard', isAuthenticated, dashboardRoutes);  // GET /dashboard
+app.use('/inventory', isAuthenticated, hasRole(['admin', 'staff']), inventoryRoutes);  // Inventory management
+app.use('/sales', isAuthenticated, hasRole(['admin', 'staff']), salesRoutes);          // Sales / POS page
 app.use('/auth/google', googleAuthRoutes); // Google OAuth routes
-app.use('/api/upload', uploadRoutes);    // Image upload to Google Drive
-app.use('/api/email', emailRoutes);      // Email service for receipts
-app.use('/api/transactions', transactionsRoutes); // Transaction logging and reports
-app.use('/api/sales', salesApiRoutes);   // Sales API (Checkout, etc.)
+app.use('/api/upload', isAuthenticated, uploadRoutes);    // Image upload to Google Drive
+app.use('/api/email', isAuthenticated, emailRoutes);      // Email service for receipts
+app.use('/transactions', isAuthenticated, hasRole(['admin']), transactionsRoutes); // Transaction view
+app.use('/api/transactions', isAuthenticated, transactionsRoutes); // Transaction logging and reports
+app.use('/api/sales', isAuthenticated, salesApiRoutes);   // Sales API (Checkout, etc.)
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {
