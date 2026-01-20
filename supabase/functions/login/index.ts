@@ -1,28 +1,11 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
+import bcrypt from "https://esm.sh/bcryptjs@2.4.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-// Determine role based on email
-function getRoleFromEmail(email: string): string {
-  const emailLower = email.toLowerCase();
-  
-  // Check if email starts with 'admin'
-  if (emailLower.startsWith('admin')) {
-    return 'admin';
-  }
-  
-  // Default to staff
-  return 'staff';
-}
-
-// Get username from email (part before @)
-function getUsernameFromEmail(email: string): string {
-  return email.split('@')[0];
-}
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -32,72 +15,82 @@ serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const { email, password } = await req.json();
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    if (!email || !password) {
+    const body = await req.json().catch(() => ({}));
+    const { username, password } = body;
+
+    if (!username || !password) {
       return new Response(
-        JSON.stringify({ error: "Email and password are required" }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        JSON.stringify({ success: false, error: "Username and password are required" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         }
       );
     }
 
-    // Sign in with Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // 1. Find user by username using service role to bypass RLS and see password hash
+    const { data: user, error: findError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .single();
 
-    if (authError) {
+    if (findError || !user) {
+      console.log(`User not found: ${username}`);
       return new Response(
-        JSON.stringify({ error: authError.message }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        JSON.stringify({ success: false, error: "Invalid credentials" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         }
       );
     }
 
-    // Determine role from email
-    const userEmail = authData.user.email || email;
-    const role = getRoleFromEmail(userEmail);
-    const username = getUsernameFromEmail(userEmail);
+    // 2. Verify password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.log(`Password mismatch for: ${username}`);
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid credentials" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        }
+      );
+    }
 
-    // Return success response with session and user info
+    // 3. Update last login
+    await supabase.from("users")
+      .update({ last_login: new Date().toISOString() })
+      .eq("id", user.id);
+
+    // 4. Return user info
     return new Response(
       JSON.stringify({
         success: true,
-        session: {
-          access_token: authData.session.access_token,
-          refresh_token: authData.session.refresh_token,
-          expires_at: authData.session.expires_at,
-        },
         user: {
-          id: authData.user.id,
-          email: userEmail,
-          username: username,
-          role: role,
+          id: user.id,
+          username: user.username,
+          roles: user.roles,
         },
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       }
     );
 
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login Edge Function error:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      JSON.stringify({ success: false, error: "Internal server error" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       }
     );
   }

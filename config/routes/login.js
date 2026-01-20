@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const supabase = require('../database/supabase');
 
 // GET /login - Serve login page
@@ -16,7 +15,7 @@ router.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/login.html'));
 });
 
-// POST /login - Local session-based login
+// POST /login - Local session-based login via Edge Function
 router.post('/', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -25,42 +24,28 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    // 1. Find user by username
-    const { data: user, error: findError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('username', username)
-      .single();
+    console.log('Login attempt via Edge Function for:', username);
 
-    console.log('Login attempt for:', username);
+    // Call Supabase Edge Function for verification
+    const { data, error: edgeError } = await supabase.functions.invoke('login', {
+      body: { username, password }
+    });
 
-    if (findError || !user) {
-      console.log('User not found or database error:', findError?.message);
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (edgeError || !data || !data.success) {
+      // Edge function library might throw or return error in body
+      const message = edgeError?.message || data?.error || 'Invalid credentials';
+      console.log('Edge Function login failed:', message);
+      return res.status(401).json({ error: message });
     }
 
-    // 2. Verify password
-    const isMatch = await bcrypt.compare(password, user.password);
-    console.log('Password match:', isMatch);
+    const { user } = data;
 
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // 3. Store user info in session
+    // 1. Store user info in session
     req.session.user = {
       id: user.id,
       username: user.username,
       roles: user.roles
     };
-
-    // 4. Update last login (fire and forget)
-    supabase.from('users')
-      .update({ last_login: new Date().toISOString() })
-      .eq('id', user.id)
-      .then(({ error }) => {
-        if (error) console.error('Error updating last login:', error);
-      });
 
     // Explicitly save session before responding to ensure the cookie is set
     req.session.save((err) => {
