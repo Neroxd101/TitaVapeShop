@@ -18,6 +18,7 @@ const transactionsLogRoutes = require('./config/routes/transactions/log-transact
 const transactionsListRoutes = require('./config/routes/transactions/list-transactions');
 const transactionsStatsRoutes = require('./config/routes/transactions/get-stats');
 const transactionsReportRoutes = require('./config/routes/transactions/get-sales-report');
+const settingsRoutes = require('./config/routes/settings');
 
 const app = express();
 
@@ -41,7 +42,10 @@ app.use('/', transactionsServeRoutes);
 app.use('/', transactionsLogRoutes);
 app.use('/', transactionsListRoutes);
 app.use('/', transactionsStatsRoutes);
+
+
 app.use('/', transactionsReportRoutes);
+app.use('/', settingsRoutes);
 // app.use('/', salesApiRoutes); // Removed
 
 // For local development

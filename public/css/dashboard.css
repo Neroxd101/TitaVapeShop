@@ -442,7 +442,7 @@ body {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .actions-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -452,31 +452,31 @@ body {
   .sidebar {
     transform: translateX(-100%);
   }
-  
+
   .sidebar.open {
     transform: translateX(0);
   }
-  
+
   .main-content {
     margin-left: 0;
   }
-  
+
   .menu-toggle {
     display: flex;
   }
-  
+
   .dashboard-content {
     padding: 20px;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .actions-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .stat-card {
     padding: 20px;
   }
@@ -486,7 +486,7 @@ body {
   .actions-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .main-header {
     padding: 16px 20px;
   }
@@ -552,23 +552,60 @@ body {
   flex-shrink: 0;
 }
 
+
 /* Google Connected Status */
 .google-connected {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 14px;
+  padding: 6px 14px;
+  /* Reduced padding slightly */
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 13px;
   color: var(--text-secondary);
+  position: relative;
+  /* For tooltip/options */
+  transition: all 0.2s;
+}
+
+.google-connected:hover {
+  border-color: var(--border);
+  /* Optional: explicit border color on hover */
+}
+
+.google-disconnect-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  margin-left: 4px;
+  /* Space from badge/text */
+  transition: all 0.2s;
+}
+
+.google-disconnect-btn:hover {
+  background: rgba(255, 71, 87, 0.1);
+  color: var(--error);
+}
+
+.google-disconnect-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
 
 .google-avatar {
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .google-badge {

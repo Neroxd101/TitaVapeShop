@@ -59,21 +59,9 @@ function closeGoogleConnectModal() {
   }
 }
 
-// Start Google OAuth flow
-async function connectGoogleAccount() {
-  try {
-    const response = await fetch('/auth/google');
-    const data = await response.json();
-
-    if (data.success && data.authUrl) {
-      window.location.href = data.authUrl;
-    } else {
-      alert('Failed to start Google authentication');
-    }
-  } catch (error) {
-    console.error('Google auth error:', error);
-    alert('Failed to connect Google account');
-  }
+// Redirect to settings for Google OAuth flow
+function connectGoogleAccount() {
+  window.location.href = '/settings';
 }
 
 // Initialize dashboard
