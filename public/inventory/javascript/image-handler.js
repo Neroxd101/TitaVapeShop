@@ -79,27 +79,11 @@ const InventoryImage = {
     const fileId = this.getGoogleDriveFileId(url);
     if (!fileId) return [url];
 
-    const fallbacks = [];
-
-    // If we have a Google access token (stored by InventoryGoogle), use our proxy endpoint first.
-    // This forces Drive `alt=media` and returns real image bytes with proper Content-Type.
-    if (typeof InventoryGoogle !== 'undefined') {
-      const token = InventoryGoogle.getToken && InventoryGoogle.getToken();
-      if (token) {
-        fallbacks.push(`/api/upload/drive-image/${fileId}?token=${encodeURIComponent(token)}`);
-      }
-    }
-
-    // Public Google Drive URLs (can still work when truly public, but may return HTML/login pages)
-    fallbacks.push(
-      `https://drive.google.com/uc?export=view&id=${fileId}`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`,
-      `https://drive.google.com/file/d/${fileId}/preview`,
-      url
-    );
-
-    return fallbacks;
+    return [
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`, // Primary (High res thumbnail)
+      `https://drive.google.com/uc?export=view&id=${fileId}`,         // Fallback 1
+      url                                                             // Fallback 2
+    ];
   },
 
   /**
@@ -273,11 +257,11 @@ const InventoryImage = {
 
   // Upload single image to Google Drive
   async uploadSingleImage(imageData, index, productName) {
-    if (!InventoryGoogle.isConnected()) {
+    if (!InventoryUtils.isGoogleConnected()) {
       throw new Error('Please connect your Google account first');
     }
 
-    const googleToken = InventoryGoogle.getToken();
+    const googleToken = InventoryUtils.getGoogleToken();
     if (!googleToken) {
       throw new Error('Google token not found');
     }
@@ -345,12 +329,12 @@ const InventoryImage = {
 
   // Upload QR code to Google Drive (backend generates QR code directly)
   async uploadQrCode(productCode, productName) {
-    if (!InventoryGoogle.isConnected()) {
+    if (!InventoryUtils.isGoogleConnected()) {
       console.log('Google not connected, skipping QR upload');
       return null;
     }
 
-    const googleToken = InventoryGoogle.getToken();
+    const googleToken = InventoryUtils.getGoogleToken();
     if (!googleToken) {
       console.log('No Google token, skipping QR upload');
       return null;

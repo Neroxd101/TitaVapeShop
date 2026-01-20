@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inventory | Tita Vape Shop</title>
-  <!-- 📋 API Routes: See API-ROUTES.md for complete reference -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -78,16 +77,18 @@
   <script src="/js/main-header.js"></script>
   <script src="/js/header-status.js"></script>
   <!-- Inventory modules - load in dependency order -->
-  <script src="/inventory/javascript/google.js"></script>
+
   <!-- Shared Logic -->
   <script src="/js/transaction-logger.js"></script>
-  <script src="/inventory/javascript/utils.js"></script>
-  <script src="/inventory/javascript/state.js"></script>
-  <script src="/inventory/javascript/dom-elements.js"></script>
+
   <script src="/inventory/javascript/image-handler.js"></script>
-  <script src="/inventory/javascript/card-renderer.js"></script>
-  <script src="/inventory/javascript/modal-handler.js"></script>
-  <script src="/inventory/javascript/api.js"></script>
+
+  <!-- Refactored Modules -->
+  <script src="/inventory/javascript/load-items.js"></script>
+  <script src="/inventory/javascript/create-item.js"></script>
+  <script src="/inventory/javascript/update-item.js"></script>
+  <script src="/inventory/javascript/delete-item.js"></script>
+
   <script src="/inventory/javascript/inventory.js"></script>
 </body>
 
