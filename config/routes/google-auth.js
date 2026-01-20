@@ -1,10 +1,14 @@
 const express = require('express');
-const path = require('path');
 const router = express.Router();
+const path = require('path');
+const { isAuthenticated, hasRole } = require('../middleware/authMiddleware');
 
 // Google OAuth configuration - these should be in .env
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+// Protect all routes in this router - Admin only
+router.use(isAuthenticated, hasRole(['admin']));
 
 // Helper function to get the correct redirect URI
 // For web apps deployed on Vercel, construct from request headers
@@ -14,7 +18,7 @@ function getRedirectUri(req) {
   if (process.env.GOOGLE_REDIRECT_URI) {
     return process.env.GOOGLE_REDIRECT_URI;
   }
-  
+
   // Construct from base URL (for web OAuth type)
   let baseUrl;
   if (process.env.GOOGLE_REDIRECT_URI_BASE) {
@@ -26,7 +30,7 @@ function getRedirectUri(req) {
     const host = req.get('x-forwarded-host') || req.get('host');
     baseUrl = `${protocol}://${host}`;
   }
-  
+
   return `${baseUrl}/auth/google/callback`;
 }
 
@@ -38,7 +42,7 @@ router.get('/', async (req, res) => {
     }
 
     const redirectUri = getRedirectUri(req);
-    
+
     const scopes = [
       'https://www.googleapis.com/auth/drive.file',
       'https://www.googleapis.com/auth/userinfo.email',

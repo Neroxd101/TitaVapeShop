@@ -94,7 +94,8 @@ function initDashboard() {
 
   // Check if admin needs to connect Google
   // Show modal after a brief delay to ensure DOM is ready
-  if (user.role === 'admin' && !isGoogleConnected()) {
+  const roles = user.roles || [];
+  if (roles.includes('admin') && !isGoogleConnected()) {
     console.log('Admin detected, showing Google modal...'); // Debug log
     setTimeout(() => {
       showGoogleConnectModal();

@@ -139,7 +139,7 @@ function toggleSidebar() {
 async function handleLogout() {
   try {
     // Call server-side logout to destroy session
-    await fetch('/logout', { method: 'POST' });
+    await fetch('/api/logout', { method: 'POST' });
   } catch (err) {
     console.error('Logout error:', err);
   }

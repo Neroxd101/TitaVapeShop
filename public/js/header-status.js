@@ -32,7 +32,19 @@
   function renderGoogleStatus(googleStatusEl) {
     if (!googleStatusEl) return;
 
-    if (!isGoogleConnected()) {
+    // Only admins should see Google connection status
+    const rawUser = localStorage.getItem('user');
+    let isAdmin = false;
+    if (rawUser) {
+      try {
+        const user = JSON.parse(rawUser);
+        isAdmin = (user.roles || []).includes('admin');
+      } catch (e) {
+        console.error('Error parsing user data for header status:', e);
+      }
+    }
+
+    if (!isAdmin || !isGoogleConnected()) {
       googleStatusEl.innerHTML = '';
       return;
     }

@@ -37,8 +37,8 @@ form.addEventListener('submit', async (e) => {
   setLoading(true);
 
   try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
+    const response = await fetch(form.action, {
+      method: form.method || 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -76,4 +76,15 @@ form.addEventListener('submit', async (e) => {
 // Clear error on input
 document.querySelectorAll('input').forEach(input => {
   input.addEventListener('input', hideError);
+});
+
+// Check for error in URL
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const error = urlParams.get('error');
+  if (error) {
+    showError(decodeURIComponent(error));
+    // Clean up URL without reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 });

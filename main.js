@@ -19,8 +19,7 @@ const app = express();
 setupMiddleware(app);
 
 // Routes
-app.use('/', loginRoutes);               // GET / and POST / for login
-app.use('/api/login', loginRoutes);      // POST /api/login
+app.use('/', loginRoutes);               // Handles GET /, POST /api/login, and POST /api/logout
 app.use('/dashboard', isAuthenticated, dashboardRoutes);  // GET /dashboard
 app.use('/inventory', isAuthenticated, hasRole(['admin', 'staff']), inventoryRoutes);  // Inventory management
 app.use('/sales', isAuthenticated, hasRole(['admin', 'staff']), salesRoutes);          // Sales / POS page
@@ -32,7 +31,7 @@ app.use('/api/transactions', isAuthenticated, transactionsRoutes); // Transactio
 app.use('/api/sales', isAuthenticated, salesApiRoutes);   // Sales API (Checkout, etc.)
 
 // For local development
-if (process.env.NODE_ENV !== 'production') {
+if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
