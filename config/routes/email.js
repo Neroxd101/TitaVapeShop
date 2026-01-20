@@ -25,10 +25,6 @@ router.post('/api/email/send-receipt', async (req, res) => {
       return res.status(400).json({ error: 'No items in the sale' });
     }
 
-    // Create transporter using Gmail SMTP
-    // Make sure you have these environment variables set:
-    // SMTP_USER=your-email@gmail.com
-    // SMTP_PASS=your-app-password (not your regular password!)
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {

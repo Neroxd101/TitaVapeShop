@@ -80,16 +80,18 @@
   <script src="/js/main-header.js"></script>
   <script src="/js/header-status.js"></script>
   <script src="/js/transaction-logger.js"></script>
-  <script src="/inventory/javascript/utils.js"></script>
-  <script src="/inventory/javascript/google.js"></script>
-  <script src="/inventory/javascript/image-handler.js"></script>
   <script src="https://unpkg.com/html5-qrcode" defer></script>
-  <script src="/sales/javascript/qr-utils.js"></script>
-  <script src="/sales/javascript/qr-scanner.js"></script>
-  <script src="/sales/javascript/qr-flow.js"></script>
-  <script src="/sales/javascript/cart-utils.js"></script>
-  <script src="/sales/javascript/products-utils.js"></script>
-  <script src="/sales/javascript/sales-ui.js"></script>
+
+  <!-- Inventory logic reused (state, utils, image helper) -->
+  <script src="/inventory/javascript/image-handler.js"></script>
+  <script src="/inventory/javascript/inventory.js"></script>
+
+  <!-- Sales modules -->
+  <script src="/sales/javascript/sales-qr.js"></script>
+  <script src="/sales/javascript/load-sales.js"></script>
+  <script src="/sales/javascript/sales-cart.js"></script>
+  <script src="/sales/javascript/create-sale.js"></script>
+
   <script src="/sales/sales.js"></script>
 </body>
 

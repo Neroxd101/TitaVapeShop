@@ -8,12 +8,12 @@ const inventoryLoadRoutes = require('./config/routes/inventory/load-items');
 const inventoryCreateRoutes = require('./config/routes/inventory/create-item');
 const inventoryUpdateRoutes = require('./config/routes/inventory/update-item');
 const inventoryDeleteRoutes = require('./config/routes/inventory/delete-item');
-const salesRoutes = require('./config/routes/sales');
+const salesLoadRoutes = require('./config/routes/sales/load-sales');
+const salesCreateRoutes = require('./config/routes/sales/create-sale');
 const googleAuthRoutes = require('./config/routes/google-auth');
 const uploadRoutes = require('./config/routes/upload');
 const emailRoutes = require('./config/routes/email');
 const transactionsRoutes = require('./config/routes/transactions');
-const salesApiRoutes = require('./config/routes/sales-api');
 
 const app = express();
 
@@ -28,7 +28,8 @@ app.use('/', inventoryLoadRoutes);
 app.use('/', inventoryCreateRoutes);
 app.use('/', inventoryUpdateRoutes);
 app.use('/', inventoryDeleteRoutes);
-app.use('/', salesRoutes);
+app.use('/', salesLoadRoutes);
+app.use('/', salesCreateRoutes);
 app.use('/', googleAuthRoutes);
 app.use('/', uploadRoutes);
 app.use('/', emailRoutes);

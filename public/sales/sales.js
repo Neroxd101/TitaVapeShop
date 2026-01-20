@@ -21,38 +21,16 @@
       MainHeader.render({ page: 'sales', title: 'Sales (POS)' });
     }
 
-    await loadCartModal();
+    await SalesCart.loadCartModal();
     wireEvents();
     // Header widgets (Google status + date/time)
     if (window.HeaderStatus && HeaderStatus.init) {
       HeaderStatus.init();
     }
-    if (window.SalesProducts && SalesProducts.loadProducts) {
-      SalesProducts.loadProducts(state, applyFilters);
-    }
-    if (window.SalesCart && SalesCart.updateCartUI) {
-      SalesCart.updateCartUI(state, renderProducts);
-    }
-  }
 
-  async function loadCartModal() {
-    try {
-      const response = await fetch('/sales/sales-cart-modal.html');
-      if (!response.ok) {
-        throw new Error(`Failed to load cart modal: ${response.statusText}`);
-      }
-      const html = await response.text();
-
-      // Inject at end of body
-      const temp = document.createElement('div');
-      temp.innerHTML = html.trim();
-      const modalEl = temp.firstElementChild;
-      if (modalEl) {
-        document.body.appendChild(modalEl);
-      }
-    } catch (err) {
-      console.error('Error loading cart modal:', err);
-    }
+    // Initialize Data
+    await SalesLoad.init(state);
+    SalesCart.updateCartUI(state);
   }
 
   function setupSidebar() {
@@ -75,38 +53,40 @@
     const qrModal = document.getElementById('qrModal');
 
     if (searchInput) {
-      searchInput.addEventListener('input', applyFilters);
+      searchInput.addEventListener('input', () => SalesLoad.filterProducts(state));
     }
 
     if (categoryFilter) {
-      categoryFilter.addEventListener('change', applyFilters);
+      categoryFilter.addEventListener('change', () => SalesLoad.filterProducts(state));
     }
 
     if (clearCartBtn) {
       clearCartBtn.addEventListener('click', () => {
         state.cart = [];
-        if (window.SalesCart && SalesCart.updateCartUI) {
-          SalesCart.updateCartUI(state, renderProducts);
-        }
+        SalesCart.updateCartUI(state);
       });
     }
 
-    if (completeSaleBtn && window.SalesCart && SalesCart.handleCompleteSale) {
-      completeSaleBtn.addEventListener('click', () => SalesCart.handleCompleteSale(state, renderProducts));
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (checkoutForm) {
+      checkoutForm.addEventListener('submit', (e) => SalesCreate.handleCompleteSale(e, state));
+    }
+
+    // Fallback if form not found but button is (though we expect the form now)
+    if (!checkoutForm && completeSaleBtn) {
+      completeSaleBtn.addEventListener('click', () => SalesCreate.handleCompleteSale(null, state)); // Pass null event 
     }
 
     // Update change display when cash input changes
     const cashInput = document.getElementById('cashInput');
-    if (cashInput && window.SalesCart && SalesCart.updateChangeDisplay) {
+    if (cashInput) {
       cashInput.addEventListener('input', () => SalesCart.updateChangeDisplay(state));
     }
 
     if (openCartModalBtn && cartModal) {
       openCartModalBtn.addEventListener('click', () => {
         cartModal.classList.add('show');
-        if (window.SalesCart && SalesCart.updateCartUI) {
-          SalesCart.updateCartUI(state, renderProducts);
-        }
+        SalesCart.updateCartUI(state);
       });
     }
 
@@ -127,14 +107,14 @@
     if (openQrModalBtn && qrModal) {
       openQrModalBtn.addEventListener('click', () => {
         qrModal.classList.add('show');
-        startQrScan();
+        SalesQR.start(state);
       });
     }
 
     if (closeQrModalBtn && qrModal) {
       closeQrModalBtn.addEventListener('click', () => {
         qrModal.classList.remove('show');
-        stopQrScan();
+        SalesQR.stop();
       });
     }
 
@@ -142,59 +122,9 @@
       qrModal.addEventListener('click', (e) => {
         if (e.target === qrModal) {
           qrModal.classList.remove('show');
-          stopQrScan();
+          SalesQR.stop();
         }
       });
-    }
-  }
-
-  async function startQrScan() {
-    if (!window.SalesQrScanner || !SalesQrScanner.start) {
-      alert('QR scanner is not available yet. Please refresh and try again.');
-      return;
-    }
-
-    await SalesQrScanner.start({
-      elementId: 'qrScanner',
-      onDecoded: (decodedText) => {
-        if (window.SalesQrFlow && SalesQrFlow.handleDecoded) {
-          SalesQrFlow.handleDecoded(state, decodedText);
-        }
-      },
-      onError: async (err) => {
-        console.error('Error starting QR scanner:', err);
-        alert('Unable to access camera for QR scanning.');
-        await stopQrScan();
-      },
-    });
-  }
-
-  async function stopQrScan() {
-    if (window.SalesQrScanner && SalesQrScanner.stop) {
-      await SalesQrScanner.stop();
-    }
-  }
-
-  function applyFilters() {
-    const q = (document.getElementById('productSearch')?.value || '').toLowerCase();
-    const category = document.getElementById('productCategoryFilter')?.value || '';
-
-    state.filtered = state.products.filter(item => {
-      if (category && item.category !== category) return false;
-
-      if (!q) return true;
-      const haystack = `${item.name || ''} ${item.category || ''} ${item.description || ''}`.toLowerCase();
-      return haystack.includes(q);
-    });
-
-    if (window.SalesUI && SalesUI.renderProducts) {
-      SalesUI.renderProducts(state);
-    }
-  }
-
-  function renderProducts() {
-    if (window.SalesUI && SalesUI.renderProducts) {
-      SalesUI.renderProducts(state);
     }
   }
 
