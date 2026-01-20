@@ -13,7 +13,11 @@ const salesCreateRoutes = require('./config/routes/sales/create-sale');
 const salesEmailRoutes = require('./config/routes/sales/email-send-receipt');
 const googleAuthRoutes = require('./config/routes/google-auth');
 const uploadRoutes = require('./config/routes/upload');
-const transactionsRoutes = require('./config/routes/transactions');
+const transactionsServeRoutes = require('./config/routes/transactions/serve-transactions');
+const transactionsLogRoutes = require('./config/routes/transactions/log-transaction');
+const transactionsListRoutes = require('./config/routes/transactions/list-transactions');
+const transactionsStatsRoutes = require('./config/routes/transactions/get-stats');
+const transactionsReportRoutes = require('./config/routes/transactions/get-sales-report');
 
 const app = express();
 
@@ -33,7 +37,11 @@ app.use('/', salesCreateRoutes);
 app.use('/', salesEmailRoutes);
 app.use('/', googleAuthRoutes);
 app.use('/', uploadRoutes);
-app.use('/', transactionsRoutes);
+app.use('/', transactionsServeRoutes);
+app.use('/', transactionsLogRoutes);
+app.use('/', transactionsListRoutes);
+app.use('/', transactionsStatsRoutes);
+app.use('/', transactionsReportRoutes);
 // app.use('/', salesApiRoutes); // Removed
 
 // For local development
