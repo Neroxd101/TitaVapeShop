@@ -11,7 +11,6 @@ const uploadRoutes = require('./config/routes/upload');
 const emailRoutes = require('./config/routes/email');
 const transactionsRoutes = require('./config/routes/transactions');
 const salesApiRoutes = require('./config/routes/sales-api');
-const { isAuthenticated, hasRole } = require('./config/middleware/authMiddleware');
 
 const app = express();
 
@@ -19,16 +18,16 @@ const app = express();
 setupMiddleware(app);
 
 // Routes
-app.use('/', loginRoutes);               // Handles GET /, POST /api/login, and POST /api/logout
-app.use('/dashboard', isAuthenticated, dashboardRoutes);  // GET /dashboard
-app.use('/inventory', isAuthenticated, hasRole(['admin', 'staff']), inventoryRoutes);  // Inventory management
-app.use('/sales', isAuthenticated, hasRole(['admin', 'staff']), salesRoutes);          // Sales / POS page
-app.use('/auth/google', googleAuthRoutes); // Google OAuth routes
-app.use('/api/upload', isAuthenticated, uploadRoutes);    // Image upload to Google Drive
-app.use('/api/email', isAuthenticated, emailRoutes);      // Email service for receipts
-app.use('/transactions', isAuthenticated, hasRole(['admin']), transactionsRoutes); // Transaction view
-app.use('/api/transactions', isAuthenticated, transactionsRoutes); // Transaction logging and reports
-app.use('/api/sales', isAuthenticated, salesApiRoutes);   // Sales API (Checkout, etc.)
+// All routes now define their full paths explicitly within their respective files
+app.use('/', loginRoutes);
+app.use('/', dashboardRoutes);
+app.use('/', inventoryRoutes);
+app.use('/', salesRoutes);
+app.use('/', googleAuthRoutes);
+app.use('/', uploadRoutes);
+app.use('/', emailRoutes);
+app.use('/', transactionsRoutes);
+app.use('/', salesApiRoutes);
 
 // For local development
 if (!process.env.VERCEL) {

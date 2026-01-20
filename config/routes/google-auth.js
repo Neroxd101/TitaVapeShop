@@ -35,7 +35,7 @@ function getRedirectUri(req) {
 }
 
 // GET /auth/google - Generate Google OAuth URL
-router.get('/', async (req, res) => {
+router.get('/auth/google', async (req, res) => {
   try {
     if (!GOOGLE_CLIENT_ID) {
       return res.status(500).json({ error: 'Google OAuth not configured' });
@@ -65,12 +65,12 @@ router.get('/', async (req, res) => {
 });
 
 // GET /auth/google/callback - Handle OAuth callback page
-router.get('/callback', (req, res) => {
+router.get('/auth/google/callback', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/google-callback.html'));
 });
 
 // POST /auth/google/exchange - Exchange code for tokens
-router.post('/exchange', async (req, res) => {
+router.post('/auth/google/exchange', async (req, res) => {
   try {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       return res.status(500).json({ error: 'Google OAuth not configured' });
@@ -124,7 +124,7 @@ router.post('/exchange', async (req, res) => {
 });
 
 // POST /auth/google/refresh - Refresh access token
-router.post('/refresh', async (req, res) => {
+router.post('/auth/google/refresh', async (req, res) => {
   try {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       return res.status(500).json({ error: 'Google OAuth not configured' });

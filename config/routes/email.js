@@ -4,71 +4,75 @@ const router = express.Router();
 // We'll use nodemailer for sending emails via Gmail SMTP
 // You'll need to install: npm install nodemailer
 const nodemailer = require('nodemailer');
+const { isAuthenticated } = require('../middleware/authMiddleware');
+
+// Protect email routes
+router.use(isAuthenticated);
 
 /**
  * POST /api/email/send-receipt
  * Send a sales receipt via email using Gmail SMTP
  */
-router.post('/send-receipt', async (req, res) => {
-    try {
-        const { customerEmail, customerName, items, total, cash, change, saleDate } = req.body;
+router.post('/api/email/send-receipt', async (req, res) => {
+  try {
+    const { customerEmail, customerName, items, total, cash, change, saleDate } = req.body;
 
-        if (!customerEmail) {
-            return res.status(400).json({ error: 'Customer email is required' });
-        }
-
-        if (!items || items.length === 0) {
-            return res.status(400).json({ error: 'No items in the sale' });
-        }
-
-        // Create transporter using Gmail SMTP
-        // Make sure you have these environment variables set:
-        // SMTP_USER=your-email@gmail.com
-        // SMTP_PASS=your-app-password (not your regular password!)
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS
-            }
-        });
-
-        // Generate receipt HTML
-        const receiptHtml = generateReceiptHtml({
-            customerName: customerName || 'Valued Customer',
-            items,
-            total,
-            cash,
-            change,
-            saleDate: saleDate || new Date().toLocaleString('en-PH', {
-                timeZone: 'Asia/Manila',
-                dateStyle: 'medium',
-                timeStyle: 'short'
-            })
-        });
-
-        // Send email
-        const mailOptions = {
-            from: `"Tita Vape Shop" <${process.env.SMTP_USER}>`,
-            to: customerEmail,
-            subject: 'Your Receipt from Tita Vape Shop',
-            html: receiptHtml
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        res.json({ success: true, message: 'Receipt sent successfully' });
-    } catch (error) {
-        console.error('Error in sendReceipt:', error);
-        res.status(500).json({ error: 'Failed to send receipt email', details: error.message });
+    if (!customerEmail) {
+      return res.status(400).json({ error: 'Customer email is required' });
     }
+
+    if (!items || items.length === 0) {
+      return res.status(400).json({ error: 'No items in the sale' });
+    }
+
+    // Create transporter using Gmail SMTP
+    // Make sure you have these environment variables set:
+    // SMTP_USER=your-email@gmail.com
+    // SMTP_PASS=your-app-password (not your regular password!)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      }
+    });
+
+    // Generate receipt HTML
+    const receiptHtml = generateReceiptHtml({
+      customerName: customerName || 'Valued Customer',
+      items,
+      total,
+      cash,
+      change,
+      saleDate: saleDate || new Date().toLocaleString('en-PH', {
+        timeZone: 'Asia/Manila',
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      })
+    });
+
+    // Send email
+    const mailOptions = {
+      from: `"Tita Vape Shop" <${process.env.SMTP_USER}>`,
+      to: customerEmail,
+      subject: 'Your Receipt from Tita Vape Shop',
+      html: receiptHtml
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ success: true, message: 'Receipt sent successfully' });
+  } catch (error) {
+    console.error('Error in sendReceipt:', error);
+    res.status(500).json({ error: 'Failed to send receipt email', details: error.message });
+  }
 });
 
 /**
  * Generate HTML for the receipt email
  */
 function generateReceiptHtml({ customerName, items, total, cash, change, saleDate }) {
-    const itemsHtml = items.map(item => `
+  const itemsHtml = items.map(item => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(item.name)}</td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.qty}</td>
@@ -77,7 +81,7 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
     </tr>
   `).join('');
 
-    return `
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -166,14 +170,14 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
  * Escape HTML to prevent XSS
  */
 function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return String(text).replace(/[&<>"']/g, m => map[m]);
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
 module.exports = router;

@@ -2,6 +2,10 @@ const express = require('express');
 const path = require('path');
 const router = express.Router();
 const supabase = require('../database/supabase');
+const { isAuthenticated, hasRole } = require('../middleware/authMiddleware');
+
+// Protect all inventory routes
+router.use(isAuthenticated, hasRole(['admin', 'staff']));
 
 /**
  * 📋 INVENTORY API ROUTES
@@ -16,19 +20,19 @@ const supabase = require('../database/supabase');
  */
 
 // GET /inventory - Serve inventory page
-router.get('/', (req, res) => {
+router.get('/inventory', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/inventory/inventory.html'));
 });
 
 // GET /inventory/load-items - Get all inventory items
-router.get('/load-items', async (req, res) => {
+router.get('/inventory/load-items', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
 
     const { data, error } = await supabase.functions.invoke('inventory', {
-      body: { 
+      body: {
         action: 'list',
         category: req.query.category,
         search: req.query.search,
@@ -52,7 +56,7 @@ router.get('/load-items', async (req, res) => {
 });
 
 // POST /inventory/create-item - Create new item
-router.post('/create-item', async (req, res) => {
+router.post('/inventory/create-item', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
@@ -61,7 +65,7 @@ router.post('/create-item', async (req, res) => {
     console.log('Creating item with data:', JSON.stringify(req.body, null, 2));
 
     const { data, error } = await supabase.functions.invoke('inventory', {
-      body: { 
+      body: {
         action: 'create',
         ...req.body,
       },
@@ -91,14 +95,14 @@ router.post('/create-item', async (req, res) => {
 });
 
 // PUT /inventory/update-item - Update item
-router.put('/update-item', async (req, res) => {
+router.put('/inventory/update-item', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
 
     const { data, error } = await supabase.functions.invoke('inventory', {
-      body: { 
+      body: {
         action: 'update',
         ...req.body,
       },
@@ -124,14 +128,14 @@ router.put('/update-item', async (req, res) => {
 });
 
 // DELETE /inventory/delete-item/:id - Delete item
-router.delete('/delete-item/:id', async (req, res) => {
+router.delete('/inventory/delete-item/:id', async (req, res) => {
   try {
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
 
     const { data, error } = await supabase.functions.invoke('inventory', {
-      body: { 
+      body: {
         action: 'delete',
         id: req.params.id,
       },

@@ -6,11 +6,10 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 const path = require('path');
+const { isAuthenticated, hasRole } = require('../middleware/authMiddleware');
 
-/**
- * GET /transactions - Serve transactions page
- */
-router.get('/', (req, res) => {
+// GET /transactions - Serve transactions page
+router.get('/transactions', isAuthenticated, hasRole(['admin']), (req, res) => {
     res.sendFile(path.join(__dirname, '../../public/transactions/transactions.html'));
 });
 
@@ -18,7 +17,7 @@ router.get('/', (req, res) => {
  * POST /api/transactions/log
  * Log a transaction/activity
  */
-router.post('/log', async (req, res) => {
+router.post('/api/transactions/log', isAuthenticated, async (req, res) => {
     try {
         const {
             action_type,
@@ -81,7 +80,7 @@ router.post('/log', async (req, res) => {
  * GET /api/transactions/list
  * Get list of transactions with filters
  */
-router.get('/list', async (req, res) => {
+router.get('/api/transactions/list', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
         const {
             action_type,
@@ -146,7 +145,7 @@ router.get('/list', async (req, res) => {
  * GET /api/transactions/stats
  * Get transaction statistics
  */
-router.get('/stats', async (req, res) => {
+router.get('/api/transactions/stats', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
         const { start_date, end_date } = req.query;
 
@@ -191,7 +190,7 @@ router.get('/stats', async (req, res) => {
  * GET /api/transactions/sales-report
  * Get detailed sales report
  */
-router.get('/sales-report', async (req, res) => {
+router.get('/api/transactions/sales-report', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
         const { start_date, end_date, group_by = 'day' } = req.query;
 

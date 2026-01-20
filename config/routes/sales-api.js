@@ -8,11 +8,13 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-/**
- * POST /api/sales/checkout
- * Handle sale checkout: deduct inventory
- */
-router.post('/checkout', async (req, res) => {
+const { isAuthenticated } = require('../middleware/authMiddleware');
+
+// Protect all sales API routes
+router.use(isAuthenticated);
+
+// Handle sale checkout: deduct inventory
+router.post('/api/sales/checkout', async (req, res) => {
     try {
         const { items } = req.body;
 

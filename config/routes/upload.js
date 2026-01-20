@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const QRCode = require('qrcode');
+const { isAuthenticated } = require('../middleware/authMiddleware');
+
+// Protect all upload routes
+router.use(isAuthenticated);
 
 // Find or create folder in Google Drive
 async function findOrCreateFolder(googleToken, folderName, parentId = null) {
@@ -162,7 +166,7 @@ async function uploadFile(googleToken, base64Data, filename, mimeType, folderId 
 }
 
 // POST /api/upload - Upload image to Google Drive (in product folder)
-router.post('/', async (req, res) => {
+router.post('/api/upload', async (req, res) => {
   try {
     const { image, filename, mimeType, productName } = req.body;
     const googleToken = req.headers['x-google-token'];
@@ -184,10 +188,10 @@ router.post('/', async (req, res) => {
     if (productName) {
       // First, find or create "Tita Vape Shop" root folder
       const rootFolderId = await findOrCreateFolder(googleToken, 'Tita Vape Shop');
-      
+
       // Then, find or create "Inventory" subfolder
       const inventoryFolderId = await findOrCreateFolder(googleToken, 'Inventory', rootFolderId);
-      
+
       // Finally, find or create product folder
       folderId = await findOrCreateFolder(googleToken, productName, inventoryFolderId);
     }
@@ -211,7 +215,7 @@ router.post('/', async (req, res) => {
 });
 
 // POST /api/upload/qrcode - Upload QR code image to Google Drive
-router.post('/qrcode', async (req, res) => {
+router.post('/api/upload/qrcode', async (req, res) => {
   try {
     const { qrCode, qrImage, productName } = req.body;
     const googleToken = req.headers['x-google-token'];
@@ -232,7 +236,7 @@ router.post('/qrcode', async (req, res) => {
     } else {
       // Generate QR code directly using qrcode library
       // This encodes the product code as plain text (not a URL)
-      
+
       try {
         // Generate QR code as data URL (base64 PNG)
         const qrDataUrl = await QRCode.toDataURL(qrCode, {
@@ -241,7 +245,7 @@ router.post('/qrcode', async (req, res) => {
           width: 300,
           margin: 1
         });
-        
+
         // Extract base64 data (remove data:image/png;base64, prefix)
         base64Data = qrDataUrl.replace(/^data:image\/\w+;base64,/, '');
       } catch (error) {
@@ -275,7 +279,7 @@ router.post('/qrcode', async (req, res) => {
 });
 
 // GET /api/upload/drive-image/:fileId - Proxy Google Drive image with auth
-router.get('/drive-image/:fileId', async (req, res) => {
+router.get('/api/upload/drive-image/:fileId', async (req, res) => {
   try {
     const { fileId } = req.params;
     // Check both header and query param for token
@@ -320,7 +324,7 @@ router.get('/drive-image/:fileId', async (req, res) => {
     // Stream the image to the client
     res.setHeader('Content-Type', contentType);
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    
+
     const imageBuffer = await imageResponse.arrayBuffer();
     res.send(Buffer.from(imageBuffer));
   } catch (error) {
@@ -330,7 +334,7 @@ router.get('/drive-image/:fileId', async (req, res) => {
 });
 
 // DELETE /api/upload/:fileId - Delete image from Google Drive
-router.delete('/:fileId', async (req, res) => {
+router.delete('/api/upload/:fileId', async (req, res) => {
   try {
     const { fileId } = req.params;
     const googleToken = req.headers['x-google-token'];
