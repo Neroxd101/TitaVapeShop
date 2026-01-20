@@ -5,55 +5,38 @@ const { isAuthenticated } = require('../../middleware/authMiddleware');
 
 /**
  * POST /api/transactions/log
- * Log a transaction/activity
+ * Log a transaction/activity via Edge Function
  */
 router.post('/api/transactions/log', isAuthenticated, async (req, res) => {
     try {
-        const {
-            action_type,
-            entity_id,
-            entity_type,
-            details,
-            sale_total,
-            sale_items,
-            customer_name,
-            customer_email
-        } = req.body;
-
-        if (!action_type) {
-            return res.status(400).json({ error: 'action_type is required' });
+        if (!supabase) {
+            return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
         // Get user info from JWT
         let user_email = 'system';
-
         if (req.user?.username) {
             user_email = req.user.username;
         }
 
-        // Insert transaction
-        const { data, error } = await supabase
-            .from('transactions')
-            .insert({
-                action_type,
-                user_email,
-                entity_id,
-                entity_type,
-                details,
-                sale_total,
-                sale_items,
-                customer_name,
-                customer_email
-            })
-            .select()
-            .single();
+        // Invoke the 'transactions' edge function
+        const { data, error } = await supabase.functions.invoke('transactions', {
+            body: {
+                action: 'log',
+                ...req.body,
+                user_email
+            }
+        });
 
         if (error) {
-            console.error('Error logging transaction:', error);
-            return res.status(500).json({ error: 'Failed to log transaction', details: error.message });
+            console.error('Supabase function error:', error);
+            return res.status(400).json({
+                success: false,
+                error: error.message || 'Failed to log transaction'
+            });
         }
 
-        res.json({ success: true, transaction: data });
+        res.json(data);
     } catch (error) {
         console.error('Error in log transaction:', error);
         res.status(500).json({ error: 'Internal server error', details: error.message });
