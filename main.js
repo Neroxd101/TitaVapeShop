@@ -19,6 +19,7 @@ const transactionsListRoutes = require('./config/routes/transactions/list-transa
 const transactionsStatsRoutes = require('./config/routes/transactions/get-stats');
 const transactionsReportRoutes = require('./config/routes/transactions/get-sales-report');
 const settingsRoutes = require('./config/routes/settings');
+const catalogRoutes = require('./config/routes/catalog');
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use('/', transactionsStatsRoutes);
 
 app.use('/', transactionsReportRoutes);
 app.use('/', settingsRoutes);
+app.use('/', catalogRoutes);
 // app.use('/', salesApiRoutes); // Removed
 
 // For local development

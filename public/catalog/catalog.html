@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog | Tita Vape Shop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/catalog/catalog.css">
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-text">TITA VAPE SHOP</span>
+            </div>
+            <div class="nav-links">
+                <a href="https://www.facebook.com/profile.php?id=61579947539937" target="_blank"
+                    class="social-link facebook" title="Follow us on Facebook">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7h-2.54v-2.9h2.54V9.82c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z" />
+                    </svg>
+                    <span>Follow Us</span>
+                </a>
+                <a href="https://maps.app.goo.gl/GzssH9xZQUN94pU38" target="_blank" class="social-link maps"
+                    title="Find us on Google Maps">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                    </svg>
+                    <span>Visit Store</span>
+                </a>
+                <div class="header-hours">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                    </svg>
+                    <span>8:00 AM - 8:30 PM</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container hero-content">
+            <h1>Our Collection</h1>
+            <p>Discover the finest selection of vapes, e-liquids, and accessories.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Filters & Search -->
+        <div class="catalog-controls">
+            <div class="search-box">
+                <div class="input-wrapper">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search products...">
+                </div>
+            </div>
+            <div class="category-filters" id="categoryFilters">
+                <button class="filter-btn active" data-category="all">All Items</button>
+                <button class="filter-btn" data-category="Hardware">Hardware</button>
+                <button class="filter-btn" data-category="Juices">Juices</button>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="productGrid">
+            <!-- Products will be injected here -->
+            <div class="loading-state">
+                <div class="spinner-large"></div>
+                <p>Browsing our inventory...</p>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </svg>
+            <h3>No products found</h3>
+            <p>Try adjusting your search or category filters.</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Tita Vape Shop. All rights reserved.</p>
+            <div style="margin-top: 16px; display: flex; justify-content: center; gap: 20px;">
+                <a href="https://www.facebook.com/profile.php?id=61579947539937" target="_blank"
+                    style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Facebook</a>
+                <a href="https://maps.app.goo.gl/GzssH9xZQUN94pU38" target="_blank"
+                    style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">Store Location</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Product Details (Optional but nice) -->
+    <div id="productModal" class="modal-overlay">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h3>Product Details</h3>
+                <button class="modal-close" id="closeModal">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/catalog/catalog.js"></script>
+</body>
+
+</html>
