@@ -92,7 +92,7 @@ const InventoryUpdate = {
             };
 
             const qrImageUrl = await InventoryImage.uploadQrCode(generateCode(item.name), item.name);
-            if (!qrImageUrl) throw new Error('Failed to generate QR');
+            if (!qrImageUrl) throw new Error('Failed to generate QR /n Please Connect with Google Drive first');
 
             const images = InventoryImage.parseImages(item);
             const updatePayload = {
