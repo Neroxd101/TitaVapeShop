@@ -32,9 +32,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   customer_name VARCHAR(255),
   customer_email VARCHAR(255),
   
-  -- Metadata
-  ip_address VARCHAR(45),
-  user_agent TEXT,
+
   
   -- Timestamps
   created_at TIMESTAMPTZ DEFAULT NOW()

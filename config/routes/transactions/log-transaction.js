@@ -35,10 +35,6 @@ router.post('/api/transactions/log', isAuthenticated, async (req, res) => {
             user_email = req.user.username;
         }
 
-        // Get IP and user agent
-        const ip_address = req.ip || req.connection.remoteAddress;
-        const user_agent = req.get('user-agent');
-
         // Insert transaction
         const { data, error } = await supabase
             .from('transactions')
@@ -51,9 +47,7 @@ router.post('/api/transactions/log', isAuthenticated, async (req, res) => {
                 sale_total,
                 sale_items,
                 customer_name,
-                customer_email,
-                ip_address,
-                user_agent
+                customer_email
             })
             .select()
             .single();
