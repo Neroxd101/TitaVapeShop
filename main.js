@@ -10,9 +10,9 @@ const inventoryUpdateRoutes = require('./config/routes/inventory/update-item');
 const inventoryDeleteRoutes = require('./config/routes/inventory/delete-item');
 const salesLoadRoutes = require('./config/routes/sales/load-sales');
 const salesCreateRoutes = require('./config/routes/sales/create-sale');
+const salesEmailRoutes = require('./config/routes/sales/email-send-receipt');
 const googleAuthRoutes = require('./config/routes/google-auth');
 const uploadRoutes = require('./config/routes/upload');
-const emailRoutes = require('./config/routes/email');
 const transactionsRoutes = require('./config/routes/transactions');
 
 const app = express();
@@ -30,11 +30,11 @@ app.use('/', inventoryUpdateRoutes);
 app.use('/', inventoryDeleteRoutes);
 app.use('/', salesLoadRoutes);
 app.use('/', salesCreateRoutes);
+app.use('/', salesEmailRoutes);
 app.use('/', googleAuthRoutes);
 app.use('/', uploadRoutes);
-app.use('/', emailRoutes);
 app.use('/', transactionsRoutes);
-app.use('/', salesApiRoutes);
+// app.use('/', salesApiRoutes); // Removed
 
 // For local development
 if (!process.env.VERCEL) {
