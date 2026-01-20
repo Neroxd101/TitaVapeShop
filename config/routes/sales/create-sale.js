@@ -7,7 +7,7 @@ const { isAuthenticated } = require('../../middleware/authMiddleware');
 // Protect all sales API routes
 router.use(isAuthenticated);
 
-// Handle sale checkout: deduct inventory
+// Handle sale checkout: deduct inventory via Edge Function
 router.post('/api/sales/checkout', async (req, res) => {
     try {
         const { items } = req.body;
@@ -16,74 +16,33 @@ router.post('/api/sales/checkout', async (req, res) => {
             return res.status(400).json({ error: 'Invalid cart items' });
         }
 
-        // Process items sequentially to avoid race conditions 
-        // real-world would use a DB transaction or RPC
-        const results = [];
-        const errors = [];
-
-        for (const item of items) {
-            try {
-                // 1. Get current stock
-                const { data: currentItem, error: fetchError } = await supabase
-                    .from('inventory')
-                    .select('quantity, name')
-                    .eq('id', item.id)
-                    .single();
-
-                if (fetchError) {
-                    throw new Error(`Failed to fetch item ${item.name}: ${fetchError.message}`);
-                }
-
-                if (!currentItem) {
-                    throw new Error(`Item ${item.name} not found`);
-                }
-
-                // 2. Check stock
-                if (currentItem.quantity < item.qty) {
-                    throw new Error(`Insufficient stock for ${item.name}. Available: ${currentItem.quantity}, Requested: ${item.qty}`);
-                }
-
-                // 3. Update stock
-                const newQuantity = currentItem.quantity - item.qty;
-                const { error: updateError } = await supabase
-                    .from('inventory')
-                    .update({ quantity: newQuantity })
-                    .eq('id', item.id);
-
-                if (updateError) {
-                    throw new Error(`Failed to update stock for ${item.name}: ${updateError.message}`);
-                }
-
-                results.push({
-                    id: item.id,
-                    name: item.name,
-                    deducted: item.qty,
-                    remaining: newQuantity
-                });
-
-            } catch (err) {
-                console.error(`Error processing item ${item.id}:`, err);
-                errors.push({
-                    id: item.id,
-                    name: item.name,
-                    error: err.message
-                });
-            }
+        if (!supabase) {
+            return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        if (errors.length > 0) {
-            // If there were errors, return 400 or 207 (Multi-Status)
-            // For simplicity, we return 400 if ANY item failed, though some might have succeeded (partial failure)
-            // In a real app we'd roll back
+        // Invoke the 'sales' edge function
+        const { data, error } = await supabase.functions.invoke('sales', {
+            body: { items }
+        });
+
+        if (error) {
+            console.error('Supabase function error:', error);
+            // Handle cases where data might contain error details
+            if (data && (data.error || data.errors)) {
+                return res.status(400).json(data);
+            }
             return res.status(400).json({
                 success: false,
-                message: 'Some items failed to process',
-                errors,
-                processed: results
+                error: error.message || 'Failed to process checkout'
             });
         }
 
-        res.json({ success: true, processed: results });
+        // Check if data indicates failure (data is the response body from edge function)
+        if (data && data.success === false) {
+            return res.status(400).json(data);
+        }
+
+        res.json(data);
 
     } catch (error) {
         console.error('Checkout error:', error);
