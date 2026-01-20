@@ -4,7 +4,7 @@ const router = express.Router();
 // We'll use nodemailer for sending emails via Gmail SMTP
 // You'll need to install: npm install nodemailer
 const nodemailer = require('nodemailer');
-const { isAuthenticated } = require('../middleware/authMiddleware');
+const { isAuthenticated } = require('../../middleware/authMiddleware');
 
 // Protect email routes
 router.use(isAuthenticated);

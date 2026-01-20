@@ -8,7 +8,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const { isAuthenticated } = require('../middleware/authMiddleware');
+const { isAuthenticated } = require('../../middleware/authMiddleware');
 
 // Protect all sales API routes
 router.use(isAuthenticated);

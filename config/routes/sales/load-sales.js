@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const { isAuthenticated, hasRole } = require('../middleware/authMiddleware');
+const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 // Protect sales route
 router.use(isAuthenticated, hasRole(['admin', 'staff']));
