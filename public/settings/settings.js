@@ -58,7 +58,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Connected State
             googleStatusContainer.innerHTML = `
                 <div class="user-info">
-                    <img src="${user.picture}" alt="Avatar" class="user-avatar-large">
+                    <div class="avatar-wrapper">
+                        <img src="${user.picture}" alt="Avatar" class="user-avatar-large">
+                        <div class="status-indicator online"></div>
+                    </div>
                     <div class="user-details">
                         <h4>${user.name}</h4>
                         <p>${user.email}</p>
@@ -69,7 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             googleActionContainer.innerHTML = `
                 <button id="disconnectBtn" class="btn btn-disconnect btn-full">
-                    Disconnect Account
+                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    Disconnect Google Account
                 </button>
             `;
 
@@ -78,15 +82,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             // Disconnected State
             googleStatusContainer.innerHTML = `
-                <div style="text-align: center; color: var(--text-secondary);">
-                    <p>Not connected</p>
+                <div style="text-align: center; padding: 10px 0;">
+                    <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                         <svg width="24" height="24" viewBox="0 0 24 24" style="opacity: 0.5;"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 8px;">Not connected to Google Drive</p>
                     <span class="status-badge disconnected">Offline</span>
                 </div>
             `;
 
             googleActionContainer.innerHTML = `
-                 <button id="connectBtn" class="btn btn-connect btn-full">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.38 0 8.79-3.96 8.79-8.79 0-.9 0-.82-.05-1.98z"/></svg>
+                 <button id="connectBtn" class="btn btn-google btn-full">
+                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.38 0 8.79-3.96 8.79-8.79 0-.9 0-.82-.05-1.98z"/></svg>
                     Connect with Google
                 </button>
             `;
@@ -140,7 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const btn = document.getElementById('connectBtn');
         const originalText = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<div class="spinner-small"></div> Connecting...'; // Ensure you have css for spinner-small or reuse existing
+        btn.innerHTML = '<div class="spinner-small" style="margin-right: 8px;"></div> Initializing...';
 
         try {
             const response = await fetch('/auth/google');

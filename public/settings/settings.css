@@ -37,6 +37,16 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.settings-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 30px 60px -12px rgba(0, 0, 0, 0.6),
+        0 0 0 1px var(--accent-glow) inset;
 }
 
 .card-header {
@@ -47,32 +57,36 @@
 }
 
 .header-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .header-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     fill: white;
 }
 
 .header-icon.google {
-    background: linear-gradient(135deg, #4285F4, #34A853);
+    background: linear-gradient(135deg, #4285F4, #00d4aa);
+    box-shadow: 0 8px 20px rgba(66, 133, 244, 0.3);
 }
 
 .header-icon.account {
-    background: linear-gradient(135deg, var(--accent), #00b894);
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
 }
 
 .settings-card h3 {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
     color: var(--text-primary);
+    letter-spacing: 0.5px;
 }
 
 .card-body {
@@ -90,54 +104,106 @@
 
 /* Status Container */
 .status-container {
-    background: var(--bg-secondary);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    position: relative;
+    backdrop-filter: blur(10px);
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 64px;
+    height: 64px;
 }
 
 .user-avatar-large {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    border: 3px solid var(--bg-card);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-card);
+}
+
+.status-indicator.online {
+    background: #00d4aa;
+    box-shadow: 0 0 8px #00d4aa;
+}
+
+.user-details {
+    flex: 1;
 }
 
 .user-details h4 {
-    font-size: 15px;
+    font-size: 17px;
+    font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .user-details p {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-secondary);
+    margin-bottom: 8px;
 }
 
 .status-badge {
-    display: inline-block;
-    padding: 4px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
 }
 
 .status-badge.connected {
-    background: rgba(0, 212, 170, 0.15);
-    color: var(--accent);
+    background: rgba(0, 212, 170, 0.1);
+    color: #00d4aa;
+    border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+.status-badge.connected::before {
+    background: #00d4aa;
+    box-shadow: 0 0 5px #00d4aa;
 }
 
 .status-badge.disconnected {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-badge.disconnected::before {
+    background: #8b8b9e;
 }
 
 /* Action Container */
@@ -145,30 +211,40 @@
     margin-top: auto;
 }
 
-.btn-connect {
+.btn-google {
     background: white;
-    color: #333;
+    color: #1f1f1f;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    transition: all 0.2s;
+    gap: 12px;
+    font-weight: 700;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.btn-connect:hover {
-    background: #f1f1f1;
+.btn-google:hover {
+    background: #f8f9fa;
     transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .btn-disconnect {
-    background: rgba(255, 71, 87, 0.1);
-    color: var(--error);
-    border: 1px solid rgba(255, 71, 87, 0.2);
+    background: rgba(255, 71, 87, 0.08);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.15);
+    font-weight: 700;
+    border-radius: 14px;
 }
 
 .btn-disconnect:hover {
-    background: rgba(255, 71, 87, 0.2);
-    border-color: var(--error);
+    background: rgba(255, 71, 87, 0.15);
+    border-color: #ff4757;
+    color: #ff4757;
+}
+
+.btn-disconnect svg {
+    margin-right: 8px;
 }
 
 @media (max-width: 600px) {
