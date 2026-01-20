@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const supabase = require('../database/supabase');
+const { supabase } = require('../database/supabase');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // GET /login - Serve login page

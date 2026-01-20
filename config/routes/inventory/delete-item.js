@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const supabase = require('../../database/supabase');
+const { supabase } = require('../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 // Protect all inventory routes
