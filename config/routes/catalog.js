@@ -19,9 +19,8 @@ router.get('/api/inventory/list', async (req, res) => {
         .json({ success: false, error: 'Database not configured' });
     }
 
-    const { data, error } = await supabase.functions.invoke('inventory', {
+    const { data, error } = await supabase.functions.invoke('inventory_get_all', {
       body: {
-        action: 'list',
         category: req.query.category,
         search: req.query.search,
       },

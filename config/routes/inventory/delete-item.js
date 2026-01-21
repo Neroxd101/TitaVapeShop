@@ -13,15 +13,13 @@ router.delete('/inventory/delete-item/:id', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { data, error } = await supabase.functions.invoke('inventory', {
+        const { data, error } = await supabase.functions.invoke('inventory_delete_item', {
             body: {
-                action: 'delete',
                 id: req.params.id,
             },
         });
 
         if (error) {
-            console.error('Supabase function error:', error);
             if (data && data.error) {
                 return res.status(400).json({ success: false, error: data.error });
             }
@@ -34,7 +32,6 @@ router.delete('/inventory/delete-item/:id', async (req, res) => {
 
         res.json(data);
     } catch (error) {
-        console.error('Inventory delete error:', error);
         res.status(500).json({ success: false, error: error.message || 'Internal server error' });
     }
 });

@@ -19,16 +19,14 @@ router.get('/inventory/load-items', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { data, error } = await supabase.functions.invoke('inventory', {
+        const { data, error } = await supabase.functions.invoke('inventory_get_all', {
             body: {
-                action: 'list',
                 category: req.query.category,
                 search: req.query.search,
             },
         });
 
         if (error) {
-            console.error('Supabase function error:', error);
             // Check if the data contains the actual response
             if (data && typeof data === 'object') {
                 return res.status(400).json(data);
@@ -38,7 +36,6 @@ router.get('/inventory/load-items', async (req, res) => {
 
         res.json(data);
     } catch (error) {
-        console.error('Inventory fetch error:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
