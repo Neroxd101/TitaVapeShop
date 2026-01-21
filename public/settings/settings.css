@@ -248,6 +248,10 @@
 }
 
 @media (max-width: 600px) {
+    .settings-container {
+        padding: 16px;
+    }
+
     .settings-grid {
         grid-template-columns: 1fr;
     }

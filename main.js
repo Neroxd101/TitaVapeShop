@@ -18,6 +18,8 @@ const transactionsLogRoutes = require('./config/routes/transactions/transactions
 const transactionsListRoutes = require('./config/routes/transactions/transactions_get_all');
 const transactionsStatsRoutes = require('./config/routes/transactions/transactions_get_stats');
 const transactionsReportRoutes = require('./config/routes/transactions/transactions_get_report');
+const analyticsServeRoutes = require('./config/routes/analytics/analytics_controller');
+const analyticsApiRoutes = require('./config/routes/analytics/analytics_api');
 const settingsRoutes = require('./config/routes/settings');
 const catalogRoutes = require('./config/routes/catalog');
 
@@ -46,6 +48,8 @@ app.use('/', transactionsStatsRoutes);
 
 
 app.use('/', transactionsReportRoutes);
+app.use('/', analyticsServeRoutes);
+app.use('/', analyticsApiRoutes);
 app.use('/', settingsRoutes);
 app.use('/', catalogRoutes);
 // app.use('/', salesApiRoutes); // Removed

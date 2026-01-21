@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Analytics | Tita Vape Shop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/analytics/analytics.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- Sidebar - Loaded dynamically -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="main-header"></header>
+
+        <div class="analytics-container">
+            <div class="page-header">
+                <div class="header-left">
+                    <h1>Business Analytics</h1>
+                    <p class="subtitle">Track your shop's performance and growth</p>
+                </div>
+                <div class="header-right">
+                    <button id="exportCsvBtn" class="btn btn-secondary">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                        </svg>
+                        Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <div class="stats-card-icon revenue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                    </div>
+                    <div class="stats-card-info">
+                        <span class="stats-label">Total Revenue</span>
+                        <h2 class="stats-value" id="statRevenue">₱0.00</h2>
+                        <p class="stats-trend" id="statRevenueDiff">Total earnings</p>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="stats-card-icon sales">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                            <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                    </div>
+                    <div class="stats-card-info">
+                        <span class="stats-label">Total Sales</span>
+                        <h2 class="stats-value" id="statSalesCount">0</h2>
+                        <p class="stats-trend" id="statSalesDiff">Transactions</p>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="stats-card-icon items">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                            <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
+                        </svg>
+                    </div>
+                    <div class="stats-card-info">
+                        <span class="stats-label">Items Sold</span>
+                        <h2 class="stats-value" id="statItemsSold">0</h2>
+                        <p class="stats-trend" id="statItemsDiff">Unit volume</p>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <div class="stats-card-icon avg">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
+                        </svg>
+                    </div>
+                    <div class="stats-card-info">
+                        <span class="stats-label">Avg. Basket</span>
+                        <h2 class="stats-value" id="statAvgSale">₱0.00</h2>
+                        <p class="stats-trend" id="statAvgDiff">Per sale</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-card main-chart">
+                    <div class="chart-header">
+                        <h3>Sales Revenue Trend</h3>
+                        <div class="chart-controls">
+                            <select id="timeRange" class="chart-select">
+                                <option value="7days">Last 7 Days</option>
+                                <option value="30days">Last 30 Days</option>
+                                <option value="90days">Last 90 Days</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Top Selling Products</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Category Performance</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Best Sellers Table -->
+            <div class="analytics-table-card">
+                <div class="card-header">
+                    <h3>Product Performance Details</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Units Sold</th>
+                                <th>Revenue</th>
+                                <th>Stock Left</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bestSellersList">
+                            <!-- Rows rendered by reports_controller.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/main-header.js"></script>
+    <script src="/js/header-status.js"></script>
+
+    <!-- Data Fetchers -->
+    <script src="/analytics/javascript/analytics_fetcher.js"></script>
+
+    <!-- UI & Controller -->
+    <script src="/analytics/javascript/analytics_controller.js"></script>
+</body>
+
+</html>
