@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-    // Handle CORS preflight
     if (req.method === "OPTIONS") {
         return new Response("ok", { headers: corsHeaders });
     }
@@ -15,10 +14,8 @@ serve(async (req) => {
     try {
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // Parse body to get cart items
         const { items } = await req.json();
 
         if (!items || !Array.isArray(items) || items.length === 0) {
@@ -31,10 +28,8 @@ serve(async (req) => {
         const results = [];
         const errors = [];
 
-        // Process items sequentially (In a real app, use a DB transaction)
         for (const item of items) {
             try {
-                // 1. Get current stock
                 const { data: currentItem, error: fetchError } = await supabase
                     .from("inventory")
                     .select("quantity, name")
@@ -45,12 +40,10 @@ serve(async (req) => {
                     throw new Error(`Item ${item.name || item.id} not found: ${fetchError?.message || ''}`);
                 }
 
-                // 2. Check stock
                 if (currentItem.quantity < item.qty) {
                     throw new Error(`Insufficient stock for ${currentItem.name}. Available: ${currentItem.quantity}, Requested: ${item.qty}`);
                 }
 
-                // 3. Update stock
                 const newQuantity = currentItem.quantity - item.qty;
                 const { error: updateError } = await supabase
                     .from("inventory")

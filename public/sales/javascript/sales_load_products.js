@@ -8,7 +8,7 @@ const SalesLoad = {
         try {
             // Re-use inventory load route or potentially a specific sales load route
             // For now, it seems it uses the inventory load
-            const response = await fetch('/inventory/load-items');
+            const response = await fetch('/inventory/inventory_get_all');
             const result = await response.json();
 
             if (result.success) {

@@ -8,7 +8,7 @@ const { isAuthenticated } = require('../../middleware/authMiddleware');
 router.use(isAuthenticated);
 
 // Handle sale checkout: deduct inventory via Edge Function
-router.post('/api/sales/checkout', async (req, res) => {
+router.post('/sales/sales_process', async (req, res) => {
     try {
         const { items } = req.body;
 
@@ -20,8 +20,8 @@ router.post('/api/sales/checkout', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        // Invoke the 'sales' edge function
-        const { data, error } = await supabase.functions.invoke('sales', {
+        // Invoke the 'sales-process' edge function
+        const { data, error } = await supabase.functions.invoke('sales_process', {
             body: { items }
         });
 
