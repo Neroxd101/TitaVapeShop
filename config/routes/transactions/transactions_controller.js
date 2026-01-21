@@ -1,10 +1,13 @@
 const express = require('express');
-const router = express.Router();
 const path = require('path');
-const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
+const router = express.Router();
+const { isAuthenticated } = require('../../middleware/authMiddleware');
+
+// Protect transactions route
+router.use(isAuthenticated);
 
 // GET /transactions - Serve transactions page
-router.get('/transactions', isAuthenticated, hasRole(['admin']), (req, res) => {
+router.get('/transactions', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../public/transactions/transactions.html'));
 });
 
