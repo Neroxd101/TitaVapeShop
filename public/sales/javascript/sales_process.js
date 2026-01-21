@@ -34,10 +34,40 @@ const SalesCreate = {
         const customerEmail = document.getElementById('customerEmail')?.value?.trim();
         const change = cash - total;
 
-        // Show confirmation
-        const confirmMsg = `Complete sale for ${customerName}?\nTotal: ${SalesCart.formatCurrencySafe(total)}`;
-        if (!confirm(confirmMsg)) {
-            return;
+        // Show confirmation modal instead of native confirm
+        this.showConfirmModal(customerName, total, cash, change, state);
+    },
+
+    showConfirmModal(customerName, total, cash, change, state) {
+        const modal = document.getElementById('confirmModal');
+        if (!modal) return;
+
+        // Populate fields
+        document.getElementById('confirmCustomer').textContent = customerName;
+        document.getElementById('confirmTotal').textContent = SalesCart.formatCurrencySafe(total);
+        document.getElementById('confirmCash').textContent = SalesCart.formatCurrencySafe(cash);
+        document.getElementById('confirmChange').textContent = SalesCart.formatCurrencySafe(change);
+
+        // Store state/current sale info on the modal or a global for the "Proceed" button
+        window._pendingSale = { customerName, total, cash, change, state };
+
+        modal.classList.add('show');
+    },
+
+    async proceedWithSale() {
+        const pending = window._pendingSale;
+        if (!pending) return;
+
+        const { customerName, total, cash, change, state } = pending;
+        const form = document.getElementById('checkoutForm');
+        const checkoutUrl = form?.dataset.apiRouteCheckout || '/sales/sales_process';
+        const receiptUrl = form?.dataset.apiRouteReceipt || '/sales/email_send_receipt';
+        const customerEmail = document.getElementById('customerEmail')?.value?.trim();
+
+        const proceedBtn = document.getElementById('proceedSaleBtn');
+        if (proceedBtn) {
+            proceedBtn.classList.add('loading');
+            proceedBtn.disabled = true;
         }
 
         // 1. Deduct Inventory (Checkout)
@@ -61,19 +91,68 @@ const SalesCreate = {
                     errorMsg += checkoutResult.message || 'Unknown error';
                 }
                 alert(errorMsg);
+                if (proceedBtn) {
+                    proceedBtn.classList.remove('loading');
+                    proceedBtn.disabled = false;
+                }
                 return; // Stop processing
             }
         } catch (error) {
             console.error('Checkout error:', error);
             alert('Failed to process sale due to network or server error.');
+            if (proceedBtn) {
+                proceedBtn.classList.remove('loading');
+                proceedBtn.disabled = false;
+            }
             return;
         }
 
         // 2. Send email receipt if email is provided
+        let emailSent = false;
+        let emailError = false;
+
         if (customerEmail) {
-            this.sendReceipt(receiptUrl, customerEmail, customerName, state.cart, total, cash, change);
-        } else {
-            alert(`Sale completed for ${customerName}.\nTotal: ${SalesCart.formatCurrencySafe(total)}`);
+            try {
+                const emailResponse = await fetch(receiptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        customerEmail: customerEmail,
+                        customerName: customerName,
+                        items: state.cart,
+                        total,
+                        cash,
+                        change,
+                        saleDate: new Date().toLocaleString('en-PH', {
+                            timeZone: 'Asia/Manila',
+                            dateStyle: 'medium',
+                            timeStyle: 'short'
+                        })
+                    })
+                });
+
+                const result = await emailResponse.json();
+                emailSent = emailResponse.ok;
+                emailError = !emailResponse.ok;
+            } catch (error) {
+                console.error('Error sending email:', error);
+                emailError = true;
+            }
+        }
+
+        // Show success modal
+        this.showSuccessModal(customerName, total, cash, change, customerEmail, emailSent, emailError);
+
+        // Reset pending sale
+        window._pendingSale = null;
+        const confirmModal = document.getElementById('confirmModal');
+        if (confirmModal) confirmModal.classList.remove('show');
+
+        if (proceedBtn) {
+            proceedBtn.classList.remove('loading');
+            proceedBtn.disabled = false;
         }
 
         // Log transaction
@@ -100,6 +179,43 @@ const SalesCreate = {
 
         // Also reload products to get fresh stock counts from server since we just deducted
         await SalesLoad.loadProducts(state);
+    },
+
+    showSuccessModal(customerName, total, cash, change, email, emailSent, emailError) {
+        const modal = document.getElementById('successModal');
+        if (!modal) return;
+
+        // Populate modal data
+        document.getElementById('successCustomer').textContent = customerName || 'Walk-in';
+        document.getElementById('successTotal').textContent = SalesCart.formatCurrencySafe(total);
+        document.getElementById('successCash').textContent = SalesCart.formatCurrencySafe(cash);
+        document.getElementById('successChange').textContent = SalesCart.formatCurrencySafe(change);
+
+        // Show email status if applicable
+        const emailStatus = document.getElementById('successEmailStatus');
+        if (emailStatus) {
+            if (email) {
+                if (emailSent) {
+                    emailStatus.textContent = `✓ Receipt sent to ${email}`;
+                    emailStatus.className = 'success-email-status sent';
+                } else if (emailError) {
+                    emailStatus.textContent = `⚠ Failed to send receipt to ${email}`;
+                    emailStatus.className = 'success-email-status failed';
+                }
+            } else {
+                emailStatus.textContent = '';
+                emailStatus.className = 'success-email-status';
+            }
+        }
+
+        // Show modal
+        modal.classList.add('show');
+
+        // Close cart modal
+        const cartModal = document.getElementById('cartModal');
+        if (cartModal) {
+            cartModal.classList.remove('show');
+        }
     },
 
     async sendReceipt(url, email, name, items, total, cash, change) {
