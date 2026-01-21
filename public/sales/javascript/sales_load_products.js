@@ -1,6 +1,7 @@
 // Logic for Loading and Rendering Sales Products
 const SalesLoad = {
     async init(state) {
+        this.renderSkeletons();
         await this.loadProducts(state);
     },
 
@@ -188,5 +189,24 @@ const SalesLoad = {
         card.appendChild(body);
 
         return card;
+    },
+
+    renderSkeletons() {
+        const listEl = document.getElementById('productList');
+        if (!listEl) return;
+
+        listEl.innerHTML = '';
+        // Render 8 skeletons
+        for (let i = 0; i < 8; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.innerHTML = `
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton-text skeleton"></div>
+                <div class="skeleton-text-sm skeleton"></div>
+                <div class="skeleton-button skeleton"></div>
+            `;
+            listEl.appendChild(skeleton);
+        }
     }
 };
