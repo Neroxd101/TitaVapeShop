@@ -39,8 +39,9 @@ CREATE INDEX IF NOT EXISTS idx_inventory_category ON inventory(category);
 CREATE INDEX IF NOT EXISTS idx_inventory_name ON inventory(name);
 
 -- =============================================
--- Run this if you already have the table without images column:
--- ALTER TABLE inventory ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
--- Run this if you already have the table without description column:
--- ALTER TABLE inventory ADD COLUMN IF NOT EXISTS description TEXT;
+-- Row Level Security (RLS)
 -- =============================================
+
+-- Enable RLS
+ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
+
