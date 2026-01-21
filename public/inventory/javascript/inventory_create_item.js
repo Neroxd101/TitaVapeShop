@@ -57,7 +57,7 @@ const InventoryCreate = {
                 images: imageUrls,
             };
 
-            const response = await fetch('/inventory/create-item', {
+            const response = await fetch('/inventory/inventory_create_item', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(itemData)

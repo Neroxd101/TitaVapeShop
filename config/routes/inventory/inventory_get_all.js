@@ -12,8 +12,8 @@ router.get('/inventory', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../public/inventory/inventory.html'));
 });
 
-// GET /inventory/load-items - Get all inventory items
-router.get('/inventory/load-items', async (req, res) => {
+// GET /inventory/inventory_get_all - Get all inventory items
+router.get('/inventory/inventory_get_all', async (req, res) => {
     try {
         if (!supabase) {
             return res.status(500).json({ success: false, error: 'Database not configured' });

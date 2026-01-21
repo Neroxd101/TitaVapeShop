@@ -9,7 +9,7 @@ const InventoryLoad = {
     async initialLoad() {
         this.showLoading(true);
         try {
-            const response = await fetch('/inventory/load-items');
+            const response = await fetch('/inventory/inventory_get_all');
             const result = await response.json();
 
             if (result.success) {

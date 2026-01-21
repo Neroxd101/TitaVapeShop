@@ -6,8 +6,8 @@ const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 // Protect all inventory routes
 router.use(isAuthenticated, hasRole(['admin', 'staff']));
 
-// PUT /inventory/update-item - Update item
-router.put('/inventory/update-item', async (req, res) => {
+// PUT /inventory/inventory_update_item - Update item
+router.put('/inventory/inventory_update_item', async (req, res) => {
     try {
         if (!supabase) {
             return res.status(500).json({ success: false, error: 'Database not configured' });

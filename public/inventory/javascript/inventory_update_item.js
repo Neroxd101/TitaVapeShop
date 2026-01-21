@@ -50,7 +50,7 @@ const InventoryUpdate = {
                 images: imageUrls,
             };
 
-            const response = await fetch('/inventory/update-item', {
+            const response = await fetch('/inventory/inventory_update_item', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(itemData)
@@ -102,7 +102,7 @@ const InventoryUpdate = {
                 qr_image_url: qrImageUrl
             };
 
-            const response = await fetch('/inventory/update-item', {
+            const response = await fetch('/inventory/inventory_update_item', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatePayload)

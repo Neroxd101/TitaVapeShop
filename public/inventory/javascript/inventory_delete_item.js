@@ -36,7 +36,7 @@ const InventoryDelete = {
         try {
             const deletingItem = InventoryState.inventoryItems.find(i => i.id === InventoryState.deletingItemId);
 
-            const response = await fetch(`/inventory/delete-item/${InventoryState.deletingItemId}`, {
+            const response = await fetch(`/inventory/inventory_delete_item/${InventoryState.deletingItemId}`, {
                 method: 'DELETE'
             });
             const result = await response.json();
