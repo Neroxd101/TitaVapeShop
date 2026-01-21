@@ -32,7 +32,7 @@ router.post('/inventory/inventory_create_item', async (req, res) => {
             return res.status(400).json(data);
         }
 
-        res.status(201);
+        res.status(201).json(data || { success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message || 'Internal server error' });
     }
