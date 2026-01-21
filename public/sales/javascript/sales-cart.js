@@ -12,9 +12,48 @@ const SalesCart = {
             const temp = document.createElement('div');
             temp.innerHTML = html.trim();
             const modalEl = temp.firstElementChild;
-            if (modalEl) document.body.appendChild(modalEl);
+            const container = document.getElementById('modal-container') || document.body;
+            if (modalEl) container.appendChild(modalEl);
         } catch (err) {
             console.error('Error loading cart modal:', err);
+        }
+    },
+
+    async loadConfirmModal() {
+        try {
+            const existing = document.getElementById('confirmModal');
+            if (existing) return;
+
+            const response = await fetch('/sales/sales-confirm-modal.html');
+            if (!response.ok) throw new Error(`Failed to load confirm modal: ${response.statusText}`);
+            const html = await response.text();
+
+            const temp = document.createElement('div');
+            temp.innerHTML = html.trim();
+            const modalEl = temp.firstElementChild;
+            const container = document.getElementById('modal-container') || document.body;
+            if (modalEl) container.appendChild(modalEl);
+        } catch (err) {
+            console.error('Error loading confirm modal:', err);
+        }
+    },
+
+    async loadSuccessModal() {
+        try {
+            const existing = document.getElementById('successModal');
+            if (existing) return;
+
+            const response = await fetch('/sales/sales-success-modal.html');
+            if (!response.ok) throw new Error(`Failed to load success modal: ${response.statusText}`);
+            const html = await response.text();
+
+            const temp = document.createElement('div');
+            temp.innerHTML = html.trim();
+            const modalEl = temp.firstElementChild;
+            const container = document.getElementById('modal-container') || document.body;
+            if (modalEl) container.appendChild(modalEl);
+        } catch (err) {
+            console.error('Error loading success modal:', err);
         }
     },
 

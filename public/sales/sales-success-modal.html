@@ -1,0 +1,44 @@
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal modal-small">
+        <div class="modal-header">
+            <h3>✓ Sale Completed</h3>
+            <button class="modal-close" id="closeSuccessModalBtn">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="success-icon-wrapper">
+                <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <div class="success-details">
+                <div class="success-row">
+                    <span class="text-muted">Customer:</span>
+                    <span id="successCustomer">Walk-in</span>
+                </div>
+                <div class="success-row">
+                    <span class="text-muted">Total:</span>
+                    <strong id="successTotal" style="color: var(--accent); font-size: 1.1rem;">₱0.00</strong>
+                </div>
+                <div class="success-row">
+                    <span class="text-muted">Cash:</span>
+                    <span id="successCash">₱0.00</span>
+                </div>
+                <div class="success-row">
+                    <span class="text-muted">Change:</span>
+                    <span id="successChange" style="color: var(--accent);">₱0.00</span>
+                </div>
+            </div>
+            <div class="success-email-status" id="successEmailStatus"></div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-primary btn-full" id="closeSuccessBtn">Continue</button>
+        </div>
+    </div>
+</div>

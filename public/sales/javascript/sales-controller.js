@@ -22,6 +22,8 @@
     }
 
     await SalesCart.loadCartModal();
+    await SalesCart.loadConfirmModal();
+    await SalesCart.loadSuccessModal();
     wireEvents();
     // Header widgets (Google status + date/time)
     if (window.HeaderStatus && HeaderStatus.init) {
