@@ -5,7 +5,7 @@ const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 /**
  * GET /api/analytics/dashboard
- * Get aggregated analytics data via Edge Function
+ * Get aggregated analytics data via RPC function
  */
 router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
@@ -13,21 +13,24 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        // Invoke the 'analytics_dashboard' edge function
-        const { data, error } = await supabase.functions.invoke('analytics_dashboard', {
-            body: {
-                ...req.query
-            }
-        });
+        // Build RPC parameters from query string
+        const rpcParams = {
+            p_start_date: req.query.start_date || null,
+            p_end_date: req.query.end_date || null
+        };
+
+        // Call database RPC function
+        const { data, error } = await supabase.rpc('analytics_dashboard', rpcParams);
 
         if (error) {
-            console.error('Supabase function error:', error);
+            console.error('RPC Error:', error);
             return res.status(400).json({
                 success: false,
                 error: error.message || 'Failed to fetch analytics data'
             });
         }
 
+        // RPC returns JSONB directly
         res.json(data);
     } catch (error) {
         console.error('Error in analytics API:', error);
