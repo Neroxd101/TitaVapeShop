@@ -1,9 +1,3 @@
--- =============================================
--- Inventory Update Item Function
--- Updates an inventory item via RPC
--- Recalculates total_profit ONLY when quantity increases
--- =============================================
-
 CREATE OR REPLACE FUNCTION inventory_update_item(
     p_id UUID,
     p_category VARCHAR(20) DEFAULT NULL,
@@ -37,6 +31,7 @@ DECLARE
     new_qty INTEGER;
     new_cost DECIMAL(10,2);
     new_profit DECIMAL(10,2);
+    diff_qty INTEGER;
 BEGIN
     -- Validate ID
     IF p_id IS NULL THEN
@@ -48,7 +43,7 @@ BEGIN
         RAISE EXCEPTION 'Category must be either "hardware" or "juices"';
     END IF;
 
-    -- Fetch current values
+    -- Fetch current inventory
     SELECT inv.quantity, inv.cost_price, inv.total_profit
     INTO cur_qty, cur_cost, cur_profit
     FROM inventory AS inv
@@ -63,9 +58,17 @@ BEGIN
     new_cost := COALESCE(p_cost_price, cur_cost);
     new_profit := COALESCE(cur_profit, 0);
 
-    -- Adjust profit ONLY for newly added stock
-    IF new_qty > cur_qty THEN
-        new_profit := new_profit - (new_cost * (new_qty - cur_qty));
+    -- Calculate difference
+    diff_qty := new_qty - cur_qty;
+
+    -- Adjust total_profit based on quantity change
+    -- Increase stock -> subtract cost
+    -- Decrease stock -> add cost back
+    IF diff_qty != 0 THEN
+        new_profit := new_profit - (diff_qty * new_cost);
+        -- Explanation:
+        -- diff_qty > 0 : added stock, subtract cost
+        -- diff_qty < 0 : removed stock, subtract negative = add back
     END IF;
 
     -- Update inventory
@@ -85,19 +88,7 @@ BEGIN
 
     -- Return updated row
     RETURN QUERY
-    SELECT
-        inv.id,
-        inv.category,
-        inv.name,
-        inv.description,
-        inv.quantity,
-        inv.cost_price,
-        inv.sale_price,
-        inv.qr_image_url,
-        inv.images,
-        inv.total_profit,
-        inv.created_at,
-        inv.updated_at
+    SELECT *
     FROM inventory AS inv
     WHERE inv.id = p_id;
 END;
