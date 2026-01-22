@@ -1,104 +1,83 @@
 -- =============================================
--- Sales Process Function
--- Processes a sale by deducting inventory quantities
+-- Complete Sale Function
+-- Updates inventory after completing a sale
+-- Adds sale revenue to total_profit
 -- =============================================
 
-CREATE OR REPLACE FUNCTION sales_process(
-    p_items JSONB
+CREATE OR REPLACE FUNCTION inventory_complete_sale(
+    p_id UUID,
+    p_qty_sold INTEGER,
+    p_sale_price DECIMAL(10,2) DEFAULT NULL
 )
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
+RETURNS TABLE (
+    id UUID,
+    category VARCHAR(20),
+    name VARCHAR(100),
+    description TEXT,
+    quantity INTEGER,
+    cost_price DECIMAL(10,2),
+    sale_price DECIMAL(10,2),
+    qr_image_url TEXT,
+    images JSONB,
+    total_profit DECIMAL(10,2),
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ
+) AS $$
 DECLARE
-    item_record JSONB;
-    current_quantity INTEGER;
-    item_name VARCHAR(100);
-    new_quantity INTEGER;
-    results JSONB[] := ARRAY[]::JSONB[];
-    errors JSONB[] := ARRAY[]::JSONB[];
-    item_id UUID;
-    item_qty INTEGER;
+    cur_qty INTEGER;
+    cur_sale_price DECIMAL(10,2);
+    cur_profit DECIMAL(10,2);
+
+    new_qty INTEGER;
+    new_profit DECIMAL(10,2);
 BEGIN
-    -- Validate input
-    IF p_items IS NULL OR jsonb_array_length(p_items) = 0 THEN
-        RETURN jsonb_build_object(
-            'success', false,
-            'error', 'Invalid cart items'
-        );
+    -- Validate inputs
+    IF p_id IS NULL THEN
+        RAISE EXCEPTION 'Item ID is required';
+    END IF;
+    IF p_qty_sold IS NULL OR p_qty_sold <= 0 THEN
+        RAISE EXCEPTION 'Quantity sold must be greater than 0';
     END IF;
 
-    -- Process each item
-    FOR item_record IN SELECT * FROM jsonb_array_elements(p_items)
-    LOOP
-        BEGIN
-            -- Extract item data
-            item_id := (item_record->>'id')::UUID;
-            item_qty := COALESCE((item_record->>'qty')::INTEGER, 0);
+    -- Fetch current inventory
+    SELECT inv.quantity, inv.sale_price, inv.total_profit
+    INTO cur_qty, cur_sale_price, cur_profit
+    FROM inventory AS inv
+    WHERE inv.id = p_id;
 
-            IF item_id IS NULL OR item_qty <= 0 THEN
-                RAISE EXCEPTION 'Invalid item data: id or qty missing';
-            END IF;
-
-            -- Get current inventory item
-            SELECT inventory.quantity, inventory.name
-            INTO current_quantity, item_name
-            FROM inventory
-            WHERE inventory.id = item_id;
-
-            -- Check if item exists
-            IF current_quantity IS NULL THEN
-                RAISE EXCEPTION 'Item not found: %', item_id;
-            END IF;
-
-            -- Check stock availability
-            IF current_quantity < item_qty THEN
-                RAISE EXCEPTION 'Insufficient stock for item. Available: %, Requested: %', 
-                    current_quantity, item_qty;
-            END IF;
-
-            -- Calculate new quantity
-            new_quantity := current_quantity - item_qty;
-
-            -- Update inventory quantity
-            UPDATE inventory
-            SET quantity = new_quantity,
-                updated_at = NOW()
-            WHERE inventory.id = item_id;
-
-            -- Add to results
-            results := results || jsonb_build_object(
-                'id', item_id,
-                'name', item_name,
-                'deducted', item_qty,
-                'remaining', new_quantity
-            );
-
-        EXCEPTION
-            WHEN OTHERS THEN
-                -- Add to errors
-                errors := errors || jsonb_build_object(
-                    'id', COALESCE(item_id::TEXT, 'unknown'),
-                    'name', COALESCE(item_name, item_record->>'name', 'Unknown'),
-                    'error', SQLERRM
-                );
-        END;
-    END LOOP;
-
-    -- If there are errors, return partial success
-    IF array_length(errors, 1) > 0 THEN
-        RETURN jsonb_build_object(
-            'success', false,
-            'message', 'Some items failed to process',
-            'errors', to_jsonb(errors),
-            'processed', to_jsonb(results)
-        );
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Item not found';
     END IF;
 
-    -- All items processed successfully
-    RETURN jsonb_build_object(
-        'success', true,
-        'processed', to_jsonb(results)
-    );
+    -- Check if enough stock
+    IF p_qty_sold > cur_qty THEN
+        RAISE EXCEPTION 'Not enough stock. Available: %', cur_qty;
+    END IF;
+
+    -- Use provided sale_price or fallback to inventory sale_price
+    IF p_sale_price IS NULL OR p_sale_price <= 0 THEN
+        p_sale_price := cur_sale_price;
+    END IF;
+
+    -- Update quantity
+    new_qty := cur_qty - p_qty_sold;
+
+    -- Update profit: add sale revenue
+    -- Note: cost was already subtracted when stock was added
+    new_profit := COALESCE(cur_profit,0) + (p_sale_price * p_qty_sold);
+
+    -- Update inventory table
+    UPDATE inventory AS inv
+    SET
+        quantity = new_qty,
+        total_profit = new_profit,
+        updated_at = NOW()
+    WHERE inv.id = p_id;
+
+    -- Return updated row
+    RETURN QUERY
+    SELECT *
+    FROM inventory AS inv
+    WHERE inv.id = p_id;
 END;
-$$;
+$$ LANGUAGE plpgsql;

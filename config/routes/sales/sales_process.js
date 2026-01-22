@@ -7,7 +7,7 @@ const { isAuthenticated } = require('../../middleware/authMiddleware');
 // Protect all sales API routes
 router.use(isAuthenticated);
 
-// Handle sale checkout: deduct inventory via Edge Function
+// Handle sale checkout: deduct inventory via RPC function
 router.post('/sales/sales_process', async (req, res) => {
     try {
         const { items } = req.body;
@@ -20,28 +20,73 @@ router.post('/sales/sales_process', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        // Call database RPC function
-        const { data, error } = await supabase.rpc('sales_process', {
-            p_items: items
-        });
+        const results = [];
+        const errors = [];
 
-        if (error) {
-            console.error('RPC Error:', error);
+        // Process each item individually
+        for (const item of items) {
+            try {
+                const { id, qty, price } = item;
+
+                if (!id || !qty || qty <= 0) {
+                    errors.push({
+                        id: id || 'unknown',
+                        name: item.name || 'Unknown',
+                        error: 'Invalid item data: id or qty missing'
+                    });
+                    continue;
+                }
+
+                // Call inventory_complete_sale RPC function for each item
+                // Use price from cart item (may differ from inventory sale_price)
+                const { data, error } = await supabase.rpc('inventory_complete_sale', {
+                    p_id: id,
+                    p_qty_sold: qty,
+                    p_sale_price: price || null
+                });
+
+                if (error) {
+                    errors.push({
+                        id: id,
+                        name: item.name || 'Unknown',
+                        error: error.message || 'Failed to process item'
+                    });
+                    continue;
+                }
+
+                // RPC returns an array, get first item
+                const updatedItem = Array.isArray(data) && data.length > 0 ? data[0] : data;
+                
+                results.push({
+                    id: id,
+                    name: item.name || updatedItem?.name || 'Unknown',
+                    deducted: qty,
+                    remaining: updatedItem?.quantity || 0
+                });
+            } catch (itemError) {
+                errors.push({
+                    id: item.id || 'unknown',
+                    name: item.name || 'Unknown',
+                    error: itemError.message || 'Failed to process item'
+                });
+            }
+        }
+
+        // If there are errors, return partial success
+        if (errors.length > 0) {
             return res.status(400).json({
                 success: false,
-                error: error.message || 'Failed to process checkout'
+                message: 'Some items failed to process',
+                errors: errors,
+                processed: results
             });
         }
 
-        // RPC function returns JSONB, parse it
-        const result = typeof data === 'string' ? JSON.parse(data) : data;
-
-        // Check if data indicates failure
-        if (result.success === false) {
-            return res.status(400).json(result);
-        }
-
-        res.json(result);
+        // All items processed successfully
+        res.json({
+            success: true,
+            processed: results
+        });
 
     } catch (error) {
         console.error('Checkout error:', error);
