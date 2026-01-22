@@ -73,20 +73,24 @@ BEGIN
 
     -- Calculate top products and category stats from sale_items JSONB
     -- Aggregate items across all sales, joining with inventory to get category and stock
-    WITH item_aggregates AS (
+    WITH filtered_transactions AS (
+        SELECT id, sale_items
+        FROM transactions
+        WHERE action_type = 'sale_complete'
+            AND (p_start_date IS NULL OR created_at >= p_start_date)
+            AND (p_end_date IS NULL OR created_at <= p_end_date)
+            AND sale_items IS NOT NULL
+    ),
+    item_aggregates AS (
         SELECT 
             (sale_item->>'id')::UUID as item_id,
             sale_item->>'name' as item_name,
             COALESCE(inv.category, sale_item->>'category', 'Uncategorized') as item_category,
             SUM(COALESCE((sale_item->>'qty')::INTEGER, 0)) as units_sold,
             SUM(COALESCE((sale_item->>'qty')::INTEGER, 0) * COALESCE((sale_item->>'price')::DECIMAL(10, 2), 0)) as revenue
-        FROM transactions t,
+        FROM filtered_transactions t,
         LATERAL jsonb_array_elements(t.sale_items) as sale_item
         LEFT JOIN inventory inv ON inv.id = (sale_item->>'id')::UUID
-        WHERE t.action_type = 'sale_complete'
-            AND (p_start_date IS NULL OR t.created_at >= p_start_date)
-            AND (p_end_date IS NULL OR t.created_at <= p_end_date)
-            AND t.sale_items IS NOT NULL
         GROUP BY (sale_item->>'id')::UUID, sale_item->>'name', COALESCE(inv.category, sale_item->>'category', 'Uncategorized')
     ),
     products_with_stock AS (
@@ -125,18 +129,22 @@ BEGIN
     FROM products_sorted;
 
     -- Calculate category stats
-    WITH item_aggregates AS (
+    WITH filtered_transactions_cat AS (
+        SELECT id, sale_items
+        FROM transactions
+        WHERE action_type = 'sale_complete'
+            AND (p_start_date IS NULL OR created_at >= p_start_date)
+            AND (p_end_date IS NULL OR created_at <= p_end_date)
+            AND sale_items IS NOT NULL
+    ),
+    item_aggregates AS (
         SELECT 
             COALESCE(inv.category, sale_item->>'category', 'Uncategorized') as item_category,
             SUM(COALESCE((sale_item->>'qty')::INTEGER, 0)) as units_sold,
             SUM(COALESCE((sale_item->>'qty')::INTEGER, 0) * COALESCE((sale_item->>'price')::DECIMAL(10, 2), 0)) as revenue
-        FROM transactions t,
+        FROM filtered_transactions_cat t,
         LATERAL jsonb_array_elements(t.sale_items) as sale_item
         LEFT JOIN inventory inv ON inv.id = (sale_item->>'id')::UUID
-        WHERE t.action_type = 'sale_complete'
-            AND (p_start_date IS NULL OR t.created_at >= p_start_date)
-            AND (p_end_date IS NULL OR t.created_at <= p_end_date)
-            AND t.sale_items IS NOT NULL
         GROUP BY COALESCE(inv.category, sale_item->>'category', 'Uncategorized')
     )
     SELECT COALESCE(jsonb_object_agg(

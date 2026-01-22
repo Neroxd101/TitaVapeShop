@@ -32,12 +32,11 @@
                     <p class="subtitle">Track your shop's performance and growth</p>
                 </div>
                 <div class="header-right">
-                    <button id="exportCsvBtn" class="btn btn-secondary">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                    <button id="printAnalyticsBtn" class="btn btn-secondary">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                            <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
                         </svg>
-                        Export CSV
+                        Print
                     </button>
                 </div>
             </div>
@@ -169,6 +168,16 @@
 
     <!-- Data Fetchers -->
     <script src="/analytics/javascript/analytics_fetcher.js"></script>
+
+    <!-- Analytics Modules -->
+    <script src="/analytics/javascript/analytics_stats.js"></script>
+    <script src="/analytics/javascript/analytics_revenue_trend.js"></script>
+    <script src="/analytics/javascript/analytics_top_products.js"></script>
+    <script src="/analytics/javascript/analytics_category_performance.js"></script>
+    <script src="/analytics/javascript/analytics_product_details.js"></script>
+
+    <!-- Print Module -->
+    <script src="/analytics/javascript/analytics_print.js"></script>
 
     <!-- UI & Controller -->
     <script src="/analytics/javascript/analytics_controller.js"></script>
