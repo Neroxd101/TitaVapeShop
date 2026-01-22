@@ -411,10 +411,20 @@ body {
   max-height: 90vh;
   overflow-y: auto;
   animation: fadeUp 0.3s ease;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.modal::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .modal-small {
   max-width: 400px;
+}
+
+.modal-medium {
+  max-width: 700px;
 }
 
 .modal-large {

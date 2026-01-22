@@ -23,6 +23,9 @@ const analyticsServeRoutes = require('./config/routes/analytics/analytics_contro
 const analyticsApiRoutes = require('./config/routes/analytics/analytics_api');
 const settingsRoutes = require('./config/routes/settings');
 const catalogRoutes = require('./config/routes/catalog');
+const ordersControllerRoutes = require('./config/routes/orders/orders_controller');
+const ordersGetAllRoutes = require('./config/routes/orders/orders_get_all');
+const ordersUpdateStatusRoutes = require('./config/routes/orders/orders_update_status');
 
 const app = express();
 
@@ -54,6 +57,9 @@ app.use('/', analyticsServeRoutes);
 app.use('/', analyticsApiRoutes);
 app.use('/', settingsRoutes);
 app.use('/', catalogRoutes);
+app.use('/', ordersControllerRoutes);
+app.use('/', ordersGetAllRoutes);
+app.use('/', ordersUpdateStatusRoutes);
 // app.use('/', salesApiRoutes); // Removed
 
 // For local development

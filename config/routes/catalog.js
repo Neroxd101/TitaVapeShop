@@ -43,5 +43,42 @@ router.get('/api/inventory/list', async (req, res) => {
   }
 });
 
+// Create order from catalog
+// POST /api/orders/create
+router.post('/api/orders/create', async (req, res) => {
+  try {
+    if (!supabase) {
+      return res.status(500).json({ success: false, error: 'Database not configured' });
+    }
+
+        const { customer_name, contact_number, social_media, order_type, items, total_amount } = req.body;
+
+        // Call database RPC function
+        const { data, error } = await supabase.rpc('orders_create_order', {
+            p_customer_name: customer_name,
+            p_contact_number: contact_number,
+            p_social_media: social_media || null,
+            p_order_type: order_type || 'pickup',
+            p_items: items,
+            p_total_amount: total_amount
+        });
+
+    if (error) {
+      console.error('RPC Error:', error);
+      return res.status(400).json({
+        success: false,
+        error: error.message || 'Failed to create order'
+      });
+    }
+
+    // RPC function returns an array, get the first element
+    const order = Array.isArray(data) && data.length > 0 ? data[0] : data;
+    res.json({ success: true, order: order });
+  } catch (err) {
+    console.error('Order creation error:', err);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
+
 module.exports = router;
 

@@ -105,11 +105,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h3 class="product-name">${product.name}</h3>
                     <div class="product-footer">
                         <span class="product-price">₱${product.sale_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                        <button class="btn btn-secondary btn-sm view-btn" onclick="document.dispatchEvent(new CustomEvent('viewProduct', {detail: '${product.id}'}))">Details</button>
+                        <div class="product-actions">
+                            <button class="btn btn-secondary btn-sm view-btn" data-product-id="${product.id}">Details</button>
+                            ${product.quantity > 0 
+                                ? `<button class="btn btn-primary btn-sm add-cart-btn" data-product-id="${product.id}">Add to Cart</button>`
+                                : `<button class="btn btn-secondary btn-sm" disabled>Out of Stock</button>`}
+                        </div>
                     </div>
                 </div>
             </div>
         `).join('');
+
+        // Add event listeners for buttons
+        productGrid.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.getAttribute('data-product-id');
+                document.dispatchEvent(new CustomEvent('viewProduct', { detail: productId }));
+            });
+        });
+
+        productGrid.querySelectorAll('.add-cart-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.getAttribute('data-product-id');
+                const product = allProducts.find(p => p.id === productId);
+                if (product) {
+                    CatalogCart.addToCart(product, 1);
+                    CatalogCart.updateCartBadge();
+                }
+            });
+        });
     }
 
     /**
