@@ -6,6 +6,12 @@
   padding: 32px;
 }
 
+/* Hide main header on sales page */
+.sales-content ~ .main-header,
+.main-content > .main-header {
+  display: none;
+}
+
 /* Header actions sizing (match header compact layout) */
 .main-header .header-right .btn {
   padding: 10px 14px;

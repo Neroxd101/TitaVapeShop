@@ -16,19 +16,10 @@
 
     setupSidebar();
 
-    // Render shared main header
-    if (window.MainHeader && MainHeader.render) {
-      MainHeader.render({ page: 'sales', title: 'Sales (POS)' });
-    }
-
     await SalesCart.loadCartModal();
     await SalesCart.loadConfirmModal();
     await SalesCart.loadSuccessModal();
     wireEvents();
-    // Header widgets (Google status + date/time)
-    if (window.HeaderStatus && HeaderStatus.init) {
-      HeaderStatus.init();
-    }
 
     // Initialize Data - ensure modules are loaded
     if (typeof SalesLoad === 'undefined') {
