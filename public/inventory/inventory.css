@@ -36,7 +36,6 @@
 .search-box {
   position: relative;
   flex: 1;
-  max-width: 400px;
 }
 
 .search-box svg {
@@ -98,6 +97,23 @@
   background: linear-gradient(135deg, var(--accent), #00b894);
   border-color: transparent;
   color: var(--bg-primary);
+}
+
+/* Add Item button in filters-bar */
+.filters-bar .btn {
+  white-space: nowrap;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filters-bar .btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Inventory Grid */

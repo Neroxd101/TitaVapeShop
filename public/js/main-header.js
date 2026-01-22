@@ -31,14 +31,8 @@
         actionsHtml = '';
         break;
       case 'inventory':
-        actionsHtml = `
-          <button class="btn btn-primary" id="addItemBtn">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>
-            <span>Add Item</span>
-          </button>
-        `;
+        // Add Item button is now in filters-bar, not in header
+        actionsHtml = '';
         break;
       case 'sales':
         // Checkout button is now in filters-bar, not in header
