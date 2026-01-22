@@ -285,10 +285,20 @@ const InventoryImage = {
         }),
       });
 
-      const result = await response.json();
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      let result;
+      
+      if (contentType && contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        // If not JSON, read as text for error message
+        const text = await response.text();
+        throw new Error(`Upload failed: ${response.status === 413 ? 'File too large (max 50MB)' : text || 'Unknown error'}`);
+      }
 
       if (!response.ok) {
-        throw new Error(result.error || 'Upload failed');
+        throw new Error(result.error || result.message || 'Upload failed');
       }
 
       InventoryState.currentImages[index].url = result.imageUrl;

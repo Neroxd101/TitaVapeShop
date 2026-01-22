@@ -7,8 +7,11 @@ function setupMiddleware(app) {
   // Enable CORS
   app.use(cors());
 
-  // Parse JSON bodies
-  app.use(express.json());
+  // Parse JSON bodies with increased limit for image uploads (50MB)
+  app.use(express.json({ limit: '50mb' }));
+  
+  // Parse URL-encoded bodies with increased limit (50MB)
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
   // Cookie parser for JWT
   app.use(cookieParser());
