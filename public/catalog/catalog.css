@@ -286,6 +286,21 @@
     padding-bottom: 60px;
 }
 
+/* Loading state in product grid - ensure proper centering */
+.product-grid .loading-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    min-height: 400px;
+}
+
+.product-grid .loading-state .spinner-large {
+    margin: 0 auto 20px;
+}
+
 /* Product Card */
 .product-card {
     background: var(--bg-card);
@@ -646,7 +661,61 @@
 
 .product-actions {
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Enhanced button styles for product cards */
+.product-actions .btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: none;
+    letter-spacing: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-actions .view-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.product-actions .view-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.product-actions .add-cart-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    border: 1px solid var(--accent);
+    color: var(--bg-primary);
+    font-weight: 700;
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.product-actions .add-cart-btn:hover {
+    background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.product-actions .add-cart-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.product-actions .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* Checkout Form Styles */
