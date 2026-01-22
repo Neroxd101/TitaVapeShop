@@ -150,6 +150,16 @@ const InventoryLoad = {
             profitEl.classList.remove('negative');
         }
 
+        // Display dates
+        const createdAtEl = document.getElementById('viewCreatedAt');
+        const updatedAtEl = document.getElementById('viewUpdatedAt');
+        if (createdAtEl && item.created_at) {
+            createdAtEl.textContent = InventoryUtils.formatDate(item.created_at);
+        }
+        if (updatedAtEl && item.updated_at) {
+            updatedAtEl.textContent = InventoryUtils.formatDate(item.updated_at);
+        }
+
         const generateQrBtn = document.getElementById('viewGenerateQrBtn');
         if (generateQrBtn) {
             generateQrBtn.style.display = item.qr_image_url ? 'none' : '';
