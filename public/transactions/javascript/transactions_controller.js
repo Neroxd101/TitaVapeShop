@@ -100,6 +100,7 @@ class TransactionsUI {
             filterDay: document.getElementById('filterDay'),
             filterYear: document.getElementById('filterYear'),
             resetFiltersBtn: document.getElementById('resetFiltersBtn'),
+            printTransactionsBtn: document.getElementById('printTransactionsBtn'),
             transactionsList: document.getElementById('transactionsList'),
             prevPageBtn: document.getElementById('prevPageBtn'),
             nextPageBtn: document.getElementById('nextPageBtn'),
@@ -419,6 +420,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize Modules
     const data = new TransactionsData();
     const ui = new TransactionsUI();
+
+    // Initialize print module
+    if (window.TransactionsPrint) {
+        TransactionsPrint.init(ui);
+    }
 
     // Bind UI Events
     ui.bindEvents({

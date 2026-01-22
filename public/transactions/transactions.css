@@ -35,6 +35,23 @@
   margin: 0;
 }
 
+.page-header .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-header .btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* Filters Card */
 .filters-card {
   background: var(--bg-card);
@@ -125,6 +142,18 @@
   display: flex;
   gap: 12px;
   flex: 0 0 auto;
+  align-items: center;
+}
+
+.filter-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-actions .btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Transactions Table */
@@ -521,5 +550,41 @@
 
   .filter-actions {
     flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .filters-card,
+  .pagination-controls,
+  .page-header .header-right,
+  #sidebar-container,
+  .bg-pattern {
+    display: none !important;
+  }
+
+  .transactions-container {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .transactions-table-card {
+    box-shadow: none;
+    border: none;
+  }
+
+  .transactions-table {
+    font-size: 11px;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 8px;
   }
 }
