@@ -1002,6 +1002,19 @@
   color: #00b894;
 }
 
+.view-stat .stat-value.profit.positive {
+  color: #00b894;
+}
+
+.view-stat .stat-value.profit.negative {
+  color: var(--error);
+}
+
+.view-stat .stat-value.profit.calculating {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
 .view-stat .stat-value.low-stock {
   color: var(--error);
 }

@@ -54,10 +54,14 @@ const InventoryUtils = {
 
     // Format currency
     formatCurrency(amount) {
-        return '₱' + Number(amount).toLocaleString('en-PH', {
+        const num = Number(amount);
+        const isNegative = num < 0;
+        const absNum = Math.abs(num);
+        const formatted = absNum.toLocaleString('en-PH', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
+        return isNegative ? `- ₱${formatted}` : `₱${formatted}`;
     },
 
     // Format date with time

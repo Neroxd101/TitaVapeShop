@@ -19,19 +19,13 @@ serve(async (req) => {
         const body = await req.json().catch(() => ({}));
         const { category, search } = body;
 
-        let query = supabase
-            .from("inventory")
-            .select("*")
-            .order("created_at", { ascending: false });
-
-        if (category && category !== "all") {
-            query = query.eq("category", category);
-        }
-        if (search) {
-            query = query.ilike("name", `%${search}%`);
-        }
-
-        const { data, error } = await query;
+        // Use database function to get inventory with profit calculation and filtering
+        // All filtering and sorting is done in the database for better performance
+        const { data, error } = await supabase
+            .rpc("get_inventory_with_profit", {
+                filter_category: category || null,
+                filter_search: search || null
+            });
 
         if (error) {
             return new Response(
@@ -41,7 +35,7 @@ serve(async (req) => {
         }
 
         return new Response(
-            JSON.stringify({ success: true, data }),
+            JSON.stringify({ success: true, data: data || [] }),
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
     } catch (error) {

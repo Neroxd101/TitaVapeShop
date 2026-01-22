@@ -20,29 +20,28 @@ router.post('/sales/sales_process', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        // Invoke the 'sales-process' edge function
-        const { data, error } = await supabase.functions.invoke('sales_process', {
-            body: { items }
+        // Call database RPC function
+        const { data, error } = await supabase.rpc('sales_process', {
+            p_items: items
         });
 
         if (error) {
-            console.error('Supabase function error:', error);
-            // Handle cases where data might contain error details
-            if (data && (data.error || data.errors)) {
-                return res.status(400).json(data);
-            }
+            console.error('RPC Error:', error);
             return res.status(400).json({
                 success: false,
                 error: error.message || 'Failed to process checkout'
             });
         }
 
-        // Check if data indicates failure (data is the response body from edge function)
-        if (data && data.success === false) {
-            return res.status(400).json(data);
+        // RPC function returns JSONB, parse it
+        const result = typeof data === 'string' ? JSON.parse(data) : data;
+
+        // Check if data indicates failure
+        if (result.success === false) {
+            return res.status(400).json(result);
         }
 
-        res.json(data);
+        res.json(result);
 
     } catch (error) {
         console.error('Checkout error:', error);

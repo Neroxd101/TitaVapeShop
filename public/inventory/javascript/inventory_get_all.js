@@ -96,7 +96,7 @@ const InventoryLoad = {
     `;
     },
 
-    viewItem(id) {
+    async viewItem(id) {
         const item = InventoryState.inventoryItems.find(i => i.id === id);
         if (!item || !InventoryDOM.viewModal) return;
 
@@ -134,7 +134,21 @@ const InventoryLoad = {
         document.getElementById('viewQuantity').textContent = item.quantity;
         document.getElementById('viewCostPrice').textContent = InventoryUtils.formatCurrency(item.cost_price);
         document.getElementById('viewSalePrice').textContent = InventoryUtils.formatCurrency(item.sale_price);
-        document.getElementById('viewProfit').textContent = InventoryUtils.formatCurrency(item.sale_price - item.cost_price);
+        
+        // Display total profit from database
+        const profitEl = document.getElementById('viewProfit');
+        const totalProfit = item.total_profit !== undefined ? item.total_profit : 0;
+        profitEl.textContent = InventoryUtils.formatCurrency(totalProfit);
+        
+        // Apply styling based on profit
+        profitEl.classList.remove('calculating');
+        if (totalProfit < 0) {
+            profitEl.classList.add('negative');
+            profitEl.classList.remove('positive');
+        } else {
+            profitEl.classList.add('positive');
+            profitEl.classList.remove('negative');
+        }
 
         const generateQrBtn = document.getElementById('viewGenerateQrBtn');
         if (generateQrBtn) {

@@ -13,26 +13,33 @@ router.post('/inventory/inventory_create_item', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { data, error } = await supabase.functions.invoke('inventory_create_item', {
-            body: {
-                ...req.body,
-            },
+        const { category, name, description, quantity, cost_price, sale_price, qr_image_url, images } = req.body;
+
+        // Validate required fields
+        if (!category || !name) {
+            return res.status(400).json({ success: false, error: 'Category and name are required' });
+        }
+
+        // Call database RPC function
+        const { data, error } = await supabase.rpc('inventory_create_item', {
+            p_category: category,
+            p_name: name,
+            p_description: description || null,
+            p_quantity: quantity || 0,
+            p_cost_price: cost_price || 0,
+            p_sale_price: sale_price || 0,
+            p_qr_image_url: qr_image_url || null,
+            p_images: images || []
         });
 
         if (error) {
-            // The Edge Function may have returned error details in data
-            if (data && data.error) {
-                return res.status(400).json({ success: false, error: data.error });
-            }
             return res.status(400).json({ success: false, error: error.message || 'Failed to create item' });
         }
 
-        // Check if data indicates failure
-        if (data && data.success === false) {
-            return res.status(400).json(data);
-        }
+        // RPC functions return an array, get the first item
+        const createdItem = Array.isArray(data) && data.length > 0 ? data[0] : data;
 
-        res.status(201).json(data || { success: true });
+        res.status(201).json({ success: true, data: createdItem });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message || 'Internal server error' });
     }

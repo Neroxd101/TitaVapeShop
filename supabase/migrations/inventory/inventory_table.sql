@@ -3,16 +3,6 @@
 -- Categories: hardware, juices
 -- =============================================
 
--- Create the update_updated_at function if it doesn't exist
-CREATE OR REPLACE FUNCTION update_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Create inventory table
 CREATE TABLE IF NOT EXISTS inventory (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   category VARCHAR(20) NOT NULL CHECK (category IN ('hardware', 'juices')),
@@ -23,20 +13,10 @@ CREATE TABLE IF NOT EXISTS inventory (
   sale_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
   qr_image_url TEXT,
   images JSONB DEFAULT '[]'::jsonb,
+  total_profit DECIMAL(10, 2) DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-
--- Trigger to update updated_at timestamp
-DROP TRIGGER IF EXISTS inventory_updated_at ON inventory;
-CREATE TRIGGER inventory_updated_at
-  BEFORE UPDATE ON inventory
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at();
-
--- Create indexes
-CREATE INDEX IF NOT EXISTS idx_inventory_category ON inventory(category);
-CREATE INDEX IF NOT EXISTS idx_inventory_name ON inventory(name);
 
 -- =============================================
 -- Row Level Security (RLS)
@@ -44,4 +24,9 @@ CREATE INDEX IF NOT EXISTS idx_inventory_name ON inventory(name);
 
 -- Enable RLS
 ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
+
+-- Block all public access (Implicitly allows Service Role/Admin)
+-- We do not add any public policies, so only the Service Role key can access this table.
+-- This protects inventory data from being exposed publicly.
+-- All access is controlled through authenticated backend routes with proper authorization.
 
