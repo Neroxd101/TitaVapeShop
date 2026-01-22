@@ -1,6 +1,7 @@
 -- =============================================
 -- Inventory Update Item Function
 -- Updates an inventory item via RPC
+-- Recalculates total_profit ONLY when quantity increases
 -- =============================================
 
 CREATE OR REPLACE FUNCTION inventory_update_item(
@@ -28,39 +29,63 @@ RETURNS TABLE (
     created_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ
 ) AS $$
+DECLARE
+    cur_qty INTEGER;
+    cur_cost DECIMAL(10,2);
+    cur_profit DECIMAL(10,2);
+
+    new_qty INTEGER;
+    new_cost DECIMAL(10,2);
+    new_profit DECIMAL(10,2);
 BEGIN
-    -- Validate required fields
+    -- Validate ID
     IF p_id IS NULL THEN
         RAISE EXCEPTION 'Item ID is required';
     END IF;
 
-    -- Validate category if provided
+    -- Validate category
     IF p_category IS NOT NULL AND p_category NOT IN ('hardware', 'juices') THEN
         RAISE EXCEPTION 'Category must be either "hardware" or "juices"';
     END IF;
 
-    -- Check if item exists
-    IF NOT EXISTS (SELECT 1 FROM inventory WHERE inventory.id = p_id) THEN
+    -- Fetch current values
+    SELECT inv.quantity, inv.cost_price, inv.total_profit
+    INTO cur_qty, cur_cost, cur_profit
+    FROM inventory AS inv
+    WHERE inv.id = p_id;
+
+    IF NOT FOUND THEN
         RAISE EXCEPTION 'Item not found';
     END IF;
 
-    -- Update the inventory item (only update fields that are provided)
-    UPDATE inventory
-    SET 
-        category = CASE WHEN p_category IS NOT NULL THEN p_category ELSE inventory.category END,
-        name = CASE WHEN p_name IS NOT NULL THEN p_name ELSE inventory.name END,
-        description = CASE WHEN p_description IS NOT NULL THEN p_description ELSE inventory.description END,
-        quantity = CASE WHEN p_quantity IS NOT NULL THEN p_quantity ELSE inventory.quantity END,
-        cost_price = CASE WHEN p_cost_price IS NOT NULL THEN p_cost_price ELSE inventory.cost_price END,
-        sale_price = CASE WHEN p_sale_price IS NOT NULL THEN p_sale_price ELSE inventory.sale_price END,
-        qr_image_url = CASE WHEN p_qr_image_url IS NOT NULL THEN p_qr_image_url ELSE inventory.qr_image_url END,
-        images = CASE WHEN p_images IS NOT NULL THEN p_images ELSE inventory.images END,
-        updated_at = NOW()
-    WHERE inventory.id = p_id;
+    -- Resolve new values
+    new_qty  := COALESCE(p_quantity, cur_qty);
+    new_cost := COALESCE(p_cost_price, cur_cost);
+    new_profit := COALESCE(cur_profit, 0);
 
-    -- Return the updated item directly using RETURN QUERY
+    -- Adjust profit ONLY for newly added stock
+    IF new_qty > cur_qty THEN
+        new_profit := new_profit - (new_cost * (new_qty - cur_qty));
+    END IF;
+
+    -- Update inventory
+    UPDATE inventory AS inv
+    SET
+        category = COALESCE(p_category, inv.category),
+        name = COALESCE(p_name, inv.name),
+        description = COALESCE(p_description, inv.description),
+        quantity = new_qty,
+        cost_price = new_cost,
+        sale_price = COALESCE(p_sale_price, inv.sale_price),
+        qr_image_url = COALESCE(p_qr_image_url, inv.qr_image_url),
+        images = COALESCE(p_images, inv.images),
+        total_profit = new_profit,
+        updated_at = NOW()
+    WHERE inv.id = p_id;
+
+    -- Return updated row
     RETURN QUERY
-    SELECT 
+    SELECT
         inv.id,
         inv.category,
         inv.name,
@@ -73,7 +98,7 @@ BEGIN
         inv.total_profit,
         inv.created_at,
         inv.updated_at
-    FROM inventory inv
+    FROM inventory AS inv
     WHERE inv.id = p_id;
 END;
 $$ LANGUAGE plpgsql;

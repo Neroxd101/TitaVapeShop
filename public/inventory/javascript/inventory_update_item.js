@@ -60,7 +60,11 @@ const InventoryUpdate = {
             if (result.success) {
                 InventoryDOM.itemModal.classList.remove('show');
                 if (window.TransactionLogger) TransactionLogger.logInventoryEdit(itemData.id, oldItem, itemData);
-                InventoryLoad.initialLoad();
+                await InventoryLoad.initialLoad();
+                // Refresh view modal if it's currently open for this item
+                if (InventoryState.viewingItemId === itemData.id) {
+                    InventoryLoad.viewItem(itemData.id);
+                }
             } else {
                 throw new Error(result.error || 'Failed to update item');
             }
