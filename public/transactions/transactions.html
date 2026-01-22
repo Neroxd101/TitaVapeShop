@@ -43,17 +43,28 @@
                 </div>
 
                 <div class="filter-group">
-                    <label for="filterDateStart">From</label>
-                    <input type="date" id="filterDateStart">
+                    <label for="filterMonth">Month</label>
+                    <select id="filterMonth">
+                        <option value="">All Months</option>
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="2_months_ago">2 Months Ago</option>
+                        <option value="3_months_ago">3 Months Ago</option>
+                    </select>
                 </div>
 
                 <div class="filter-group">
-                    <label for="filterDateEnd">To</label>
-                    <input type="date" id="filterDateEnd">
+                    <label for="filterWeek">Week</label>
+                    <select id="filterWeek">
+                        <option value="">All Weeks</option>
+                        <option value="this_week">This Week</option>
+                        <option value="last_week">Last Week</option>
+                        <option value="2_weeks_ago">2 Weeks Ago</option>
+                        <option value="3_weeks_ago">3 Weeks Ago</option>
+                    </select>
                 </div>
 
                 <div class="filter-actions">
-                    <button id="applyFiltersBtn" class="btn btn-primary">Apply Filters</button>
                     <button id="resetFiltersBtn" class="btn btn-secondary">Reset</button>
                 </div>
             </div>
