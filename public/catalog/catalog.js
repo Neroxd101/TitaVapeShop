@@ -46,12 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /**
-     * Fetch products from the Edge Function
+     * Fetch products from the RPC function
      */
     async function fetchProducts() {
         try {
-            // We use the direct edge function URL if possible, or a proxy
-            // For catalog, we can use the existing /api/inventory/list if it exists
             const response = await fetch('/api/inventory/list');
             const result = await response.json();
 

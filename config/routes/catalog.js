@@ -19,25 +19,24 @@ router.get('/api/inventory/list', async (req, res) => {
         .json({ success: false, error: 'Database not configured' });
     }
 
-    const { data, error } = await supabase.functions.invoke('inventory_get_all', {
-      body: {
-        category: req.query.category,
-        search: req.query.search,
-      },
+    const { category, search } = req.query;
+
+    // Call database RPC function directly
+    // All filtering and sorting is done in the database
+    const { data, error } = await supabase.rpc('inventory_get_all', {
+      filter_category: category || null,
+      filter_search: search || null
     });
 
     if (error) {
-      console.error('Supabase function error (catalog):', error);
-      if (data && typeof data === 'object') {
-        return res.status(400).json(data);
-      }
+      console.error('RPC Error:', error);
       return res.status(400).json({
         success: false,
-        error: error.message || 'Failed to fetch catalog items',
+        error: error.message || 'Failed to fetch catalog items'
       });
     }
 
-    res.json(data);
+    res.json({ success: true, data: data || [] });
   } catch (err) {
     console.error('Catalog inventory fetch error:', err);
     res.status(500).json({ success: false, error: 'Internal server error' });
