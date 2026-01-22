@@ -79,6 +79,35 @@
   width: 100%;
 }
 
+.date-filter-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.date-filter-group .date-select {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.date-filter-group .date-select:hover {
+  border-color: var(--accent);
+}
+
+.date-filter-group .date-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+
 .filter-group select:focus,
 .filter-group input:focus {
   border-color: var(--accent);
@@ -104,6 +133,13 @@
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.table-responsive::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }
 
 .transactions-table {
@@ -360,6 +396,13 @@
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.table-responsive::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }
 
 .transactions-table {

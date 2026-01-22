@@ -43,25 +43,30 @@
                 </div>
 
                 <div class="filter-group">
-                    <label for="filterMonth">Month</label>
-                    <select id="filterMonth">
-                        <option value="">All Months</option>
-                        <option value="this_month">This Month</option>
-                        <option value="last_month">Last Month</option>
-                        <option value="2_months_ago">2 Months Ago</option>
-                        <option value="3_months_ago">3 Months Ago</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label for="filterWeek">Week</label>
-                    <select id="filterWeek">
-                        <option value="">All Weeks</option>
-                        <option value="this_week">This Week</option>
-                        <option value="last_week">Last Week</option>
-                        <option value="2_weeks_ago">2 Weeks Ago</option>
-                        <option value="3_weeks_ago">3 Weeks Ago</option>
-                    </select>
+                    <label>Date</label>
+                    <div class="date-filter-group">
+                        <select id="filterMonth" class="date-select">
+                            <option value="">Month</option>
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="filterDay" class="date-select">
+                            <option value="">Day</option>
+                        </select>
+                        <select id="filterYear" class="date-select">
+                            <option value="">Year</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="filter-actions">

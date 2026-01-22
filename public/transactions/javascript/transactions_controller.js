@@ -97,13 +97,15 @@ class TransactionsUI {
         this.elements = {
             filterAction: document.getElementById('filterAction'),
             filterMonth: document.getElementById('filterMonth'),
-            filterWeek: document.getElementById('filterWeek'),
+            filterDay: document.getElementById('filterDay'),
+            filterYear: document.getElementById('filterYear'),
             resetFiltersBtn: document.getElementById('resetFiltersBtn'),
             transactionsList: document.getElementById('transactionsList'),
             prevPageBtn: document.getElementById('prevPageBtn'),
             nextPageBtn: document.getElementById('nextPageBtn'),
             pageInfo: document.getElementById('pageInfo')
         };
+        this.setupDateFilter();
     }
 
     /**
@@ -123,21 +125,22 @@ class TransactionsUI {
 
         if (this.elements.filterMonth) {
             this.elements.filterMonth.addEventListener('change', () => {
-                // Clear week filter when month is selected
-                if (this.elements.filterWeek && this.elements.filterMonth.value) {
-                    this.elements.filterWeek.value = '';
-                }
+                this.updateDayDropdown();
                 const filters = this.getFiltersFromDOM();
                 if (onApplyFilters) onApplyFilters(filters);
             });
         }
 
-        if (this.elements.filterWeek) {
-            this.elements.filterWeek.addEventListener('change', () => {
-                // Clear month filter when week is selected
-                if (this.elements.filterMonth && this.elements.filterWeek.value) {
-                    this.elements.filterMonth.value = '';
-                }
+        if (this.elements.filterYear) {
+            this.elements.filterYear.addEventListener('change', () => {
+                this.updateDayDropdown();
+                const filters = this.getFiltersFromDOM();
+                if (onApplyFilters) onApplyFilters(filters);
+            });
+        }
+
+        if (this.elements.filterDay) {
+            this.elements.filterDay.addEventListener('change', () => {
                 const filters = this.getFiltersFromDOM();
                 if (onApplyFilters) onApplyFilters(filters);
             });
@@ -164,103 +167,69 @@ class TransactionsUI {
     }
 
     /**
+     * Setup date filter dropdowns
+     */
+    setupDateFilter() {
+        const yearSelect = this.elements.filterYear;
+        if (!yearSelect) return;
+
+        // Populate year dropdown (current year and past 10 years)
+        const currentYear = new Date().getFullYear();
+        yearSelect.innerHTML = '<option value="">Year</option>';
+        for (let year = currentYear; year >= currentYear - 10; year--) {
+            yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+        }
+    }
+
+    /**
+     * Update day dropdown based on selected month and year
+     */
+    updateDayDropdown() {
+        const month = this.elements.filterMonth?.value;
+        const year = this.elements.filterYear?.value;
+        const daySelect = this.elements.filterDay;
+
+        if (!daySelect) return;
+
+        daySelect.innerHTML = '<option value="">Day</option>';
+
+        if (month && year) {
+            const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayStr = day.toString().padStart(2, '0');
+                daySelect.innerHTML += `<option value="${dayStr}">${day}</option>`;
+            }
+        }
+    }
+
+    /**
      * Get filter values from DOM inputs
      */
     getFiltersFromDOM() {
         const action = this.elements.filterAction.value;
         const month = this.elements.filterMonth.value;
-        const week = this.elements.filterWeek.value;
+        const day = this.elements.filterDay.value;
+        const year = this.elements.filterYear.value;
 
         const filters = {};
 
         if (action) filters.action_type = action;
 
-        // Calculate date range based on month selection
-        if (month) {
-            const dateRange = this.getMonthDateRange(month);
-            if (dateRange.start) filters.start_date = dateRange.start.toISOString();
-            if (dateRange.end) filters.end_date = dateRange.end.toISOString();
-        }
-
-        // Calculate date range based on week selection
-        if (week) {
-            const dateRange = this.getWeekDateRange(week);
-            if (dateRange.start) filters.start_date = dateRange.start.toISOString();
-            if (dateRange.end) filters.end_date = dateRange.end.toISOString();
+        // Calculate date range based on selected date
+        if (month && day && year) {
+            const selectedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            const start = new Date(selectedDate);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(selectedDate);
+            end.setHours(23, 59, 59, 999);
+            
+            filters.start_date = start.toISOString();
+            filters.end_date = end.toISOString();
         }
 
         return filters;
     }
 
-    /**
-     * Get date range for month filter
-     */
-    getMonthDateRange(monthValue) {
-        const now = new Date();
-        const start = new Date(now.getFullYear(), now.getMonth(), 1);
-        const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-
-        switch (monthValue) {
-            case 'this_month':
-                return { start, end };
-            case 'last_month':
-                return {
-                    start: new Date(now.getFullYear(), now.getMonth() - 1, 1),
-                    end: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999)
-                };
-            case '2_months_ago':
-                return {
-                    start: new Date(now.getFullYear(), now.getMonth() - 2, 1),
-                    end: new Date(now.getFullYear(), now.getMonth() - 1, 0, 23, 59, 59, 999)
-                };
-            case '3_months_ago':
-                return {
-                    start: new Date(now.getFullYear(), now.getMonth() - 3, 1),
-                    end: new Date(now.getFullYear(), now.getMonth() - 2, 0, 23, 59, 59, 999)
-                };
-            default:
-                return { start: null, end: null };
-        }
-    }
-
-    /**
-     * Get date range for week filter
-     */
-    getWeekDateRange(weekValue) {
-        const now = new Date();
-        const dayOfWeek = now.getDay();
-        const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Monday as first day
-        const monday = new Date(now.setDate(diff));
-        monday.setHours(0, 0, 0, 0);
-        const sunday = new Date(monday);
-        sunday.setDate(sunday.getDate() + 6);
-        sunday.setHours(23, 59, 59, 999);
-
-        switch (weekValue) {
-            case 'this_week':
-                return { start: monday, end: sunday };
-            case 'last_week':
-                const lastMonday = new Date(monday);
-                lastMonday.setDate(lastMonday.getDate() - 7);
-                const lastSunday = new Date(sunday);
-                lastSunday.setDate(lastSunday.getDate() - 7);
-                return { start: lastMonday, end: lastSunday };
-            case '2_weeks_ago':
-                const twoWeeksMonday = new Date(monday);
-                twoWeeksMonday.setDate(twoWeeksMonday.getDate() - 14);
-                const twoWeeksSunday = new Date(sunday);
-                twoWeeksSunday.setDate(twoWeeksSunday.getDate() - 14);
-                return { start: twoWeeksMonday, end: twoWeeksSunday };
-            case '3_weeks_ago':
-                const threeWeeksMonday = new Date(monday);
-                threeWeeksMonday.setDate(threeWeeksMonday.getDate() - 21);
-                const threeWeeksSunday = new Date(sunday);
-                threeWeeksSunday.setDate(threeWeeksSunday.getDate() - 21);
-                return { start: threeWeeksMonday, end: threeWeeksSunday };
-            default:
-                return { start: null, end: null };
-        }
-    }
 
     /**
      * Reset DOM inputs
@@ -268,7 +237,11 @@ class TransactionsUI {
     resetDOM() {
         if (this.elements.filterAction) this.elements.filterAction.value = '';
         if (this.elements.filterMonth) this.elements.filterMonth.value = '';
-        if (this.elements.filterWeek) this.elements.filterWeek.value = '';
+        if (this.elements.filterDay) {
+            this.elements.filterDay.value = '';
+            this.elements.filterDay.innerHTML = '<option value="">Day</option>';
+        }
+        if (this.elements.filterYear) this.elements.filterYear.value = '';
     }
 
     /**
