@@ -8,6 +8,7 @@ const inventoryLoadRoutes = require('./config/routes/inventory/inventory_get_all
 const inventoryCreateRoutes = require('./config/routes/inventory/inventory_create_item');
 const inventoryUpdateRoutes = require('./config/routes/inventory/inventory_update_item');
 const inventoryDeleteRoutes = require('./config/routes/inventory/inventory_delete_item');
+const inventoryHistoryRoutes = require('./config/routes/inventory/inventory_get_sales_history');
 const salesLoadRoutes = require('./config/routes/sales/serve_sales');
 const salesCreateRoutes = require('./config/routes/sales/sales_process');
 const salesEmailRoutes = require('./config/routes/sales/email_send_receipt');
@@ -36,6 +37,7 @@ app.use('/', inventoryLoadRoutes);
 app.use('/', inventoryCreateRoutes);
 app.use('/', inventoryUpdateRoutes);
 app.use('/', inventoryDeleteRoutes);
+app.use('/', inventoryHistoryRoutes);
 app.use('/', salesLoadRoutes);
 app.use('/', salesCreateRoutes);
 app.use('/', salesEmailRoutes);

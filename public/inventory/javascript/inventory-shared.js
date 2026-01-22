@@ -10,6 +10,7 @@ const InventoryState = {
     deletingItemId: null,
     currentImages: [], // Array of { url, file, uploading }
     viewingItemId: null,
+    viewingHistoryItemId: null,
     MAX_IMAGES: 5
 };
 
@@ -26,6 +27,7 @@ const InventoryDOM = {
     itemModal: null,
     viewModal: null,
     deleteModal: null,
+    historyModal: null,
     itemForm: null,
 
     // Initialize DOM references

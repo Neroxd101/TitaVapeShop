@@ -22,7 +22,8 @@ const Inventory = {
     await Promise.all([
       InventoryLoad.init(),
       InventoryCreate.init(),
-      InventoryDelete.init()
+      InventoryDelete.init(),
+      InventoryHistory.init()
       // InventoryUpdate doesn't need explicit init as it shares the Create modal
     ]);
 
@@ -93,6 +94,12 @@ const Inventory = {
       InventoryLoad.closeViewModal();
       if (item) InventoryDelete.openDeleteModal(item.id, item.name);
     });
+    document.getElementById('viewHistoryBtn')?.addEventListener('click', () => {
+      if (InventoryState.viewingItemId) InventoryHistory.openHistoryModal(InventoryState.viewingItemId);
+    });
+
+    // History modal close buttons
+    document.getElementById('historyModalClose')?.addEventListener('click', () => InventoryHistory.closeHistoryModal());
 
     // Close modals on overlay click
     InventoryDOM.itemModal?.addEventListener('click', (e) => {
@@ -103,6 +110,9 @@ const Inventory = {
     });
     InventoryDOM.viewModal?.addEventListener('click', (e) => {
       if (e.target === InventoryDOM.viewModal) InventoryLoad.closeViewModal();
+    });
+    InventoryDOM.historyModal?.addEventListener('click', (e) => {
+      if (e.target === InventoryDOM.historyModal) InventoryHistory.closeHistoryModal();
     });
   }
 };

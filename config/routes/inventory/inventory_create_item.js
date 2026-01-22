@@ -33,7 +33,10 @@ router.post('/inventory/inventory_create_item', async (req, res) => {
         });
 
         if (error) {
-            return res.status(400).json({ success: false, error: error.message || 'Failed to create item' });
+            console.error('RPC Error:', error);
+            console.error('RPC Params:', { p_category: category, p_name: name, p_description: description, p_quantity: quantity, p_cost_price: cost_price, p_sale_price: sale_price, p_qr_image_url: qr_image_url, p_images: images });
+            const errorMessage = error.message || error.details || error.hint || 'Failed to create item';
+            return res.status(400).json({ success: false, error: errorMessage });
         }
 
         // RPC functions return an array, get the first item
