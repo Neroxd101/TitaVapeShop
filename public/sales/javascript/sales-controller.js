@@ -30,7 +30,16 @@
       HeaderStatus.init();
     }
 
-    // Initialize Data
+    // Initialize Data - ensure modules are loaded
+    if (typeof SalesLoad === 'undefined') {
+      console.error('SalesLoad module not loaded');
+      return;
+    }
+    if (typeof SalesCart === 'undefined') {
+      console.error('SalesCart module not loaded');
+      return;
+    }
+    
     await SalesLoad.init(state);
     SalesCart.updateCartUI(state);
   }
@@ -44,7 +53,7 @@
 
   function wireEvents() {
     const searchInput = document.getElementById('productSearch');
-    const categoryFilter = document.getElementById('productCategoryFilter');
+    const filterTabs = document.querySelectorAll('.filter-tab');
     const clearCartBtn = document.getElementById('clearCartBtn');
     const completeSaleBtn = document.getElementById('completeSaleBtn');
     const openCartModalBtn = document.getElementById('openCartModalBtn');
@@ -58,9 +67,17 @@
       searchInput.addEventListener('input', () => SalesLoad.filterProducts(state));
     }
 
-    if (categoryFilter) {
-      categoryFilter.addEventListener('change', () => SalesLoad.filterProducts(state));
-    }
+    // Handle filter tab clicks
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        filterTabs.forEach(t => t.classList.remove('active'));
+        // Add active class to clicked tab
+        tab.classList.add('active');
+        // Filter products
+        SalesLoad.filterProducts(state);
+      });
+    });
 
     if (clearCartBtn) {
       clearCartBtn.addEventListener('click', () => {

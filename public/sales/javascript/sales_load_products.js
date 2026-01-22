@@ -31,10 +31,11 @@ const SalesLoad = {
 
     filterProducts(state) {
         const q = (document.getElementById('productSearch')?.value || '').toLowerCase();
-        const category = document.getElementById('productCategoryFilter')?.value || '';
+        const activeTab = document.querySelector('.filter-tab.active');
+        const category = activeTab?.dataset.category || '';
 
         state.filtered = state.products.filter(item => {
-            if (category && item.category !== category) return false;
+            if (category && category !== 'all' && item.category !== category) return false;
             if (!q) return true;
             const haystack = `${item.name || ''} ${item.category || ''} ${item.description || ''}`.toLowerCase();
             return haystack.includes(q);
@@ -49,13 +50,27 @@ const SalesLoad = {
         if (!listEl) return;
 
         listEl.innerHTML = '';
+        
+        // Get references to state elements
+        const loadingState = document.getElementById('loadingState');
+        const emptyState = document.getElementById('emptyState');
+
+        // Hide loading state
+        if (loadingState) {
+            loadingState.style.display = 'none';
+        }
 
         if (!state.filtered || !state.filtered.length) {
-            const empty = document.createElement('div');
-            empty.className = 'cart-empty';
-            empty.textContent = 'No products found.';
-            listEl.appendChild(empty);
+            // Show empty state instead of inline message
+            if (emptyState) {
+                emptyState.style.display = 'block';
+            }
             return;
+        }
+
+        // Hide empty state if products found
+        if (emptyState) {
+            emptyState.style.display = 'none';
         }
 
         state.filtered.forEach(item => {
@@ -196,6 +211,17 @@ const SalesLoad = {
         if (!listEl) return;
 
         listEl.innerHTML = '';
+        
+        // Show loading state
+        const loadingState = document.getElementById('loadingState');
+        if (loadingState) {
+            loadingState.style.display = 'block';
+        }
+        const emptyState = document.getElementById('emptyState');
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+        
         // Render 8 skeletons
         for (let i = 0; i < 8; i++) {
             const skeleton = document.createElement('div');

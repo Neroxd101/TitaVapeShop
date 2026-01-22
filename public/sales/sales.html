@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sales POS | Tita Vape Shop</title>
+  <title>Sales | Tita Vape Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,32 +23,41 @@
   <main class="main-content">
     <header class="main-header"></header>
 
-    <section class="pos-layout">
-      <!-- Product list / catalog -->
-      <div class="pos-column pos-products">
-        <div class="pos-panel">
-          <div class="pos-panel-header">
-            <div class="pos-search">
-              <input type="text" id="productSearch" placeholder="Search products by name or category">
-            </div>
-            <div class="pos-filter">
-              <select id="productCategoryFilter">
-                <option value="">All categories</option>
-                <option value="hardware">Hardware</option>
-                <option value="juices">Juices</option>
-              </select>
-            </div>
-            <button type="button" class="pos-qr-btn" id="openQrModalBtn">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path
-                  d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10 0h-2v2h2v2h2v-4h-2zm4 0v2h2v-2h-2zm0 4v2h2v-2h-2z" />
-              </svg>
-              <span>Scan QR</span>
-            </button>
-          </div>
+    <div class="sales-content">
+      <!-- Filters -->
+      <div class="filters-bar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+          <input type="text" id="productSearch" placeholder="Search products...">
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-category="all">All</button>
+          <button class="filter-tab" data-category="hardware">Hardware</button>
+          <button class="filter-tab" data-category="juices">Juices</button>
+        </div>
+        <div class="filters-actions">
+          <button type="button" class="pos-qr-btn" id="openQrModalBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path
+                d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10 0h-2v2h2v2h2v-4h-2zm4 0v2h2v-2h-2zm0 4v2h2v-2h-2z" />
+            </svg>
+            <span>Scan QR</span>
+          </button>
+          <button class="btn btn-primary" id="openCartModalBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            <span>Checkout</span>
+            <span id="cartBadge" class="cart-badge">0</span>
+          </button>
+        </div>
+      </div>
 
-          <div class="pos-panel-body">
-            <div id="productList" class="product-list">
+      <!-- Product Grid -->
+      <div id="productList" class="product-list">
               <!-- Initial Loading Skeletons -->
               <div class="skeleton-card">
                 <div class="skeleton skeleton-image"></div>
@@ -74,11 +83,24 @@
                 <div class="skeleton-text-sm skeleton"></div>
                 <div class="skeleton-button skeleton"></div>
               </div>
-            </div>
-          </div>
-        </div>
       </div>
-    </section>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h16v11z" />
+        </svg>
+        <h3>No products found</h3>
+        <p>Add products to inventory to start selling</p>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner-large"></div>
+        <p>Loading products...</p>
+      </div>
+    </div>
   </main>
 
   <!-- Scan QR Modal -->
