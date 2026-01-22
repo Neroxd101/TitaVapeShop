@@ -41,6 +41,14 @@ BEGIN
         RAISE EXCEPTION 'Category must be either "hardware" or "juices"';
     END IF;
 
+    -- Check if product name already exists (case-insensitive)
+    IF EXISTS (
+        SELECT 1 FROM inventory inv
+        WHERE LOWER(TRIM(inv.name)) = LOWER(TRIM(p_name))
+    ) THEN
+        RAISE EXCEPTION 'Product name already exists';
+    END IF;
+
     -- Calculate initial profit (negative, representing cost of unsold inventory)
     initial_profit := -(COALESCE(p_cost_price, 0) * COALESCE(p_quantity, 0));
 
@@ -83,4 +91,4 @@ BEGIN
         new_item.created_at,
         new_item.updated_at;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
