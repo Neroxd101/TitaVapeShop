@@ -7,6 +7,12 @@
   animation: fadeUp 0.5s ease-out;
 }
 
+/* Hide main header on transactions page */
+.transactions-container ~ .main-header,
+.main-content > .main-header {
+  display: none;
+}
+
 .page-header {
   margin-bottom: 24px;
 }

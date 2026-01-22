@@ -413,9 +413,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Initialize sidebar and header
+    // Initialize sidebar
     if (typeof initSidebar === 'function') initSidebar('transactions');
-    if (window.HeaderStatus && HeaderStatus.init) HeaderStatus.init();
 
     // Initialize Modules
     const data = new TransactionsData();
