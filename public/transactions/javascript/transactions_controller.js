@@ -320,9 +320,9 @@ class TransactionsUI {
     getActionBadge(type) {
         const map = {
             'sale_complete': '<span class="badge badge-sale">Sale</span>',
-            'inventory_add': '<span class="badge badge-add">Add Item</span>',
-            'inventory_edit': '<span class="badge badge-edit">Edit Item</span>',
-            'inventory_delete': '<span class="badge badge-delete">Delete Item</span>'
+            'inventory_add': '<span class="badge badge-add">Add</span>',
+            'inventory_edit': '<span class="badge badge-edit">Edit</span>',
+            'inventory_delete': '<span class="badge badge-delete">Delete</span>'
         };
         return map[type] || `<span class="badge">${type}</span>`;
     }
