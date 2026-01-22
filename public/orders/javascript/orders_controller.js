@@ -143,7 +143,7 @@ class OrdersController {
 
             return `
                 <tr>
-                    <td><code class="order-id">${order.id.substring(0, 8)}...</code></td>
+                    <td><code class="order-id" title="${order.id}">${order.id.substring(0, 8)}</code></td>
                     <td>${this.escapeHtml(order.customer_name)}</td>
                     <td>${this.escapeHtml(order.contact_number)}</td>
                     <td>${itemsCount} item(s)<br><small>${itemsSummary}</small></td>
@@ -157,9 +157,11 @@ class OrdersController {
                             ${order.status === 'pending' 
                                 ? `<button class="btn btn-small btn-primary" onclick="OrdersController.confirmOrder('${order.id}')">Confirm</button>`
                                 : ''}
-                            ${order.status === 'confirmed' && orderType === 'pickup'
+                            ${order.status === 'confirmed'
                                 ? `
-                                    <button class="btn btn-small btn-info" onclick="OrdersController.scanCustomerQR('${order.id}')">Scan QR</button>
+                                    ${orderType === 'pickup' 
+                                        ? `<button class="btn btn-small btn-info" onclick="OrdersController.scanCustomerQR('${order.id}')">Scan QR</button>`
+                                        : ''}
                                     <button class="btn btn-small btn-success" onclick="OrdersController.completeOrder('${order.id}')">Complete</button>
                                     <button class="btn btn-small btn-danger" onclick="OrdersController.cancelOrder('${order.id}')">Cancel</button>
                                 `
@@ -211,6 +213,7 @@ class OrdersController {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify({
                     order_id: orderId,
                     status: 'confirmed'
@@ -320,6 +323,7 @@ class OrdersController {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify({
                     order_id: orderId,
                     status: 'completed'
@@ -351,6 +355,7 @@ class OrdersController {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify({
                     order_id: orderId,
                     status: 'cancelled'

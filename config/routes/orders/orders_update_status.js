@@ -22,10 +22,26 @@ router.post('/api/orders/update_status', async (req, res) => {
             });
         }
 
+        // Get user email from JWT
+        let user_email = 'system';
+        if (req.user) {
+            // Try username first, then email, then id as fallback
+            user_email = req.user.username || req.user.email || req.user.id || 'system';
+        }
+        
+        // Debug logging
+        console.log('Order update - User info:', {
+            user: req.user,
+            user_email: user_email,
+            order_id: order_id,
+            status: status
+        });
+
         // Call database RPC function
         const { data, error } = await supabase.rpc('orders_update_status', {
             p_order_id: order_id,
-            p_status: status
+            p_status: status,
+            p_user_email: user_email
         });
 
         if (error) {

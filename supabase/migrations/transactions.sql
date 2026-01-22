@@ -49,6 +49,17 @@ CREATE INDEX IF NOT EXISTS idx_transactions_customer_email ON transactions(custo
 CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions(user_email, created_at DESC);
 
 -- =============================================
+-- Row Level Security (RLS)
+-- =============================================
+
+-- Enable RLS
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+
+-- Block all public access (Implicitly allows Service Role/Admin)
+-- We do not add any public policies, so only the Service Role key can access this table.
+-- This protects transaction logs from being exposed.
+
+-- =============================================
 -- Sample queries for reference:
 -- =============================================
 

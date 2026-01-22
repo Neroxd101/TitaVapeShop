@@ -2,7 +2,7 @@
 
 .orders-container {
   padding: 32px;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -122,6 +122,10 @@
   letter-spacing: 0.5px;
 }
 
+.orders-table th:first-child {
+  min-width: 140px;
+}
+
 .orders-table td {
   padding: 16px;
   border-bottom: 1px solid var(--border);
@@ -143,6 +147,11 @@
   background: rgba(255, 255, 255, 0.05);
   padding: 4px 8px;
   border-radius: 6px;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .order-actions {

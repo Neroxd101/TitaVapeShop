@@ -12,4 +12,9 @@ CREATE TABLE IF NOT EXISTS public.users (
 CREATE INDEX IF NOT EXISTS users_username_idx ON public.users (username);
 
 -- Enable Row Level Security (optional, depending on project needs)
--- ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+-- Enable Row Level Security
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+-- Block all public access (Implicitly allows Service Role/Admin)
+-- We do not add any public policies, so only the Service Role key can access this table.
+-- This protects user data (like password hashes) from being exposed.
