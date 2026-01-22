@@ -33,9 +33,10 @@ BEGIN
         jsonb_build_object(
             'transaction_id', t.id,
             'sale_date', t.created_at,
-            'quantity_sold', (sale_item->>'qty')::INTEGER,
-            'sale_price', (sale_item->>'price')::DECIMAL(10, 2),
-            'subtotal', ((sale_item->>'qty')::INTEGER * (sale_item->>'price')::DECIMAL(10, 2)),
+            'quantity_sold', (t.sale_item->>'qty')::INTEGER,
+            'sale_price', (t.sale_item->>'price')::DECIMAL(10, 2),
+            'cost_price', t.cost_price,
+            'subtotal', ((t.sale_item->>'qty')::INTEGER * (t.sale_item->>'price')::DECIMAL(10, 2)),
             'sale_total', t.sale_total,
             'customer_name', t.customer_name,
             'customer_email', t.customer_email,
@@ -50,9 +51,11 @@ BEGIN
             t.customer_name,
             t.customer_email,
             t.user_email,
-            sale_item
+            sale_item,
+            COALESCE(inv.cost_price, 0) as cost_price
         FROM transactions t,
         LATERAL jsonb_array_elements(t.sale_items) as sale_item
+        LEFT JOIN inventory inv ON inv.id = (sale_item->>'id')::UUID
         WHERE t.action_type = 'sale_complete'
             AND t.sale_items IS NOT NULL
             AND (sale_item->>'id')::UUID = p_item_id

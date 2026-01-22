@@ -1179,6 +1179,42 @@
   align-items: flex-end;
 }
 
+.history-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-date-filter .date-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 100px;
+}
+
+.history-date-filter .date-select:hover {
+  border-color: var(--accent);
+}
+
+.history-date-filter .date-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 74, 144, 226), 0.1);
+}
+
+/* Modal header with date picker */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .history-stat {
   display: flex;
   flex-direction: column;

@@ -28,9 +28,21 @@ const InventoryHistory = {
         if (!item) return;
 
         InventoryState.viewingHistoryItemId = itemId;
+        InventoryState.historyFilterDate = null;
         
         // Set product name
         document.getElementById('historyProductName').textContent = item.name;
+        
+        // Reset date filter dropdowns
+        const monthSelect = document.getElementById('historyMonthFilter');
+        const daySelect = document.getElementById('historyDayFilter');
+        const yearSelect = document.getElementById('historyYearFilter');
+        if (monthSelect) monthSelect.value = '';
+        if (daySelect) daySelect.innerHTML = '<option value="">Day</option>';
+        if (yearSelect) yearSelect.value = '';
+        
+        // Setup date filter dropdowns
+        this.setupDateFilter(itemId);
         
         // Show loading state
         document.getElementById('historyLoading').style.display = 'block';
@@ -60,20 +72,44 @@ const InventoryHistory = {
 
             loadingState.style.display = 'none';
 
-            if (sales.length === 0) {
+            // Filter sales by date if date filter is set
+            let filteredSales = sales;
+            if (InventoryState.historyFilterDate) {
+                const filterDate = new Date(InventoryState.historyFilterDate);
+                filterDate.setHours(0, 0, 0, 0);
+                filteredSales = sales.filter(sale => {
+                    const saleDate = new Date(sale.sale_date);
+                    saleDate.setHours(0, 0, 0, 0);
+                    return saleDate.getTime() === filterDate.getTime();
+                });
+            }
+
+            if (filteredSales.length === 0) {
                 emptyState.style.display = 'block';
                 tbody.innerHTML = '';
             } else {
                 emptyState.style.display = 'none';
-                tbody.innerHTML = sales.map(sale => this.createSaleRow(sale)).join('');
+                tbody.innerHTML = filteredSales.map(sale => this.createSaleRow(sale)).join('');
             }
 
-            // Update stats
-            const totalSales = sales.length;
-            const totalRevenue = sales.reduce((sum, sale) => sum + parseFloat(sale.subtotal || 0), 0);
+            // Update stats based on filtered sales
+            const totalSales = filteredSales.length;
+            const totalRevenue = filteredSales.reduce((sum, sale) => sum + parseFloat(sale.subtotal || 0), 0);
+            const totalCost = filteredSales.reduce((sum, sale) => {
+                const qty = parseFloat(sale.quantity_sold || 0);
+                const cost = parseFloat(sale.cost_price || 0);
+                return sum + (qty * cost);
+            }, 0);
+            
+            // Calculate margin percentage
+            let marginPercent = 0;
+            if (totalRevenue > 0) {
+                marginPercent = ((totalRevenue - totalCost) / totalRevenue) * 100;
+            }
             
             document.getElementById('historyTotalSales').textContent = totalSales;
             document.getElementById('historyTotalRevenue').textContent = InventoryUtils.formatCurrency(totalRevenue);
+            document.getElementById('historyMarginPercent').textContent = `${marginPercent.toFixed(1)}%`;
         } catch (error) {
             console.error('Error loading sales history:', error);
             document.getElementById('historyLoading').style.display = 'none';
@@ -102,8 +138,61 @@ const InventoryHistory = {
         `;
     },
 
+    setupDateFilter(itemId) {
+        const monthSelect = document.getElementById('historyMonthFilter');
+        const daySelect = document.getElementById('historyDayFilter');
+        const yearSelect = document.getElementById('historyYearFilter');
+        
+        if (!monthSelect || !daySelect || !yearSelect) return;
+        
+        // Populate year dropdown (current year and past 10 years)
+        const currentYear = new Date().getFullYear();
+        yearSelect.innerHTML = '<option value="">Year</option>';
+        for (let year = currentYear; year >= currentYear - 10; year--) {
+            yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+        }
+        
+        // Update days when month or year changes
+        const updateDays = () => {
+            const month = monthSelect.value;
+            const year = yearSelect.value;
+            
+            daySelect.innerHTML = '<option value="">Day</option>';
+            
+            if (month && year) {
+                const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayStr = day.toString().padStart(2, '0');
+                    daySelect.innerHTML += `<option value="${dayStr}">${day}</option>`;
+                }
+            }
+            
+            // Apply filter when all three are selected
+            this.applyDateFilter(itemId);
+        };
+        
+        monthSelect.onchange = updateDays;
+        yearSelect.onchange = updateDays;
+        daySelect.onchange = () => this.applyDateFilter(itemId);
+    },
+    
+    applyDateFilter(itemId) {
+        const month = document.getElementById('historyMonthFilter')?.value;
+        const day = document.getElementById('historyDayFilter')?.value;
+        const year = document.getElementById('historyYearFilter')?.value;
+        
+        if (month && day && year) {
+            InventoryState.historyFilterDate = `${year}-${month}-${day}`;
+        } else {
+            InventoryState.historyFilterDate = null;
+        }
+        
+        this.loadSalesHistory(itemId);
+    },
+
     closeHistoryModal() {
         InventoryDOM.historyModal?.classList.remove('show');
         InventoryState.viewingHistoryItemId = null;
+        InventoryState.historyFilterDate = null;
     }
 };

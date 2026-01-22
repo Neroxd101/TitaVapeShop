@@ -98,9 +98,6 @@ const Inventory = {
       if (InventoryState.viewingItemId) InventoryHistory.openHistoryModal(InventoryState.viewingItemId);
     });
 
-    // History modal close buttons
-    document.getElementById('historyModalClose')?.addEventListener('click', () => InventoryHistory.closeHistoryModal());
-
     // Close modals on overlay click
     InventoryDOM.itemModal?.addEventListener('click', (e) => {
       if (e.target === InventoryDOM.itemModal) InventoryCreate.closeModal();

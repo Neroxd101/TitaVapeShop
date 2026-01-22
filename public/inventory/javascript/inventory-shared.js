@@ -11,6 +11,7 @@ const InventoryState = {
     currentImages: [], // Array of { url, file, uploading }
     viewingItemId: null,
     viewingHistoryItemId: null,
+    historyFilterDate: null,
     MAX_IMAGES: 5
 };
 
