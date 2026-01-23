@@ -75,10 +75,6 @@ function initDashboard() {
 
   // User info is now set by sidebar.js
 
-  // Header widgets (Google status + date/time)
-  if (window.HeaderStatus && HeaderStatus.init) {
-    HeaderStatus.init();
-  }
 
   // Check if admin needs to connect Google
   // Show modal after a brief delay to ensure DOM is ready
@@ -131,10 +127,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize sidebar first
   await initSidebar('dashboard');
 
-  // Main header (shared layout / design)
-  if (window.MainHeader && MainHeader.render) {
-    MainHeader.render({ page: 'dashboard', title: 'Dashboard' });
-  }
 
   // Then initialize dashboard
   initDashboard();

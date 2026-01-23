@@ -10,9 +10,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Initialize sidebar/header
+    // Initialize sidebar
     if (typeof initSidebar === 'function') initSidebar('settings');
-    if (window.HeaderStatus && HeaderStatus.init) HeaderStatus.init();
 
     // Elements
     const googleStatusContainer = document.getElementById('googleStatusContainer');

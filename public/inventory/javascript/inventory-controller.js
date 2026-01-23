@@ -13,11 +13,6 @@ const Inventory = {
     // Initialize sidebar first
     await initSidebar('inventory');
 
-    // Render shared main header
-    if (window.MainHeader && MainHeader.render) {
-      MainHeader.render({ page: 'inventory', title: 'Inventory' });
-    }
-
     // Initialize Feature Modules
     await Promise.all([
       InventoryLoad.init(),
@@ -26,12 +21,6 @@ const Inventory = {
       InventoryHistory.init()
       // InventoryUpdate doesn't need explicit init as it shares the Create modal
     ]);
-
-    // User info is now set by sidebar.js
-    // Header widgets
-    if (window.HeaderStatus && HeaderStatus.init) {
-      HeaderStatus.init();
-    }
 
     // Setup event listeners
     this.setupEventListeners();

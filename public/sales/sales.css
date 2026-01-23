@@ -6,6 +6,28 @@
   padding: 32px;
 }
 
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #a5a5b0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.page-header .subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin: 0;
+}
+
 /* Hide main header on sales page */
 .sales-content ~ .main-header,
 .main-content > .main-header {
