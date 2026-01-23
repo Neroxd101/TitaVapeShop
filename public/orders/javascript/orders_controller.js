@@ -155,7 +155,10 @@ class OrdersController {
                         <div class="order-actions">
                             <button class="btn btn-small btn-secondary" onclick="OrdersController.viewOrder('${order.id}')">View</button>
                             ${order.status === 'pending' 
-                                ? `<button class="btn btn-small btn-primary" onclick="OrdersController.confirmOrder('${order.id}')">Confirm</button>`
+                                ? `
+                                    <button class="btn btn-small btn-primary" onclick="OrdersController.confirmOrder('${order.id}')">Confirm</button>
+                                    <button class="btn btn-small btn-danger" onclick="OrdersController.cancelOrder('${order.id}')">Cancel</button>
+                                `
                                 : ''}
                             ${order.status === 'confirmed'
                                 ? `
