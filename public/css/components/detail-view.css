@@ -1,0 +1,2220 @@
+/* =============================================
+   Detail View Component
+   Reusable detail/view modal styles (two-column layout)
+   ============================================= */
+
+.view-modal-content {
+  display: grid;
+  /* Details on left (wider), images on right */
+  grid-template-columns: 1.2fr 1fr;
+  gap: 0;
+}
+
+.view-col {
+  padding: 24px;
+}
+
+.view-col-images {
+  order: 2;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.view-col-details {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.view-main-image {
+  width: 100%;
+  /* Make gallery bigger */
+  aspect-ratio: 1 / 1;
+  min-height: clamp(320px, 46vh, 560px);
+  background: var(--bg-primary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.view-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.view-main-image:empty,
+.view-main-image.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-main-image.no-image::after {
+  content: 'No images';
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.view-thumbnails {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.view-thumbnails:empty {
+  display: none;
+}
+
+.view-thumbnail {
+  width: 72px;
+  height: 72px;
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-thumbnail:hover {
+  border-color: var(--accent);
+}
+
+.view-thumbnail.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.view-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.view-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.view-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.view-description:empty {
+  display: none;
+}
+
+.view-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.view-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.view-date {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.view-date svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.view-date div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.view-date .date-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-date .date-value {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.view-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.view-actions .btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .view-modal-content {
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  .view-col {
+    padding: 20px;
+  }
+
+  .view-main-image {
+    min-height: clamp(280px, 40vh, 480px);
+  }
+
+  .view-name {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .view-modal-content {
+    grid-template-columns: 1fr;
+  }
+
+  .view-col {
+    padding: 18px;
+  }
+
+  .view-main-image {
+    aspect-ratio: 4 / 3;
+    min-height: 220px;
+  }
+
+  .view-col-images {
+    order: 1;
+    border-left: none;
+    border-bottom: none;
+    padding-bottom: 18px;
+  }
+
+  .view-col-details {
+    order: 2;
+    gap: 16px;
+  }
+
+  .view-name {
+    font-size: 20px;
+  }
+
+  .view-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .view-thumbnails {
+    gap: 6px;
+  }
+
+  .view-thumbnail {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .view-col {
+    padding: 16px;
+  }
+
+  .view-main-image {
+    min-height: 200px;
+    border-radius: 10px;
+  }
+
+  .view-name {
+    font-size: 18px;
+  }
+
+  .view-description {
+    font-size: 13px;
+  }
+
+  .view-stats {
+    gap: 10px;
+  }
+
+  .view-dates {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .view-date {
+    gap: 10px;
+  }
+
+  .view-date svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .view-date .date-value {
+    font-size: 13px;
+  }
+
+  .view-thumbnails {
+    gap: 5px;
+  }
+
+  .view-thumbnail {
+    width: 56px;
+    height: 56px;
+  }
+
+  .view-actions {
+    gap: 10px;
+    padding-top: 16px;
+  }
+}
+
+/* Phone portrait (360x740) - specific optimizations */
+@media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 20px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 8px;
+  }
+
+  .view-col-details {
+    gap: 6px;
+  }
+
+  .view-col-images {
+    gap: 4px;
+    padding-bottom: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 120px;
+    max-height: 120px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 14px;
+    margin-bottom: 1px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 9px;
+    line-height: 1.3;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 4px;
+  }
+
+  .view-dates {
+    padding: 5px;
+    gap: 4px;
+    border-radius: 6px;
+  }
+
+  .view-date {
+    gap: 5px;
+  }
+
+  .view-date svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .view-date .date-label {
+    font-size: 9px;
+  }
+
+  .view-date .date-value {
+    font-size: 10px;
+  }
+
+  .view-thumbnails {
+    gap: 3px;
+    max-height: 140px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 38px;
+    height: 38px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 3px;
+    padding-top: 6px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 9px;
+    padding: 7px 3px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+/* Phone portrait (380x706) - specific optimizations */
+@media (width: 380px) and (height: 706px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 20px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 8px;
+  }
+
+  .view-col-details {
+    gap: 6px;
+  }
+
+  .view-col-images {
+    gap: 4px;
+    padding-bottom: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 120px;
+    max-height: 120px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 14px;
+    margin-bottom: 1px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 9px;
+    line-height: 1.3;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 4px;
+  }
+
+  .view-dates {
+    padding: 5px;
+    gap: 4px;
+    border-radius: 6px;
+  }
+
+  .view-date {
+    gap: 5px;
+  }
+
+  .view-date svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .view-date .date-label {
+    font-size: 9px;
+  }
+
+  .view-date .date-value {
+    font-size: 10px;
+  }
+
+  .view-thumbnails {
+    gap: 3px;
+    max-height: 140px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 38px;
+    height: 38px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 4px;
+    padding-top: 6px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 10px;
+    padding: 7px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+/* Phone portrait (380x754) - specific optimizations */
+@media (width: 380px) and (height: 754px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 25px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 9px;
+  }
+
+  .view-col-details {
+    gap: 7px;
+  }
+
+  .view-col-images {
+    gap: 5px;
+    padding-bottom: 9px;
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 130px;
+    max-height: 130px;
+    border-radius: 7px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 15px;
+    margin-bottom: 1px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 10px;
+    line-height: 1.35;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 5px;
+  }
+
+  .view-dates {
+    padding: 7px;
+    gap: 5px;
+    border-radius: 7px;
+  }
+
+  .view-date {
+    gap: 5px;
+  }
+
+  .view-date svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .view-date .date-label {
+    font-size: 9px;
+  }
+
+  .view-date .date-value {
+    font-size: 10px;
+  }
+
+  .view-thumbnails {
+    gap: 3px;
+    max-height: 150px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 40px;
+    height: 40px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 5px;
+    padding-top: 8px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 11px;
+    padding: 8px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+/* Phone portrait (380x810) - specific optimizations */
+@media (width: 380px) and (height: 810px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 25px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 9px;
+  }
+
+  .view-col-details {
+    gap: 7px;
+  }
+
+  .view-col-images {
+    gap: 5px;
+    padding-bottom: 9px;
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 135px;
+    max-height: 135px;
+    border-radius: 7px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 15px;
+    margin-bottom: 1px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 10px;
+    line-height: 1.35;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 5px;
+  }
+
+  .view-dates {
+    padding: 7px;
+    gap: 5px;
+    border-radius: 7px;
+  }
+
+  .view-date {
+    gap: 5px;
+  }
+
+  .view-date svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .view-date .date-label {
+    font-size: 9px;
+  }
+
+  .view-date .date-value {
+    font-size: 10px;
+  }
+
+  .view-thumbnails {
+    gap: 3px;
+    max-height: 150px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 40px;
+    height: 40px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 5px;
+    padding-top: 8px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 11px;
+    padding: 8px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+/* Phone portrait (375x812) - specific optimizations */
+@media (width: 375px) and (height: 812px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 25px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 9px;
+  }
+
+  .view-col-details {
+    gap: 7px;
+  }
+
+  .view-col-images {
+    gap: 5px;
+    padding-bottom: 9px;
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 135px;
+    max-height: 135px;
+    border-radius: 7px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 15px;
+    margin-bottom: 1px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 10px;
+    line-height: 1.35;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 5px;
+  }
+
+  .view-dates {
+    padding: 7px;
+    gap: 5px;
+    border-radius: 7px;
+  }
+
+  .view-date {
+    gap: 5px;
+  }
+
+  .view-date svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .view-date .date-label {
+    font-size: 9px;
+  }
+
+  .view-date .date-value {
+    font-size: 10px;
+  }
+
+  .view-thumbnails {
+    gap: 3px;
+    max-height: 150px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 40px;
+    height: 40px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 5px;
+    padding-top: 8px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 10px;
+    padding: 8px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+/* Phone portrait (375x667) - specific optimizations */
+@media (width: 375px) and (height: 667px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 20px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 8px;
+  }
+
+  .view-col-details {
+    gap: 6px;
+  }
+
+  .view-col-images {
+    gap: 4px;
+    padding-bottom: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 120px;
+    max-height: 120px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 14px;
+    margin-bottom: 1px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 9px;
+    line-height: 1.3;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 4px;
+  }
+
+  .view-dates {
+    padding: 5px;
+    gap: 4px;
+    border-radius: 6px;
+  }
+
+  .view-date {
+    gap: 5px;
+  }
+
+  .view-date svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .view-date .date-label {
+    font-size: 9px;
+  }
+
+  .view-date .date-value {
+    font-size: 10px;
+  }
+
+  .view-thumbnails {
+    gap: 3px;
+    max-height: 140px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 38px;
+    height: 38px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 4px;
+    padding-top: 6px;
+    flex-wrap: wrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 calc(50% - 2px);
+    min-width: 0;
+    font-size: 11px;
+    padding: 7px 5px;
+  }
+
+  .view-actions .btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Phone portrait (430x932) - specific optimizations */
+@media (width: 430px) and (height: 932px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 30px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 10px;
+  }
+
+  .view-col-details {
+    gap: 8px;
+  }
+
+  .view-col-images {
+    gap: 6px;
+    padding-bottom: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 16px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 6px;
+  }
+
+  .view-dates {
+    padding: 8px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .view-date {
+    gap: 6px;
+  }
+
+  .view-date svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .view-date .date-label {
+    font-size: 10px;
+  }
+
+  .view-date .date-value {
+    font-size: 11px;
+  }
+
+  .view-thumbnails {
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 42px;
+    height: 42px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 6px;
+    padding-top: 10px;
+    flex-wrap: wrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 calc(50% - 3px);
+    min-width: 0;
+    font-size: 12px;
+    padding: 9px 6px;
+  }
+
+  .view-actions .btn svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* Phone portrait (1080x2400) - specific optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 40px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 16px;
+  }
+
+  .view-col-details {
+    gap: 12px;
+  }
+
+  .view-col-images {
+    gap: 12px;
+    padding-bottom: 16px;
+    max-height: 500px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 250px;
+    max-height: 250px;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 22px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .view-description {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 12px;
+  }
+
+  .view-dates {
+    padding: 14px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .view-date {
+    gap: 10px;
+  }
+
+  .view-date svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .view-date .date-label {
+    font-size: 12px;
+  }
+
+  .view-date .date-value {
+    font-size: 14px;
+  }
+
+  .view-thumbnails {
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 64px;
+    height: 64px;
+    border-width: 2px;
+    border-radius: 8px;
+  }
+
+  .view-actions {
+    gap: 10px;
+    padding-top: 16px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 14px;
+    padding: 12px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/* 1080x2400 portrait 380dpi - high DPI optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) and (resolution: 380dpi),
+       (width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
+  .view-modal-content {
+    max-height: calc(99vh - 40px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 16px;
+  }
+
+  .view-col-details {
+    gap: 12px;
+  }
+
+  .view-col-images {
+    gap: 12px;
+    padding-bottom: 16px;
+    max-height: 500px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 250px;
+    max-height: 250px;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 22px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .view-description {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 12px;
+  }
+
+  .view-dates {
+    padding: 14px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .view-date {
+    gap: 10px;
+  }
+
+  .view-date svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .view-date .date-label {
+    font-size: 12px;
+  }
+
+  .view-date .date-value {
+    font-size: 14px;
+  }
+
+  .view-thumbnails {
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 64px;
+    height: 64px;
+    border-width: 2px;
+    border-radius: 8px;
+  }
+
+  .view-actions {
+    gap: 10px;
+    padding-top: 16px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 14px;
+    padding: 12px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/* 1080p portrait (1080px width) - general optimizations */
+@media (width: 1080px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 40px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 16px;
+  }
+
+  .view-col-details {
+    gap: 12px;
+  }
+
+  .view-col-images {
+    gap: 12px;
+    padding-bottom: 16px;
+    max-height: 500px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 250px;
+    max-height: 250px;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 22px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .view-description {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 12px;
+  }
+
+  .view-dates {
+    padding: 14px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .view-date {
+    gap: 10px;
+  }
+
+  .view-date svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .view-date .date-label {
+    font-size: 12px;
+  }
+
+  .view-date .date-value {
+    font-size: 14px;
+  }
+
+  .view-thumbnails {
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 64px;
+    height: 64px;
+    border-width: 2px;
+    border-radius: 8px;
+  }
+
+  .view-actions {
+    gap: 10px;
+    padding-top: 16px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 14px;
+    padding: 12px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/* Phone portrait (411x823) - specific optimizations */
+@media (width: 411px) and (height: 823px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 30px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 10px;
+  }
+
+  .view-col-details {
+    gap: 8px;
+  }
+
+  .view-col-images {
+    gap: 6px;
+    padding-bottom: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 16px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 6px;
+  }
+
+  .view-dates {
+    padding: 8px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .view-date {
+    gap: 6px;
+  }
+
+  .view-date svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .view-date .date-label {
+    font-size: 10px;
+  }
+
+  .view-date .date-value {
+    font-size: 11px;
+  }
+
+  .view-thumbnails {
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 42px;
+    height: 42px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 6px;
+    padding-top: 10px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 12px;
+    padding: 9px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+/* Phone portrait (412x892) - specific optimizations */
+@media (width: 412px) and (height: 892px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 30px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 10px;
+  }
+
+  .view-col-details {
+    gap: 8px;
+  }
+
+  .view-col-images {
+    gap: 6px;
+    padding-bottom: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 16px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 6px;
+  }
+
+  .view-dates {
+    padding: 8px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .view-date {
+    gap: 6px;
+  }
+
+  .view-date svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .view-date .date-label {
+    font-size: 10px;
+  }
+
+  .view-date .date-value {
+    font-size: 11px;
+  }
+
+  .view-thumbnails {
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 42px;
+    height: 42px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 6px;
+    padding-top: 10px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 12px;
+    padding: 9px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+/* Phone portrait (412x915) - specific optimizations */
+@media (width: 412px) and (height: 915px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 30px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 10px;
+  }
+
+  .view-col-details {
+    gap: 8px;
+  }
+
+  .view-col-images {
+    gap: 6px;
+    padding-bottom: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 16px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 6px;
+  }
+
+  .view-dates {
+    padding: 8px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .view-date {
+    gap: 6px;
+  }
+
+  .view-date svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .view-date .date-label {
+    font-size: 10px;
+  }
+
+  .view-date .date-value {
+    font-size: 11px;
+  }
+
+  .view-thumbnails {
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 42px;
+    height: 42px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 6px;
+    padding-top: 10px;
+    flex-wrap: wrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 calc(50% - 3px);
+    min-width: 0;
+    font-size: 12px;
+    padding: 9px 6px;
+  }
+
+  .view-actions .btn svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* Phone portrait (414x736) - specific optimizations */
+@media (width: 414px) and (height: 736px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 30px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 10px;
+  }
+
+  .view-col-details {
+    gap: 8px;
+  }
+
+  .view-col-images {
+    gap: 6px;
+    padding-bottom: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 140px;
+    max-height: 140px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 16px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 6px;
+  }
+
+  .view-dates {
+    padding: 8px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .view-date {
+    gap: 6px;
+  }
+
+  .view-date svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .view-date .date-label {
+    font-size: 10px;
+  }
+
+  .view-date .date-value {
+    font-size: 11px;
+  }
+
+  .view-thumbnails {
+    gap: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 42px;
+    height: 42px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 6px;
+    padding-top: 10px;
+    flex-wrap: nowrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 12px;
+    padding: 9px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .view-actions .btn svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn .btn-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+/* Phone portrait (414x896) - specific optimizations */
+@media (width: 414px) and (height: 896px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 30px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 10px;
+  }
+
+  .view-col-details {
+    gap: 8px;
+  }
+
+  .view-col-images {
+    gap: 6px;
+    padding-bottom: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 16px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 6px;
+  }
+
+  .view-dates {
+    padding: 8px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .view-date {
+    gap: 6px;
+  }
+
+  .view-date svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .view-date .date-label {
+    font-size: 10px;
+  }
+
+  .view-date .date-value {
+    font-size: 11px;
+  }
+
+  .view-thumbnails {
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 42px;
+    height: 42px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 6px;
+    padding-top: 10px;
+    flex-wrap: wrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 calc(50% - 3px);
+    min-width: 0;
+    font-size: 12px;
+    padding: 9px 6px;
+  }
+
+  .view-actions .btn svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* Phone portrait (390x844) - specific optimizations */
+@media (width: 390px) and (height: 844px) and (orientation: portrait) {
+  .view-modal-content {
+    max-height: calc(99vh - 25px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-col {
+    padding: 9px;
+  }
+
+  .view-col-details {
+    gap: 7px;
+  }
+
+  .view-col-images {
+    gap: 5px;
+    padding-bottom: 9px;
+    max-height: 300px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .view-main-image {
+    min-height: 135px;
+    max-height: 135px;
+    border-radius: 7px;
+    flex-shrink: 0;
+  }
+
+  .view-name {
+    font-size: 15px;
+    margin-bottom: 1px;
+    line-height: 1.2;
+  }
+
+  .view-description {
+    font-size: 10px;
+    line-height: 1.35;
+    margin-bottom: 0;
+  }
+
+  .view-stats {
+    gap: 5px;
+  }
+
+  .view-dates {
+    padding: 7px;
+    gap: 5px;
+    border-radius: 7px;
+  }
+
+  .view-date {
+    gap: 5px;
+  }
+
+  .view-date svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .view-date .date-label {
+    font-size: 9px;
+  }
+
+  .view-date .date-value {
+    font-size: 10px;
+  }
+
+  .view-thumbnails {
+    gap: 3px;
+    max-height: 150px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+  }
+
+  .view-thumbnail {
+    width: 40px;
+    height: 40px;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .view-actions {
+    gap: 5px;
+    padding-top: 8px;
+    flex-wrap: wrap;
+    border-top-width: 1px;
+    flex-shrink: 0;
+  }
+
+  .view-actions .btn {
+    flex: 1 1 calc(50% - 2.5px);
+    min-width: 0;
+    font-size: 11px;
+    padding: 8px 5px;
+  }
+
+  .view-actions .btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .view-col {
+    padding: 14px;
+  }
+
+  .view-main-image {
+    min-height: 180px;
+    border-radius: 8px;
+  }
+
+  .view-name {
+    font-size: 16px;
+  }
+
+  .view-description {
+    font-size: 12px;
+  }
+
+  .view-thumbnail {
+    width: 48px;
+    height: 48px;
+  }
+
+  .view-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .view-modal-content {
+    grid-template-columns: 1fr;
+  }
+
+  .view-col {
+    padding: 12px;
+  }
+
+  .view-main-image {
+    aspect-ratio: 16 / 9;
+    min-height: 160px;
+    border-radius: 8px;
+  }
+
+  .view-name {
+    font-size: 16px;
+  }
+
+  .view-description {
+    font-size: 12px;
+  }
+
+  .view-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .view-thumbnails {
+    gap: 4px;
+  }
+
+  .view-thumbnail {
+    width: 48px;
+    height: 48px;
+  }
+
+  .view-actions {
+    gap: 8px;
+    padding-top: 12px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .view-col {
+    padding: 10px;
+  }
+
+  .view-main-image {
+    min-height: 140px;
+  }
+
+  .view-name {
+    font-size: 14px;
+  }
+
+  .view-thumbnail {
+    width: 40px;
+    height: 40px;
+  }
+}

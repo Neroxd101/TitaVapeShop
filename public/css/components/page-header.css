@@ -1,0 +1,66 @@
+/* =============================================
+   Page Header Component
+   ============================================= */
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #a5a5b0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.page-header .subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin: 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .page-header h1 {
+    font-size: 23px;
+  }
+
+  .page-header .subtitle {
+    font-size: 10px;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .page-header {
+    margin-bottom: 14px;
+  }
+
+  .page-header h1 {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .page-header .subtitle {
+    font-size: 11px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .page-header {
+    margin-bottom: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 16px;
+  }
+
+  .page-header .subtitle {
+    font-size: 10px;
+  }
+}

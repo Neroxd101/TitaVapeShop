@@ -1,0 +1,298 @@
+/* =============================================
+   Badges Component
+   ============================================= */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Badge Variants - Transaction Types */
+.badge-sale {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent);
+}
+
+.badge-add {
+  background: rgba(0, 150, 255, 0.15);
+  color: #00d4ff;
+}
+
+.badge-edit {
+  background: rgba(255, 159, 67, 0.15);
+  color: #ff9f43;
+}
+
+.badge-delete {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--error);
+}
+
+/* Badge Variants - Status */
+.badge-warning {
+  background: rgba(255, 159, 67, 0.15);
+  color: #ff9f43;
+}
+
+.badge-info {
+  background: rgba(0, 150, 255, 0.15);
+  color: #00d4ff;
+}
+
+.badge-success {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent);
+}
+
+.badge-danger {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--error);
+}
+
+/* Badge Variants - Stock */
+.badge-stock {
+  background: rgba(0, 212, 170, 0.2);
+  color: var(--accent);
+}
+
+.badge-out {
+  background: rgba(255, 71, 87, 0.2);
+  color: var(--error);
+}
+
+/* Cart Badge */
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--error);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.2s ease;
+}
+
+.cart-badge.has-items {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Category Badge (for view modals/details) */
+.view-category {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 150, 255, 0.15);
+  color: #00d4ff;
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+  .view-category {
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+}
+
+/* Phone portrait (375x667) - specific optimizations */
+@media (width: 375px) and (height: 667px) and (orientation: portrait) {
+  .view-category {
+    padding: 3px 6px;
+    font-size: 8px;
+    letter-spacing: 0.1px;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+}
+
+/* Phone portrait (430x932) - specific optimizations */
+@media (width: 430px) and (height: 932px) and (orientation: portrait) {
+  .view-category {
+    padding: 4px 8px;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    margin-bottom: 1px;
+    border-radius: 5px;
+  }
+}
+
+/* Phone portrait (1080x2400) - specific optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
+  .view-category {
+    padding: 8px 16px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    border-radius: 8px;
+  }
+}
+
+/* 1080p portrait (1080px width) - general optimizations */
+@media (width: 1080px) and (orientation: portrait) {
+  .view-category {
+    padding: 8px 16px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    border-radius: 8px;
+  }
+}
+
+/* Phone portrait (411x823) - specific optimizations */
+@media (width: 411px) and (height: 823px) and (orientation: portrait) {
+  .view-category {
+    padding: 4px 8px;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    margin-bottom: 1px;
+    border-radius: 5px;
+  }
+}
+
+/* 1080x2400 portrait 380dpi - high DPI optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) and (resolution: 380dpi),
+       (width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
+  .view-category {
+    padding: 8px 16px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    border-radius: 8px;
+  }
+}
+
+/* Phone portrait (412x892) - specific optimizations */
+@media (width: 412px) and (height: 892px) and (orientation: portrait) {
+  .view-category {
+    padding: 4px 8px;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    margin-bottom: 1px;
+    border-radius: 5px;
+  }
+}
+
+/* Phone portrait (412x915) - specific optimizations */
+@media (width: 412px) and (height: 915px) and (orientation: portrait) {
+  .view-category {
+    padding: 4px 8px;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    margin-bottom: 1px;
+    border-radius: 5px;
+  }
+}
+
+/* Phone portrait (414x736) - specific optimizations */
+@media (width: 414px) and (height: 736px) and (orientation: portrait) {
+  .view-category {
+    padding: 4px 8px;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    margin-bottom: 1px;
+    border-radius: 5px;
+  }
+}
+
+/* Phone portrait (414x896) - specific optimizations */
+@media (width: 414px) and (height: 896px) and (orientation: portrait) {
+  .view-category {
+    padding: 4px 8px;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    margin-bottom: 1px;
+    border-radius: 5px;
+  }
+}
+
+/* Phone portrait (360x740) - specific optimizations */
+@media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  .view-category {
+    padding: 3px 6px;
+    font-size: 8px;
+    letter-spacing: 0.1px;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+}
+
+/* Phone portrait (375x812) - specific optimizations */
+@media (width: 375px) and (height: 812px) and (orientation: portrait) {
+  .view-category {
+    padding: 3px 7px;
+    font-size: 8px;
+    letter-spacing: 0.15px;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+}
+
+/* Phone portrait (380x706) - specific optimizations */
+@media (width: 380px) and (height: 706px) and (orientation: portrait) {
+  .view-category {
+    padding: 3px 6px;
+    font-size: 8px;
+    letter-spacing: 0.1px;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+}
+
+/* Phone portrait (380x754) - specific optimizations */
+@media (width: 380px) and (height: 754px) and (orientation: portrait) {
+  .view-category {
+    padding: 3px 7px;
+    font-size: 8px;
+    letter-spacing: 0.15px;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+}
+
+/* Phone portrait (380x810) - specific optimizations */
+@media (width: 380px) and (height: 810px) and (orientation: portrait) {
+  .view-category {
+    padding: 3px 7px;
+    font-size: 8px;
+    letter-spacing: 0.15px;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+}
+
+/* Phone portrait (390x844) - specific optimizations */
+@media (width: 390px) and (height: 844px) and (orientation: portrait) {
+  .view-category {
+    padding: 3px 7px;
+    font-size: 8px;
+    letter-spacing: 0.15px;
+    margin-bottom: 0;
+    border-radius: 4px;
+  }
+}
+
+.view-category.juices {
+  background: rgba(255, 159, 67, 0.15);
+  color: #ff9f43;
+}

@@ -1,0 +1,87 @@
+/* =============================================
+   Confirmation Modal Component
+   Reusable confirmation and success modal styles
+   ============================================= */
+
+.confirm-details,
+.success-details {
+  background: rgba(0, 212, 170, 0.05);
+  border: 1px solid rgba(0, 212, 170, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+}
+
+.confirm-row,
+.success-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.confirm-row:last-child,
+.success-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.confirm-row:first-child,
+.success-row:first-child {
+  padding-top: 0;
+}
+
+/* Success Modal Specific Styles */
+.success-icon-wrapper {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  stroke: var(--accent);
+  animation: checkmarkDraw 0.8s ease-in-out;
+}
+
+@keyframes checkmarkDraw {
+  0% {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.success-email-status {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+  display: none;
+}
+
+.success-email-status.sent {
+  display: block;
+  background: rgba(0, 212, 170, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+.success-email-status.failed {
+  display: block;
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}

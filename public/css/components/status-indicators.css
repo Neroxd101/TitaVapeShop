@@ -1,0 +1,89 @@
+/* =============================================
+   Status Indicators Component
+   ============================================= */
+
+.status-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.status-indicator.online {
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(0, 212, 170, 0.5);
+}
+
+.status-indicator.online::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.status-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+}
+
+.status-badge.connected {
+  background: rgba(0, 212, 170, 0.1);
+  border-color: rgba(0, 212, 170, 0.3);
+  color: var(--accent);
+}
+
+.status-badge.connected::before {
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(0, 212, 170, 0.5);
+}
+
+.status-badge.disconnected {
+  background: rgba(255, 71, 87, 0.1);
+  border-color: rgba(255, 71, 87, 0.3);
+  color: var(--error);
+}
+
+.status-badge.disconnected::before {
+  background: var(--error);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2);
+  }
+}

@@ -11,7 +11,31 @@
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/navigation/navigation.css">
   <link rel="stylesheet" href="/css/dashboard.css">
-  <link rel="stylesheet" href="/inventory/inventory.css">
+  <link rel="stylesheet" href="/css/components/page-header.css">
+  <link rel="stylesheet" href="/css/components/page-content.css">
+  <link rel="stylesheet" href="/css/components/search-box.css">
+  <link rel="stylesheet" href="/css/components/filter-tabs.css">
+  <link rel="stylesheet" href="/css/components/buttons.css">
+  <link rel="stylesheet" href="/css/components/modal.css">
+  <link rel="stylesheet" href="/css/components/empty-state.css">
+  <link rel="stylesheet" href="/css/components/loading-state.css">
+  <link rel="stylesheet" href="/css/components/forms.css">
+  <link rel="stylesheet" href="/css/components/alerts.css">
+  <link rel="stylesheet" href="/css/components/badges.css">
+  <link rel="stylesheet" href="/css/components/stat-cards.css">
+  <link rel="stylesheet" href="/css/components/action-cards.css">
+  <link rel="stylesheet" href="/css/components/status-indicators.css">
+  <link rel="stylesheet" href="/css/components/sections.css">
+  <link rel="stylesheet" href="/css/components/table.css">
+  <link rel="stylesheet" href="/css/components/pagination.css">
+  <link rel="stylesheet" href="/css/components/cards.css">
+  <link rel="stylesheet" href="/css/components/image-carousel.css">
+  <link rel="stylesheet" href="/css/components/image-upload.css">
+  <link rel="stylesheet" href="/css/components/modal-layouts.css">
+  <link rel="stylesheet" href="/css/components/detail-view.css">
+  <link rel="stylesheet" href="/css/components/history-table.css">
+  <link rel="stylesheet" href="/css/components/qr-preview.css">
+  <link rel="stylesheet" href="/inventory/inventory-structure.css">
 </head>
 
 <body>
@@ -22,14 +46,14 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="inventory-content">
+    <div class="page-content">
       <div class="page-header">
         <h1>Inventory</h1>
         <p class="subtitle">Manage your products and stock</p>
       </div>
 
       <!-- Filters -->
-      <div class="filters-bar">
+      <div class="filter-tabs">
         <div class="search-box">
           <svg viewBox="0 0 24 24">
             <path
@@ -37,12 +61,12 @@
           </svg>
           <input type="text" id="searchInput" placeholder="Search products...">
         </div>
-        <div class="filters-bar-row">
-          <div class="filter-tabs">
-            <button class="filter-tab active" data-category="all">All</button>
-            <button class="filter-tab" data-category="hardware">Hardware</button>
-            <button class="filter-tab" data-category="juices">Juices</button>
-          </div>
+        <div class="filter-tabs-group">
+          <button class="filter-tab active" data-category="all">All</button>
+          <button class="filter-tab" data-category="hardware">Hardware</button>
+          <button class="filter-tab" data-category="juices">Juices</button>
+        </div>
+        <div class="filter-tabs-actions filter-tabs-actions-single">
           <button class="btn btn-primary" id="addItemBtn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>

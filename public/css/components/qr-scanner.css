@@ -1,0 +1,30 @@
+/* =============================================
+   QR Scanner Component
+   Reusable QR code scanner styles
+   ============================================= */
+
+.qr-scanner-area {
+  width: 100%;
+  max-width: 320px;
+  height: 260px;
+  margin: 12px auto 8px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Ensure the video/canvas fully covers the area without black bars */
+.qr-scanner-area video,
+.qr-scanner-area canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  display: block;
+}
+
+.qr-help-text {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+}

@@ -1,0 +1,50 @@
+/* =============================================
+   Alerts Component
+   ============================================= */
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 24px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert.show {
+  display: flex;
+}
+
+.alert svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.alert-error {
+  background: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+  color: var(--error);
+  animation: shake 0.4s ease;
+}
+
+.alert-error svg {
+  fill: var(--error);
+}
+
+.alert-success {
+  background: rgba(0, 212, 170, 0.1);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  color: var(--success);
+}
+
+.alert-success svg {
+  fill: var(--success);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}

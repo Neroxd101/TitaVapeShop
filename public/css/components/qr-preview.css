@@ -1,0 +1,97 @@
+/* =============================================
+   QR Preview Component
+   Reusable QR code preview styles
+   ============================================= */
+
+/* QR Code on Cards */
+.card-qr {
+  width: 48px;
+  height: 48px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-qr svg {
+  width: 28px;
+  height: 28px;
+  fill: var(--text-secondary);
+}
+
+.card-qr img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* QR Preview in Forms/Modals */
+.qr-preview-wrapper {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.qr-preview {
+  width: 120px;
+  height: 120px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.qr-preview svg {
+  width: 60px;
+  height: 60px;
+  fill: var(--text-secondary);
+  opacity: 0.3;
+}
+
+.qr-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+.qr-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.qr-code-text {
+  font-family: monospace;
+  font-size: 14px;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+  word-break: break-all;
+}
+
+/* QR in view modal */
+.view-qr {
+  padding: 12px;
+  background: white;
+  border-radius: 12px;
+  align-self: flex-start;
+}
+
+.view-qr:empty,
+.view-qr.no-qr {
+  display: none;
+}
+
+.view-qr img {
+  width: 80px;
+  height: 80px;
+  display: block;
+}

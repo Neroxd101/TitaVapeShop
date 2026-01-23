@@ -1,0 +1,1153 @@
+/* =============================================
+   Modal Component
+   ============================================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeUp 0.3s ease;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.modal::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.modal-small {
+  max-width: 400px;
+}
+
+.modal-medium {
+  max-width: 700px;
+}
+
+.modal-large {
+  max-width: 800px;
+}
+
+.modal-wide {
+  max-width: 900px;
+}
+
+.modal-xl {
+  max-width: 1100px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--text-secondary);
+}
+
+.modal-close:hover {
+  border-color: var(--error);
+}
+
+.modal-close:hover svg {
+  fill: var(--error);
+}
+
+.modal form,
+.modal-body {
+  padding: 24px;
+}
+
+.modal-body p {
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.modal-body .text-muted {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 24px 24px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .modal-overlay {
+    padding: 16px;
+  }
+
+  .modal-header {
+    padding: 20px 20px 0;
+  }
+
+  .modal-header h3 {
+    font-size: 18px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-actions {
+    padding: 0 20px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal {
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 18px 18px 0;
+  }
+
+  .modal-header h3 {
+    font-size: 17px;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+  }
+
+  .modal-close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 18px;
+  }
+
+  .modal-actions {
+    padding: 0 18px 18px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    margin: 10px;
+    border-radius: 16px;
+  }
+
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal-header {
+    padding: 16px 16px 0;
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+  }
+
+  .modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .modal-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-actions {
+    padding: 0 16px 16px;
+    gap: 8px;
+    flex-direction: column;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Phone portrait (375x667) - specific optimizations */
+@media (width: 375px) and (height: 667px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 8px 8px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 12px;
+  }
+
+  .modal-close {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-close svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 8px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 8px 8px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (430x932) - specific optimizations */
+@media (width: 430px) and (height: 932px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 2px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 2px;
+    max-height: 99vh;
+    border-radius: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 10px 10px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal-close {
+    width: 24px;
+    height: 24px;
+  }
+
+  .modal-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 10px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 10px 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (1080x2400) - specific optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 8px;
+    max-height: 98vh;
+    border-radius: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 20px 20px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+  }
+
+  .modal-close {
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 20px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 20px 20px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+}
+
+/* 1080p portrait (1080px width) - general optimizations */
+@media (width: 1080px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 8px;
+    max-height: 98vh;
+    border-radius: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 20px 20px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+  }
+
+  .modal-close {
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 20px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 20px 20px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (411x823) - specific optimizations */
+@media (width: 411px) and (height: 823px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 2px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 2px;
+    max-height: 99vh;
+    border-radius: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 10px 10px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal-close {
+    width: 24px;
+    height: 24px;
+  }
+
+  .modal-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 10px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 10px 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+}
+
+/* 1080x2400 portrait 380dpi - high DPI optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) and (resolution: 380dpi),
+       (width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
+  .modal-overlay {
+    padding: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 8px;
+    max-height: 98vh;
+    border-radius: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 20px 20px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 20px;
+  }
+
+  .modal-close {
+    width: 36px;
+    height: 36px;
+  }
+
+  .modal-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 20px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 20px 20px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (412x892) - specific optimizations */
+@media (width: 412px) and (height: 892px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 2px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 2px;
+    max-height: 99vh;
+    border-radius: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 10px 10px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal-close {
+    width: 24px;
+    height: 24px;
+  }
+
+  .modal-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 10px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 10px 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (412x915) - specific optimizations */
+@media (width: 412px) and (height: 915px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 2px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 2px;
+    max-height: 99vh;
+    border-radius: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 10px 10px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal-close {
+    width: 24px;
+    height: 24px;
+  }
+
+  .modal-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 10px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 10px 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (414x736) - specific optimizations */
+@media (width: 414px) and (height: 736px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 2px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 2px;
+    max-height: 99vh;
+    border-radius: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 10px 10px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal-close {
+    width: 24px;
+    height: 24px;
+  }
+
+  .modal-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 10px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 10px 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (414x896) - specific optimizations */
+@media (width: 414px) and (height: 896px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 2px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 2px;
+    max-height: 99vh;
+    border-radius: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 10px 10px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal-close {
+    width: 24px;
+    height: 24px;
+  }
+
+  .modal-close svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 10px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 10px 10px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (360x740) - specific optimizations */
+@media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 8px 8px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 12px;
+  }
+
+  .modal-close {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-close svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 8px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 8px 8px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (375x812) - specific optimizations */
+@media (width: 375px) and (height: 812px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 9px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 9px 9px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 13px;
+  }
+
+  .modal-close {
+    width: 22px;
+    height: 22px;
+  }
+
+  .modal-close svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 9px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 9px 9px;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (380x706) - specific optimizations */
+@media (width: 380px) and (height: 706px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 8px 8px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 12px;
+  }
+
+  .modal-close {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-close svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 8px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 8px 8px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (380x754) - specific optimizations */
+@media (width: 380px) and (height: 754px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 9px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 9px 9px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 13px;
+  }
+
+  .modal-close {
+    width: 22px;
+    height: 22px;
+  }
+
+  .modal-close svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 9px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 9px 9px;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (380x810) - specific optimizations */
+@media (width: 380px) and (height: 810px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 9px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 9px 9px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 13px;
+  }
+
+  .modal-close {
+    width: 22px;
+    height: 22px;
+  }
+
+  .modal-close svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 9px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 9px 9px;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (390x844) - specific optimizations */
+@media (width: 390px) and (height: 844px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 9px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 9px 9px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 13px;
+  }
+
+  .modal-close {
+    width: 22px;
+    height: 22px;
+  }
+
+  .modal-close svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 9px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 9px 9px;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .modal {
+    margin: 5px;
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 14px 14px 0;
+  }
+
+  .modal-header h3 {
+    font-size: 15px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 14px;
+  }
+
+  .modal-actions {
+    padding: 0 14px 14px;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal {
+    max-height: 98vh;
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 12px 12px 0;
+  }
+
+  .modal-header h3 {
+    font-size: 15px;
+  }
+
+  .modal-close {
+    width: 28px;
+    height: 28px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 12px;
+  }
+
+  .modal-actions {
+    padding: 0 12px 12px;
+    gap: 6px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .modal-header {
+    padding: 10px 10px 0;
+  }
+
+  .modal-header h3 {
+    font-size: 14px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 10px;
+  }
+
+  .modal-actions {
+    padding: 0 10px 10px;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

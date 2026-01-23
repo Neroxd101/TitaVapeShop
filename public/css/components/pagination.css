@@ -1,0 +1,29 @@
+/* =============================================
+   Pagination Component
+   ============================================= */
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 16px;
+}
+
+.pagination-controls .btn-small {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.pagination-controls .btn-small:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-controls #pageInfo {
+  color: var(--text-secondary);
+  font-size: 14px;
+  min-width: 80px;
+  text-align: center;
+}

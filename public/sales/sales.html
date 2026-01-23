@@ -11,7 +11,20 @@
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/navigation/navigation.css">
   <link rel="stylesheet" href="/css/dashboard.css">
-  <link rel="stylesheet" href="/sales/sales.css">
+  <link rel="stylesheet" href="/css/components/page-header.css">
+  <link rel="stylesheet" href="/css/components/page-content.css">
+  <link rel="stylesheet" href="/css/components/search-box.css">
+  <link rel="stylesheet" href="/css/components/filter-tabs.css">
+  <link rel="stylesheet" href="/css/components/buttons.css">
+  <link rel="stylesheet" href="/css/components/modal.css">
+  <link rel="stylesheet" href="/css/components/empty-state.css">
+  <link rel="stylesheet" href="/css/components/loading-state.css">
+  <link rel="stylesheet" href="/css/components/pos-cards.css">
+  <link rel="stylesheet" href="/css/components/cart.css">
+  <link rel="stylesheet" href="/css/components/skeleton.css">
+  <link rel="stylesheet" href="/css/components/confirmation-modal.css">
+  <link rel="stylesheet" href="/css/components/qr-scanner.css">
+  <link rel="stylesheet" href="/sales/sales-structure.css">
 </head>
 
 <body>
@@ -22,14 +35,14 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="sales-content">
+    <div class="page-content">
       <div class="page-header">
         <h1>Sales</h1>
         <p class="subtitle">Process sales and manage transactions</p>
       </div>
 
       <!-- Filters -->
-      <div class="filters-bar">
+      <div class="filter-tabs">
         <div class="search-box">
           <svg viewBox="0 0 24 24">
             <path
@@ -37,25 +50,25 @@
           </svg>
           <input type="text" id="productSearch" placeholder="Search products...">
         </div>
-        <div class="filter-tabs">
+        <div class="filter-tabs-group">
           <button class="filter-tab active" data-category="all">All</button>
           <button class="filter-tab" data-category="hardware">Hardware</button>
           <button class="filter-tab" data-category="juices">Juices</button>
         </div>
-        <div class="filters-actions">
-          <button type="button" class="pos-qr-btn" id="openQrModalBtn">
+        <div class="filter-tabs-actions">
+          <button type="button" class="btn btn-primary" id="openQrModalBtn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
               <path
                 d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10 0h-2v2h2v2h2v-4h-2zm4 0v2h2v-2h-2zm0 4v2h2v-2h-2z" />
             </svg>
             <span>Scan QR</span>
           </button>
-          <button class="btn btn-primary" id="openCartModalBtn">
+          <button type="button" class="btn btn-primary" id="openCartModalBtn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
               <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
             <span>Checkout</span>
-            <span id="cartBadge" class="cart-badge">0</span>
+            <span id="cartBadge" class="checkout-badge">0</span>
           </button>
         </div>
       </div>

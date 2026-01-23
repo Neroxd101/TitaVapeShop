@@ -1,0 +1,151 @@
+/* =============================================
+   Search Box Component
+   ============================================= */
+
+.search-box {
+  position: relative;
+  flex: 1;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  fill: var(--text-secondary);
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.search-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.search-box input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .search-box svg {
+    left: 10px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .search-box input {
+    padding: 10px 12px 10px 32px;
+    font-size: 12px;
+    border-radius: 10px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-box {
+    max-width: 100%;
+    order: 1;
+  }
+
+  .search-box svg {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .search-box input {
+    padding: 10px 12px 10px 36px;
+    font-size: 13px;
+    border-radius: 10px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-box svg {
+    left: 10px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .search-box input {
+    padding: 8px 10px 8px 32px;
+    font-size: 12px;
+    border-radius: 8px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 360px) {
+  .search-box svg {
+    left: 8px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .search-box input {
+    padding: 6px 8px 6px 28px;
+    font-size: 11px;
+    border-radius: 6px;
+    height: 32px;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .search-box {
+    order: 0;
+    max-width: none;
+    flex: 1;
+  }
+
+  .search-box svg {
+    left: 10px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .search-box input {
+    padding: 6px 12px 6px 34px;
+    font-size: 12px;
+    border-radius: 8px;
+    height: 32px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .search-box {
+    order: 0;
+    max-width: none;
+    flex: 1;
+  }
+
+  .search-box svg {
+    left: 8px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .search-box input {
+    padding: 5px 10px 5px 30px;
+    font-size: 11px;
+    border-radius: 6px;
+    height: 30px;
+  }
+}

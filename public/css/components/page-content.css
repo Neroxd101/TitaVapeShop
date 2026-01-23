@@ -1,0 +1,34 @@
+/* =============================================
+   Page Content Component
+   Reusable page content wrapper with consistent padding
+   ============================================= */
+
+.page-content {
+  padding: 32px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-content {
+    padding: 12px;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .page-content {
+    padding: 12px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .page-content {
+    padding: 10px;
+  }
+}

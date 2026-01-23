@@ -1,0 +1,37 @@
+/* =============================================
+   Sections Component
+   ============================================= */
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .section {
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+}

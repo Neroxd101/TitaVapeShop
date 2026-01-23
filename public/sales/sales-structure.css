@@ -1,0 +1,141 @@
+/* =============================================
+   Sales Page Styles
+   Only truly sales-specific styles
+   ============================================= */
+
+/* Page content wrapper - uses reusable .page-content from /css/components/page-content.css */
+
+/* Hide main header on sales page */
+.main-content > .main-header {
+  display: none;
+}
+
+/* Common component styles moved to /css/components/ directory:
+   - page-header.css
+   - search-box.css
+   - filter-tabs.css (includes filters bar functionality)
+   - buttons.css
+   - modal.css (base modal styles)
+   - empty-state.css
+   - loading-state.css
+   - pos-cards.css
+   - cart.css
+   - skeleton.css
+   - confirmation-modal.css
+   - qr-scanner.css
+*/
+
+/* Product Grid */
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+/* Sales-specific product input/button styles */
+.product-qty-input {
+  width: 50px;
+  padding: 3px 5px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #05050b;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+}
+
+.product-add-btn {
+  flex: 1;
+  justify-content: center;
+  padding: 4px 6px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.product-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.product-add-btn svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* Sales-specific cart payment section */
+.cart-payment {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cart-payment .form-group label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.cart-payment input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #05050b;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.change-display {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #05050b;
+  font-size: 0.95rem;
+}
+
+/* Sales-specific checkout badge (different from catalog cart badge) */
+.checkout-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.checkout-badge.has-items {
+  background: #fff;
+  color: #000;
+}
+
+/* Confirmation/Success modal z-index override */
+#confirmModal,
+#successModal {
+  z-index: 1100;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .product-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+}

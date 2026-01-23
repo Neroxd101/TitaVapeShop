@@ -1,0 +1,503 @@
+/* =============================================
+   Stat Cards Component
+   ============================================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon svg {
+  width: 28px;
+  height: 28px;
+  fill: white;
+}
+
+.stat-icon.blue {
+  background: linear-gradient(135deg, #0096ff, #00d4ff);
+}
+
+.stat-icon.green {
+  background: linear-gradient(135deg, var(--accent), #00b894);
+}
+
+.stat-icon.orange {
+  background: linear-gradient(135deg, #ff9f43, #ee5a24);
+}
+
+.stat-icon.purple {
+  background: linear-gradient(135deg, #a55eea, #8854d0);
+}
+
+.stat-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* View Stat (for modals/details) */
+.view-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-secondary);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.view-stat .stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.view-stat .stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.view-stat .stat-value.highlight {
+  color: var(--accent);
+}
+
+.view-stat .stat-value.profit {
+  font-weight: 700;
+}
+
+.view-stat .stat-value.profit.positive {
+  color: var(--accent);
+}
+
+.view-stat .stat-value.profit.negative {
+  color: var(--error);
+}
+
+.view-stat .stat-value.low-stock {
+  color: var(--error);
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .view-stat {
+    padding: 14px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 11px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 16px;
+    gap: 12px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .stat-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+  }
+
+  .view-stat {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 17px;
+  }
+}
+
+/* Phone portrait (375x667) - specific optimizations */
+@media (width: 375px) and (height: 667px) and (orientation: portrait) {
+  .view-stat {
+    padding: 6px;
+    border-radius: 6px;
+    gap: 2px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.1px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (360x740) - specific optimizations */
+@media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  .view-stat {
+    padding: 6px;
+    border-radius: 6px;
+    gap: 2px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.1px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (375x812) - specific optimizations */
+@media (width: 375px) and (height: 812px) and (orientation: portrait) {
+  .view-stat {
+    padding: 7px;
+    border-radius: 7px;
+    gap: 2px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.15px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (380x706) - specific optimizations */
+@media (width: 380px) and (height: 706px) and (orientation: portrait) {
+  .view-stat {
+    padding: 6px;
+    border-radius: 6px;
+    gap: 2px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.1px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (380x754) - specific optimizations */
+@media (width: 380px) and (height: 754px) and (orientation: portrait) {
+  .view-stat {
+    padding: 7px;
+    border-radius: 7px;
+    gap: 2px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.15px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (380x810) - specific optimizations */
+@media (width: 380px) and (height: 810px) and (orientation: portrait) {
+  .view-stat {
+    padding: 7px;
+    border-radius: 7px;
+    gap: 2px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.15px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (430x932) - specific optimizations */
+@media (width: 430px) and (height: 932px) and (orientation: portrait) {
+  .view-stat {
+    padding: 8px;
+    border-radius: 8px;
+    gap: 3px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (1080x2400) - specific optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
+  .view-stat {
+    padding: 14px;
+    border-radius: 12px;
+    gap: 4px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 22px;
+    font-weight: 600;
+  }
+}
+
+/* 1080p portrait (1080px width) - general optimizations */
+@media (width: 1080px) and (orientation: portrait) {
+  .view-stat {
+    padding: 14px;
+    border-radius: 12px;
+    gap: 4px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 22px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (411x823) - specific optimizations */
+@media (width: 411px) and (height: 823px) and (orientation: portrait) {
+  .view-stat {
+    padding: 8px;
+    border-radius: 8px;
+    gap: 3px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+/* 1080x2400 portrait 380dpi - high DPI optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) and (resolution: 380dpi),
+       (width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
+  .view-stat {
+    padding: 14px;
+    border-radius: 12px;
+    gap: 4px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 22px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (412x892) - specific optimizations */
+@media (width: 412px) and (height: 892px) and (orientation: portrait) {
+  .view-stat {
+    padding: 8px;
+    border-radius: 8px;
+    gap: 3px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (412x915) - specific optimizations */
+@media (width: 412px) and (height: 915px) and (orientation: portrait) {
+  .view-stat {
+    padding: 8px;
+    border-radius: 8px;
+    gap: 3px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (414x736) - specific optimizations */
+@media (width: 414px) and (height: 736px) and (orientation: portrait) {
+  .view-stat {
+    padding: 8px;
+    border-radius: 8px;
+    gap: 3px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (414x896) - specific optimizations */
+@media (width: 414px) and (height: 896px) and (orientation: portrait) {
+  .view-stat {
+    padding: 8px;
+    border-radius: 8px;
+    gap: 3px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+/* Phone portrait (390x844) - specific optimizations */
+@media (width: 390px) and (height: 844px) and (orientation: portrait) {
+  .view-stat {
+    padding: 7px;
+    border-radius: 7px;
+    gap: 2px;
+  }
+
+  .view-stat .stat-label {
+    font-size: 8px;
+    letter-spacing: 0.15px;
+  }
+
+  .view-stat .stat-value {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}

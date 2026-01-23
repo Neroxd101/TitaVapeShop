@@ -1,0 +1,237 @@
+/* =============================================
+   Image Upload Component
+   Reusable image upload/gallery styles
+   ============================================= */
+
+.label-hint {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  min-height: 140px;
+}
+
+.images-grid:empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.images-grid:empty::after {
+  content: 'No images added';
+}
+
+.image-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-item .remove-image {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.image-item:hover .remove-image {
+  opacity: 1;
+}
+
+.image-item .remove-image svg {
+  width: 14px;
+  height: 14px;
+  fill: white;
+}
+
+.image-item .remove-image:hover {
+  background: var(--error);
+}
+
+.image-add-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg-primary);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  min-height: 140px;
+}
+
+.image-add-tile:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.image-add-tile svg {
+  width: 40px;
+  height: 40px;
+  fill: currentColor;
+  display: block;
+  margin: auto;
+}
+
+.image-item.uploading img {
+  opacity: 0.3;
+}
+
+.image-item.uploading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -14px;
+  margin-top: -14px;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  z-index: 10;
+}
+
+.image-upload-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px !important;
+  cursor: pointer;
+}
+
+.image-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.image-uploading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--accent);
+  margin: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Edit Modal Image Styles (reusable for edit forms) */
+.edit-main-image {
+  width: 100%;
+  max-width: 530px;
+  height: 530px;
+  min-height: 530px;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.edit-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.edit-main-image.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-main-image.no-image::after {
+  content: 'No images';
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.edit-thumbnails {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Thumbnail sizing inside the edit modal */
+.edit-thumbnails .image-item {
+  width: 80px;
+  height: 80px;
+  min-height: 80px;
+  flex: 0 0 auto;
+}
+
+/* Make the add-image tile align with thumbnails */
+.edit-thumbnails .image-add-tile {
+  width: 80px;
+  height: 80px;
+  min-height: 80px;
+  flex: 0 0 auto;
+  padding: 0;
+}
+
+.edit-thumbnails .image-add-tile svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  margin: auto;
+}
+
+/* Responsive Styles */
+@media (min-width: 1024px) {
+  .images-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    min-height: 160px;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+}
