@@ -20,9 +20,8 @@ class AnalyticsController {
             return;
         }
 
-        // Initialize sidebar/header
+        // Initialize sidebar
         if (typeof initSidebar === 'function') initSidebar('analytics');
-        if (window.HeaderStatus && HeaderStatus.init) HeaderStatus.init();
 
         // Initialize print module
         if (window.AnalyticsPrint) {
