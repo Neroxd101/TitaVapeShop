@@ -564,7 +564,8 @@
   .filters-card,
   .pagination-controls,
   .page-header .header-right,
-  #sidebar-container,
+  #navigation-container,
+  #sidebar-container, /* Backward compatibility */
   .bg-pattern {
     display: none !important;
   }
