@@ -14,7 +14,7 @@ async function loadNavigation() {
   }
 
   try {
-    const response = await fetch('/navigation.html');
+    const response = await fetch('/navigation/navigation.html');
     if (!response.ok) {
       throw new Error(`Failed to load navigation: ${response.statusText}`);
     }
