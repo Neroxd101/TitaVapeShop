@@ -34,6 +34,11 @@ setupMiddleware(app);
 
 // Routes
 // All routes now define their full paths explicitly within their respective files
+
+// Public routes (no authentication required) - register first
+app.use('/', catalogRoutes); // Public catalog for customers
+
+// Protected routes (authentication required)
 app.use('/', loginRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', inventoryLoadRoutes);
@@ -50,13 +55,10 @@ app.use('/', transactionsServeRoutes);
 app.use('/', transactionsLogRoutes);
 app.use('/', transactionsListRoutes);
 app.use('/', transactionsStatsRoutes);
-
-
 app.use('/', transactionsReportRoutes);
 app.use('/', analyticsServeRoutes);
 app.use('/', analyticsApiRoutes);
 app.use('/', settingsRoutes);
-app.use('/', catalogRoutes);
 app.use('/', ordersControllerRoutes);
 app.use('/', ordersGetAllRoutes);
 app.use('/', ordersUpdateStatusRoutes);

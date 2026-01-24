@@ -3,7 +3,12 @@ const path = require('path');
 const router = express.Router();
 const { supabase } = require('../database/supabase');
 
-// Public product catalog page
+// =============================================
+// PUBLIC ROUTES - No authentication required
+// These routes are accessible to anyone (customers)
+// =============================================
+
+// Public product catalog page - accessible without login
 // GET /catalog
 router.get('/catalog', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/catalog/catalog.html'));
