@@ -3,32 +3,10 @@
    Reusable history/transaction table styles
    ============================================= */
 
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+.history-stats-container {
   margin-bottom: 24px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border);
-  gap: 20px;
-}
-
-.history-header-left {
-  flex: 1;
-  display: flex;
-  align-items: flex-end;
-}
-
-.history-header h4 {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-  line-height: 1.2;
-}
-
-.history-header-right {
-  flex-shrink: 0;
 }
 
 .history-stats {
@@ -184,15 +162,31 @@
   margin: 0;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .history-header {
-    flex-direction: column;
-    gap: 16px;
+/* Tablet Header Centering (600px - 1080px) */
+@media (min-width: 600px) and (max-width: 1080px) {
+  .modal-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 12px !important;
+    padding-bottom: 15px !important;
   }
 
-  .history-header-right {
-    width: 100%;
+  .modal-header h3 {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .modal-header .history-date-filter {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .history-stats-container {
+    margin-bottom: 16px;
   }
 
   .history-stats {
@@ -213,15 +207,9 @@
 }
 
 @media (max-width: 768px) {
-  .history-header {
-    flex-direction: column;
-    gap: 12px;
+  .history-stats-container {
     margin-bottom: 16px;
     padding-bottom: 16px;
-  }
-
-  .history-header h4 {
-    font-size: 18px;
   }
 
   .history-stats {
@@ -285,26 +273,9 @@
     font-size: 11px !important;
   }
 
-  .history-header {
-    gap: 8px !important;
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 15px !important;
-    margin-bottom: 8px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
+  .history-stats-container {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
   }
 
   .history-stats {
@@ -386,26 +357,9 @@
 
 /* Phone portrait (360x740) - specific optimizations */
 @media (width: 360px) and (height: 740px) and (orientation: portrait) {
-  .history-header {
-    gap: 6px !important;
+  .history-stats-container {
     margin-bottom: 8px !important;
     padding-bottom: 8px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 13px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
   }
 
   .history-stats {
@@ -510,26 +464,9 @@
     font-size: 10px !important;
   }
 
-  .history-header {
-    gap: 6px !important;
+  .history-stats-container {
     margin-bottom: 8px !important;
     padding-bottom: 8px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 13px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
   }
 
   .history-stats {
@@ -634,26 +571,9 @@
     font-size: 11px !important;
   }
 
-  .history-header {
-    gap: 8px !important;
+  .history-stats-container {
     margin-bottom: 10px !important;
     padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 14px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
   }
 
   .history-stats {
@@ -758,26 +678,10 @@
     font-size: 10px !important;
   }
 
-  .history-header {
+  .history-stats-container {
     gap: 6px !important;
     margin-bottom: 8px !important;
     padding-bottom: 8px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 13px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
   }
 
   .history-stats {
@@ -859,26 +763,9 @@
 
 /* Phone portrait (380x754) - specific optimizations */
 @media (width: 380px) and (height: 754px) and (orientation: portrait) {
-  .history-header {
-    gap: 6px !important;
+  .history-stats-container {
     margin-bottom: 8px !important;
     padding-bottom: 8px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 14px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
   }
 
   .history-stats {
@@ -985,103 +872,86 @@
     font-size: 11px !important;
   }
 
-  .history-header {
-    gap: 8px !important;
+  .history-stats-container {
     margin-bottom: 10px !important;
     padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
   }
+}
 
-  .history-header-left {
-    width: 100% !important;
-  }
+.history-stats {
+  gap: 6px !important;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+}
 
-  .history-header h4 {
-    font-size: 14px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
+.history-stat {
+  flex: 1 1 calc(33.333% - 4px) !important;
+  min-width: 0;
+}
 
-  .history-header-right {
-    width: 100% !important;
-  }
+.history-stat .stat-label {
+  font-size: 9px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: space-between;
-  }
+.history-stat .stat-value {
+  font-size: 13px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
+.history-date-filter {
+  flex-wrap: wrap;
+  gap: 4px !important;
+  width: 100%;
+}
 
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.history-date-filter .date-select {
+  padding: 6px 8px !important;
+  font-size: 11px !important;
+  min-width: 0 !important;
+  flex: 1 1 calc(33.333% - 3px);
+}
 
-  .history-stat .stat-value {
-    font-size: 13px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.history-table-container {
+  max-height: calc(100vh - 260px) !important;
+  border-radius: 7px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
+.history-table {
+  min-width: 550px;
+}
 
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
+.history-table th,
+.history-table td {
+  padding: 7px 6px !important;
+  font-size: 10px !important;
+}
 
-  .history-table-container {
-    max-height: calc(100vh - 260px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+.history-table th {
+  font-size: 8px !important;
+  padding: 6px 4px !important;
+  white-space: nowrap;
+}
 
-  .history-table {
-    min-width: 550px;
-  }
+.history-table td {
+  white-space: nowrap;
+}
 
-  .history-table th,
-  .history-table td {
-    padding: 7px 6px !important;
-    font-size: 10px !important;
-  }
+.history-empty,
+.history-loading {
+  padding: 24px 12px !important;
+}
 
-  .history-table th {
-    font-size: 8px !important;
-    padding: 6px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
+.history-empty p,
+.history-loading p {
+  font-size: 11px !important;
 }
 
 /* Phone portrait (390x844) - specific optimizations */
@@ -1109,26 +979,9 @@
     font-size: 11px !important;
   }
 
-  .history-header {
-    gap: 8px !important;
+  .history-stats-container {
     margin-bottom: 10px !important;
     padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 15px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
   }
 
   .history-stats {

@@ -2,7 +2,7 @@
 <div class="modal-overlay" id="historyModal">
   <div class="modal modal-wide">
     <div class="modal-header">
-      <h3>Sales History</h3>
+      <h3 id="historyProductName">Product Name</h3>
       <div class="history-date-filter">
         <select id="historyYearFilter" class="date-select">
           <option value="">Year</option>
@@ -29,24 +29,19 @@
     </div>
 
     <div class="modal-body">
-      <div class="history-header">
-        <div class="history-header-left">
-          <h4 id="historyProductName">Product Name</h4>
-        </div>
-        <div class="history-header-right">
-          <div class="history-stats">
-            <div class="history-stat">
-              <span class="stat-label">Total Sales</span>
-              <span class="stat-value" id="historyTotalSales">0</span>
-            </div>
-            <div class="history-stat">
-              <span class="stat-label">Total Revenue</span>
-              <span class="stat-value highlight" id="historyTotalRevenue">₱0.00</span>
-            </div>
-            <div class="history-stat">
-              <span class="stat-label">Margin %</span>
-              <span class="stat-value highlight" id="historyMarginPercent">0%</span>
-            </div>
+      <div class="history-stats-container">
+        <div class="history-stats">
+          <div class="history-stat">
+            <span class="stat-label">Total Sales</span>
+            <span class="stat-value" id="historyTotalSales">0</span>
+          </div>
+          <div class="history-stat">
+            <span class="stat-label">Total Revenue</span>
+            <span class="stat-value highlight" id="historyTotalRevenue">₱0.00</span>
+          </div>
+          <div class="history-stat">
+            <span class="stat-label">Margin %</span>
+            <span class="stat-value highlight" id="historyMarginPercent">0%</span>
           </div>
         </div>
       </div>

@@ -1495,12 +1495,12 @@
   }
 }
 
-/* Phone portrait (380x706) - specific modal optimizations */
-@media (min-width: 378px) and (max-width: 382px) and (min-height: 704px) and (max-height: 710px) and (orientation: portrait) {
+/* All Portrait Viewports (Phones & Tablets e.g. 360x740, 768x1024, 1080x2400) - Inventory View Modal optimizations */
+@media (max-width: 1080px) and (orientation: portrait) {
 
   /* Modal container */
   #viewModal .modal.modal-wide {
-    max-height: 95vh !important;
+    max-height: 92vh !important;
     height: auto !important;
     /* Changed from fixed height to auto */
     border-radius: 12px !important;
@@ -1519,89 +1519,89 @@
     gap: 0 !important;
   }
 
-  /* Images column */
+  /* Images column - even more compact for short screens */
   #viewModal .view-col-images {
     order: 1 !important;
     border-bottom: 1px solid var(--border) !important;
-    padding: 8px !important;
+    padding: 6px !important;
     flex-shrink: 0 !important;
-    gap: 6px !important;
+    gap: 4px !important;
   }
 
   /* Main image - compact */
   #viewModal .view-main-image {
-    min-height: 120px !important;
-    max-height: 120px !important;
-    height: 120px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    height: 100px !important;
   }
 
   /* Thumbnails - compact */
   #viewModal .view-thumbnails {
-    gap: 6px !important;
+    gap: 4px !important;
   }
 
-  /* Details column - scrollable, takes remaining space */
+  /* Details column */
   #viewModal .view-col-details {
     order: 2 !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     flex: 1 !important;
     min-height: 0 !important;
-    padding: 10px 12px !important;
+    padding: 8px 10px !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 6px !important;
+    gap: 4px !important;
   }
 
   #viewModal .view-category {
-    font-size: 10px !important;
-    padding: 2px 8px !important;
+    font-size: 9px !important;
+    padding: 2px 6px !important;
   }
 
   #viewModal .view-name {
-    font-size: 16px !important;
+    font-size: 15px !important;
     line-height: 1.2 !important;
   }
 
   #viewModal .view-description {
-    font-size: 12px !important;
-    margin-bottom: 4px !important;
+    font-size: 11px !important;
+    margin-bottom: 2px !important;
   }
 
   #viewModal .view-stats {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    gap: 6px !important;
   }
 
   #viewModal .view-stat {
-    padding: 6px !important;
+    padding: 4px 6px !important;
   }
 
   #viewModal .stat-label {
-    font-size: 9px !important;
+    font-size: 8px !important;
     color: var(--text-secondary) !important;
     margin-bottom: 0 !important;
   }
 
   #viewModal .stat-value {
-    font-size: 13px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
   }
 
   #viewModal .view-dates {
-    padding: 8px !important;
-    gap: 4px !important;
-    margin-bottom: 4px !important;
+    padding: 6px 8px !important;
+    gap: 2px !important;
+    margin-bottom: 2px !important;
   }
 
   #viewModal .view-date {
-    gap: 6px !important;
+    gap: 4px !important;
   }
 
   #viewModal .view-date svg {
-    width: 12px !important;
-    height: 12px !important;
+    width: 10px !important;
+    height: 10px !important;
   }
 
   #viewModal .date-label {
@@ -1609,15 +1609,15 @@
   }
 
   #viewModal .date-value {
-    font-size: 10px !important;
+    font-size: 9px !important;
   }
 
   /* Action Buttons Grid (2x2) */
   #viewModal .view-actions {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    padding-top: 10px !important;
+    gap: 6px !important;
+    padding-top: 8px !important;
     margin-top: 4px !important;
     border-top: 1px solid var(--border) !important;
     width: 100% !important;
@@ -1632,8 +1632,8 @@
   }
 
   #viewModal .view-actions .btn {
-    padding: 10px 8px !important;
-    font-size: 11px !important;
+    padding: 8px 6px !important;
+    font-size: 10px !important;
     width: 100% !important;
     justify-content: center !important;
     min-width: 0 !important;
@@ -1645,91 +1645,250 @@
     height: 12px !important;
   }
 
-  /* For other modals with modal-form-horizontal */
+  /* For other modals with modal-form-horizontal (Add/Edit) */
+  #itemModal .modal.modal-wide,
   .modal.modal-wide {
     max-height: 95vh !important;
-    border-radius: 10px !important;
-    overflow: hidden !important;
+    height: auto !important;
+    border-radius: 12px !important;
+    overflow-y: auto !important;
     display: flex !important;
     flex-direction: column !important;
-  }
-
-  .modal.modal-wide .modal-header {
-    padding: 6px 8px !important;
-    flex-shrink: 0 !important;
-    border-bottom: 1px solid var(--border) !important;
-  }
-
-  .modal.modal-wide .modal-header h3 {
-    font-size: 13px !important;
-    margin: 0 !important;
-  }
-
-  .modal.modal-wide .modal-body {
-    flex: 1 !important;
-    overflow: hidden !important;
-    min-height: 0 !important;
     padding: 0 !important;
   }
 
+  #itemModal .modal-form-horizontal,
   .modal-form-horizontal {
     grid-template-columns: 1fr !important;
     flex: 1 !important;
-    overflow: hidden !important;
-    min-height: 0 !important;
     display: flex !important;
     flex-direction: column !important;
+    gap: 0 !important;
   }
 
-  .modal-col {
-    padding: 6px !important;
-  }
-
+  #itemModal .modal-col-images,
   .modal-col-images {
     order: 1 !important;
     border-left: none !important;
     border-bottom: 1px solid var(--border) !important;
-    padding: 6px !important;
+    padding: 10px !important;
     flex-shrink: 0 !important;
-    max-height: 200px !important;
+    max-height: 280px !important;
+    /* Increased from 180px */
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
   }
 
+  #itemModal .edit-main-image {
+    height: 180px !important;
+    /* Increased from 100px */
+    min-height: 180px !important;
+    margin-bottom: 6px !important;
+  }
+
+  #itemModal .edit-thumbnails {
+    gap: 4px !important;
+  }
+
+  #itemModal .modal-col-fields,
   .modal-col-fields {
     order: 2 !important;
     overflow-y: auto !important;
     flex: 1 !important;
     min-height: 0 !important;
-    padding: 6px !important;
+    padding: 12px 15px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
   }
 
-  .modal.modal-wide .form-group {
-    margin-bottom: 6px !important;
-  }
-
-  .modal-col-fields .view-name {
-    font-size: 13px !important;
-    margin-bottom: 4px !important;
+  #itemModal .modal-col-fields .view-name {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
     line-height: 1.2 !important;
   }
 
+  #itemModal .form-group,
+  .modal.modal-wide .form-group {
+    margin-bottom: 8px !important;
+  }
+
+  #itemModal label,
+  .modal.modal-wide label {
+    font-size: 11px !important;
+    margin-bottom: 4px !important;
+  }
+
+  #itemModal input,
+  #itemModal select,
+  #itemModal textarea,
+  .modal.modal-wide input,
+  .modal.modal-wide select,
+  .modal.modal-wide textarea {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+
+  #itemModal textarea {
+    /* Visual hint, might need JS or just height */
+    height: 60px !important;
+  }
+
+  #itemModal .form-row-2,
+  .modal.modal-wide .form-row-2 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  #itemModal .modal-actions,
   .modal-col-fields .modal-actions {
-    padding: 4px 0 0 !important;
-    gap: 3px !important;
+    padding: 10px 0 0 !important;
+    gap: 8px !important;
     flex-shrink: 0 !important;
-    margin-top: 4px !important;
+    margin-top: 10px !important;
     position: sticky !important;
     bottom: 0 !important;
     background: var(--bg-card) !important;
     z-index: 10 !important;
     border-top: 1px solid var(--border) !important;
+    display: flex !important;
+    flex-direction: row !important;
   }
 
+  #itemModal .modal-actions .btn,
   .modal-col-fields .modal-actions .btn {
-    padding: 6px 8px !important;
-    font-size: 9px !important;
-    flex: 1 1 0 !important;
+    padding: 10px 15px !important;
+    font-size: 12px !important;
+    flex: 1 !important;
     min-width: 0 !important;
+  }
+}
+
+/* Tablet Portrait Override - More generous spacing and heights */
+@media (min-width: 600px) and (max-width: 1080px) and (orientation: portrait) {
+
+  #viewModal .modal.modal-wide,
+  #itemModal .modal.modal-wide {
+    max-height: 90vh !important;
+    /* Increased from 85vh to fit more content */
+    width: 90% !important;
+    max-width: 600px !important;
+    height: auto !important;
+  }
+
+  /* Mid-size tablets specific image height (e.g. 640x889) */
+  #viewModal .view-main-image,
+  #itemModal .edit-main-image {
+    min-height: 120px !important;
+    max-height: 350px !important;
+    height: 300px !important;
+  }
+
+  #itemModal .modal-col-images {
+    max-height: 460px !important;
+    /* Increased to fit the 300px image + labels */
+  }
+
+  #viewModal .view-col-details,
+  #itemModal .modal-col-fields {
+    padding: 20px 20px !important;
+    gap: 12px !important;
+  }
+
+  #itemModal .modal-col-fields {
+    gap: 0 !important;
+  }
+
+  #itemModal .form-group {
+    margin-bottom: 12px !important;
+  }
+
+  #itemModal label {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+  }
+
+  #itemModal input,
+  #itemModal select,
+  #itemModal textarea {
+    padding: 10px 14px !important;
+    font-size: 15px !important;
+  }
+
+  #itemModal textarea {
+    height: 120px !important;
+  }
+
+  #itemModal .modal-actions {
+    padding-top: 15px !important;
+    margin-top: 10px !important;
+  }
+
+  #viewModal .view-category {
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+  }
+
+  #viewModal .view-name {
+    font-size: 20px !important;
+    /* Slightly smaller than 22px */
+  }
+
+  #viewModal .view-description {
+    font-size: 13px !important;
+    margin-bottom: 8px !important;
+  }
+
+  #viewModal .view-stats {
+    gap: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  #viewModal .view-stat {
+    padding: 10px !important;
+    border-radius: 8px !important;
+  }
+
+  #viewModal .stat-label {
+    font-size: 10px !important;
+  }
+
+  #viewModal .stat-value {
+    font-size: 15px !important;
+  }
+
+  #viewModal .view-dates {
+    padding: 10px 12px !important;
+    gap: 6px !important;
+    border-radius: 10px !important;
+  }
+
+  #viewModal .view-date svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  #viewModal .date-label {
+    font-size: 9px !important;
+  }
+
+  #viewModal .date-value {
+    font-size: 12px !important;
+  }
+
+  #viewModal .view-actions {
+    padding-top: 12px !important;
+    gap: 10px !important;
+    margin-top: 6px !important;
+  }
+
+  #viewModal .view-actions .btn {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+  }
+
+  #viewModal .view-actions .btn svg {
+    width: 16px !important;
+    height: 16px !important;
   }
 }
