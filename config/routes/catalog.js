@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const router = express.Router();
 const { supabase } = require('../database/supabase');
+const { sendOrderEmail } = require('./orders/orders_email');
 
 // =============================================
 // PUBLIC ROUTES - No authentication required
@@ -140,13 +141,14 @@ router.post('/api/orders/create', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
 
-        const { customer_name, contact_number, social_media, order_type, items, total_amount } = req.body;
+        const { customer_name, contact_number, social_media, customer_email, order_type, items, total_amount } = req.body;
 
         // Call database RPC function
         const { data, error } = await supabase.rpc('orders_create_order', {
             p_customer_name: customer_name,
             p_contact_number: contact_number,
             p_social_media: social_media || null,
+            p_customer_email: customer_email || null,
             p_order_type: order_type || 'pickup',
             p_items: items,
             p_total_amount: total_amount
@@ -162,6 +164,27 @@ router.post('/api/orders/create', async (req, res) => {
 
     // RPC function returns an array, get the first element
     const order = Array.isArray(data) && data.length > 0 ? data[0] : data;
+    
+    // Send order confirmation email
+    if (order && customer_email) {
+        try {
+            await sendOrderEmail(
+                customer_email,
+                customer_name,
+                order.id,
+                'pending',
+                {
+                    items: items,
+                    total_amount: total_amount,
+                    order_type: order_type
+                }
+            );
+        } catch (emailError) {
+            console.error('[Order Creation] Error sending email:', emailError);
+            // Don't fail the order creation if email fails
+        }
+    }
+    
     res.json({ success: true, order: order });
   } catch (err) {
     console.error('Order creation error:', err);

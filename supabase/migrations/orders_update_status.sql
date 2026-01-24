@@ -13,6 +13,7 @@ RETURNS TABLE (
     customer_name VARCHAR(255),
     contact_number VARCHAR(20),
     social_media TEXT,
+    customer_email VARCHAR(255),
     order_type VARCHAR(20),
     items JSONB,
     total_amount DECIMAL(10, 2),
@@ -25,6 +26,7 @@ DECLARE
     current_status VARCHAR(50);
     order_items JSONB;
     order_customer_name VARCHAR(255);
+    order_customer_email VARCHAR(255);
     order_total_amount DECIMAL(10,2);
     order_type VARCHAR(20);
     item_record JSONB;
@@ -40,8 +42,8 @@ BEGIN
     END IF;
 
     -- Get order details before update (to process inventory deduction and transaction logging)
-    SELECT o.items, o.status, o.customer_name, o.total_amount, o.order_type
-    INTO order_items, current_status, order_customer_name, order_total_amount, order_type
+    SELECT o.items, o.status, o.customer_name, o.customer_email, o.total_amount, o.order_type
+    INTO order_items, current_status, order_customer_name, order_customer_email, order_total_amount, order_type
     FROM orders o
     WHERE o.id = p_order_id;
 
@@ -114,6 +116,7 @@ BEGIN
         o.customer_name,
         o.contact_number,
         o.social_media,
+        o.customer_email,
         o.order_type,
         o.items,
         o.total_amount,
@@ -134,6 +137,7 @@ BEGIN
         updated_order.customer_name,
         updated_order.contact_number,
         updated_order.social_media,
+        updated_order.customer_email,
         updated_order.order_type,
         updated_order.items,
         updated_order.total_amount,

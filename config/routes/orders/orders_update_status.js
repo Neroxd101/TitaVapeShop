@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabase } = require('../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
+const { sendOrderEmail } = require('./orders_email');
 
 // Protect orders routes
 router.use(isAuthenticated, hasRole(['admin']));
@@ -52,7 +53,30 @@ router.post('/api/orders/update_status', async (req, res) => {
             });
         }
 
-        res.json({ success: true, order: data });
+        // Get the updated order (RPC returns array)
+        const updatedOrder = Array.isArray(data) && data.length > 0 ? data[0] : data;
+
+        // Send email notification if status is confirmed or completed
+        if (updatedOrder && (status === 'confirmed' || status === 'completed')) {
+            try {
+                await sendOrderEmail(
+                    updatedOrder.customer_email,
+                    updatedOrder.customer_name,
+                    updatedOrder.id,
+                    status,
+                    {
+                        items: updatedOrder.items,
+                        total_amount: updatedOrder.total_amount,
+                        order_type: updatedOrder.order_type
+                    }
+                );
+            } catch (emailError) {
+                console.error('[Order Update] Error sending email:', emailError);
+                // Don't fail the status update if email fails
+            }
+        }
+
+        res.json({ success: true, order: updatedOrder });
     } catch (error) {
         console.error('Error updating order status:', error);
         res.status(500).json({ success: false, error: 'Internal server error' });

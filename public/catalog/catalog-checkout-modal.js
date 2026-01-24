@@ -86,11 +86,24 @@ const CatalogCheckoutModal = {
         const customerName = document.getElementById('customerName').value.trim();
         const contactNumber = document.getElementById('contactNumber').value.trim();
         const socialMedia = document.getElementById('socialMedia').value.trim();
+        const customerEmail = document.getElementById('customerEmail').value.trim();
 
         // Validate contact number (11 digits)
         const digitsOnly = contactNumber.replace(/\D/g, '');
         if (digitsOnly.length !== 11) {
             alert('Contact number must be exactly 11 digits');
+            return;
+        }
+
+        // Validate email
+        if (!customerEmail) {
+            alert('Email is required');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(customerEmail)) {
+            alert('Please enter a valid email address');
             return;
         }
 
@@ -126,6 +139,7 @@ const CatalogCheckoutModal = {
                     customer_name: customerName,
                     contact_number: digitsOnly,
                     social_media: socialMedia || null,
+                    customer_email: customerEmail,
                     order_type: orderType,
                     items: items,
                     total_amount: totalAmount
