@@ -230,7 +230,7 @@ main {
 /* Product Grid Layout */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 24px;
     padding-bottom: 60px;
     max-width: 100%;
@@ -244,7 +244,7 @@ main {
     }
 
     .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 300px));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
         gap: 28px;
     }
 }
@@ -256,7 +256,7 @@ main {
     }
 
     .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 320px));
+        grid-template-columns: repeat(auto-fill, minmax(260px, 300px));
         gap: 32px;
     }
 
@@ -299,7 +299,7 @@ main {
     }
 
     .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 320px));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 320px));
         gap: 32px;
     }
 
@@ -545,6 +545,7 @@ main {
     transition: all 0.2s ease;
     min-width: 0;
     max-width: 100%;
+    white-space: nowrap;
 }
 
 .btn-card:hover {
@@ -729,8 +730,8 @@ main {
 
 .privacy-consent-checkbox label {
     display: flex;
-        align-items: flex-start;
-        gap: 12px;
+    align-items: flex-start;
+    gap: 12px;
     cursor: pointer;
     color: var(--text-primary);
     font-size: 16px;
@@ -898,7 +899,7 @@ main {
 
 /* Tablet Portrait (800x1145) - align logo to left */
 @media (width: 800px) and (height: 1145px) and (orientation: portrait),
-       (min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
+(min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
     .nav-container {
         justify-content: flex-start !important;
         position: relative;
@@ -1119,8 +1120,7 @@ main {
         width: 12px;
         height: 12px;
     }
-        row-gap: 4px;
-    }
+
 
     .social-link {
         padding: 4px 8px;
@@ -1206,7 +1206,7 @@ main {
 
 /* Tablet landscape (1024x505) - compact nav */
 @media (width: 1024px) and (height: 505px) and (orientation: landscape),
-       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+(min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
     .nav-container {
         padding: 6px 10px !important;
     }
@@ -1536,13 +1536,16 @@ main {
 /* Scrollbar hiding for catalog-specific elements */
 .category-filters,
 .privacy-consent-content {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
 }
 
 .category-filters::-webkit-scrollbar,
 .privacy-consent-content::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none;
+    /* Chrome, Safari, Opera */
 }
 
 /* Responsive styles for Privacy Consent Modal */
@@ -1728,7 +1731,7 @@ main {
 
 /* Tablet landscape (1024x505) - compact privacy modal */
 @media (width: 1024px) and (height: 505px) and (orientation: landscape),
-       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+(min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
     #privacyConsentModal.modal-overlay {
         padding: 4px !important;
     }
@@ -1990,7 +1993,8 @@ main {
 
 /* Mobile Landscape (823x309) - compact catalog */
 @media (width: 823px) and (height: 309px) and (orientation: landscape),
-       (min-width: 820px) and (max-width: 826px) and (min-height: 305px) and (max-height: 313px) and (orientation: landscape) {
+(min-width: 820px) and (max-width: 826px) and (min-height: 305px) and (max-height: 313px) and (orientation: landscape) {
+
     /* Navigation - very compact */
     .nav-container {
         padding: 4px 6px !important;
@@ -2445,7 +2449,8 @@ main {
 
 /* Large Desktop (1920x951 and similar) - show everything without scrolling */
 @media (min-width: 1920px) and (min-height: 900px) and (orientation: landscape),
-       (min-width: 1900px) and (min-height: 900px) {
+(min-width: 1900px) and (min-height: 900px) {
+
     /* Large Desktop - Better space utilization */
     .nav-container {
         max-width: 1800px;
