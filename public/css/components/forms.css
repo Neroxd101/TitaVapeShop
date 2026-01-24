@@ -446,6 +446,54 @@ select:focus {
   }
 }
 
+/* Phone portrait (360x800) - specific optimizations */
+@media (width: 360px) and (height: 800px) and (orientation: portrait),
+       (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
+  .form-row,
+  .form-row-2 {
+    gap: 4px !important;
+  }
+
+  .form-group {
+    margin-bottom: 6px !important;
+  }
+
+  .form-group label {
+    font-size: 9px !important;
+    margin-bottom: 2px !important;
+    letter-spacing: 0.1px !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 6px !important;
+    font-size: 11px !important;
+    border-radius: 5px !important;
+  }
+
+  .form-group input:not(.has-icon),
+  .form-group select:not(.has-icon),
+  .form-group textarea:not(.has-icon) {
+    padding-left: 6px !important;
+  }
+
+  .form-group textarea {
+    min-height: 55px !important;
+    rows: 3 !important;
+  }
+
+  select {
+    padding: 6px !important;
+    font-size: 11px !important;
+    background-position: right 4px center !important;
+  }
+
+  .label-hint {
+    font-size: 8px !important;
+  }
+}
+
 /* Phone portrait (375x667) - specific optimizations */
 @media (width: 375px) and (height: 667px) and (orientation: portrait) {
   .form-row,
@@ -667,6 +715,52 @@ select:focus {
   select {
     padding: 7px !important;
     font-size: 12px !important;
+    background-position: right 5px center !important;
+  }
+
+  .label-hint {
+    font-size: 9px !important;
+  }
+}
+
+/* Phone portrait (392x767) - specific optimizations */
+@media (width: 392px) and (height: 767px) and (orientation: portrait),
+       (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
+  .form-row,
+  .form-row-2 {
+    gap: 5px !important;
+  }
+
+  .form-group {
+    margin-bottom: 5px !important;
+  }
+
+  .form-group label {
+    font-size: 10px !important;
+    margin-bottom: 3px !important;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 6px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+  }
+
+  .form-group input:not(.has-icon),
+  .form-group select:not(.has-icon),
+  .form-group textarea:not(.has-icon) {
+    padding-left: 6px !important;
+  }
+
+  .form-group textarea {
+    min-height: 50px !important;
+  }
+
+  select {
+    padding: 6px !important;
+    font-size: 11px !important;
     background-position: right 5px center !important;
   }
 

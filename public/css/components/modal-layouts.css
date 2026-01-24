@@ -1218,6 +1218,60 @@
   }
 }
 
+/* Phone portrait (360x800) - specific optimizations */
+@media (width: 360px) and (height: 800px) and (orientation: portrait),
+       (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
+  .modal.modal-wide {
+    max-height: calc(100vh - 16px) !important;
+    border-radius: 16px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .modal-col {
+    padding: 8px !important;
+  }
+
+  .modal.modal-wide .modal-header {
+    padding: 8px 8px 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    background: var(--bg-card) !important;
+    z-index: 10 !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+
+  .modal.modal-wide .form-group {
+    margin-bottom: 8px !important;
+  }
+
+  .modal-col-fields .modal-actions {
+    padding: 6px 8px 8px !important;
+    gap: 5px !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: var(--bg-card) !important;
+    z-index: 10 !important;
+    border-top: 1px solid var(--border) !important;
+    margin-top: auto !important;
+  }
+
+  .modal-col-fields .modal-actions .btn {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  .modal-col-fields .view-name {
+    font-size: 14px !important;
+    margin-bottom: 10px !important;
+    line-height: 1.2;
+  }
+}
+
 /* Phone portrait (380x754) - specific optimizations */
 @media (width: 380px) and (height: 754px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -1335,6 +1389,51 @@
     margin-bottom: 5px !important;
   }
 
+
+  .modal-col-fields .modal-actions {
+    padding: 5px 6px 6px !important;
+    gap: 4px !important;
+    margin-top: 5px !important;
+  }
+
+  .modal-col-fields .modal-actions .btn {
+    padding: 7px 10px !important;
+    font-size: 10px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  .modal-col-fields .view-name {
+    font-size: 13px !important;
+    margin-bottom: 5px !important;
+    line-height: 1.2;
+  }
+}
+
+/* Phone portrait (392x767) - specific optimizations */
+@media (width: 392px) and (height: 767px) and (orientation: portrait),
+       (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
+  .modal.modal-wide {
+    max-height: 100vh !important;
+    border-radius: 12px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+  }
+
+  .modal-col {
+    padding: 6px !important;
+  }
+
+  .modal.modal-wide .modal-header {
+    padding: 6px 6px 0 !important;
+  }
+
+  .modal.modal-wide .form-group {
+    margin-bottom: 5px !important;
+  }
 
   .modal-col-fields .modal-actions {
     padding: 5px 6px 6px !important;

@@ -286,59 +286,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Parse images from product (can be JSON array, string, or already parsed)
-     */
-    function parseImages(product) {
-        if (!product.images) return [];
-        
-        try {
-            // If it's already an array, return it
-            if (Array.isArray(product.images)) {
-                return product.images.filter(img => img && img.trim() !== '');
-            }
-            
-            // If it's a string, try to parse it
-            if (typeof product.images === 'string') {
-                const parsed = JSON.parse(product.images);
-                return Array.isArray(parsed) ? parsed.filter(img => img && img.trim() !== '') : [];
-            }
-        } catch (e) {
-            console.error('Error parsing images:', e, product.images);
-        }
-        
-        return [];
-    }
-
-    /**
      * Get the correct image URL (handling drive proxy)
      */
     function getImageUrl(product) {
-        const images = parseImages(product);
-        
-        if (images.length > 0) {
-            // Filter out QR code images (they usually contain 'qr' in the URL or are the qr_image_url)
-            const nonQrImages = images.filter(img => {
-                const imgLower = img.toLowerCase();
-                return img !== product.qr_image_url && 
-                       !imgLower.includes('qr') && 
-                       !imgLower.includes('qrcode');
-            });
-            
-            // Use first non-QR image, or fallback to first image if all are QR
-            const img = nonQrImages.length > 0 ? nonQrImages[0] : images[0];
-            
-            if (img) {
-                // Handle Google Drive URLs
-                if (img.includes('drive.google.com')) {
-                    const fileId = img.match(/id=([^&]+)/)?.[1] || img.match(/\/d\/([^\/]+)/)?.[1];
-                    if (fileId) {
-                        return `/api/upload/drive-image/${fileId}`;
-                    }
-                }
-                return img;
+        if (product.images && product.images.length > 0) {
+            const img = product.images[0];
+            if (img.includes('drive.google.com')) {
+                const fileId = img.match(/id=([^&]+)/)?.[1];
+                return fileId ? `/api/upload/drive-image/${fileId}` : img;
             }
+            return img;
         }
-        
         return '/img/placeholder-product.png';
     }
 

@@ -356,8 +356,8 @@
 
 .privacy-consent-checkbox label {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
+        align-items: flex-start;
+        gap: 12px;
     cursor: pointer;
     color: var(--text-primary);
     font-size: 16px;

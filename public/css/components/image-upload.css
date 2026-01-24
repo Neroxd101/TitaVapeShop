@@ -577,6 +577,40 @@
   }
 }
 
+/* Phone portrait (360x800) - specific optimizations */
+@media (width: 360px) and (height: 800px) and (orientation: portrait),
+       (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
+  .edit-main-image {
+    max-width: 100% !important;
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    margin-bottom: 4px !important;
+    border-radius: 6px !important;
+  }
+
+  .edit-thumbnails {
+    gap: 3px !important;
+  }
+
+  .edit-thumbnails .image-item,
+  .edit-thumbnails .image-add-tile {
+    width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+  }
+
+  .edit-thumbnails .image-add-tile svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .image-hint {
+    font-size: 8px !important;
+    margin-top: 2px !important;
+  }
+}
+
 /* Phone portrait (375x667) - specific optimizations */
 @media (width: 375px) and (height: 667px) and (orientation: portrait) {
   .edit-main-image {
@@ -736,6 +770,40 @@
   .edit-thumbnails .image-add-tile svg {
     width: 16px !important;
     height: 16px !important;
+  }
+
+  .image-hint {
+    font-size: 9px !important;
+    margin-top: 3px !important;
+  }
+}
+
+/* Phone portrait (392x767) - specific optimizations */
+@media (width: 392px) and (height: 767px) and (orientation: portrait),
+       (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
+  .edit-main-image {
+    max-width: 100% !important;
+    height: 105px !important;
+    min-height: 105px !important;
+    max-height: 105px !important;
+    margin-bottom: 5px !important;
+    border-radius: 7px !important;
+  }
+
+  .edit-thumbnails {
+    gap: 4px !important;
+  }
+
+  .edit-thumbnails .image-item,
+  .edit-thumbnails .image-add-tile {
+    width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+  }
+
+  .edit-thumbnails .image-add-tile svg {
+    width: 15px !important;
+    height: 15px !important;
   }
 
   .image-hint {

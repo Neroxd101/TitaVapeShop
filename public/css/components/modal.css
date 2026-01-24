@@ -1845,6 +1845,59 @@
   }
 }
 
+/* Phone portrait (360x800) - specific optimizations */
+@media (width: 360px) and (height: 800px) and (orientation: portrait),
+       (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 8px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 8px 8px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 12px;
+  }
+
+  .modal-close {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-close svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 8px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 8px 8px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+}
+
 /* Phone portrait (375x812) - specific optimizations */
 @media (width: 375px) and (height: 812px) and (orientation: portrait) {
   .modal-overlay {
@@ -2104,6 +2157,59 @@
   .modal-actions {
     padding: 0 9px 9px;
     gap: 5px;
+    flex-shrink: 0;
+  }
+}
+
+/* Phone portrait (392x767) - specific optimizations */
+@media (width: 392px) and (height: 767px) and (orientation: portrait),
+       (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
+  .modal-overlay {
+    padding: 1px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal {
+    margin: 1px;
+    max-height: 99.5vh;
+    border-radius: 9px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 8px 8px 0;
+    flex-shrink: 0;
+  }
+
+  .modal-header h3 {
+    font-size: 12px;
+  }
+
+  .modal-close {
+    width: 21px;
+    height: 21px;
+  }
+
+  .modal-close svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .modal form,
+  .modal-body {
+    padding: 8px;
+    overflow-y: visible;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .modal-actions {
+    padding: 0 8px 8px;
+    gap: 4px;
     flex-shrink: 0;
   }
 }
