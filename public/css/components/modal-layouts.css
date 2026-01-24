@@ -494,7 +494,7 @@
 /* Phone portrait (380x754) - specific optimizations */
 @media (width: 380px) and (height: 754px) and (orientation: portrait) {
   .modal.modal-wide {
-    max-height: 99.5vh;
+    max-height: 99.5vh !important;
     border-radius: 9px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -503,26 +503,29 @@
   }
 
   .modal-col {
-    padding: 9px;
+    padding: 9px !important;
   }
 
   .modal.modal-wide .modal-header {
-    padding: 9px 9px 0;
+    padding: 9px 9px 0 !important;
   }
 
   .modal.modal-wide .form-group {
-    margin-bottom: 9px;
+    margin-bottom: 9px !important;
   }
 
   .modal-col-fields .modal-actions {
-    padding: 11px 0 0;
+    padding: 11px 0 0 !important;
   }
 }
 
-/* Phone portrait (380x810) - specific optimizations */
-@media (width: 380px) and (height: 810px) and (orientation: portrait) {
+/* Phone portrait (380x754) and (380x810) - specific optimizations */
+/* Using range-based media query for Android compatibility */
+@media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
+       (width: 380px) and (height: 754px) and (orientation: portrait),
+       (width: 380px) and (height: 810px) and (orientation: portrait) {
   .modal.modal-wide {
-    max-height: 99.5vh;
+    max-height: 99.5vh !important;
     border-radius: 9px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -531,19 +534,19 @@
   }
 
   .modal-col {
-    padding: 9px;
+    padding: 9px !important;
   }
 
   .modal.modal-wide .modal-header {
-    padding: 9px 9px 0;
+    padding: 9px 9px 0 !important;
   }
 
   .modal.modal-wide .form-group {
-    margin-bottom: 9px;
+    margin-bottom: 9px !important;
   }
 
   .modal-col-fields .modal-actions {
-    padding: 11px 0 0;
+    padding: 11px 0 0 !important;
   }
 }
 
