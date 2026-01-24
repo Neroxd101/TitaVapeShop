@@ -1,0 +1,102 @@
+/* =============================================
+   Action Buttons Component
+   Reusable horizontal scrolling action button groups
+   ============================================= */
+
+.action-buttons,
+.order-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.action-buttons .btn-small,
+.order-actions .btn-small {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.action-buttons::-webkit-scrollbar,
+.order-actions::-webkit-scrollbar {
+  height: 4px;
+}
+
+.action-buttons::-webkit-scrollbar-track,
+.order-actions::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.action-buttons::-webkit-scrollbar-thumb,
+.order-actions::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .action-buttons,
+  .order-actions {
+    gap: 6px;
+  }
+
+  .action-buttons .btn-small,
+  .order-actions .btn-small {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-buttons,
+  .order-actions {
+    gap: 4px;
+  }
+
+  .action-buttons .btn-small,
+  .order-actions .btn-small {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .action-buttons,
+  .order-actions {
+    gap: 3px;
+  }
+
+  .action-buttons .btn-small,
+  .order-actions .btn-small {
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .action-buttons,
+  .order-actions {
+    gap: 4px;
+  }
+
+  .action-buttons .btn-small,
+  .order-actions .btn-small {
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .action-buttons,
+  .order-actions {
+    gap: 3px;
+  }
+
+  .action-buttons .btn-small,
+  .order-actions .btn-small {
+    padding: 3px 5px;
+    font-size: 8px;
+  }
+}

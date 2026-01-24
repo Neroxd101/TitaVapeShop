@@ -43,8 +43,47 @@ class OrdersController {
         // Initialize sidebar
         if (typeof initSidebar === 'function') initSidebar('orders');
 
+        // Load order details modal
+        await this.loadOrderDetailsModal();
+
         this.setupEventListeners();
         await this.loadOrders();
+    }
+
+    async loadOrderDetailsModal() {
+        const container = document.getElementById('order-details-modal-container');
+        if (!container) return;
+
+        try {
+            const response = await fetch('/orders/order-details-modal.html');
+            if (response.ok) {
+                container.innerHTML = await response.text();
+                this.setupModalEventListeners();
+            }
+        } catch (error) {
+            console.error('Error loading order details modal:', error);
+        }
+    }
+
+    setupModalEventListeners() {
+        const orderDetailsModal = document.getElementById('orderDetailsModal');
+        const closeOrderDetailsModal = document.getElementById('closeOrderDetailsModal');
+
+        if (closeOrderDetailsModal) {
+            closeOrderDetailsModal.addEventListener('click', () => {
+                if (orderDetailsModal) {
+                    orderDetailsModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (orderDetailsModal) {
+            orderDetailsModal.addEventListener('click', (e) => {
+                if (e.target === orderDetailsModal) {
+                    orderDetailsModal.classList.remove('show');
+                }
+            });
+        }
     }
 
     setupEventListeners() {
@@ -557,24 +596,6 @@ OrdersController.cancelOrder = function(orderId) {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     window.ordersController = new OrdersController();
-
-    // Close order details modal
-    const orderDetailsModal = document.getElementById('orderDetailsModal');
-    const closeOrderDetailsModal = document.getElementById('closeOrderDetailsModal');
-
-    if (closeOrderDetailsModal) {
-        closeOrderDetailsModal.addEventListener('click', () => {
-            orderDetailsModal.classList.remove('show');
-        });
-    }
-
-    if (orderDetailsModal) {
-        orderDetailsModal.addEventListener('click', (e) => {
-            if (e.target === orderDetailsModal) {
-                orderDetailsModal.classList.remove('show');
-            }
-        });
-    }
 
     // QR Scanner Modal event listeners
     const qrScannerModal = document.getElementById('qrScannerModal');

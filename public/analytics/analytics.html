@@ -11,7 +11,17 @@
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/navigation/navigation.css">
     <link rel="stylesheet" href="/css/dashboard.css">
-    <link rel="stylesheet" href="/analytics/analytics.css">
+    <!-- Reusable Components -->
+    <link rel="stylesheet" href="/css/components/animations.css">
+    <link rel="stylesheet" href="/css/components/page-header.css">
+    <link rel="stylesheet" href="/css/components/page-content.css">
+    <link rel="stylesheet" href="/css/components/stat-cards.css">
+    <link rel="stylesheet" href="/css/components/table.css">
+    <link rel="stylesheet" href="/css/components/card-wrapper.css">
+    <link rel="stylesheet" href="/css/components/charts.css">
+    <link rel="stylesheet" href="/css/components/data-table.css">
+    <!-- Analytics Structure -->
+    <link rel="stylesheet" href="/analytics/analytics-structure.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -24,7 +34,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="analytics-container">
+        <div class="page-content analytics-container">
             <div class="page-header">
                 <div class="header-left">
                     <h1>Business Analytics</h1>
@@ -42,58 +52,58 @@
 
             <!-- Stats Summary -->
             <div class="stats-grid">
-                <div class="stats-card">
-                    <div class="stats-card-icon revenue">
+                <div class="stat-card">
+                    <div class="stat-icon green">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                         </svg>
                     </div>
-                    <div class="stats-card-info">
-                        <span class="stats-label">Total Revenue</span>
-                        <h2 class="stats-value" id="statRevenue">₱0.00</h2>
+                    <div class="stat-details">
+                        <span class="stat-label">Total Revenue</span>
+                        <div class="stat-value" id="statRevenue">₱0.00</div>
                         <p class="stats-trend" id="statRevenueDiff">Total earnings</p>
                     </div>
                 </div>
 
-                <div class="stats-card">
-                    <div class="stats-card-icon sales">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
                             <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
                         </svg>
                     </div>
-                    <div class="stats-card-info">
-                        <span class="stats-label">Total Sales</span>
-                        <h2 class="stats-value" id="statSalesCount">0</h2>
+                    <div class="stat-details">
+                        <span class="stat-label">Total Sales</span>
+                        <div class="stat-value" id="statSalesCount">0</div>
                         <p class="stats-trend" id="statSalesDiff">Transactions</p>
                     </div>
                 </div>
 
-                <div class="stats-card">
-                    <div class="stats-card-icon items">
+                <div class="stat-card">
+                    <div class="stat-icon orange">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
                             <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
                         </svg>
                     </div>
-                    <div class="stats-card-info">
-                        <span class="stats-label">Items Sold</span>
-                        <h2 class="stats-value" id="statItemsSold">0</h2>
+                    <div class="stat-details">
+                        <span class="stat-label">Items Sold</span>
+                        <div class="stat-value" id="statItemsSold">0</div>
                         <p class="stats-trend" id="statItemsDiff">Unit volume</p>
                     </div>
                 </div>
 
-                <div class="stats-card">
-                    <div class="stats-card-icon avg">
+                <div class="stat-card">
+                    <div class="stat-icon purple">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10" />
                             <path d="M12 6v6l4 2" />
                         </svg>
                     </div>
-                    <div class="stats-card-info">
-                        <span class="stats-label">Avg. Basket</span>
-                        <h2 class="stats-value" id="statAvgSale">₱0.00</h2>
+                    <div class="stat-details">
+                        <span class="stat-label">Avg. Basket</span>
+                        <div class="stat-value" id="statAvgSale">₱0.00</div>
                         <p class="stats-trend" id="statAvgDiff">Per sale</p>
                     </div>
                 </div>
@@ -101,7 +111,7 @@
 
             <!-- Charts Section -->
             <div class="charts-grid">
-                <div class="chart-card main-chart">
+                <div class="card-wrapper chart-card main-chart">
                     <div class="chart-header">
                         <h3>Sales Revenue Trend</h3>
                         <div class="chart-controls">
@@ -117,7 +127,7 @@
                     </div>
                 </div>
 
-                <div class="chart-card">
+                <div class="card-wrapper chart-card">
                     <div class="chart-header">
                         <h3>Top Selling Products</h3>
                     </div>
@@ -126,7 +136,7 @@
                     </div>
                 </div>
 
-                <div class="chart-card">
+                <div class="card-wrapper chart-card">
                     <div class="chart-header">
                         <h3>Category Performance</h3>
                     </div>
@@ -137,12 +147,12 @@
             </div>
 
             <!-- Best Sellers Table -->
-            <div class="analytics-table-card">
+            <div class="card-wrapper data-table-card">
                 <div class="card-header">
                     <h3>Product Performance Details</h3>
                 </div>
                 <div class="table-responsive">
-                    <table class="analytics-table">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Product Name</th>
@@ -162,6 +172,8 @@
     </main>
 
     <script src="/navigation/javascript/navigation.js"></script>
+    <!-- Screen Debug Utility -->
+    <script src="/css/javascript/screen-debug.js"></script>
 
     <!-- Data Fetchers -->
     <script src="/analytics/javascript/analytics_fetcher.js"></script>

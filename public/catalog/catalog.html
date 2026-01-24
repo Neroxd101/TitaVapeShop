@@ -9,6 +9,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/components/page-header.css">
+    <link rel="stylesheet" href="/css/components/page-content.css">
+    <link rel="stylesheet" href="/css/components/search-box.css">
+    <link rel="stylesheet" href="/css/components/filter-tabs.css">
+    <link rel="stylesheet" href="/css/components/buttons.css">
+    <link rel="stylesheet" href="/css/components/modal.css">
+    <link rel="stylesheet" href="/css/components/modal-layouts.css">
+    <link rel="stylesheet" href="/css/components/empty-state.css">
+    <link rel="stylesheet" href="/css/components/loading-state.css">
+    <link rel="stylesheet" href="/css/components/forms.css">
+    <link rel="stylesheet" href="/css/components/cards.css">
+    <link rel="stylesheet" href="/css/components/cart.css">
+    <link rel="stylesheet" href="/css/components/badges.css">
+    <link rel="stylesheet" href="/css/components/image-carousel.css">
     <link rel="stylesheet" href="/catalog/catalog.css">
 </head>
 
@@ -58,29 +72,27 @@
     </nav>
 
     <!-- Hero Section -->
-    <header class="hero">
-        <div class="container hero-content">
-            <h1>Our Collection</h1>
-            <p>Discover the finest selection of vapes, e-liquids, and accessories.</p>
-        </div>
-    </header>
-
-    <main class="container">
-        <!-- Filters & Search -->
-        <div class="catalog-controls">
-            <div class="search-box">
-                <div class="input-wrapper">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Search products...">
-                </div>
+    <main class="page-content">
+        <div class="page-header">
+            <div class="header-left">
+                <h1>Our Collection</h1>
+                <p class="subtitle">Discover the finest selection of vapes, e-liquids, and accessories.</p>
             </div>
-            <div class="category-filters" id="categoryFilters">
-                <button class="filter-btn active" data-category="all">All Items</button>
-                <button class="filter-btn" data-category="Hardware">Hardware</button>
-                <button class="filter-btn" data-category="Juices">Juices</button>
+        </div>
+
+        <!-- Filters & Search -->
+        <div class="filter-tabs">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search products...">
+            </div>
+            <div class="filter-tabs-group" id="categoryFilters">
+                <button class="filter-tab active" data-category="all">All Items</button>
+                <button class="filter-tab" data-category="Hardware">Hardware</button>
+                <button class="filter-tab" data-category="Juices">Juices</button>
             </div>
         </div>
 
@@ -147,12 +159,15 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="cartItems" class="cart-items">
-                    <!-- Cart items will be rendered here -->
-                </div>
-                <div class="cart-footer">
-                    <div class="cart-total">
-                        <strong>Total: <span id="cartTotal">₱0.00</span></strong>
+                <div class="cart-container">
+                    <div id="cartItems" class="cart-items">
+                        <!-- Cart items will be rendered here -->
+                    </div>
+                    <div class="cart-summary">
+                        <div class="cart-summary-row">
+                            <span>Total:</span>
+                            <span class="cart-total-amount" id="cartTotal">₱0.00</span>
+                        </div>
                     </div>
                     <div class="cart-actions">
                         <button id="clearCartBtn" class="btn btn-secondary">Clear</button>
@@ -263,12 +278,6 @@
         <div class="modal modal-medium">
             <div class="modal-header">
                 <h3>Order Created Successfully!</h3>
-                <button class="modal-close" id="closeOrderSuccessModal">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
-                    </svg>
-                </button>
             </div>
             <div class="modal-body">
                 <div class="order-success-content">
@@ -278,6 +287,12 @@
                         <div id="orderQrCodeDisplay" class="qr-code-container">
                             <!-- QR code will be generated here for pickup orders -->
                         </div>
+                        <button id="saveQrCodeBtn" class="btn btn-secondary" style="width: 100%; margin-top: 12px; display: none;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right: 8px;">
+                                <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/>
+                            </svg>
+                            <span>Save QR Code</span>
+                        </button>
                     </div>
                     <div class="order-info">
                         <p><strong>Order ID:</strong> <span id="orderIdDisplay"></span></p>
@@ -290,6 +305,8 @@
         </div>
     </div>
 
+    <!-- Screen Debug Utility -->
+    <script src="/css/javascript/screen-debug.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="/catalog/catalog-cart.js"></script>
     <script src="/catalog/catalog.js"></script>

@@ -11,6 +11,7 @@
   border-radius: 12px;
   overflow: hidden;
   position: relative;
+  background: #000;
 }
 
 /* Ensure the video/canvas fully covers the area without black bars */
@@ -27,4 +28,29 @@
   font-size: 0.85rem;
   color: var(--text-secondary);
   text-align: center;
+}
+
+.qr-code-display {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.qr-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .qr-scanner-area {
+    max-width: 260px;
+    height: 200px;
+  }
+
+  .qr-help-text {
+    font-size: 12px;
+  }
 }

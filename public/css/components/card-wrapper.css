@@ -1,0 +1,275 @@
+/* =============================================
+   Card Wrapper Component
+   Generic reusable card container with background, border, padding, shadow
+   ============================================= */
+
+.card-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.card-wrapper:hover {
+  box-shadow: 0 15px 35px -10px rgba(0, 212, 170, 0.1);
+}
+
+/* Card header variant (for section headers inside cards) */
+.card-wrapper .card-header {
+  padding: 0 0 24px 0;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-wrapper .card-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .card-wrapper {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .card-wrapper .card-header {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-wrapper {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .card-wrapper .card-header {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-wrapper {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .card-wrapper .card-header {
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card-wrapper {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .card-wrapper .card-header {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 13px;
+  }
+}
+
+/* Tablet landscape (1024x505) - compact card wrapper */
+@media (width: 1024px) and (height: 505px) and (orientation: landscape),
+       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+  .card-wrapper {
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .card-wrapper .card-header {
+    padding-bottom: 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 14px !important;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .card-wrapper {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .card-wrapper .card-header {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 13px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .card-wrapper {
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .card-wrapper .card-header {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 12px;
+  }
+}
+
+/* Phone portrait (360x740) - specific optimizations */
+@media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  .card-wrapper .card-header {
+    padding: 10px !important;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 12px !important;
+  }
+}
+
+/* Phone portrait (375x667) - specific optimizations */
+@media (width: 375px) and (height: 667px) and (orientation: portrait) {
+  .card-wrapper .card-header {
+    padding: 11px !important;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 13px !important;
+  }
+}
+
+/* Phone portrait (375x812) - specific optimizations */
+@media (width: 375px) and (height: 812px) and (orientation: portrait) {
+  .card-wrapper .card-header {
+    padding: 12px !important;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 14px !important;
+  }
+}
+
+/* Phone portrait (380x706) - specific optimizations */
+@media (width: 380px) and (height: 706px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 13px !important;
+  }
+}
+
+/* Phone portrait (380x754) - specific optimizations */
+@media (width: 380px) and (height: 754px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 13px !important;
+  }
+}
+
+/* Phone portrait (380x810) - range-based query */
+@media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 13px !important;
+  }
+}
+
+/* Phone portrait (390x844) - specific optimizations */
+@media (width: 390px) and (height: 844px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 14px !important;
+  }
+}
+
+/* Phone portrait (411x823) - specific optimizations */
+@media (width: 411px) and (height: 823px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 15px !important;
+  }
+}
+
+/* Phone portrait (412x892) - specific optimizations */
+@media (width: 412px) and (height: 892px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 16px !important;
+  }
+}
+
+/* Phone portrait (412x915) - specific optimizations */
+@media (width: 412px) and (height: 915px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 16px !important;
+  }
+}
+
+/* Phone portrait (414x736) - specific optimizations */
+@media (width: 414px) and (height: 736px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 15px !important;
+  }
+}
+
+/* Phone portrait (414x896) - specific optimizations */
+@media (width: 414px) and (height: 896px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 16px !important;
+  }
+}
+
+/* Phone portrait (430x932) - specific optimizations */
+@media (width: 430px) and (height: 932px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 16px !important;
+  }
+}
+
+/* Phone portrait (1080x2400) - specific optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 20px !important;
+  }
+}
+
+/* 1080p width portrait - general rule */
+@media (min-width: 1080px) and (orientation: portrait) {
+  .card-wrapper .card-header h3 {
+    font-size: 20px !important;
+  }
+}
+
+/* Landscape optimizations */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .card-wrapper .card-header {
+    padding: 8px !important;
+  }
+
+  .card-wrapper .card-header h3 {
+    font-size: 11px !important;
+  }
+}

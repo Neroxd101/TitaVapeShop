@@ -8,6 +8,8 @@
   /* Details on left (wider), images on right */
   grid-template-columns: 1.2fr 1fr;
   gap: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .view-col {
@@ -240,6 +242,557 @@
   .view-thumbnail {
     width: 64px;
     height: 64px;
+  }
+}
+
+/* Tablet portrait (820x1180) - specific optimizations */
+@media (width: 820px) and (height: 1180px) and (orientation: portrait) {
+  .view-modal-content {
+    grid-template-columns: 1fr !important;
+  }
+
+  .view-col {
+    padding: 20px !important;
+  }
+
+  .view-main-image {
+    aspect-ratio: 4 / 3 !important;
+    min-height: 280px !important;
+    max-height: 320px !important;
+  }
+
+  .view-col-images {
+    order: 1 !important;
+    border-left: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding-bottom: 20px !important;
+    gap: 14px !important;
+  }
+
+  .view-col-details {
+    order: 2 !important;
+    gap: 18px !important;
+  }
+
+  .view-name {
+    font-size: 22px !important;
+  }
+
+  .view-description {
+    font-size: 14px !important;
+  }
+
+  .view-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  .view-dates {
+    padding: 14px !important;
+    gap: 12px !important;
+  }
+
+  .view-date {
+    gap: 12px !important;
+  }
+
+  .view-date svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .view-date .date-label {
+    font-size: 11px !important;
+  }
+
+  .view-date .date-value {
+    font-size: 14px !important;
+  }
+
+  .view-thumbnails {
+    gap: 10px !important;
+  }
+
+  .view-thumbnail {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  .view-actions {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding-top: 18px !important;
+  }
+
+  .view-actions .btn {
+    width: 100% !important;
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+  }
+}
+
+/* Tablet portrait (912x1368) - specific optimizations */
+@media (width: 912px) and (height: 1368px) and (orientation: portrait) {
+  .view-modal-content {
+    grid-template-columns: 1fr !important;
+  }
+
+  .view-col {
+    padding: 24px !important;
+  }
+
+  .view-main-image {
+    aspect-ratio: 4 / 3 !important;
+    min-height: 320px !important;
+    max-height: 380px !important;
+  }
+
+  .view-col-images {
+    order: 1 !important;
+    border-left: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding-bottom: 24px !important;
+    gap: 16px !important;
+  }
+
+  .view-col-details {
+    order: 2 !important;
+    gap: 20px !important;
+  }
+
+  .view-name {
+    font-size: 26px !important;
+  }
+
+  .view-description {
+    font-size: 15px !important;
+  }
+
+  .view-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .view-dates {
+    padding: 16px !important;
+    gap: 14px !important;
+  }
+
+  .view-date {
+    gap: 14px !important;
+  }
+
+  .view-date svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .view-date .date-label {
+    font-size: 12px !important;
+  }
+
+  .view-date .date-value {
+    font-size: 15px !important;
+  }
+
+  .view-thumbnails {
+    gap: 12px !important;
+  }
+
+  .view-thumbnail {
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  .view-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding-top: 20px !important;
+  }
+
+  .view-actions .btn {
+    width: 100% !important;
+    padding: 16px 24px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Tablet portrait (800x1145) - specific optimizations */
+@media (width: 800px) and (height: 1145px) and (orientation: portrait),
+       (min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
+  .view-modal-content {
+    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .view-col {
+    padding: 12px 14px !important;
+  }
+
+  .view-main-image {
+    aspect-ratio: 4 / 3 !important;
+    min-height: 200px !important;
+    max-height: 240px !important;
+    width: 100% !important;
+    border-radius: 10px !important;
+  }
+
+  .view-col-images {
+    order: 1 !important;
+    border-left: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding-bottom: 12px !important;
+    padding-top: 12px !important;
+    gap: 10px !important;
+    flex-shrink: 0;
+  }
+
+  .view-col-details {
+    order: 2 !important;
+    gap: 12px !important;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-top: 12px !important;
+  }
+
+  .view-name {
+    font-size: 18px !important;
+    margin-bottom: 8px !important;
+    line-height: 1.2 !important;
+  }
+
+  .view-description {
+    font-size: 12px !important;
+    margin-bottom: 6px !important;
+    line-height: 1.4 !important;
+  }
+
+  .view-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .view-dates {
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+
+  .view-date {
+    gap: 8px !important;
+  }
+
+  .view-date svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .view-date .date-label {
+    font-size: 10px !important;
+  }
+
+  .view-date .date-value {
+    font-size: 12px !important;
+  }
+
+  .view-thumbnails {
+    gap: 8px !important;
+  }
+
+  .view-thumbnail {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 8px !important;
+  }
+
+  .view-actions {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding-top: 12px !important;
+    margin-top: auto !important;
+  }
+
+  .view-actions .btn {
+    width: 100% !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Tablet portrait (640x889) - specific optimizations */
+@media (width: 640px) and (height: 889px) and (orientation: portrait),
+       (min-width: 638px) and (max-width: 642px) and (min-height: 887px) and (max-height: 891px) and (orientation: portrait) {
+  .view-modal-content {
+    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .view-col {
+    padding: 10px 12px !important;
+  }
+
+  .view-main-image {
+    aspect-ratio: 4 / 3 !important;
+    min-height: 180px !important;
+    max-height: 220px !important;
+    width: 100% !important;
+    border-radius: 9px !important;
+  }
+
+  .view-col-images {
+    order: 1 !important;
+    border-left: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding-bottom: 10px !important;
+    padding-top: 10px !important;
+    gap: 8px !important;
+    flex-shrink: 0;
+  }
+
+  .view-col-details {
+    order: 2 !important;
+    gap: 10px !important;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-top: 10px !important;
+  }
+
+  .view-name {
+    font-size: 16px !important;
+    margin-bottom: 6px !important;
+    line-height: 1.2 !important;
+  }
+
+  .view-description {
+    font-size: 11px !important;
+    margin-bottom: 5px !important;
+    line-height: 1.4 !important;
+  }
+
+  .view-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .view-dates {
+    padding: 8px !important;
+    gap: 6px !important;
+  }
+
+  .view-date {
+    gap: 6px !important;
+  }
+
+  .view-date svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .view-date .date-label {
+    font-size: 9px !important;
+  }
+
+  .view-date .date-value {
+    font-size: 11px !important;
+  }
+
+  .view-thumbnails {
+    gap: 6px !important;
+  }
+
+  .view-thumbnail {
+    width: 55px !important;
+    height: 55px !important;
+    border-radius: 7px !important;
+  }
+
+  .view-actions {
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding-top: 10px !important;
+    margin-top: auto !important;
+  }
+
+  .view-actions .btn {
+    width: 100% !important;
+    padding: 9px 14px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Tablet landscape (1024x505) - compact view modal */
+@media (width: 1024px) and (height: 505px) and (orientation: landscape),
+       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+  .view-modal-content {
+    grid-template-columns: 1fr 1fr !important;
+    display: grid !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 0 !important;
+  }
+
+  .view-col {
+    padding: 10px 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .view-main-image {
+    width: 100% !important;
+    max-width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    min-height: 0 !important;
+    flex: 0 1 auto !important;
+    height: 180px !important;
+    min-height: 370px !important;
+    max-height: 370px !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .view-main-image img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  .view-col-images {
+    order: 2 !important;
+    border-left: 1px solid var(--border) !important;
+    border-bottom: none !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    gap: 8px !important;
+    flex: 0 0 50% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: calc(88vh - 60px) !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+  }
+
+  .view-col-details {
+    order: 1 !important;
+    gap: 8px !important;
+    flex: 0 0 50% !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    max-height: calc(88vh - 60px) !important;
+    padding-right: 12px !important;
+    padding-left: 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .view-name {
+    font-size: 15px !important;
+    margin-bottom: 6px !important;
+    line-height: 1.2 !important;
+  }
+
+  .view-description {
+    font-size: 10px !important;
+    margin-bottom: 4px !important;
+    line-height: 1.3 !important;
+  }
+
+  .view-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .view-dates {
+    padding: 8px !important;
+    gap: 6px !important;
+  }
+
+  .view-date {
+    gap: 6px !important;
+  }
+
+  .view-date svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .view-date .date-label {
+    font-size: 8px !important;
+  }
+
+  .view-date .date-value {
+    font-size: 10px !important;
+  }
+
+  .view-thumbnails {
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    flex: 0 1 auto !important;
+    min-height: 80px !important;
+    max-height: none !important;
+    align-content: flex-start !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .view-thumbnail {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    max-width: 60px !important;
+    max-height: 60px !important;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .view-thumbnail img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .view-actions {
+    flex-direction: row !important;
+    gap: 6px !important;
+    padding-top: 8px !important;
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: var(--bg-card) !important;
+    z-index: 10 !important;
+    padding-bottom: 12px !important;
+  }
+
+  .view-actions .btn {
+    flex: 1 !important;
+    padding: 8px 12px !important;
+    font-size: 11px !important;
   }
 }
 

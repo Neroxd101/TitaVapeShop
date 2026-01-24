@@ -139,3 +139,33 @@
     gap: 12px;
   }
 }
+
+/* Tablet landscape (1024x505) - compact cart payment */
+@media (width: 1024px) and (height: 505px) and (orientation: landscape),
+       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+  .cart-payment {
+    padding-top: 8px !important;
+    gap: 6px !important;
+  }
+
+  .cart-payment .form-group {
+    margin-bottom: 6px !important;
+  }
+
+  .cart-payment .form-group label {
+    font-size: 0.7rem !important;
+    margin-bottom: 3px !important;
+  }
+
+  .cart-payment input {
+    padding: 6px 8px !important;
+    font-size: 0.8rem !important;
+    border-radius: 8px !important;
+  }
+
+  .change-display {
+    padding: 6px 8px !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+  }
+}
