@@ -1,0 +1,49 @@
+<!-- Checkout Modal -->
+<div class="modal-overlay" id="checkoutModal">
+    <div class="modal modal-medium">
+        <div class="modal-header">
+            <h3>Checkout</h3>
+            <button class="modal-close" id="closeCheckoutModal">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="orderType">Order Type <span class="required">*</span></label>
+                    <select id="orderType" name="orderType" required>
+                        <option value="pickup">Pickup</option>
+                        <option value="delivery">Delivery (3rd Party)</option>
+                    </select>
+                    <small class="form-hint">Pickup orders will receive a QR code</small>
+                </div>
+                <div class="form-group">
+                    <label for="customerName">Name <span class="required">*</span></label>
+                    <input type="text" id="customerName" name="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactNumber">Contact Number <span class="required">*</span></label>
+                    <input type="tel" id="contactNumber" name="contactNumber" 
+                           placeholder="11 digits" maxlength="11" pattern="[0-9]{11}" required>
+                    <small class="form-hint">Must be exactly 11 digits</small>
+                </div>
+                <div class="form-group">
+                    <label for="socialMedia">Social Media</label>
+                    <input type="text" id="socialMedia" name="socialMedia" 
+                           placeholder="e.g., fb: juan">
+                    <small class="form-hint">Format: platform: username (e.g., fb: juan)</small>
+                </div>
+                <div class="checkout-total">
+                    <strong>Total Amount: <span id="checkoutTotal">₱0.00</span></strong>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancelCheckoutBtn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" id="createOrderBtn" class="btn btn-primary">Create Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

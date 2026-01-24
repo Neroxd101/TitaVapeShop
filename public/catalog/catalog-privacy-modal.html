@@ -1,0 +1,44 @@
+<!-- Data Privacy Consent Modal -->
+<div class="modal-overlay" id="privacyConsentModal">
+    <div class="modal modal-medium">
+        <div class="modal-header">
+            <h3>Data Privacy Consent</h3>
+        </div>
+        <div class="modal-body">
+            <div class="privacy-consent-content">
+                <p class="privacy-notice">
+                    In accordance with the Data Privacy Act of 2012, we need your consent to collect and process your personal information.
+                </p>
+                <div class="privacy-details">
+                    <p><strong>What information we collect:</strong></p>
+                    <ul>
+                        <li>Name</li>
+                        <li>Contact Number</li>
+                        <li>Social Media Information (if provided)</li>
+                        <li>Order Details</li>
+                    </ul>
+                    <p><strong>How we use your information:</strong></p>
+                    <ul>
+                        <li>To process and fulfill your orders</li>
+                        <li>To communicate with you regarding your orders</li>
+                        <li>To improve our services</li>
+                        <li>For internal business operations only</li>
+                    </ul>
+                    <p class="privacy-assurance">
+                        <strong>We assure you that:</strong> Your personal information will only be used within this system and will not be shared with third parties without your explicit consent, except as required by law.
+                    </p>
+                </div>
+                <div class="privacy-consent-checkbox">
+                    <label>
+                        <input type="checkbox" id="privacyConsentCheckbox" required>
+                        <span>I consent to the collection and processing of my personal information as described above, and I understand that this information will only be used for the purposes stated.</span>
+                    </label>
+                </div>
+                <div class="privacy-actions">
+                    <button type="button" id="declinePrivacyBtn" class="btn btn-secondary">Decline</button>
+                    <button type="button" id="acceptPrivacyBtn" class="btn btn-primary" disabled>Accept & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

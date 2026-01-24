@@ -1,0 +1,31 @@
+<!-- Order Success Modal with QR Code -->
+<div class="modal-overlay" id="orderSuccessModal">
+    <div class="modal modal-medium">
+        <div class="modal-header">
+            <h3>Order Created Successfully!</h3>
+        </div>
+        <div class="modal-body">
+            <div class="order-success-content">
+                <p class="success-message" id="orderSuccessMessage">Your order has been created successfully!</p>
+                <div id="qrCodeSection" style="display: none;">
+                    <p class="qr-instruction">Please show this QR code to the admin when picking up your order.</p>
+                    <div id="orderQrCodeDisplay" class="qr-code-container">
+                        <!-- QR code will be generated here for pickup orders -->
+                    </div>
+                    <button id="saveQrCodeBtn" class="btn btn-secondary" style="width: 100%; margin-top: 12px; display: none;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right: 8px;">
+                            <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/>
+                        </svg>
+                        <span>Save QR Code</span>
+                    </button>
+                </div>
+                <div class="order-info">
+                    <p><strong>Order ID:</strong> <span id="orderIdDisplay"></span></p>
+                    <p><strong>Order Type:</strong> <span id="orderTypeDisplay"></span></p>
+                    <p><strong>Total Amount:</strong> <span id="orderTotalDisplay"></span></p>
+                </div>
+                <button id="closeOrderSuccessBtn" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

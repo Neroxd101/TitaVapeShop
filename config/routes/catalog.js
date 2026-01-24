@@ -14,6 +14,32 @@ router.get('/catalog', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/catalog/catalog.html'));
 });
 
+// Public product catalog modal HTML - accessible without login
+// GET /catalog/catalog-product-modal.html
+router.get('/catalog/catalog-product-modal.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-product-modal.html'));
+});
+
+// Public cart modal HTML
+router.get('/catalog/catalog-cart-modal.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-cart-modal.html'));
+});
+
+// Public privacy modal HTML
+router.get('/catalog/catalog-privacy-modal.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-privacy-modal.html'));
+});
+
+// Public checkout modal HTML
+router.get('/catalog/catalog-checkout-modal.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-checkout-modal.html'));
+});
+
+// Public order success modal HTML
+router.get('/catalog/catalog-order-success-modal.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-order-success-modal.html'));
+});
+
 // Public inventory list for catalog
 // GET /api/inventory/list
 router.get('/api/inventory/list', async (req, res) => {

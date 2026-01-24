@@ -7,16 +7,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const categoryFilters = document.getElementById('categoryFilters');
     const emptyState = document.getElementById('emptyState');
-    const productModal = document.getElementById('productModal');
-    const closeModal = document.getElementById('closeModal');
-    const modalContent = document.getElementById('modalContent');
 
     let allProducts = [];
     let currentCategory = 'all';
     let searchQuery = '';
 
     // Initialize
-    fetchProducts();
+    async function init() {
+        try {
+            // Initialize product modal (before fetching products)
+            // Don't block if modal fails to load
+            if (window.CatalogProductModal) {
+                await CatalogProductModal.init([]);
+            } else {
+                console.warn('[Catalog] CatalogProductModal not available, continuing without modal');
+            }
+            
+            // Fetch products (always try to fetch, even if modal failed)
+            await fetchProducts();
+            
+            // Update modal with products after fetch
+            if (window.CatalogProductModal) {
+                CatalogProductModal.allProducts = allProducts;
+            }
+        } catch (error) {
+            console.error('[Catalog] Initialization error:', error);
+            // Try to fetch products anyway
+            try {
+                await fetchProducts();
+            } catch (fetchError) {
+                console.error('[Catalog] Failed to fetch products:', fetchError);
+            }
+        }
+    }
 
     // Listen for cart updates to refresh stock display
     document.addEventListener('cartUpdated', (e) => {
@@ -41,16 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    closeModal.addEventListener('click', () => {
-        productModal.classList.remove('show');
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target === productModal) {
-            productModal.classList.remove('show');
-        }
-    });
-
     /**
      * Fetch products from the RPC function
      */
@@ -61,6 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 allProducts = result.data;
+                // Update modal with products
+                if (window.CatalogProductModal) {
+                    CatalogProductModal.allProducts = allProducts;
+                }
                 filterAndRender();
             } else {
                 productGrid.innerHTML = `<p class="error">Failed to load products: ${result.error}</p>`;
@@ -404,192 +421,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.handleImageError = handleImageError;
 
-    function handleModalImageError(imgElement) {
-        const originalUrl = imgElement.getAttribute('data-original-url');
-        if (!originalUrl) {
-            imgElement.src = '/img/placeholder-product.png';
-            return;
-        }
-
-        const fallbacks = getFallbackUrls(originalUrl, 800);
-        const currentSrc = imgElement.src;
-        const currentIndex = fallbacks.indexOf(currentSrc);
-        
-        console.log('[Catalog Modal] Image error, trying fallback. Current:', currentSrc, 'Fallbacks:', fallbacks);
-        
-        if (currentIndex >= 0 && currentIndex < fallbacks.length - 1) {
-            imgElement.src = fallbacks[currentIndex + 1];
-        } else {
-            imgElement.src = '/img/placeholder-product.png';
-        }
-    }
-
-    window.handleModalImageError = handleModalImageError;
-
-    function handleThumbnailError(imgElement) {
-        const fallbacksJson = imgElement.getAttribute('data-fallbacks');
-        let fallbacks;
-        
-        if (fallbacksJson) {
-            try {
-                // Unescape HTML entities
-                const unescaped = fallbacksJson.replace(/&quot;/g, '"');
-                fallbacks = JSON.parse(unescaped);
-            } catch (e) {
-                console.error('[Catalog Modal] Error parsing thumbnail fallbacks:', e, 'Raw:', fallbacksJson);
-                const originalUrl = imgElement.getAttribute('data-original-url');
-                if (originalUrl) {
-                    // Unescape the URL
-                    const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
-                    fallbacks = getFallbackUrls(unescapedUrl, 200);
-                }
-            }
-        } else {
-            const originalUrl = imgElement.getAttribute('data-original-url');
-            if (originalUrl) {
-                const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
-                fallbacks = getFallbackUrls(unescapedUrl, 200);
-            } else {
-                console.warn('[Catalog Modal] No original URL or fallbacks for thumbnail');
-                imgElement.src = '/img/placeholder-product.png';
-                return;
-            }
-        }
-        
-        if (!fallbacks || fallbacks.length === 0) {
-            console.warn('[Catalog Modal] No fallbacks available for thumbnail');
-            imgElement.src = '/img/placeholder-product.png';
-            return;
-        }
-        
-        const currentSrc = imgElement.src;
-        const triedIndex = parseInt(imgElement.getAttribute('data-tried-index') || '0');
-        
-        console.log('[Catalog Modal] Thumbnail error, trying fallback. Current:', currentSrc, 'Tried:', triedIndex, 'Total fallbacks:', fallbacks.length);
-        
-        if (triedIndex < fallbacks.length - 1) {
-            const nextIndex = triedIndex + 1;
-            console.log(`[Catalog Modal] Trying fallback ${nextIndex + 1}/${fallbacks.length}:`, fallbacks[nextIndex]);
-            imgElement.src = fallbacks[nextIndex];
-            imgElement.setAttribute('data-tried-index', nextIndex.toString());
-        } else {
-            // All fallbacks exhausted, use placeholder
-            console.warn('[Catalog Modal] All thumbnail fallbacks exhausted, using placeholder');
-            imgElement.src = '/img/placeholder-product.png';
-        }
-    }
-
-    window.handleThumbnailError = handleThumbnailError;
-
     /**
-     * Set main image in product modal
-     */
-    function setModalMainImage(url, activeIndex) {
-        const mainImageEl = document.getElementById('modalMainImage');
-        if (!mainImageEl) {
-            console.error('[Catalog Modal] Main image element not found');
-            return;
-        }
-
-        console.log('[Catalog Modal] Setting main image:', url, 'at index:', activeIndex);
-        const fallbacks = getFallbackUrls(url, 800);
-        console.log('[Catalog Modal] Fallback URLs:', fallbacks);
-        
-        // Update data attributes for error handling
-        mainImageEl.setAttribute('data-original-url', url);
-        mainImageEl.setAttribute('data-fallbacks', JSON.stringify(fallbacks));
-        
-        mainImageEl.src = fallbacks[0];
-        mainImageEl.onerror = function() {
-            window.handleModalImageError(this);
-        };
-
-        // Update active thumbnail
-        document.querySelectorAll('.modal-thumbnail').forEach((thumb, index) => {
-            thumb.classList.toggle('active', index === activeIndex);
-        });
-    }
-
-    /**
-     * View product details
+     * View product details - use separated modal
      */
     document.addEventListener('viewProduct', (e) => {
         const id = e.detail;
         const product = allProducts.find(p => p.id === id);
         if (!product) return;
 
-        const images = parseImages(product);
-        const mainImageUrl = images.length > 0 ? images[0] : null;
-        const mainImageFallbacks = mainImageUrl ? getFallbackUrls(mainImageUrl, 800) : ['/img/placeholder-product.png'];
-        
-        // Debug: log image count and URLs
-        console.log(`[Catalog Modal] Product "${product.name}" has ${images.length} images:`, images);
-        console.log(`[Catalog Modal] Main image URL:`, mainImageUrl);
-        console.log(`[Catalog Modal] Main image fallbacks:`, mainImageFallbacks);
-        
-        // Show thumbnails if product has multiple images (2 or more)
-        const hasMultipleImages = images.length >= 2;
-
-        // Build thumbnails HTML if there are multiple images
-        let thumbnailsHTML = '';
-        if (hasMultipleImages) {
-            console.log(`[Catalog Modal] Showing thumbnails for ${images.length} images`);
-            console.log(`[Catalog Modal] Image URLs for thumbnails:`, images);
-            thumbnailsHTML = `
-                <div class="modal-thumbnails">
-                    ${images.map((img, index) => {
-                        console.log(`[Catalog Modal] Processing thumbnail ${index + 1}:`, img);
-                        const thumbFallbacks = getFallbackUrls(img, 200);
-                        console.log(`[Catalog Modal] Thumbnail ${index + 1} fallbacks:`, thumbFallbacks);
-                        const escapedUrl = img.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                        // Store fallbacks as JSON string, properly escaped for HTML attribute
-                        const fallbacksJson = JSON.stringify(thumbFallbacks);
-                        return `
-                            <div class="modal-thumbnail ${index === 0 ? 'active' : ''}" 
-                                 onclick="window.setModalMainImage('${escapedUrl}', ${index})">
-                                <img src="${thumbFallbacks[0]}" alt="Thumbnail ${index + 1}" 
-                                     onerror="window.handleThumbnailError(this)"
-                                     data-original-url="${escapedUrl}"
-                                     data-fallbacks="${fallbacksJson.replace(/"/g, '&quot;')}"
-                                     data-thumb-index="${index}"
-                                     loading="lazy">
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
+        if (window.CatalogProductModal) {
+            CatalogProductModal.show(product);
+        } else {
+            console.error('[Catalog] Product modal not initialized');
         }
-
-        modalContent.innerHTML = `
-            <div class="modal-product-view">
-                <div class="modal-image-container ${hasMultipleImages ? 'with-thumbnails' : ''}">
-                    <img id="modalMainImage" src="${mainImageFallbacks[0]}" alt="${product.name}" 
-                         onerror="window.handleModalImageError(this)"
-                         data-original-url="${mainImageUrl || ''}"
-                         data-fallbacks='${JSON.stringify(mainImageFallbacks)}'
-                         loading="lazy">
-                    ${thumbnailsHTML}
-                </div>
-                <div class="modal-details">
-                    <span class="product-category">${product.category}</span>
-                    <h2>${product.name}</h2>
-                    <span class="product-price" style="font-size: 28px;">₱${product.sale_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                    
-                    <p class="description">${product.description || 'No description available for this product.'}</p>
-                    
-                    <div class="stock-info">
-                        <strong>Availability:</strong>
-                        <span class="status-badge ${product.quantity > 0 ? 'connected' : 'disconnected'}">
-                            ${product.quantity > 0 ? `In Stock (${product.quantity})` : 'Out of Stock'}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Expose setModalMainImage globally for onclick handlers
-        window.setModalMainImage = (url, activeIndex) => setModalMainImage(url, activeIndex);
-
-        productModal.classList.add('show');
     });
+
+    // Start initialization
+    init();
 });

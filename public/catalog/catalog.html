@@ -128,186 +128,23 @@
         </div>
     </footer>
 
-    <!-- Modal for Product Details -->
-    <div id="productModal" class="modal-overlay">
-        <div class="modal modal-large">
-            <div class="modal-header">
-                <h3>Product Details</h3>
-                <button class="modal-close" id="closeModal">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body" id="modalContent">
-                <!-- Content injected by JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Cart Modal -->
-    <div id="cartModal" class="modal-overlay">
-        <div class="modal modal-large">
-            <div class="modal-header">
-                <h3>Shopping Cart</h3>
-                <button class="modal-close" id="closeCartModal">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="cart-container">
-                    <div id="cartItems" class="cart-items">
-                        <!-- Cart items will be rendered here -->
-                    </div>
-                    <div class="cart-summary">
-                        <div class="cart-summary-row">
-                            <span>Total:</span>
-                            <span class="cart-total-amount" id="cartTotal">₱0.00</span>
-                        </div>
-                    </div>
-                    <div class="cart-actions">
-                        <button id="clearCartBtn" class="btn btn-secondary">Clear</button>
-                        <button id="nextToCheckoutBtn" class="btn btn-primary">Next</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Data Privacy Consent Modal -->
-    <div id="privacyConsentModal" class="modal-overlay">
-        <div class="modal modal-medium">
-            <div class="modal-header">
-                <h3>Data Privacy Consent</h3>
-            </div>
-            <div class="modal-body">
-                <div class="privacy-consent-content">
-                    <p class="privacy-notice">
-                        In accordance with the Data Privacy Act of 2012, we need your consent to collect and process your personal information.
-                    </p>
-                    <div class="privacy-details">
-                        <p><strong>What information we collect:</strong></p>
-                        <ul>
-                            <li>Name</li>
-                            <li>Contact Number</li>
-                            <li>Social Media Information (if provided)</li>
-                            <li>Order Details</li>
-                        </ul>
-                        <p><strong>How we use your information:</strong></p>
-                        <ul>
-                            <li>To process and fulfill your orders</li>
-                            <li>To communicate with you regarding your orders</li>
-                            <li>To improve our services</li>
-                            <li>For internal business operations only</li>
-                        </ul>
-                        <p class="privacy-assurance">
-                            <strong>We assure you that:</strong> Your personal information will only be used within this system and will not be shared with third parties without your explicit consent, except as required by law.
-                        </p>
-                    </div>
-                    <div class="privacy-consent-checkbox">
-                        <label>
-                            <input type="checkbox" id="privacyConsentCheckbox" required>
-                            <span>I consent to the collection and processing of my personal information as described above, and I understand that this information will only be used for the purposes stated.</span>
-                        </label>
-                    </div>
-                    <div class="privacy-actions">
-                        <button type="button" id="declinePrivacyBtn" class="btn btn-secondary">Decline</button>
-                        <button type="button" id="acceptPrivacyBtn" class="btn btn-primary" disabled>Accept & Continue</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Checkout Modal -->
-    <div id="checkoutModal" class="modal-overlay">
-        <div class="modal modal-medium">
-            <div class="modal-header">
-                <h3>Checkout</h3>
-                <button class="modal-close" id="closeCheckoutModal">
-                    <svg viewBox="0 0 24 24">
-                        <path
-                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="checkoutForm">
-                    <div class="form-group">
-                        <label for="orderType">Order Type <span class="required">*</span></label>
-                        <select id="orderType" name="orderType" required>
-                            <option value="pickup">Pickup</option>
-                            <option value="delivery">Delivery (3rd Party)</option>
-                        </select>
-                        <small class="form-hint">Pickup orders will receive a QR code</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="customerName">Name <span class="required">*</span></label>
-                        <input type="text" id="customerName" name="customerName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contactNumber">Contact Number <span class="required">*</span></label>
-                        <input type="tel" id="contactNumber" name="contactNumber" 
-                               placeholder="11 digits" maxlength="11" pattern="[0-9]{11}" required>
-                        <small class="form-hint">Must be exactly 11 digits</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="socialMedia">Social Media</label>
-                        <input type="text" id="socialMedia" name="socialMedia" 
-                               placeholder="e.g., fb: juan">
-                        <small class="form-hint">Format: platform: username (e.g., fb: juan)</small>
-                    </div>
-                    <div class="checkout-total">
-                        <strong>Total Amount: <span id="checkoutTotal">₱0.00</span></strong>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" id="cancelCheckoutBtn" class="btn btn-secondary">Cancel</button>
-                        <button type="submit" id="createOrderBtn" class="btn btn-primary">Create Order</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Order Success Modal with QR Code -->
-    <div id="orderSuccessModal" class="modal-overlay">
-        <div class="modal modal-medium">
-            <div class="modal-header">
-                <h3>Order Created Successfully!</h3>
-            </div>
-            <div class="modal-body">
-                <div class="order-success-content">
-                    <p class="success-message" id="orderSuccessMessage">Your order has been created successfully!</p>
-                    <div id="qrCodeSection" style="display: none;">
-                        <p class="qr-instruction">Please show this QR code to the admin when picking up your order.</p>
-                        <div id="orderQrCodeDisplay" class="qr-code-container">
-                            <!-- QR code will be generated here for pickup orders -->
-                        </div>
-                        <button id="saveQrCodeBtn" class="btn btn-secondary" style="width: 100%; margin-top: 12px; display: none;">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right: 8px;">
-                                <path d="M19 12v7H5v-7H3v7c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2zm-6 .67l2.59-2.58L17 11.5l-5 5-5-5 1.41-1.41L11 12.67V3h2z"/>
-                            </svg>
-                            <span>Save QR Code</span>
-                        </button>
-                    </div>
-                    <div class="order-info">
-                        <p><strong>Order ID:</strong> <span id="orderIdDisplay"></span></p>
-                        <p><strong>Order Type:</strong> <span id="orderTypeDisplay"></span></p>
-                        <p><strong>Total Amount:</strong> <span id="orderTotalDisplay"></span></p>
-                    </div>
-                    <button id="closeOrderSuccessBtn" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modals - Loaded dynamically -->
+    <div id="product-modal-container"></div>
+    <div id="cart-modal-container"></div>
+    <div id="privacy-modal-container"></div>
+    <div id="checkout-modal-container"></div>
+    <div id="order-success-modal-container"></div>
 
     <!-- Screen Debug Utility -->
     <script src="/css/javascript/screen-debug.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Modal modules -->
+    <script src="/catalog/catalog-product-modal.js"></script>
+    <script src="/catalog/catalog-cart-modal.js"></script>
+    <script src="/catalog/catalog-privacy-modal.js"></script>
+    <script src="/catalog/catalog-checkout-modal.js"></script>
+    <script src="/catalog/catalog-order-success-modal.js"></script>
+    <!-- Main modules -->
     <script src="/catalog/catalog-cart.js"></script>
     <script src="/catalog/catalog.js"></script>
 </body>
