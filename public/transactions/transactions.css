@@ -429,6 +429,18 @@
 }
 
 .table-responsive {
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 480px) {
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+}
+
+.table-responsive {
   width: 100%;
   overflow-x: auto;
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -447,7 +459,7 @@
 
 .transactions-table th,
 .transactions-table td {
-  padding: 16px 24px;
+  padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid var(--border);
 }
@@ -456,14 +468,16 @@
   background: rgba(0, 0, 0, 0.02);
   color: var(--text-secondary);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  padding: 10px 14px;
 }
 
 .transactions-table td {
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
+  padding: 12px 14px;
 }
 
 .transactions-table tr:last-child td {
@@ -538,24 +552,265 @@
   cursor: not-allowed;
 }
 
+@media (max-width: 1024px) {
+  .transactions-container {
+    padding: 20px;
+  }
+
+  .page-header h1 {
+    font-size: 26px;
+  }
+
+  .page-header .subtitle {
+    font-size: 13px;
+  }
+
+  .filters-card {
+    padding: 18px;
+    gap: 16px;
+  }
+
+  .filter-group {
+    min-width: 180px;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 14px 18px;
+    font-size: 13px;
+  }
+
+  .transactions-table th {
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .transactions-container {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .page-header .subtitle {
+    font-size: 12px;
   }
 
   .filters-card {
     flex-direction: column;
     align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .filter-group {
+    min-width: 100%;
+    gap: 6px;
+  }
+
+  .filter-group label {
+    font-size: 11px;
+    letter-spacing: 0.3px;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .date-filter-group {
+    gap: 6px;
+  }
+
+  .date-filter-group .date-select {
+    padding: 10px 12px;
+    font-size: 13px;
   }
 
   .filter-actions {
     flex-direction: column;
     width: 100%;
+    gap: 8px;
+    margin-top: 4px;
   }
 
   .filter-actions .btn {
     width: 100%;
     justify-content: center;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .filter-actions .btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .transactions-table-card {
+    border-radius: 12px;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 8px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .transactions-table th {
+    font-size: 10px !important;
+    padding: 8px 8px !important;
+    white-space: nowrap;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 8px 8px !important;
+  }
+
+  .pagination-controls {
+    padding: 12px 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  #pageInfo {
+    font-size: 12px;
+  }
+
+  .badge {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .transactions-container {
+    padding: 8px !important;
+  }
+
+  .page-header {
+    margin-bottom: 12px !important;
+  }
+
+  .page-header h1 {
+    font-size: 18px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 11px !important;
+  }
+
+  .filters-card {
+    padding: 12px !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .filter-group {
+    gap: 5px !important;
+  }
+
+  .filter-group label {
+    font-size: 10px !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .date-filter-group {
+    gap: 4px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .filter-actions {
+    gap: 6px !important;
+    margin-top: 2px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 9px 14px !important;
+    font-size: 12px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 10px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 180px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 7px 12px !important;
+    font-size: 11px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 11px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 7px !important;
+    font-size: 10px !important;
   }
 }
 
@@ -587,5 +842,1798 @@
   .transactions-table th,
   .transactions-table td {
     padding: 8px;
+  }
+}
+
+/* Phone portrait (360x740) - specific optimizations */
+@media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 6px !important;
+  }
+
+  .page-header {
+    margin-bottom: 10px !important;
+  }
+
+  .page-header h1 {
+    font-size: 16px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 10px !important;
+  }
+
+  .filters-card {
+    padding: 10px !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+    border-radius: 10px !important;
+  }
+
+  .filter-group {
+    gap: 4px !important;
+  }
+
+  .filter-group label {
+    font-size: 9px !important;
+    letter-spacing: 0.1px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 7px 9px !important;
+    font-size: 11px !important;
+    border-radius: 7px !important;
+  }
+
+  .date-filter-group {
+    gap: 3px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 7px 9px !important;
+    font-size: 11px !important;
+    border-radius: 7px !important;
+  }
+
+  .filter-actions {
+    gap: 5px !important;
+    margin-top: 2px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 10px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 180px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 10px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 6px !important;
+    font-size: 9px !important;
+  }
+}
+
+/* Phone portrait (375x667) - specific optimizations */
+@media (width: 375px) and (height: 667px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 6px !important;
+  }
+
+  .page-header {
+    margin-bottom: 10px !important;
+  }
+
+  .page-header h1 {
+    font-size: 16px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 10px !important;
+  }
+
+  .filters-card {
+    padding: 10px !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+    border-radius: 10px !important;
+  }
+
+  .filter-group {
+    gap: 4px !important;
+  }
+
+  .filter-group label {
+    font-size: 9px !important;
+    letter-spacing: 0.1px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 7px 9px !important;
+    font-size: 11px !important;
+    border-radius: 7px !important;
+  }
+
+  .date-filter-group {
+    gap: 3px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 7px 9px !important;
+    font-size: 11px !important;
+    border-radius: 7px !important;
+  }
+
+  .filter-actions {
+    gap: 5px !important;
+    margin-top: 2px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 10px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 180px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 10px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 6px !important;
+    font-size: 9px !important;
+  }
+}
+
+/* Phone portrait (375x812) - specific optimizations */
+@media (width: 375px) and (height: 812px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 8px !important;
+  }
+
+  .page-header {
+    margin-bottom: 12px !important;
+  }
+
+  .page-header h1 {
+    font-size: 17px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 11px !important;
+  }
+
+  .filters-card {
+    padding: 11px !important;
+    gap: 9px !important;
+    margin-bottom: 14px !important;
+    border-radius: 11px !important;
+  }
+
+  .filter-group {
+    gap: 5px !important;
+  }
+
+  .filter-group label {
+    font-size: 10px !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .date-filter-group {
+    gap: 4px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .filter-actions {
+    gap: 6px !important;
+    margin-top: 3px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 9px 13px !important;
+    font-size: 12px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 11px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 9px 11px !important;
+    gap: 7px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 7px 11px !important;
+    font-size: 11px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 11px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 7px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Phone portrait (380x706) - specific optimizations */
+@media (width: 380px) and (height: 706px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 6px !important;
+  }
+
+  .page-header {
+    margin-bottom: 10px !important;
+  }
+
+  .page-header h1 {
+    font-size: 16px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 10px !important;
+  }
+
+  .filters-card {
+    padding: 10px !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+    border-radius: 10px !important;
+  }
+
+  .filter-group {
+    gap: 4px !important;
+  }
+
+  .filter-group label {
+    font-size: 9px !important;
+    letter-spacing: 0.1px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 7px 9px !important;
+    font-size: 11px !important;
+    border-radius: 7px !important;
+  }
+
+  .date-filter-group {
+    gap: 3px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 7px 9px !important;
+    font-size: 11px !important;
+    border-radius: 7px !important;
+  }
+
+  .filter-actions {
+    gap: 5px !important;
+    margin-top: 2px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 10px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 180px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 10px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 6px !important;
+    font-size: 9px !important;
+  }
+}
+
+/* Phone portrait (380x754) and (380x810) - specific optimizations */
+@media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
+       (width: 380px) and (height: 754px) and (orientation: portrait),
+       (width: 380px) and (height: 810px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 8px !important;
+  }
+
+  .page-header {
+    margin-bottom: 12px !important;
+  }
+
+  .page-header h1 {
+    font-size: 17px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 11px !important;
+  }
+
+  .filters-card {
+    padding: 11px !important;
+    gap: 9px !important;
+    margin-bottom: 14px !important;
+    border-radius: 11px !important;
+  }
+
+  .filter-group {
+    gap: 5px !important;
+  }
+
+  .filter-group label {
+    font-size: 10px !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .date-filter-group {
+    gap: 4px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .filter-actions {
+    gap: 6px !important;
+    margin-top: 3px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 9px 13px !important;
+    font-size: 12px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 11px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 9px 11px !important;
+    gap: 7px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 7px 11px !important;
+    font-size: 11px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 11px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 7px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Phone portrait (390x844) - specific optimizations */
+@media (width: 390px) and (height: 844px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 8px !important;
+  }
+
+  .page-header {
+    margin-bottom: 12px !important;
+  }
+
+  .page-header h1 {
+    font-size: 17px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 11px !important;
+  }
+
+  .filters-card {
+    padding: 11px !important;
+    gap: 9px !important;
+    margin-bottom: 14px !important;
+    border-radius: 11px !important;
+  }
+
+  .filter-group {
+    gap: 5px !important;
+  }
+
+  .filter-group label {
+    font-size: 10px !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .date-filter-group {
+    gap: 4px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .filter-actions {
+    gap: 6px !important;
+    margin-top: 3px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 9px 13px !important;
+    font-size: 12px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 11px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 9px 11px !important;
+    gap: 7px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 7px 11px !important;
+    font-size: 11px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 11px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 7px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Phone portrait (411x823) - specific optimizations */
+@media (width: 411px) and (height: 823px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 10px !important;
+  }
+
+  .page-header {
+    margin-bottom: 14px !important;
+  }
+
+  .page-header h1 {
+    font-size: 18px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 12px !important;
+  }
+
+  .filters-card {
+    padding: 12px !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .filter-group {
+    gap: 6px !important;
+  }
+
+  .filter-group label {
+    font-size: 11px !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .date-filter-group {
+    gap: 5px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .filter-actions {
+    gap: 7px !important;
+    margin-top: 4px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 12px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 12px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Phone portrait (412x892) - specific optimizations */
+@media (width: 412px) and (height: 892px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 10px !important;
+  }
+
+  .page-header {
+    margin-bottom: 14px !important;
+  }
+
+  .page-header h1 {
+    font-size: 18px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 12px !important;
+  }
+
+  .filters-card {
+    padding: 12px !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .filter-group {
+    gap: 6px !important;
+  }
+
+  .filter-group label {
+    font-size: 11px !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .date-filter-group {
+    gap: 5px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .filter-actions {
+    gap: 7px !important;
+    margin-top: 4px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 12px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 12px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Phone portrait (412x915) - specific optimizations */
+@media (width: 412px) and (height: 915px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 10px !important;
+  }
+
+  .page-header {
+    margin-bottom: 14px !important;
+  }
+
+  .page-header h1 {
+    font-size: 18px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 12px !important;
+  }
+
+  .filters-card {
+    padding: 12px !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .filter-group {
+    gap: 6px !important;
+  }
+
+  .filter-group label {
+    font-size: 11px !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .date-filter-group {
+    gap: 5px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .filter-actions {
+    gap: 7px !important;
+    margin-top: 4px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 12px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 12px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Phone portrait (414x736) - specific optimizations */
+@media (width: 414px) and (height: 736px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 8px !important;
+  }
+
+  .page-header {
+    margin-bottom: 12px !important;
+  }
+
+  .page-header h1 {
+    font-size: 17px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 11px !important;
+  }
+
+  .filters-card {
+    padding: 11px !important;
+    gap: 9px !important;
+    margin-bottom: 14px !important;
+    border-radius: 11px !important;
+  }
+
+  .filter-group {
+    gap: 5px !important;
+  }
+
+  .filter-group label {
+    font-size: 10px !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .date-filter-group {
+    gap: 4px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .filter-actions {
+    gap: 6px !important;
+    margin-top: 3px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 9px 13px !important;
+    font-size: 12px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 11px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 9px 11px !important;
+    gap: 7px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 7px 11px !important;
+    font-size: 11px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 11px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 3px 7px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Phone portrait (414x896) - specific optimizations */
+@media (width: 414px) and (height: 896px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 10px !important;
+  }
+
+  .page-header {
+    margin-bottom: 14px !important;
+  }
+
+  .page-header h1 {
+    font-size: 18px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 12px !important;
+  }
+
+  .filters-card {
+    padding: 12px !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .filter-group {
+    gap: 6px !important;
+  }
+
+  .filter-group label {
+    font-size: 11px !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .date-filter-group {
+    gap: 5px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 9px !important;
+  }
+
+  .filter-actions {
+    gap: 7px !important;
+    margin-top: 4px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 12px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 12px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Phone portrait (430x932) - specific optimizations */
+@media (width: 430px) and (height: 932px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 12px !important;
+  }
+
+  .page-header {
+    margin-bottom: 16px !important;
+  }
+
+  .page-header h1 {
+    font-size: 19px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 13px !important;
+  }
+
+  .filters-card {
+    padding: 14px !important;
+    gap: 12px !important;
+    margin-bottom: 18px !important;
+    border-radius: 13px !important;
+  }
+
+  .filter-group {
+    gap: 7px !important;
+  }
+
+  .filter-group label {
+    font-size: 12px !important;
+    letter-spacing: 0.4px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+  }
+
+  .date-filter-group {
+    gap: 6px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+  }
+
+  .filter-actions {
+    gap: 8px !important;
+    margin-top: 5px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 11px 15px !important;
+    font-size: 14px !important;
+  }
+
+  .filter-actions .btn svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .transactions-table-card {
+    border-radius: 13px !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 240px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 240px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .table-responsive {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 5px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 5px 3px !important;
+    white-space: nowrap;
+    letter-spacing: 0.2px !important;
+  }
+
+  .transactions-table td {
+    white-space: nowrap;
+    padding: 5px 3px !important;
+  }
+
+  .pagination-controls {
+    padding: 11px 13px !important;
+    gap: 9px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 9px 13px !important;
+    font-size: 13px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+  }
+
+  #pageInfo {
+    font-size: 13px !important;
+    width: 100% !important;
+    text-align: center !important;
+    order: -1 !important;
+  }
+
+  .badge {
+    padding: 4px 9px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* 1080x2400 portrait - specific optimizations */
+@media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 32px !important;
+    max-width: 1400px !important;
+  }
+
+  .page-header h1 {
+    font-size: 36px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 18px !important;
+  }
+
+  .filters-card {
+    padding: 28px !important;
+    gap: 24px !important;
+    margin-bottom: 40px !important;
+  }
+
+  .filter-group label {
+    font-size: 15px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 14px 22px !important;
+    font-size: 16px !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 20px 28px !important;
+    font-size: 16px !important;
+  }
+
+  .transactions-table th {
+    font-size: 15px !important;
+  }
+
+  .pagination-controls {
+    padding: 24px 28px !important;
+    gap: 20px !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 12px 20px !important;
+    font-size: 15px !important;
+  }
+
+  #pageInfo {
+    font-size: 16px !important;
+  }
+
+  .badge {
+    padding: 6px 14px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* 1080p portrait (1080px width) - general optimizations */
+@media (width: 1080px) and (orientation: portrait) {
+  .transactions-container {
+    padding: 32px !important;
+    max-width: 1400px !important;
+  }
+
+  .page-header h1 {
+    font-size: 36px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 18px !important;
+  }
+
+  .filters-card {
+    padding: 28px !important;
+    gap: 24px !important;
+    margin-bottom: 40px !important;
+  }
+
+  .filter-group label {
+    font-size: 15px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 14px 22px !important;
+    font-size: 16px !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 20px 28px !important;
+    font-size: 16px !important;
+  }
+
+  .transactions-table th {
+    font-size: 15px !important;
+  }
+
+  .pagination-controls {
+    padding: 24px 28px !important;
+    gap: 20px !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 12px 20px !important;
+    font-size: 15px !important;
+  }
+
+  #pageInfo {
+    font-size: 16px !important;
+  }
+
+  .badge {
+    padding: 6px 14px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .transactions-container {
+    padding: 8px !important;
+  }
+
+  .page-header {
+    margin-bottom: 8px !important;
+  }
+
+  .page-header h1 {
+    font-size: 16px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 10px !important;
+  }
+
+  .filters-card {
+    padding: 10px !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .filter-group {
+    min-width: 0 !important;
+    flex: 1 1 0 !important;
+    gap: 4px !important;
+  }
+
+  .filter-group label {
+    font-size: 9px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .date-filter-group {
+    gap: 3px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .filter-actions {
+    gap: 5px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .filter-actions .btn {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 8px 6px !important;
+    font-size: 10px !important;
+  }
+
+  .transactions-table th {
+    font-size: 9px !important;
+    padding: 7px 5px !important;
+  }
+
+  .pagination-controls {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+  }
+
+  #pageInfo {
+    font-size: 10px !important;
+  }
+
+  .badge {
+    padding: 2px 6px !important;
+    font-size: 9px !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .transactions-container {
+    padding: 6px !important;
+  }
+
+  .page-header h1 {
+    font-size: 14px !important;
+  }
+
+  .page-header .subtitle {
+    font-size: 9px !important;
+  }
+
+  .filters-card {
+    padding: 8px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .filter-group label {
+    font-size: 8px !important;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 5px 7px !important;
+    font-size: 10px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 5px 7px !important;
+    font-size: 10px !important;
+  }
+
+  .filter-actions .btn {
+    padding: 5px 8px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 6px 5px !important;
+    font-size: 9px !important;
+  }
+
+  .transactions-table th {
+    font-size: 8px !important;
+    padding: 6px 4px !important;
+  }
+
+  .pagination-controls {
+    padding: 6px 8px !important;
+    gap: 5px !important;
+  }
+
+  .pagination-controls .btn-small {
+    padding: 5px 8px !important;
+    font-size: 9px !important;
+  }
+
+  #pageInfo {
+    font-size: 9px !important;
+  }
+
+  .badge {
+    padding: 2px 5px !important;
+    font-size: 8px !important;
   }
 }

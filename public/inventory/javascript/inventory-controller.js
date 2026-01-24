@@ -63,7 +63,6 @@ const Inventory = {
     document.getElementById('modalClose')?.addEventListener('click', () => InventoryCreate.closeModal());
     document.getElementById('cancelBtn')?.addEventListener('click', () => InventoryCreate.closeModal());
 
-    document.getElementById('deleteModalClose')?.addEventListener('click', () => InventoryDelete.closeModal());
     document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => InventoryDelete.closeModal());
 
     // Delete Confirmation
