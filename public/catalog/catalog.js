@@ -219,7 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
             <div class="product-card" data-id="${product.id}">
                 <div class="product-image-container">
-                    <img src="${getImageUrl(product)}" alt="${product.name}" class="product-image" onerror="this.src='/img/placeholder-product.png'">
+                    <img src="${getImageUrl(product)}" alt="${product.name}" class="product-image" 
+                         onerror="handleImageError(this, '${product.id}')"
+                         loading="lazy"
+                         crossorigin="anonymous">
                     ${availableStock > 0
                 ? `<span class="product-badge badge-stock">In Stock</span>`
                 : `<span class="product-badge badge-out">Out of Stock</span>`}
@@ -285,19 +288,226 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /**
-     * Get the correct image URL (handling drive proxy)
-     */
-    function getImageUrl(product) {
-        if (product.images && product.images.length > 0) {
-            const img = product.images[0];
-            if (img.includes('drive.google.com')) {
-                const fileId = img.match(/id=([^&]+)/)?.[1];
-                return fileId ? `/api/upload/drive-image/${fileId}` : img;
-            }
-            return img;
+    function parseImages(product) {
+        if (!product.images) {
+            return [];
         }
+
+        try {
+            let parsed;
+            if (typeof product.images === 'string') {
+                if (product.images.trim().startsWith('[') || product.images.trim().startsWith('{')) {
+                    parsed = JSON.parse(product.images);
+                } else {
+                    parsed = [product.images];
+                }
+            } else {
+                parsed = product.images;
+            }
+            
+            const imageArray = Array.isArray(parsed) ? parsed : (parsed ? [parsed] : []);
+            const validImages = imageArray.filter(img => img && typeof img === 'string' && img.trim() !== '');
+            const nonQrImages = validImages.filter(url => url && url !== product.qr_image_url);
+            
+            return nonQrImages.length > 0 ? nonQrImages : validImages;
+        } catch (e) {
+            console.error('Error parsing images for product:', product.id, product.name);
+            return [];
+        }
+    }
+
+    function getGoogleDriveFileId(url) {
+        if (!url) return null;
+
+        const patterns = [
+            /[?&]id=([a-zA-Z0-9_-]+)/,
+            /\/d\/([a-zA-Z0-9_-]+)/,
+        ];
+
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match) return match[1];
+        }
+
+        return null;
+    }
+
+    function getFallbackUrls(url, size = 800) {
+        if (!url || typeof url !== 'string') return ['/img/placeholder-product.png'];
+        
+        const fileId = getGoogleDriveFileId(url);
+        if (!fileId) {
+            // Not a Google Drive URL, return as-is
+            return [url];
+        }
+
+        const directUrl = `https://drive.usercontent.google.com/download?id=${fileId}&export=view`;
+        
+        // For thumbnails, use smaller size in thumbnail endpoint
+        if (size <= 200) {
+            return [
+                directUrl, // Primary: Direct view URL (works for public files)
+                `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`, // Thumbnail endpoint
+                `/api/catalog/image/${fileId}`, // Proxy endpoint
+                url // Original URL
+            ];
+        }
+        
+        // For larger images
+        return [
+            directUrl,
+            `/api/catalog/image/${fileId}`,
+            `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
+            url
+        ];
+    }
+
+    function getImageUrl(product) {
+        const images = parseImages(product);
+        
+        if (images && images.length > 0) {
+            const img = images[0];
+            if (img && typeof img === 'string' && img.trim() !== '') {
+                const fallbacks = getFallbackUrls(img, 800);
+                return fallbacks[0];
+            }
+        }
+        
         return '/img/placeholder-product.png';
+    }
+
+    function handleImageError(imgElement, productId) {
+        const currentSrc = imgElement.src;
+        const product = allProducts.find(p => p.id === productId);
+        
+        if (!product) {
+            imgElement.src = '/img/placeholder-product.png';
+            return;
+        }
+
+        const images = parseImages(product);
+        if (images.length === 0) {
+            imgElement.src = '/img/placeholder-product.png';
+            return;
+        }
+
+        const img = images[0];
+        const fallbacks = getFallbackUrls(img, 800);
+        const currentIndex = fallbacks.indexOf(currentSrc);
+        
+        if (currentIndex >= 0 && currentIndex < fallbacks.length - 1) {
+            imgElement.src = fallbacks[currentIndex + 1];
+        } else {
+            imgElement.src = '/img/placeholder-product.png';
+        }
+    }
+
+    window.handleImageError = handleImageError;
+
+    function handleModalImageError(imgElement) {
+        const originalUrl = imgElement.getAttribute('data-original-url');
+        if (!originalUrl) {
+            imgElement.src = '/img/placeholder-product.png';
+            return;
+        }
+
+        const fallbacks = getFallbackUrls(originalUrl, 800);
+        const currentSrc = imgElement.src;
+        const currentIndex = fallbacks.indexOf(currentSrc);
+        
+        console.log('[Catalog Modal] Image error, trying fallback. Current:', currentSrc, 'Fallbacks:', fallbacks);
+        
+        if (currentIndex >= 0 && currentIndex < fallbacks.length - 1) {
+            imgElement.src = fallbacks[currentIndex + 1];
+        } else {
+            imgElement.src = '/img/placeholder-product.png';
+        }
+    }
+
+    window.handleModalImageError = handleModalImageError;
+
+    function handleThumbnailError(imgElement) {
+        const fallbacksJson = imgElement.getAttribute('data-fallbacks');
+        let fallbacks;
+        
+        if (fallbacksJson) {
+            try {
+                // Unescape HTML entities
+                const unescaped = fallbacksJson.replace(/&quot;/g, '"');
+                fallbacks = JSON.parse(unescaped);
+            } catch (e) {
+                console.error('[Catalog Modal] Error parsing thumbnail fallbacks:', e, 'Raw:', fallbacksJson);
+                const originalUrl = imgElement.getAttribute('data-original-url');
+                if (originalUrl) {
+                    // Unescape the URL
+                    const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
+                    fallbacks = getFallbackUrls(unescapedUrl, 200);
+                }
+            }
+        } else {
+            const originalUrl = imgElement.getAttribute('data-original-url');
+            if (originalUrl) {
+                const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
+                fallbacks = getFallbackUrls(unescapedUrl, 200);
+            } else {
+                console.warn('[Catalog Modal] No original URL or fallbacks for thumbnail');
+                imgElement.src = '/img/placeholder-product.png';
+                return;
+            }
+        }
+        
+        if (!fallbacks || fallbacks.length === 0) {
+            console.warn('[Catalog Modal] No fallbacks available for thumbnail');
+            imgElement.src = '/img/placeholder-product.png';
+            return;
+        }
+        
+        const currentSrc = imgElement.src;
+        const triedIndex = parseInt(imgElement.getAttribute('data-tried-index') || '0');
+        
+        console.log('[Catalog Modal] Thumbnail error, trying fallback. Current:', currentSrc, 'Tried:', triedIndex, 'Total fallbacks:', fallbacks.length);
+        
+        if (triedIndex < fallbacks.length - 1) {
+            const nextIndex = triedIndex + 1;
+            console.log(`[Catalog Modal] Trying fallback ${nextIndex + 1}/${fallbacks.length}:`, fallbacks[nextIndex]);
+            imgElement.src = fallbacks[nextIndex];
+            imgElement.setAttribute('data-tried-index', nextIndex.toString());
+        } else {
+            // All fallbacks exhausted, use placeholder
+            console.warn('[Catalog Modal] All thumbnail fallbacks exhausted, using placeholder');
+            imgElement.src = '/img/placeholder-product.png';
+        }
+    }
+
+    window.handleThumbnailError = handleThumbnailError;
+
+    /**
+     * Set main image in product modal
+     */
+    function setModalMainImage(url, activeIndex) {
+        const mainImageEl = document.getElementById('modalMainImage');
+        if (!mainImageEl) {
+            console.error('[Catalog Modal] Main image element not found');
+            return;
+        }
+
+        console.log('[Catalog Modal] Setting main image:', url, 'at index:', activeIndex);
+        const fallbacks = getFallbackUrls(url, 800);
+        console.log('[Catalog Modal] Fallback URLs:', fallbacks);
+        
+        // Update data attributes for error handling
+        mainImageEl.setAttribute('data-original-url', url);
+        mainImageEl.setAttribute('data-fallbacks', JSON.stringify(fallbacks));
+        
+        mainImageEl.src = fallbacks[0];
+        mainImageEl.onerror = function() {
+            window.handleModalImageError(this);
+        };
+
+        // Update active thumbnail
+        document.querySelectorAll('.modal-thumbnail').forEach((thumb, index) => {
+            thumb.classList.toggle('active', index === activeIndex);
+        });
     }
 
     /**
@@ -308,10 +518,57 @@ document.addEventListener('DOMContentLoaded', () => {
         const product = allProducts.find(p => p.id === id);
         if (!product) return;
 
+        const images = parseImages(product);
+        const mainImageUrl = images.length > 0 ? images[0] : null;
+        const mainImageFallbacks = mainImageUrl ? getFallbackUrls(mainImageUrl, 800) : ['/img/placeholder-product.png'];
+        
+        // Debug: log image count and URLs
+        console.log(`[Catalog Modal] Product "${product.name}" has ${images.length} images:`, images);
+        console.log(`[Catalog Modal] Main image URL:`, mainImageUrl);
+        console.log(`[Catalog Modal] Main image fallbacks:`, mainImageFallbacks);
+        
+        // Show thumbnails if product has multiple images (2 or more)
+        const hasMultipleImages = images.length >= 2;
+
+        // Build thumbnails HTML if there are multiple images
+        let thumbnailsHTML = '';
+        if (hasMultipleImages) {
+            console.log(`[Catalog Modal] Showing thumbnails for ${images.length} images`);
+            console.log(`[Catalog Modal] Image URLs for thumbnails:`, images);
+            thumbnailsHTML = `
+                <div class="modal-thumbnails">
+                    ${images.map((img, index) => {
+                        console.log(`[Catalog Modal] Processing thumbnail ${index + 1}:`, img);
+                        const thumbFallbacks = getFallbackUrls(img, 200);
+                        console.log(`[Catalog Modal] Thumbnail ${index + 1} fallbacks:`, thumbFallbacks);
+                        const escapedUrl = img.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        // Store fallbacks as JSON string, properly escaped for HTML attribute
+                        const fallbacksJson = JSON.stringify(thumbFallbacks);
+                        return `
+                            <div class="modal-thumbnail ${index === 0 ? 'active' : ''}" 
+                                 onclick="window.setModalMainImage('${escapedUrl}', ${index})">
+                                <img src="${thumbFallbacks[0]}" alt="Thumbnail ${index + 1}" 
+                                     onerror="window.handleThumbnailError(this)"
+                                     data-original-url="${escapedUrl}"
+                                     data-fallbacks="${fallbacksJson.replace(/"/g, '&quot;')}"
+                                     data-thumb-index="${index}"
+                                     loading="lazy">
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
         modalContent.innerHTML = `
             <div class="modal-product-view">
-                <div class="modal-image-container">
-                    <img src="${getImageUrl(product)}" alt="${product.name}" onerror="this.src='/img/placeholder-product.png'">
+                <div class="modal-image-container ${hasMultipleImages ? 'with-thumbnails' : ''}">
+                    <img id="modalMainImage" src="${mainImageFallbacks[0]}" alt="${product.name}" 
+                         onerror="window.handleModalImageError(this)"
+                         data-original-url="${mainImageUrl || ''}"
+                         data-fallbacks='${JSON.stringify(mainImageFallbacks)}'
+                         loading="lazy">
+                    ${thumbnailsHTML}
                 </div>
                 <div class="modal-details">
                     <span class="product-category">${product.category}</span>
@@ -329,6 +586,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
+
+        // Expose setModalMainImage globally for onclick handlers
+        window.setModalMainImage = (url, activeIndex) => setModalMainImage(url, activeIndex);
 
         productModal.classList.add('show');
     });
