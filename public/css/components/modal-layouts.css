@@ -321,7 +321,7 @@
 
 /* Tablet portrait (800x1145) - specific optimizations */
 @media (width: 800px) and (height: 1145px) and (orientation: portrait),
-       (min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
+(min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
   .modal.modal-wide {
     max-width: min(750px, 94vw) !important;
     max-height: 92vh !important;
@@ -398,7 +398,7 @@
 
 /* Tablet portrait (640x889) - specific optimizations */
 @media (width: 640px) and (height: 889px) and (orientation: portrait),
-       (min-width: 638px) and (max-width: 642px) and (min-height: 887px) and (max-height: 891px) and (orientation: portrait) {
+(min-width: 638px) and (max-width: 642px) and (min-height: 887px) and (max-height: 891px) and (orientation: portrait) {
   .modal.modal-wide {
     max-width: min(620px, 96vw) !important;
     max-height: 90vh !important;
@@ -475,7 +475,7 @@
 
 /* Tablet landscape (1024x505) - compact modal layout */
 @media (width: 1024px) and (height: 505px) and (orientation: landscape),
-       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+(min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
   .modal.modal-wide {
     max-width: min(1000px, 98vw) !important;
     width: min(1000px, 98vw) !important;
@@ -844,7 +844,7 @@
 
 /* 1080x2400 portrait 380dpi - high DPI optimizations */
 @media (width: 1080px) and (height: 2400px) and (orientation: portrait) and (resolution: 380dpi),
-       (width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
+(width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
   .modal.modal-wide {
     max-height: 98vh;
     border-radius: 16px;
@@ -1220,7 +1220,7 @@
 
 /* Phone portrait (360x800) - specific optimizations */
 @media (width: 360px) and (height: 800px) and (orientation: portrait),
-       (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
+(min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
   .modal.modal-wide {
     max-height: calc(100vh - 16px) !important;
     border-radius: 16px !important;
@@ -1320,8 +1320,8 @@
 /* Phone portrait (380x754) and (380x810) - specific optimizations */
 /* Using range-based media query for Android compatibility */
 @media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
-       (width: 380px) and (height: 754px) and (orientation: portrait),
-       (width: 380px) and (height: 810px) and (orientation: portrait) {
+(width: 380px) and (height: 754px) and (orientation: portrait),
+(width: 380px) and (height: 810px) and (orientation: portrait) {
   .modal.modal-wide {
     max-height: 100vh !important;
     border-radius: 12px !important;
@@ -1412,7 +1412,7 @@
 
 /* Phone portrait (392x767) - specific optimizations */
 @media (width: 392px) and (height: 767px) and (orientation: portrait),
-       (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
+(min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
   .modal.modal-wide {
     max-height: 100vh !important;
     border-radius: 12px !important;
@@ -1492,5 +1492,244 @@
 
   .modal.modal-wide .modal-header {
     padding: 8px 8px 0;
+  }
+}
+
+/* Phone portrait (380x706) - specific modal optimizations */
+@media (min-width: 378px) and (max-width: 382px) and (min-height: 704px) and (max-height: 710px) and (orientation: portrait) {
+
+  /* Modal container */
+  #viewModal .modal.modal-wide {
+    max-height: 95vh !important;
+    height: auto !important;
+    /* Changed from fixed height to auto */
+    border-radius: 12px !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important;
+  }
+
+  /* View modal content */
+  #viewModal .view-modal-content {
+    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    gap: 0 !important;
+  }
+
+  /* Images column */
+  #viewModal .view-col-images {
+    order: 1 !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 8px !important;
+    flex-shrink: 0 !important;
+    gap: 6px !important;
+  }
+
+  /* Main image - compact */
+  #viewModal .view-main-image {
+    min-height: 120px !important;
+    max-height: 120px !important;
+    height: 120px !important;
+  }
+
+  /* Thumbnails - compact */
+  #viewModal .view-thumbnails {
+    gap: 6px !important;
+  }
+
+  /* Details column - scrollable, takes remaining space */
+  #viewModal .view-col-details {
+    order: 2 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    padding: 10px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  #viewModal .view-category {
+    font-size: 10px !important;
+    padding: 2px 8px !important;
+  }
+
+  #viewModal .view-name {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+  }
+
+  #viewModal .view-description {
+    font-size: 12px !important;
+    margin-bottom: 4px !important;
+  }
+
+  #viewModal .view-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  #viewModal .view-stat {
+    padding: 6px !important;
+  }
+
+  #viewModal .stat-label {
+    font-size: 9px !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 0 !important;
+  }
+
+  #viewModal .stat-value {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+
+  #viewModal .view-dates {
+    padding: 8px !important;
+    gap: 4px !important;
+    margin-bottom: 4px !important;
+  }
+
+  #viewModal .view-date {
+    gap: 6px !important;
+  }
+
+  #viewModal .view-date svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  #viewModal .date-label {
+    font-size: 8px !important;
+  }
+
+  #viewModal .date-value {
+    font-size: 10px !important;
+  }
+
+  /* Action Buttons Grid (2x2) */
+  #viewModal .view-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding-top: 10px !important;
+    margin-top: 4px !important;
+    border-top: 1px solid var(--border) !important;
+    width: 100% !important;
+    position: sticky !important;
+    bottom: -8px !important;
+    /* Offset the padding of parent */
+    background: var(--bg-card) !important;
+    z-index: 10 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  #viewModal .view-actions .btn {
+    padding: 10px 8px !important;
+    font-size: 11px !important;
+    width: 100% !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  #viewModal .view-actions .btn svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  /* For other modals with modal-form-horizontal */
+  .modal.modal-wide {
+    max-height: 95vh !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .modal.modal-wide .modal-header {
+    padding: 6px 8px !important;
+    flex-shrink: 0 !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+
+  .modal.modal-wide .modal-header h3 {
+    font-size: 13px !important;
+    margin: 0 !important;
+  }
+
+  .modal.modal-wide .modal-body {
+    flex: 1 !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  .modal-form-horizontal {
+    grid-template-columns: 1fr !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .modal-col {
+    padding: 6px !important;
+  }
+
+  .modal-col-images {
+    order: 1 !important;
+    border-left: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 6px !important;
+    flex-shrink: 0 !important;
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .modal-col-fields {
+    order: 2 !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    padding: 6px !important;
+  }
+
+  .modal.modal-wide .form-group {
+    margin-bottom: 6px !important;
+  }
+
+  .modal-col-fields .view-name {
+    font-size: 13px !important;
+    margin-bottom: 4px !important;
+    line-height: 1.2 !important;
+  }
+
+  .modal-col-fields .modal-actions {
+    padding: 4px 0 0 !important;
+    gap: 3px !important;
+    flex-shrink: 0 !important;
+    margin-top: 4px !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: var(--bg-card) !important;
+    z-index: 10 !important;
+    border-top: 1px solid var(--border) !important;
+  }
+
+  .modal-col-fields .modal-actions .btn {
+    padding: 6px 8px !important;
+    font-size: 9px !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
   }
 }

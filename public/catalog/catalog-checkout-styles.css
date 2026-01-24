@@ -1,0 +1,120 @@
+/* Form hint text */
+.form-hint {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+/* Checkout modal specific optimizations for large screens */
+@media (min-width: 1400px) and (max-width: 1700px) {
+    #checkoutForm .form-group {
+        margin-bottom: 10px !important;
+    }
+
+    #checkoutForm .form-group label {
+        font-size: 11px !important;
+        margin-bottom: 4px !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    #checkoutForm .form-group input,
+    #checkoutForm .form-group select {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+    }
+
+    #checkoutForm .form-hint {
+        font-size: 10px !important;
+        margin-top: 2px !important;
+        line-height: 1.2 !important;
+    }
+
+    #checkoutForm .checkout-total {
+        padding: 8px !important;
+        margin-bottom: 10px !important;
+        font-size: 14px !important;
+    }
+
+    #checkoutForm .form-actions {
+        margin-top: 10px !important;
+        gap: 10px !important;
+    }
+
+    #checkoutForm .form-actions .btn {
+        padding: 10px 16px !important;
+        font-size: 13px !important;
+    }
+
+    /* Reduce modal body padding */
+    #checkoutModal .modal-body {
+        padding: 16px 20px !important;
+    }
+
+    /* Reduce modal header */
+    #checkoutModal .modal-header {
+        padding: 14px 20px !important;
+    }
+
+    #checkoutModal .modal-header h3 {
+        font-size: 20px !important;
+    }
+
+    /* Order Success Modal Optimizations */
+    #orderSuccessModal .modal-body {
+        padding: 16px 20px !important;
+    }
+
+    #orderSuccessModal .modal-header {
+        padding: 14px 20px !important;
+    }
+
+    #orderSuccessModal .modal-header h3 {
+        font-size: 20px !important;
+    }
+
+    #orderSuccessModal .success-message {
+        font-size: 16px !important;
+        margin-bottom: 12px !important;
+    }
+
+    #orderSuccessModal .qr-instruction {
+        font-size: 12px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #orderSuccessModal .qr-code-container {
+        margin: 12px 0 !important;
+        padding: 12px !important;
+    }
+
+    #orderSuccessModal .order-info {
+        margin-top: 12px !important;
+        padding: 10px !important;
+    }
+
+    #orderSuccessModal .order-info p {
+        margin-bottom: 4px !important;
+        font-size: 13px !important;
+    }
+
+    #orderSuccessModal #closeOrderSuccessBtn {
+        margin-top: 12px !important;
+        padding: 10px 16px !important;
+        font-size: 13px !important;
+    }
+
+    #orderSuccessModal #saveQrCodeBtn {
+        margin-top: 8px !important;
+        padding: 8px 14px !important;
+        font-size: 12px !important;
+    }
+
+    #orderSuccessModal #saveQrCodeBtn svg {
+        width: 16px !important;
+        height: 16px !important;
+        margin-right: 6px !important;
+    }
+}

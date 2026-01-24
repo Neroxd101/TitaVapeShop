@@ -678,7 +678,7 @@ main {
 
 /* Privacy Consent Modal Styles */
 .privacy-consent-content {
-    max-height: 60vh;
+    max-height: 75vh;
     overflow-y: auto;
     padding-right: 8px;
 }
@@ -686,30 +686,30 @@ main {
 .privacy-notice {
     font-size: 17px;
     color: var(--text-secondary);
-    margin-bottom: 18px;
-    line-height: 1.6;
+    margin-bottom: 12px;
+    line-height: 1.5;
 }
 
 .privacy-details {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .privacy-details p {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     color: var(--text-primary);
     font-weight: 600;
     font-size: 16px;
 }
 
 .privacy-details ul {
-    margin-left: 22px;
-    margin-bottom: 14px;
+    margin-left: 20px;
+    margin-bottom: 10px;
     color: var(--text-secondary);
 }
 
 .privacy-details li {
-    margin-bottom: 8px;
-    line-height: 1.6;
+    margin-bottom: 4px;
+    line-height: 1.4;
     font-size: 15px;
 }
 
@@ -717,25 +717,25 @@ main {
     background: rgba(0, 212, 170, 0.1);
     border: 1px solid rgba(0, 212, 170, 0.3);
     border-radius: 8px;
-    padding: 14px 16px;
-    margin-top: 16px;
+    padding: 10px 12px;
+    margin-top: 10px;
     color: var(--text-primary);
     font-size: 15px;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 .privacy-consent-checkbox {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .privacy-consent-checkbox label {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     color: var(--text-primary);
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .privacy-consent-checkbox input[type="checkbox"] {
@@ -765,7 +765,7 @@ main {
     gap: 12px;
     justify-content: flex-start !important;
     align-items: center;
-    margin-top: 16px;
+    margin-top: 12px;
     width: 100%;
 }
 
@@ -776,18 +776,18 @@ main {
 #checkoutForm .form-actions .btn {
     flex: 1 1 0;
     min-width: 0;
-    padding: 16px 24px;
-    font-size: 15px;
+    padding: 12px 20px;
+    font-size: 14px;
     white-space: nowrap;
 }
 
 .checkout-total {
-    padding: 12px;
+    padding: 10px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
     border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 16px;
+    margin-bottom: 12px;
+    font-size: 15px;
     text-align: left;
 }
 
