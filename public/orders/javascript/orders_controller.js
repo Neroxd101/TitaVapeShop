@@ -161,7 +161,6 @@ class OrdersController {
             // Normalize order_type to lowercase for comparison
             const orderType = order.order_type ? String(order.order_type).toLowerCase().trim() : 'pickup';
             
-            // Debug log for troubleshooting
             if (!order.order_type || order.order_type !== 'pickup' && order.order_type !== 'delivery') {
                 console.warn('Order type issue:', {
                     orderId: order.id,

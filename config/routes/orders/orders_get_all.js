@@ -34,12 +34,6 @@ router.get('/api/orders/get_all', async (req, res) => {
         const total = data && data.length > 0 ? data[0].total_count : 0;
         const orders = data || [];
 
-        // Debug: Log first order to verify order_type is present
-        if (orders.length > 0) {
-            console.log('Sample order from RPC:', orders[0]);
-            console.log('Order type field:', orders[0].order_type);
-        }
-
         res.json({
             success: true,
             orders: orders,

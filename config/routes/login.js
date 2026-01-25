@@ -36,8 +36,6 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: message });
     }
 
-    console.log('Login attempt via Edge Function for:', username);
-
     // Call Supabase Edge Function for verification
     const { data, error: edgeError } = await supabase.functions.invoke('login', {
       body: { username, password }
@@ -45,7 +43,6 @@ router.post('/login', async (req, res) => {
 
     if (edgeError || !data || !data.success) {
       const message = edgeError?.message || data?.error || 'Invalid credentials';
-      console.log('Edge Function login failed:', message);
 
       if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
         return res.redirect('/?error=' + encodeURIComponent(message));

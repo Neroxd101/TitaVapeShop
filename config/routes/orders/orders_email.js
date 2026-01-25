@@ -18,7 +18,6 @@ const { supabase } = require('../../database/supabase');
  */
 async function sendOrderEmail(customerEmail, customerName, orderId, status, orderData) {
     if (!customerEmail) {
-        console.log('[Order Email] No email provided, skipping email send');
         return { success: false, error: 'No email provided' };
     }
 
@@ -58,7 +57,6 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
         };
 
         await transporter.sendMail(mailOptions);
-        console.log(`[Order Email] Email sent successfully to ${customerEmail} for order ${orderId} (${status})`);
         return { success: true };
     } catch (error) {
         console.error('[Order Email] Error sending email:', error);

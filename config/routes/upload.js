@@ -113,7 +113,6 @@ async function uploadFile(googleToken, base64Data, filename, mimeType, folderId 
   }
 
   const fileData = await uploadResponse.json();
-  console.log('File uploaded:', fileData.id);
 
   // Make file publicly accessible
   const permResponse = await fetch(
@@ -154,8 +153,6 @@ async function uploadFile(googleToken, base64Data, filename, mimeType, folderId 
     } catch (retryError) {
       console.error('Retry permission setting also failed:', retryError);
     }
-  } else {
-    console.log('File permissions set to public');
   }
 
   // Return URL using export=view format which is more reliable for public files

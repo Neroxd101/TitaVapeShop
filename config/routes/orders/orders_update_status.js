@@ -30,14 +30,6 @@ router.post('/api/orders/update_status', async (req, res) => {
             user_email = req.user.username || req.user.email || req.user.id || 'system';
         }
 
-        // Debug logging
-        console.log('Order update - User info:', {
-            user: req.user,
-            user_email: user_email,
-            order_id: order_id,
-            status: status
-        });
-
         // Call database RPC function
         const { data, error } = await supabase.rpc('orders_update_status', {
             p_order_id: order_id,

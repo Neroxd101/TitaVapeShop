@@ -96,7 +96,6 @@ const InventoryImage = {
     const nextIndex = triedIndex + 1;
 
     if (nextIndex < fallbacks.length) {
-      console.log(`[Image] Fallback ${nextIndex + 1}/${fallbacks.length} for:`, originalUrl, '→', fallbacks[nextIndex]);
       imgEl.dataset.triedIndex = nextIndex;
       imgEl.src = fallbacks[nextIndex];
       return;
@@ -340,18 +339,15 @@ const InventoryImage = {
   // Upload QR code to Google Drive (backend generates QR code directly)
   async uploadQrCode(productCode, productName) {
     if (!InventoryUtils.isGoogleConnected()) {
-      console.log('Google not connected, skipping QR upload');
       return null;
     }
 
     const googleToken = InventoryUtils.getGoogleToken();
     if (!googleToken) {
-      console.log('No Google token, skipping QR upload');
       return null;
     }
 
     try {
-      console.log('Uploading QR for product code:', productCode);
 
       // Backend will generate QR code and upload to Google Drive
       const response = await fetch('/api/upload/qrcode', {

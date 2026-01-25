@@ -34,7 +34,6 @@ router.put('/inventory/inventory_update_item', isAuthenticated, hasRole(['admin'
 
         if (error) {
             console.error('RPC Error:', error);
-            console.error('RPC Params:', rpcParams);
             return res.status(400).json({ success: false, error: error.message || 'Failed to update item' });
         }
 

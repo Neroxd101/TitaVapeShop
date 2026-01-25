@@ -69,18 +69,12 @@ function initDashboard() {
   const user = checkAuth();
   if (!user) return;
 
-  console.log('User data:', user); // Debug log
-  console.log('User role:', user.role); // Debug log
-  console.log('Google connected:', isGoogleConnected()); // Debug log
-
   // User info is now set by sidebar.js
-
 
   // Check if admin needs to connect Google
   // Show modal after a brief delay to ensure DOM is ready
   const roles = user.roles || [];
   if (roles.includes('admin') && !isGoogleConnected()) {
-    console.log('Admin detected, showing Google modal...'); // Debug log
     setTimeout(() => {
       showGoogleConnectModal();
     }, 500);
