@@ -4,7 +4,7 @@ const { supabase } = require('../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 // Protect orders routes
-router.use(isAuthenticated, hasRole(['admin']));
+router.use(isAuthenticated, hasRole(['admin', 'staff']));
 
 // GET /api/orders/get_all - Get all orders
 router.get('/api/orders/get_all', async (req, res) => {

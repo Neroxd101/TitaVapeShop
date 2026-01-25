@@ -59,9 +59,7 @@ form.addEventListener('submit', async (e) => {
     // Role-based redirection logic
     const roles = data.user.roles || [];
     if (roles.includes('staff')) {
-      window.location.href = '/inventory';
-    } else if (roles.includes('supplier')) {
-      window.location.href = '/supply';
+      window.location.href = '/sales';
     } else {
       window.location.href = '/dashboard';
     }

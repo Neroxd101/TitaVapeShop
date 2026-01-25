@@ -5,7 +5,7 @@ const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 const { sendOrderEmail } = require('./orders_email');
 
 // Protect orders routes
-router.use(isAuthenticated, hasRole(['admin']));
+router.use(isAuthenticated, hasRole(['admin', 'staff']));
 
 // POST /api/orders/update_status - Update order status
 router.post('/api/orders/update_status', async (req, res) => {
@@ -29,7 +29,7 @@ router.post('/api/orders/update_status', async (req, res) => {
             // Try username first, then email, then id as fallback
             user_email = req.user.username || req.user.email || req.user.id || 'system';
         }
-        
+
         // Debug logging
         console.log('Order update - User info:', {
             user: req.user,

@@ -3,8 +3,10 @@ const path = require('path');
 const router = express.Router();
 const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
-// Protect sales route
-router.use(isAuthenticated, hasRole(['admin', 'staff']));
+// Protect sales route - Admin and Staff
+// Apply middleware to all routes in this router
+router.use(isAuthenticated);
+router.use(hasRole(['admin', 'staff']));
 
 // GET /sales - Serve sales page
 router.get('/sales', (req, res) => {

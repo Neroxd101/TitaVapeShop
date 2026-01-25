@@ -4,10 +4,8 @@ const { supabase } = require('../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 // Protect all inventory routes
-router.use(isAuthenticated, hasRole(['admin', 'staff']));
-
 // DELETE /inventory/inventory_delete_item/:id - Delete item
-router.delete('/inventory/inventory_delete_item/:id', async (req, res) => {
+router.delete('/inventory/inventory_delete_item/:id', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
         if (!supabase) {
             return res.status(500).json({ success: false, error: 'Database not configured' });

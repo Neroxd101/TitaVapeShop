@@ -29,17 +29,53 @@ function isAuthenticated(req, res, next) {
 function hasRole(roles) {
     return (req, res, next) => {
         if (!req.user) {
-            return res.status(401).json({ error: 'Unauthorized' });
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+            return res.redirect('/');
         }
 
-        const userRoles = req.user.roles || [];
+        // Normalize user roles - handle both array and string formats
+        let userRoles = req.user.roles || [];
+
+        // Handle various string formats
+        if (typeof userRoles === 'string') {
+            // Check for Postgres array format {admin,staff}
+            if (userRoles.startsWith('{') && userRoles.endsWith('}')) {
+                userRoles = userRoles
+                    .slice(1, -1) // Remove { and }
+                    .split(',')   // Split by comma
+                    .map(r => r.trim().replace(/^"|"$/g, '')); // Remove usage quotes if any
+            } else {
+                try {
+                    userRoles = JSON.parse(userRoles);
+                } catch (e) {
+                    // If parsing fails, treat as single role
+                    userRoles = [userRoles];
+                }
+            }
+        }
+
+        // Ensure it's an array
+        if (!Array.isArray(userRoles)) {
+            userRoles = userRoles ? [userRoles] : [];
+        }
+
         const hasRequiredRole = roles.some(role => userRoles.includes(role));
+
+        // Debug logging
+        console.log(`[Auth Check] User: ${req.user.username}, UserRoles: ${JSON.stringify(userRoles)}, Required: ${JSON.stringify(roles)}, Allowed: ${hasRequiredRole}, Path: ${req.path}`);
 
         if (hasRequiredRole) {
             return next();
         }
 
-        res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+        // Do NOT clear cookie here. Just deny access.
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+            return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+        }
+        // Redirect to login for browser requests with error
+        return res.redirect('/?error=' + encodeURIComponent('Insufficient permissions'));
     };
 }
 

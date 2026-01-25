@@ -2,13 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { supabase } = require('../../database/supabase');
 
-const { isAuthenticated } = require('../../middleware/authMiddleware');
-
-// Protect all sales API routes
-router.use(isAuthenticated);
+const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 // Handle sale checkout: deduct inventory via RPC function
-router.post('/sales/sales_process', async (req, res) => {
+router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
         const { items } = req.body;
 
@@ -56,7 +53,7 @@ router.post('/sales/sales_process', async (req, res) => {
 
                 // RPC returns an array, get first item
                 const updatedItem = Array.isArray(data) && data.length > 0 ? data[0] : data;
-                
+
                 results.push({
                     id: id,
                     name: item.name || updatedItem?.name || 'Unknown',

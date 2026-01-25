@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       const roles = decoded.roles || [];
-      if (roles.includes('staff')) return res.redirect('/inventory');
+      if (roles.includes('staff')) return res.redirect('/sales');
       if (roles.includes('supplier')) return res.redirect('/supply');
       return res.redirect('/dashboard');
     } catch (err) {
@@ -73,7 +73,7 @@ router.post('/login', async (req, res) => {
     // 3. Handle response based on request type
     if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
       const roles = user.roles || [];
-      if (roles.includes('staff')) return res.redirect('/inventory');
+      if (roles.includes('staff')) return res.redirect('/sales');
       if (roles.includes('supplier')) return res.redirect('/supply');
       return res.redirect('/dashboard');
     }

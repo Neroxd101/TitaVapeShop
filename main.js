@@ -29,7 +29,7 @@ const ordersUpdateStatusRoutes = require('./config/routes/orders/orders_update_s
 
 const app = express();
 
-// Setup middleware
+// Setup middleware (includes static file serving)
 setupMiddleware(app);
 
 // Routes
@@ -40,6 +40,10 @@ app.use('/', catalogRoutes); // Public catalog for customers
 
 // Protected routes (authentication required)
 app.use('/', loginRoutes);
+// Register orders routes early to avoid conflicts with other routes
+app.use('/', ordersControllerRoutes);
+app.use('/', ordersGetAllRoutes);
+app.use('/', ordersUpdateStatusRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', inventoryLoadRoutes);
 app.use('/', inventoryCreateRoutes);
@@ -59,9 +63,6 @@ app.use('/', transactionsReportRoutes);
 app.use('/', analyticsServeRoutes);
 app.use('/', analyticsApiRoutes);
 app.use('/', settingsRoutes);
-app.use('/', ordersControllerRoutes);
-app.use('/', ordersGetAllRoutes);
-app.use('/', ordersUpdateStatusRoutes);
 // app.use('/', salesApiRoutes); // Removed
 
 // For local development

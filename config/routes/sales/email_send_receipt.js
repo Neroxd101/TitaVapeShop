@@ -4,16 +4,14 @@ const router = express.Router();
 // We'll use nodemailer for sending emails via Gmail SMTP
 // You'll need to install: npm install nodemailer
 const nodemailer = require('nodemailer');
-const { isAuthenticated } = require('../../middleware/authMiddleware');
+const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 // Protect email routes
-router.use(isAuthenticated);
-
 /**
  * POST /api/email/send-receipt
  * Send a sales receipt via email using Gmail SMTP
  */
-router.post('/api/email/send-receipt', async (req, res) => {
+router.post('/api/email/send-receipt', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
   try {
     const { customerEmail, customerName, items, total, cash, change, saleDate } = req.body;
 

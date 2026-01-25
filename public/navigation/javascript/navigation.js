@@ -59,7 +59,7 @@ function setActiveNavItem(currentPage) {
   if (currentNavItem) {
     currentNavItem.classList.add('active');
   }
-  
+
   // Also handle 'orders' page (if it exists)
   if (currentPage === 'orders') {
     const ordersNavItem = document.querySelector(`.nav-item[data-page="orders"]`);
@@ -81,17 +81,29 @@ function loadUserInfo() {
   const userStr = localStorage.getItem('user');
   let username = 'Admin';
   let role = 'Administrator';
+  let roles = ['admin'];
 
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
       username = user.username || user.email?.split('@')[0] || 'Admin';
-      role = user.role === 'admin' ? 'Admin' : (user.role === 'staff' ? 'Staff' : 'Admin');
+
+      // Handle roles array (from new login) or single role (legacy)
+      roles = user.roles || (user.role ? [user.role] : ['admin']);
+
+      if (roles.includes('admin')) {
+        role = 'Administrator';
+      } else if (roles.includes('staff')) {
+        role = 'Staff';
+      } else {
+        role = 'User';
+      }
     } catch (e) {
       console.error('Error parsing user data:', e);
     }
   }
 
+  // Update UI Elements
   if (userNameEl) userNameEl.textContent = username;
   if (userRoleEl) userRoleEl.textContent = role;
 
@@ -105,6 +117,41 @@ function loadUserInfo() {
       userAvatarEl.textContent = initial;
     }
   }
+
+  // Update accessible links
+  updateNavigationLinks(roles);
+}
+
+/**
+ * Show/Hide navigation links based on user roles
+ * @param {string[]} roles 
+ */
+function updateNavigationLinks(roles) {
+  const navItems = document.querySelectorAll('.nav-item[data-page]');
+
+  navItems.forEach(item => {
+    const page = item.getAttribute('data-page');
+    let isAllowed = false;
+
+    // Admin has access to everything
+    if (roles.includes('admin')) {
+      isAllowed = true;
+    }
+    // Staff has restricted access
+    else if (roles.includes('staff')) {
+      if (['sales', 'orders'].includes(page)) {
+        isAllowed = true;
+      }
+    }
+    // Add other roles here if needed
+
+    // Toggle visibility
+    if (isAllowed) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
+  });
 }
 
 /**
