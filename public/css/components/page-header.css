@@ -28,7 +28,7 @@
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .page-header .header-left {
@@ -39,21 +39,35 @@
   margin-left: 16px;
 }
 
+/* Simple header (h1 left, subtitle right) */
+.page-header > h1 {
+  margin: 0;
+}
+
+.page-header > .subtitle {
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50%;
+}
+
 /* Responsive: stack header on small screens */
 @media (max-width: 768px) {
+  /* Keep title + subtitle on one row; allow header-right content to wrap below if needed */
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .page-header > .subtitle {
+    max-width: 45%;
   }
 
   .page-header .header-right {
     width: 100%;
     margin-left: 0;
-  }
-
-  .page-header .header-right .btn {
-    width: 100%;
   }
 }
 
