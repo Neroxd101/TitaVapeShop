@@ -26,6 +26,7 @@ const catalogRoutes = require('./config/routes/catalog');
 const ordersControllerRoutes = require('./config/routes/orders/orders_controller');
 const ordersGetAllRoutes = require('./config/routes/orders/orders_get_all');
 const ordersUpdateStatusRoutes = require('./config/routes/orders/orders_update_status');
+const passwordResetRoutes = require('./config/routes/password-reset');
 
 const app = express();
 
@@ -37,6 +38,7 @@ setupMiddleware(app);
 
 // Public routes (no authentication required) - register first
 app.use('/', catalogRoutes); // Public catalog for customers
+app.use('/', passwordResetRoutes); // Password reset (public)
 
 // Protected routes (authentication required)
 app.use('/', loginRoutes);
