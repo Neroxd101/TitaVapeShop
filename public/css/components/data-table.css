@@ -35,6 +35,15 @@
   border-bottom: none;
 }
 
+/* Generic table card wrapper - can be used with any table */
+.table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+}
+
 /* Table card wrapper */
 .data-table-card {
   overflow: hidden;

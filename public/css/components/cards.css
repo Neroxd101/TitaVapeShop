@@ -3,6 +3,25 @@
    Reusable card styles for product/inventory cards
    ============================================= */
 
+/* Base card style */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  backdrop-filter: blur(20px);
+}
+
+/* Responsive card padding */
+@media (max-width: 480px) {
+  .card {
+    padding: 36px 24px;
+  }
+}
+
 .card-header {
   display: flex;
   align-items: flex-start;

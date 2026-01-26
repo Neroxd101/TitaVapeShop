@@ -1,11 +1,5 @@
 /* Settings Page Styles */
-
-.settings-container {
-    padding: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-    animation: fadeUp 0.5s ease-out;
-}
+/* Note: .page-container is now in /css/components/page-container.css */
 
 .page-header {
     margin-bottom: 32px;

@@ -1,0 +1,104 @@
+/* =============================================
+   Utility Classes
+   Reusable utility classes for common patterns
+   ============================================= */
+
+/* Amount Display Utilities */
+.amount-positive {
+  color: #10b981;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+}
+
+.amount-negative {
+  color: var(--error);
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Date Filter Group - Reusable pattern */
+.date-filter-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.date-filter-group .date-select {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.date-filter-group .date-select:hover {
+  border-color: var(--accent);
+}
+
+.date-filter-group .date-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .date-filter-group {
+    gap: 6px;
+  }
+
+  .date-filter-group .date-select {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .date-filter-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .date-filter-group .date-select {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Small phones landscape (short height) */
+@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
+  .date-filter-group {
+    gap: 6px;
+  }
+
+  .date-filter-group .date-select {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) {
+  .date-filter-group .date-select {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
+/* Tablet landscape (1024x505) - compact */
+@media (width: 1024px) and (height: 505px) and (orientation: landscape),
+       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+  .date-filter-group {
+    gap: 6px !important;
+  }
+
+  .date-filter-group .date-select {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    border-radius: 8px !important;
+  }
+}

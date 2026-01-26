@@ -1,0 +1,27 @@
+/* =============================================
+   CSS Variables
+   Global design tokens and theme variables
+   ============================================= */
+
+/* Custom Font */
+@font-face {
+  font-family: 'Coolpbl';
+  src: url('/fonts/Coolpbl.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a24;
+  --accent: #00d4aa;
+  --accent-glow: rgba(0, 212, 170, 0.3);
+  --accent-hover: #00eabb;
+  --text-primary: #ffffff;
+  --text-secondary: #8b8b9e;
+  --border: #2a2a3a;
+  --error: #ff4757;
+  --success: #00d4aa;
+}
