@@ -157,8 +157,7 @@ BEGIN
 
     -- Update password
     UPDATE public.users
-    SET password = p_new_password_hash,
-        updated_at = NOW()
+    SET password = p_new_password_hash
     WHERE id = p_user_id;
 
     -- Invalidate all existing reset tokens for this user
