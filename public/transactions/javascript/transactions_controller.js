@@ -331,7 +331,9 @@ class TransactionsUI {
             'sale_complete': '<span class="badge badge-sale">Sale</span>',
             'inventory_add': '<span class="badge badge-add">Add</span>',
             'inventory_edit': '<span class="badge badge-edit">Edit</span>',
-            'inventory_delete': '<span class="badge badge-delete">Delete</span>'
+            'inventory_delete': '<span class="badge badge-delete">Delete</span>',
+            'order_confirm': '<span class="badge badge-confirm">Confirm</span>',
+            'order_cancel': '<span class="badge badge-cancel">Cancel</span>'
         };
         return map[type] || `<span class="badge">${type}</span>`;
     }
@@ -380,6 +382,20 @@ class TransactionsUI {
 
         if (t.action_type === 'inventory_delete') {
             return `Deleted "${this.escapeHtml(d.name)}"`;
+        }
+
+        if (t.action_type === 'order_confirm') {
+            const orderId = d.order_id ? d.order_id.substring(0, 8) : 'N/A';
+            const itemsCount = d.items_count || 0;
+            const orderType = d.order_type || 'pickup';
+            return `Confirmed order ${orderId} (${itemsCount} items, ${orderType})`;
+        }
+
+        if (t.action_type === 'order_cancel') {
+            const orderId = d.order_id ? d.order_id.substring(0, 8) : 'N/A';
+            const itemsCount = d.items_count || 0;
+            const orderType = d.order_type || 'pickup';
+            return `Cancelled order ${orderId} (${itemsCount} items, ${orderType})`;
         }
 
         return JSON.stringify(d).substring(0, 50) + '...';

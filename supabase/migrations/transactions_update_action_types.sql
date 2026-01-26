@@ -1,8 +1,25 @@
 -- =============================================
--- Transactions Log Function
--- Logs a transaction/activity via RPC
+-- Update Transactions Action Types
+-- Adds order_confirm and order_cancel to allowed action types
 -- =============================================
 
+-- Drop the existing CHECK constraint
+ALTER TABLE transactions DROP CONSTRAINT IF EXISTS transactions_action_type_check;
+
+-- Add the updated CHECK constraint with new action types
+ALTER TABLE transactions ADD CONSTRAINT transactions_action_type_check 
+    CHECK (action_type IN (
+        'inventory_add',
+        'inventory_edit',
+        'inventory_delete',
+        'sale_complete',
+        'sale_void',
+        'order_confirm',
+        'order_cancel'
+    ));
+
+-- Update the transactions_log function to accept new action types
+-- (This is already in transactions_log.sql, but ensuring it's updated)
 CREATE OR REPLACE FUNCTION transactions_log(
     p_action_type VARCHAR(50),
     p_user_email VARCHAR(255) DEFAULT NULL,
@@ -35,7 +52,7 @@ BEGIN
         RAISE EXCEPTION 'action_type is required';
     END IF;
 
-    -- Validate action_type
+    -- Validate action_type (includes new order action types)
     IF p_action_type NOT IN ('inventory_add', 'inventory_edit', 'inventory_delete', 'sale_complete', 'sale_void', 'order_confirm', 'order_cancel') THEN
         RAISE EXCEPTION 'Invalid action_type: %', p_action_type;
     END IF;

@@ -51,6 +51,48 @@ BEGIN
         RAISE EXCEPTION 'Order not found';
     END IF;
 
+    -- Log transaction for order confirmation
+    IF p_status = 'confirmed' AND (current_status IS NULL OR current_status != 'confirmed') THEN
+        -- Log order confirmation transaction
+        PERFORM transactions_log(
+            p_action_type => 'order_confirm',
+            p_user_email => p_user_email,
+            p_entity_id => p_order_id,
+            p_entity_type => 'order',
+            p_sale_total => order_total_amount,
+            p_sale_items => order_items,
+            p_customer_name => order_customer_name,
+            p_customer_email => order_customer_email,
+            p_details => jsonb_build_object(
+                'order_id', p_order_id,
+                'order_type', order_type,
+                'items_count', jsonb_array_length(order_items),
+                'previous_status', current_status
+            )
+        );
+    END IF;
+
+    -- Log transaction for order cancellation
+    IF p_status = 'cancelled' AND (current_status IS NULL OR current_status != 'cancelled') THEN
+        -- Log order cancellation transaction
+        PERFORM transactions_log(
+            p_action_type => 'order_cancel',
+            p_user_email => p_user_email,
+            p_entity_id => p_order_id,
+            p_entity_type => 'order',
+            p_sale_total => order_total_amount,
+            p_sale_items => order_items,
+            p_customer_name => order_customer_name,
+            p_customer_email => order_customer_email,
+            p_details => jsonb_build_object(
+                'order_id', p_order_id,
+                'order_type', order_type,
+                'items_count', jsonb_array_length(order_items),
+                'previous_status', current_status
+            )
+        );
+    END IF;
+
     -- If completing the order, deduct inventory quantities and log transaction
     -- Only deduct if order was not already completed (prevent double deduction)
     IF p_status = 'completed' AND (current_status IS NULL OR current_status != 'completed') THEN

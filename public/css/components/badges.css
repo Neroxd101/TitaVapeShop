@@ -35,6 +35,16 @@
   color: var(--error);
 }
 
+.badge-confirm {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent);
+}
+
+.badge-cancel {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--error);
+}
+
 /* Badge Variants - Status */
 .badge-warning {
   background: rgba(255, 159, 67, 0.15);

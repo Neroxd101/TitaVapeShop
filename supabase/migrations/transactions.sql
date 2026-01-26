@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS transactions (
     'inventory_edit',
     'inventory_delete',
     'sale_complete',
-    'sale_void'
+    'sale_void',
+    'order_confirm',
+    'order_cancel'
   )),
   
   -- User information (from session)
