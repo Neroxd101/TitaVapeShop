@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const QRCode = require('qrcode');
-const { isAuthenticated } = require('../middleware/authMiddleware');
+const { isAuthenticated } = require('../../middleware/authMiddleware');
 
 // Protect all upload routes
 router.use(isAuthenticated);

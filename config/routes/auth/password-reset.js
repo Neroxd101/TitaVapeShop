@@ -3,13 +3,13 @@ const path = require('path');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const { supabase } = require('../database/supabase');
+const { supabase } = require('../../database/supabase');
 
 /**
  * GET /forgot-password - Serve forgot password page
  */
 router.get('/forgot-password', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/forgot-password/forgot-password.html'));
+  res.sendFile(path.join(__dirname, '../../../public/forgot-password/forgot-password.html'));
 });
 
 /**

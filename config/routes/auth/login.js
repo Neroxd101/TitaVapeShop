@@ -3,7 +3,7 @@ const path = require('path');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { supabase } = require('../database/supabase');
+const { supabase } = require('../../database/supabase');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // GET /login - Serve login page
@@ -15,13 +15,12 @@ router.get('/', (req, res) => {
       const decoded = jwt.verify(token, JWT_SECRET);
       const roles = decoded.roles || [];
       if (roles.includes('staff')) return res.redirect('/sales');
-      if (roles.includes('supplier')) return res.redirect('/supply');
       return res.redirect('/dashboard');
     } catch (err) {
       // Invalid token, just show login page
     }
   }
-  res.sendFile(path.join(__dirname, '../../public/login/login.html'));
+  res.sendFile(path.join(__dirname, '../../../public/login/login.html'));
 });
 
 // POST /login - JWT-based login via RPC Function
@@ -86,7 +85,6 @@ router.post('/login', async (req, res) => {
     if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
       const roles = user.roles || [];
       if (roles.includes('staff')) return res.redirect('/sales');
-      if (roles.includes('supplier')) return res.redirect('/supply');
       return res.redirect('/dashboard');
     }
 

@@ -1,8 +1,8 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const { supabase } = require('../database/supabase');
-const { sendOrderEmail } = require('./orders/orders_email');
+const { supabase } = require('../../database/supabase');
+const { sendOrderEmail } = require('../orders/orders_email');
 
 // =============================================
 // PUBLIC ROUTES - No authentication required
@@ -12,33 +12,33 @@ const { sendOrderEmail } = require('./orders/orders_email');
 // Public product catalog page - accessible without login
 // GET /catalog
 router.get('/catalog', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/catalog/catalog.html'));
+  res.sendFile(path.join(__dirname, '../../../public/catalog/catalog.html'));
 });
 
 // Public product catalog modal HTML - accessible without login
 // GET /catalog/catalog-product-modal.html
 router.get('/catalog/catalog-product-modal.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-product-modal.html'));
+  res.sendFile(path.join(__dirname, '../../../public/catalog/catalog-product-modal.html'));
 });
 
 // Public cart modal HTML
 router.get('/catalog/catalog-cart-modal.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-cart-modal.html'));
+  res.sendFile(path.join(__dirname, '../../../public/catalog/catalog-cart-modal.html'));
 });
 
 // Public privacy modal HTML
 router.get('/catalog/catalog-privacy-modal.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-privacy-modal.html'));
+  res.sendFile(path.join(__dirname, '../../../public/catalog/catalog-privacy-modal.html'));
 });
 
 // Public checkout modal HTML
 router.get('/catalog/catalog-checkout-modal.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-checkout-modal.html'));
+  res.sendFile(path.join(__dirname, '../../../public/catalog/catalog-checkout-modal.html'));
 });
 
 // Public order success modal HTML
 router.get('/catalog/catalog-order-success-modal.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/catalog/catalog-order-success-modal.html'));
+  res.sendFile(path.join(__dirname, '../../../public/catalog/catalog-order-success-modal.html'));
 });
 
 // Public inventory list for catalog
@@ -193,4 +193,3 @@ router.post('/api/orders/create', async (req, res) => {
 });
 
 module.exports = router;
-

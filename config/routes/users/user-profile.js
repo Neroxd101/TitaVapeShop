@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const { supabase } = require('../database/supabase');
-const { isAuthenticated, hasRole } = require('../middleware/authMiddleware');
+const { supabase } = require('../../database/supabase');
+const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 /**
  * GET /api/user/profile/info
