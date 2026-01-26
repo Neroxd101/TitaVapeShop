@@ -1,0 +1,86 @@
+/* =============================================
+   Main Layout Component
+   Global layout styles for all pages
+   ============================================= */
+
+/* Global body layout */
+body {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  padding-bottom: 70px;
+  padding-top: 0;
+}
+
+/* Main content container */
+.main-content {
+  flex: 1;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  padding-top: 0;
+  padding-bottom: 70px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Main header (if used) */
+.main-header {
+  padding: 20px 32px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-left h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.menu-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-toggle svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--text-primary);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.current-date {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .main-header {
+    padding: 16px 20px;
+  }
+}

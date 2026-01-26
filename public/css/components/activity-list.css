@@ -1,0 +1,105 @@
+/* =============================================
+   Activity List Component
+   Reusable activity/notification list styles
+   ============================================= */
+
+.activity-list {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.activity-item {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item:hover {
+  background: var(--bg-secondary);
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--text-secondary);
+}
+
+.activity-details {
+  flex: 1;
+}
+
+.activity-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.activity-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .activity-item {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .activity-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .activity-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-item {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .activity-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .activity-title {
+    font-size: 13px;
+  }
+
+  .activity-time {
+    font-size: 11px;
+  }
+}

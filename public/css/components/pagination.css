@@ -7,8 +7,8 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-top: 24px;
-  padding: 16px;
+  margin-top: 0px;
+  padding: 8px 16px;
 }
 
 .pagination-controls .btn-small {

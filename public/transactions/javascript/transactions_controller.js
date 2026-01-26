@@ -312,10 +312,18 @@ class TransactionsUI {
 
     formatDate(dateString) {
         if (!dateString) return '-';
-        return new Date(dateString).toLocaleString('en-PH', {
-            dateStyle: 'medium',
-            timeStyle: 'short'
+        const date = new Date(dateString);
+        const dateStr = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
         });
+        const timeStr = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+        return `<div class="time-date">${dateStr}</div><div class="time-time">${timeStr}</div>`;
     }
 
     getActionBadge(type) {

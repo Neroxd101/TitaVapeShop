@@ -24,6 +24,15 @@ const Inventory = {
 
     // Setup event listeners
     this.setupEventListeners();
+
+    // Check if we should open add modal (from dashboard quick action)
+    if (sessionStorage.getItem('openAddItemModal') === 'true') {
+      sessionStorage.removeItem('openAddItemModal');
+      // Small delay to ensure modal is ready
+      setTimeout(() => {
+        InventoryCreate.openAddModal();
+      }, 300);
+    }
   },
 
   // Setup event listeners

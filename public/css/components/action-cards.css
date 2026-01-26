@@ -18,6 +18,7 @@
   align-items: center;
   gap: 16px;
   text-decoration: none;
+  cursor: pointer;
   transition: all 0.2s ease;
   min-height: 120px;
 }
