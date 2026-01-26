@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { supabase } = require('../database/supabase');
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -23,7 +24,7 @@ router.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/login/login.html'));
 });
 
-// POST /login - JWT-based login via Edge Function
+// POST /login - JWT-based login via RPC Function
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -36,21 +37,35 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: message });
     }
 
-    // Call Supabase Edge Function for verification
-    const { data, error: edgeError } = await supabase.functions.invoke('login', {
-      body: { username, password }
+    // Call RPC function to get user by username
+    const { data: userData, error: rpcError } = await supabase.rpc('user_get_by_username', {
+      p_username: username
     });
 
-    if (edgeError || !data || !data.success) {
-      const message = edgeError?.message || data?.error || 'Invalid credentials';
-
+    if (rpcError || !userData || userData.length === 0) {
+      const message = 'Invalid credentials';
       if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
         return res.redirect('/?error=' + encodeURIComponent(message));
       }
       return res.status(401).json({ error: message });
     }
 
-    const { user } = data;
+    const user = userData[0];
+
+    // Verify password using bcrypt
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (!isPasswordValid) {
+      const message = 'Invalid credentials';
+      if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+        return res.redirect('/?error=' + encodeURIComponent(message));
+      }
+      return res.status(401).json({ error: message });
+    }
+
+    // Update last login via RPC
+    await supabase.rpc('user_update_last_login', {
+      p_user_id: user.id
+    });
 
     // 1. Create JWT
     const token = jwt.sign(
