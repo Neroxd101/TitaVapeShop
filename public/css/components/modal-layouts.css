@@ -1616,6 +1616,7 @@
   #viewModal .view-actions {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
+    grid-auto-flow: row !important;
     gap: 6px !important;
     padding-top: 8px !important;
     margin-top: 4px !important;
@@ -1629,6 +1630,42 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
     margin-left: 0 !important;
+  }
+
+  /* Default button order: Generate QR, Edit, Delete, History */
+  #viewModal .view-actions #viewGenerateQrBtn {
+    order: 1;
+  }
+
+  #viewModal .view-actions #viewEditBtn {
+    order: 2;
+  }
+
+  #viewModal .view-actions #viewDeleteBtn {
+    order: 3;
+  }
+
+  #viewModal .view-actions #viewHistoryBtn {
+    order: 4;
+  }
+
+  /* When Generate QR is hidden, History moves up to fill the space */
+  #viewModal .view-actions.qr-hidden {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Reorder buttons when QR is hidden: Edit, Delete, History */
+  #viewModal .view-actions.qr-hidden #viewEditBtn {
+    order: 1;
+  }
+
+  #viewModal .view-actions.qr-hidden #viewDeleteBtn {
+    order: 2;
+  }
+
+  #viewModal .view-actions.qr-hidden #viewHistoryBtn {
+    order: 3;
+    grid-column: 1 / -1;
   }
 
   #viewModal .view-actions .btn {
@@ -1890,5 +1927,146 @@
   #viewModal .view-actions .btn svg {
     width: 16px !important;
     height: 16px !important;
+  }
+}
+
+/* Inventory View Modal - Phone portrait (360x740) taller images column */
+@media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 28vh !important;
+    min-height: 28vh !important;
+    max-height: 28vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Inventory View Modal - Phone portrait (360x740) taller images column */
+@media (width: 353px) and (height: 745px){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 28vh !important;
+    min-height: 28vh !important;
+    max-height: 28vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Inventory View Modal - Phone portrait (360x740) taller images column */
+@media (width: 375px) and (height: 667px){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 33vh !important;
+    min-height: 33vh !important;
+    max-height: 33vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Inventory View Modal - Phone portrait (360x740) taller images column */
+@media (width: 414px) and (height: 896px){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 33vh !important;
+    min-height: 33vh !important;
+    max-height: 33vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Inventory View Modal - Phone portrait (360x740) taller images column */
+@media (width: 390px) and (height: 844px){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 33vh !important;
+    min-height: 33vh !important;
+    max-height: 33vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (width: 430px) and (height: 932px){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 33vh !important;
+    min-height: 33vh !important;
+    max-height: 33vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (min-width: 375px) and (min-height: 726px){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 27vh !important;
+    min-height: 27vh !important;
+    max-height: 27vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+
+@media (width: 540px) and (height: 720px){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 35vh !important;
+    min-height: 35vh !important;
+    max-height: 35vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (min-width: 1200px) and (min-height: 800px) and (orientation: landscape){
+  /* Override the portrait "100px" compact image sizing */
+  #viewModal .view-main-image {
+    height: 47vh !important;
+    min-height: 47vh !important;
+    max-height: 47vh !important;
+  }
+
+  #viewModal .view-col-details {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
   }
 }

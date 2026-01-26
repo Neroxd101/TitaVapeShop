@@ -30,12 +30,15 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: fadeUp 0.3s ease;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 .modal::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 .modal-small {
@@ -342,7 +345,7 @@
 
 /* Tablet portrait (800x1145) - specific optimizations */
 @media (width: 800px) and (height: 1145px) and (orientation: portrait),
-       (min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
+(min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
   .modal-overlay {
     padding: 12px !important;
     align-items: center !important;
@@ -380,7 +383,7 @@
 
 /* Tablet portrait (640x889) - specific optimizations */
 @media (width: 640px) and (height: 889px) and (orientation: portrait),
-       (min-width: 638px) and (max-width: 642px) and (min-height: 887px) and (max-height: 891px) and (orientation: portrait) {
+(min-width: 638px) and (max-width: 642px) and (min-height: 887px) and (max-height: 891px) and (orientation: portrait) {
   .modal-overlay {
     padding: 10px !important;
     align-items: center !important;
@@ -418,7 +421,7 @@
 
 /* Tablet landscape (1024x505) - compact modal */
 @media (width: 1024px) and (height: 505px) and (orientation: landscape),
-       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+(min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
   .modal-overlay {
     padding: 8px !important;
     align-items: center !important;
@@ -466,20 +469,20 @@
   }
 }
 
-  .modal-close svg {
-    width: 18px;
-    height: 18px;
-  }
+.modal-close svg {
+  width: 18px;
+  height: 18px;
+}
 
-  .modal form,
-  .modal-body {
-    padding: 18px;
-  }
+.modal form,
+.modal-body {
+  padding: 18px;
+}
 
-  .modal-actions {
-    padding: 0 18px 18px;
-    gap: 10px;
-  }
+.modal-actions {
+  padding: 0 18px 18px;
+  gap: 10px;
+}
 }
 
 @media (max-width: 480px) {
@@ -815,7 +818,7 @@
 
 /* 1080x2400 portrait 380dpi - high DPI optimizations */
 @media (width: 1080px) and (height: 2400px) and (orientation: portrait) and (resolution: 380dpi),
-       (width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
+(width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
   .modal-overlay {
     padding: 8px;
     overflow-y: auto;
@@ -1257,8 +1260,8 @@
 
 /* Phone portrait (380x754) and (380x810) - delete modal */
 @media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
-       (width: 380px) and (height: 754px) and (orientation: portrait),
-       (width: 380px) and (height: 810px) and (orientation: portrait) {
+(width: 380px) and (height: 754px) and (orientation: portrait),
+(width: 380px) and (height: 810px) and (orientation: portrait) {
   .modal-small {
     max-width: 100% !important;
     margin: 0 !important;
@@ -1847,7 +1850,7 @@
 
 /* Phone portrait (360x800) - specific optimizations */
 @media (width: 360px) and (height: 800px) and (orientation: portrait),
-       (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
+(min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
   .modal-overlay {
     padding: 1px;
     overflow-y: auto;
@@ -2057,8 +2060,8 @@
 /* Phone portrait (380x754) and (380x810) - specific optimizations */
 /* Using range-based media query for Android compatibility */
 @media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
-       (width: 380px) and (height: 754px) and (orientation: portrait),
-       (width: 380px) and (height: 810px) and (orientation: portrait) {
+(width: 380px) and (height: 754px) and (orientation: portrait),
+(width: 380px) and (height: 810px) and (orientation: portrait) {
   .modal-overlay {
     padding: 1px !important;
     overflow-y: auto;
@@ -2163,7 +2166,7 @@
 
 /* Phone portrait (392x767) - specific optimizations */
 @media (width: 392px) and (height: 767px) and (orientation: portrait),
-       (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
+(min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
   .modal-overlay {
     padding: 1px;
     overflow-y: auto;
@@ -2297,6 +2300,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

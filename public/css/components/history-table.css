@@ -45,6 +45,14 @@
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 74, 144, 226), 0.1);
 }
 
+.modal-header {
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 6px !important;
+  border-bottom: none !important;
+}
+
 /* Modal header date filter responsive */
 .modal-header .history-date-filter {
   display: flex;
@@ -90,12 +98,14 @@
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .history-stat .stat-value {
   font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
+  text-align: center;
 }
 
 .history-stat .stat-value.highlight {
@@ -357,6 +367,47 @@
 
 /* Phone portrait (360x740) - specific optimizations */
 @media (width: 360px) and (height: 740px) and (orientation: portrait) {
+  /* Center product name in inventory history modal header */
+  #historyModal .modal-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 6px !important;
+    border-bottom: none !important;
+  }
+
+  #historyModal .modal-header h3 {
+    width: 100%;
+    margin-bottom: 2px;
+  }
+
+  #historyModal .modal-header .history-date-filter {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Phone portrait (353x745) - specific optimizations */
+@media (width: 353px) and (height: 745px) and (orientation: portrait) {
+  /* Center product name in inventory history modal header */
+  #historyModal .modal-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 6px !important;
+    border-bottom: none !important;
+  }
+
+  #historyModal .modal-header h3 {
+    width: 100%;
+    margin-bottom: 2px;
+  }
+
+  #historyModal .modal-header .history-date-filter {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
   .history-stats-container {
     margin-bottom: 8px !important;
     padding-bottom: 8px !important;
@@ -382,6 +433,7 @@
   }
 
   .history-stat .stat-value {
+    justify-content: center !important;
     font-size: 12px !important;
     white-space: nowrap;
     overflow: hidden;
@@ -2085,5 +2137,49 @@
 
   .history-table th {
     font-size: 7px !important;
+  }
+}
+
+/* Phone portrait (353x745) - specific optimizations */
+@media (width: 375px) and (height: 667px) and (orientation: portrait) {
+  /* Center product name in inventory history modal header */
+  #historyModal .modal-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 6px !important;
+    border-bottom: none !important;
+  }
+}
+
+@media (width: 414px) and (height: 896px){
+  #historyModal .modal-header{
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 6px !important;
+  border-bottom: none !important;
+  }
+}
+
+@media (width: 390px) and (height: 844px){
+
+  #historyModal .modal-header{
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 6px !important;
+  border-bottom: none !important;
+  }
+}
+
+@media (width: 430px) and (height: 932px){
+
+  #historyModal .modal-header{
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 6px !important;
+  border-bottom: none !important;
   }
 }

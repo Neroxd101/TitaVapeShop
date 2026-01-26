@@ -161,8 +161,15 @@ const InventoryLoad = {
         }
 
         const generateQrBtn = document.getElementById('viewGenerateQrBtn');
+        const viewActions = document.querySelector('#viewModal .view-actions');
         if (generateQrBtn) {
-            generateQrBtn.style.display = item.qr_image_url ? 'none' : '';
+            if (item.qr_image_url) {
+                generateQrBtn.style.display = 'none';
+                if (viewActions) viewActions.classList.add('qr-hidden');
+            } else {
+                generateQrBtn.style.display = '';
+                if (viewActions) viewActions.classList.remove('qr-hidden');
+            }
         }
 
         InventoryDOM.viewModal.classList.add('show');

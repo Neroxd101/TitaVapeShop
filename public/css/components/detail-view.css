@@ -33,6 +33,17 @@
   gap: 20px;
 }
 
+/* Inventory View Modal: center header text (category/name/description) */
+#viewModal .view-category {
+  align-self: center;
+  text-align: center;
+}
+
+#viewModal .view-name,
+#viewModal .view-description {
+  text-align: center;
+}
+
 .view-main-image {
   width: 100%;
   /* Make gallery bigger */

@@ -59,6 +59,15 @@
   line-height: 1.3;
 }
 
+/* Inventory cards: center category badge and name */
+.inventory-card .card-header {
+  justify-content: center;
+}
+
+.inventory-card .card-name {
+  text-align: center;
+}
+
 .card-details {
   display: grid;
   grid-template-columns: 1fr 1fr;
