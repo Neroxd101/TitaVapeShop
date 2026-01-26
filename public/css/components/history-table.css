@@ -12,8 +12,9 @@
 .history-stats {
   display: flex;
   gap: 24px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap !important;
   align-items: flex-end;
+  justify-content: space-between;
 }
 
 .history-date-filter {
@@ -33,6 +34,14 @@
   cursor: pointer;
   transition: border-color 0.2s ease;
   min-width: 100px;
+}
+
+#historyModal .modal-wide {
+  max-height: 700px !important; /* or any value you want */
+}
+
+#historyModal .modal-wide .modal-body {
+  
 }
 
 .history-date-filter .date-select:hover {
@@ -91,6 +100,8 @@
   flex-direction: column;
   gap: 4px;
   justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
 }
 
 .history-stat .stat-label {
@@ -224,6 +235,7 @@
 
   .history-stats {
     gap: 12px;
+    flex-wrap: nowrap !important;
   }
 
   .history-stat .stat-label {
@@ -290,7 +302,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -415,7 +427,7 @@
 
   .history-stats {
     gap: 5px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -523,7 +535,7 @@
 
   .history-stats {
     gap: 5px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -630,7 +642,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -738,7 +750,7 @@
 
   .history-stats {
     gap: 5px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -822,7 +834,7 @@
 
   .history-stats {
     gap: 5px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -932,7 +944,7 @@
 
 .history-stats {
   gap: 6px !important;
-  flex-wrap: wrap;
+  flex-wrap: nowrap !important;
   width: 100%;
   justify-content: space-between;
 }
@@ -1038,7 +1050,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -1162,7 +1174,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -1286,7 +1298,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -1410,7 +1422,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -1534,7 +1546,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -1658,7 +1670,7 @@
 
   .history-stats {
     gap: 6px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -1782,7 +1794,7 @@
 
   .history-stats {
     gap: 8px !important;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important;
     width: 100%;
     justify-content: space-between;
   }
@@ -2183,3 +2195,76 @@
   border-bottom: none !important;
   }
 }
+
+/* Desktop/Laptop (1920x951) - larger history modal and table */
+@media (min-width: 500px) and (min-height: 500px)  {
+  /* Larger modal */
+  #historyModal .modal.modal-wide {
+    max-width: 1000px !important;
+    max-height: 85vh !important;
+  }
+
+  /* Larger header */
+  #historyModal .modal-header {
+    padding: 32px 32px 0 !important;
+  }
+
+  #historyModal .modal-header h3 {
+    font-size: 28px !important;
+  }
+
+  #historyModal .history-date-filter {
+    gap: 12px !important;
+  }
+
+  #historyModal .history-date-filter .date-select {
+    padding: 12px 16px !important;
+    font-size: 16px !important;
+    min-width: 140px !important;
+  }
+
+  /* Larger stats */
+  #historyModal .history-stats-container {
+    margin-bottom: 32px !important;
+    padding-bottom: 24px !important;
+  }
+
+  #historyModal .history-stats {
+    gap: 32px !important;
+  }
+
+  #historyModal .history-stat {
+    padding: 24px !important;
+    border-radius: 16px !important;
+  }
+
+  #historyModal .history-stat .stat-label {
+    font-size: 14px !important;
+  }
+
+  #historyModal .history-stat .stat-value {
+    font-size: 32px !important;
+  }
+
+  /* Larger table */
+  #historyModal .history-table-container {
+    max-height: 600px !important;
+    border-radius: 16px !important;
+  }
+
+  #historyModal .history-table th {
+    padding: 20px 24px !important;
+    font-size: 14px !important;
+  }
+
+  #historyModal .history-table td {
+    padding: 18px 24px !important;
+    font-size: 16px !important;
+  }
+
+  /* Larger modal body padding */
+  #historyModal .modal-body {
+    padding: 32px !important;
+  }
+
+  #historyMod}
