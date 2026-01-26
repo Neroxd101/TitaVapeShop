@@ -29,6 +29,9 @@ class OrdersController {
         this.qrScanning = false;
         this.scanningOrderId = null;
 
+        // Modal state
+        this.pendingOrderId = null;
+
         this.init();
     }
 
@@ -47,6 +50,7 @@ class OrdersController {
         await this.loadOrderDetailsModal();
 
         this.setupEventListeners();
+        this.setupModalEventListeners();
         await this.loadOrders();
     }
 
@@ -81,6 +85,158 @@ class OrdersController {
             orderDetailsModal.addEventListener('click', (e) => {
                 if (e.target === orderDetailsModal) {
                     orderDetailsModal.classList.remove('show');
+                }
+            });
+        }
+
+        // Confirm Order Modal
+        const confirmOrderModal = document.getElementById('confirmOrderModal');
+        const closeConfirmOrderModal = document.getElementById('closeConfirmOrderModal');
+        const cancelConfirmOrderBtn = document.getElementById('cancelConfirmOrderBtn');
+        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
+
+        if (closeConfirmOrderModal) {
+            closeConfirmOrderModal.addEventListener('click', () => {
+                if (confirmOrderModal) {
+                    confirmOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        if (cancelConfirmOrderBtn) {
+            cancelConfirmOrderBtn.addEventListener('click', () => {
+                if (confirmOrderModal) {
+                    confirmOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        if (confirmOrderBtn) {
+            confirmOrderBtn.addEventListener('click', () => {
+                if (this.pendingOrderId) {
+                    this.executeConfirmOrder(this.pendingOrderId);
+                }
+            });
+        }
+
+        if (confirmOrderModal) {
+            confirmOrderModal.addEventListener('click', (e) => {
+                if (e.target === confirmOrderModal) {
+                    confirmOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        // Cancel Order Modal
+        const cancelOrderModal = document.getElementById('cancelOrderModal');
+        const closeCancelOrderModal = document.getElementById('closeCancelOrderModal');
+        const cancelCancelOrderBtn = document.getElementById('cancelCancelOrderBtn');
+        const confirmCancelOrderBtn = document.getElementById('confirmCancelOrderBtn');
+
+        if (closeCancelOrderModal) {
+            closeCancelOrderModal.addEventListener('click', () => {
+                if (cancelOrderModal) {
+                    cancelOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        if (cancelCancelOrderBtn) {
+            cancelCancelOrderBtn.addEventListener('click', () => {
+                if (cancelOrderModal) {
+                    cancelOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        if (confirmCancelOrderBtn) {
+            confirmCancelOrderBtn.addEventListener('click', () => {
+                if (this.pendingOrderId) {
+                    this.executeCancelOrder(this.pendingOrderId);
+                }
+            });
+        }
+
+        if (cancelOrderModal) {
+            cancelOrderModal.addEventListener('click', (e) => {
+                if (e.target === cancelOrderModal) {
+                    cancelOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        // Complete Order Modal
+        const completeOrderModal = document.getElementById('completeOrderModal');
+        const closeCompleteOrderModal = document.getElementById('closeCompleteOrderModal');
+        const cancelCompleteOrderBtn = document.getElementById('cancelCompleteOrderBtn');
+        const confirmCompleteOrderBtn = document.getElementById('confirmCompleteOrderBtn');
+
+        if (closeCompleteOrderModal) {
+            closeCompleteOrderModal.addEventListener('click', () => {
+                if (completeOrderModal) {
+                    completeOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        if (cancelCompleteOrderBtn) {
+            cancelCompleteOrderBtn.addEventListener('click', () => {
+                if (completeOrderModal) {
+                    completeOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        if (confirmCompleteOrderBtn) {
+            confirmCompleteOrderBtn.addEventListener('click', () => {
+                if (this.pendingOrderId) {
+                    this.executeCompleteOrder(this.pendingOrderId);
+                }
+            });
+        }
+
+        if (completeOrderModal) {
+            completeOrderModal.addEventListener('click', (e) => {
+                if (e.target === completeOrderModal) {
+                    completeOrderModal.classList.remove('show');
+                    this.pendingOrderId = null;
+                }
+            });
+        }
+
+        // Order Confirmed Success Modal
+        const orderConfirmedSuccessModal = document.getElementById('orderConfirmedSuccessModal');
+        const closeOrderConfirmedSuccessModal = document.getElementById('closeOrderConfirmedSuccessModal');
+        const closeOrderConfirmedSuccessBtn = document.getElementById('closeOrderConfirmedSuccessBtn');
+
+        if (closeOrderConfirmedSuccessModal) {
+            closeOrderConfirmedSuccessModal.addEventListener('click', () => {
+                if (orderConfirmedSuccessModal) {
+                    orderConfirmedSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (closeOrderConfirmedSuccessBtn) {
+            closeOrderConfirmedSuccessBtn.addEventListener('click', () => {
+                if (orderConfirmedSuccessModal) {
+                    orderConfirmedSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (orderConfirmedSuccessModal) {
+            orderConfirmedSuccessModal.addEventListener('click', (e) => {
+                if (e.target === orderConfirmedSuccessModal) {
+                    orderConfirmedSuccessModal.classList.remove('show');
                 }
             });
         }
@@ -243,9 +399,18 @@ class OrdersController {
         });
     }
 
-    async confirmOrder(orderId) {
-        if (!confirm('Are you sure you want to confirm this order?')) {
-            return;
+    confirmOrder(orderId) {
+        this.pendingOrderId = orderId;
+        const modal = document.getElementById('confirmOrderModal');
+        if (modal) {
+            modal.classList.add('show');
+        }
+    }
+
+    async executeConfirmOrder(orderId) {
+        const modal = document.getElementById('confirmOrderModal');
+        if (modal) {
+            modal.classList.remove('show');
         }
 
         try {
@@ -264,7 +429,11 @@ class OrdersController {
             const result = await response.json();
 
             if (result.success) {
-                alert('Order confirmed successfully!');
+                // Show success modal
+                const successModal = document.getElementById('orderConfirmedSuccessModal');
+                if (successModal) {
+                    successModal.classList.add('show');
+                }
                 this.loadOrders();
             } else {
                 alert('Failed to confirm order: ' + (result.error || 'Unknown error'));
@@ -272,6 +441,8 @@ class OrdersController {
         } catch (error) {
             console.error('Error confirming order:', error);
             alert('Error confirming order. Please try again.');
+        } finally {
+            this.pendingOrderId = null;
         }
     }
 
@@ -345,7 +516,7 @@ class OrdersController {
         const scannedOrderId = decodedText.trim();
         
         if (scannedOrderId === this.scanningOrderId) {
-            // QR code matches - complete the order
+            // QR code matches - show complete modal
             this.completeOrder(this.scanningOrderId);
         } else {
             alert('QR code does not match this order. Please scan the correct QR code.');
@@ -353,9 +524,18 @@ class OrdersController {
         }
     }
 
-    async completeOrder(orderId) {
-        if (!confirm('Are you sure you want to complete this order?')) {
-            return;
+    completeOrder(orderId) {
+        this.pendingOrderId = orderId;
+        const modal = document.getElementById('completeOrderModal');
+        if (modal) {
+            modal.classList.add('show');
+        }
+    }
+
+    async executeCompleteOrder(orderId) {
+        const modal = document.getElementById('completeOrderModal');
+        if (modal) {
+            modal.classList.remove('show');
         }
 
         try {
@@ -382,12 +562,23 @@ class OrdersController {
         } catch (error) {
             console.error('Error completing order:', error);
             alert('Error completing order. Please try again.');
+        } finally {
+            this.pendingOrderId = null;
         }
     }
 
-    async cancelOrder(orderId) {
-        if (!confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
-            return;
+    cancelOrder(orderId) {
+        this.pendingOrderId = orderId;
+        const modal = document.getElementById('cancelOrderModal');
+        if (modal) {
+            modal.classList.add('show');
+        }
+    }
+
+    async executeCancelOrder(orderId) {
+        const modal = document.getElementById('cancelOrderModal');
+        if (modal) {
+            modal.classList.remove('show');
         }
 
         try {
@@ -414,6 +605,8 @@ class OrdersController {
         } catch (error) {
             console.error('Error cancelling order:', error);
             alert('Error cancelling order. Please try again.');
+        } finally {
+            this.pendingOrderId = null;
         }
     }
 

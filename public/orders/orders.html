@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="/css/components/alerts.css">
     <link rel="stylesheet" href="/css/components/modal.css">
     <link rel="stylesheet" href="/css/components/modal-layouts.css">
+    <link rel="stylesheet" href="/css/components/confirmation-modal.css">
     <link rel="stylesheet" href="/css/components/empty-state.css">
     <link rel="stylesheet" href="/css/components/loading-state.css">
     <link rel="stylesheet" href="/css/components/logo.css">
@@ -110,6 +111,99 @@
 
     <!-- Order Details Modal - Loaded dynamically -->
     <div id="order-details-modal-container"></div>
+
+    <!-- Confirm Order Modal -->
+    <div id="confirmOrderModal" class="modal-overlay">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>Confirm Order</h3>
+                <button class="modal-close" id="closeConfirmOrderModal">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to confirm this order?</p>
+                <p class="text-muted">The customer will be notified via email.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelConfirmOrderBtn">Cancel</button>
+                <button class="btn btn-primary" id="confirmOrderBtn">Confirm Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Order Modal -->
+    <div id="cancelOrderModal" class="modal-overlay">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>Cancel Order</h3>
+                <button class="modal-close" id="closeCancelOrderModal">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this order?</p>
+                <p class="text-muted"><strong>Warning:</strong> This action cannot be undone.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelCancelOrderBtn">No, Keep Order</button>
+                <button class="btn btn-danger" id="confirmCancelOrderBtn">Yes, Cancel Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complete Order Modal -->
+    <div id="completeOrderModal" class="modal-overlay">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>Complete Order</h3>
+                <button class="modal-close" id="closeCompleteOrderModal">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to complete this order?</p>
+                <p class="text-muted">Inventory will be deducted and the customer will be notified.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelCompleteOrderBtn">Cancel</button>
+                <button class="btn btn-success" id="confirmCompleteOrderBtn">Complete Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Confirmed Success Modal -->
+    <div id="orderConfirmedSuccessModal" class="modal-overlay">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>✓ Order Confirmed</h3>
+                <button class="modal-close" id="closeOrderConfirmedSuccessModal">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon-wrapper">
+                    <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <p style="text-align: center; margin-top: 16px;">Order has been confirmed successfully!</p>
+                <p class="text-muted" style="text-align: center; margin-top: 8px;">The customer has been notified via email.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary btn-full" id="closeOrderConfirmedSuccessBtn">Continue</button>
+            </div>
+        </div>
+    </div>
 
     <!-- QR Scanner Modal -->
     <div id="qrScannerModal" class="modal-overlay">
