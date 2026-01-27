@@ -4,7 +4,7 @@
 
 .actions-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr) !important;
   gap: 20px;
 }
 
@@ -62,13 +62,6 @@
 }
 
 /* Responsive Styles */
-@media (max-width: 1200px) {
-  .actions-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-}
-
 @media (max-width: 768px) {
   .actions-grid {
     grid-template-columns: repeat(2, 1fr);
