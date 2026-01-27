@@ -15,11 +15,16 @@ const AnalyticsProductDetails = {
 
         products.forEach(p => {
             const row = document.createElement('tr');
+            const revenue = parseFloat(p.revenue || 0);
+            const formattedRevenue = revenue.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
             row.innerHTML = `
                 <td><strong>${this.escapeHtml(p.name)}</strong></td>
                 <td><span class="badge">${this.escapeHtml(p.category || 'Uncategorized')}</span></td>
                 <td>${p.unitsSold} units</td>
-                <td>₱${parseFloat(p.revenue || 0).toFixed(2)}</td>
+                <td>₱${formattedRevenue}</td>
                 <td>${p.stockLeft !== undefined ? p.stockLeft : '-'}</td>
             `;
             listEl.appendChild(row);

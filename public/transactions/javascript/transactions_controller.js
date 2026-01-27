@@ -365,8 +365,10 @@ class TransactionsUI {
 
                     // Format based on field type
                     if (field.includes('price')) {
-                        from = `₱${parseFloat(from || 0).toFixed(2)}`;
-                        to = `₱${parseFloat(to || 0).toFixed(2)}`;
+                        const fromAmount = parseFloat(from || 0);
+                        const toAmount = parseFloat(to || 0);
+                        from = `₱${fromAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                        to = `₱${toAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                     }
 
                     changeList.push(`${this.formatFieldName(field)}: ${from} → ${to}`);
@@ -403,7 +405,12 @@ class TransactionsUI {
 
     formatAmount(t) {
         if (t.sale_total) {
-            return `<span class="amount-positive">₱${parseFloat(t.sale_total).toFixed(2)}</span>`;
+            const amount = parseFloat(t.sale_total);
+            const formatted = amount.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            return `<span class="amount-positive">₱${formatted}</span>`;
         }
         return '-';
     }
