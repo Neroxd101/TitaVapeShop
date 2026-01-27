@@ -8,10 +8,10 @@ const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 // Protect email routes
 /**
- * POST /api/email/send-receipt
+ * POST /sales/email_send_receipt
  * Send a sales receipt via email using Gmail SMTP
  */
-router.post('/api/email/send-receipt', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
+router.post('/sales/email_send_receipt', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
   try {
     const { customerEmail, customerName, items, total, cash, change, saleDate } = req.body;
 
