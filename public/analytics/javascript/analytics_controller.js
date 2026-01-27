@@ -74,6 +74,9 @@ class AnalyticsController {
                 if (window.AnalyticsProductDetails) {
                     AnalyticsProductDetails.render(data.topProducts || []);
                 }
+            } else {
+                // Show error in UI if available
+                console.error('Analytics loading failed:', response.error);
             }
 
         } catch (error) {

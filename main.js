@@ -42,7 +42,14 @@ const transactionsReportRoutes = require('./config/routes/transactions/transacti
 
 // Analytics routes
 const analyticsServeRoutes = require('./config/routes/analytics/analytics_controller');
-const analyticsApiRoutes = require('./config/routes/analytics/analytics_api');
+const analyticsDashboardRoutes = require('./config/routes/analytics/analytics_dashboard');
+const analyticsTotalRevenueRoutes = require('./config/routes/analytics/analytics_total_revenue');
+const analyticsTotalSalesRoutes = require('./config/routes/analytics/analytics_total_sales');
+const analyticsItemsSoldRoutes = require('./config/routes/analytics/analytics_items_sold');
+const analyticsAvgBasketRoutes = require('./config/routes/analytics/analytics_avg_basket');
+const analyticsRevenueTrendRoutes = require('./config/routes/analytics/analytics_revenue_trend');
+const analyticsTopProductsRoutes = require('./config/routes/analytics/analytics_top_products');
+const analyticsCategoryStatsRoutes = require('./config/routes/analytics/analytics_category_stats');
 
 // Orders routes
 const ordersControllerRoutes = require('./config/routes/orders/orders_controller');
@@ -85,7 +92,14 @@ app.use('/', transactionsListRoutes);
 app.use('/', transactionsStatsRoutes);
 app.use('/', transactionsReportRoutes);
 app.use('/', analyticsServeRoutes);
-app.use('/', analyticsApiRoutes);
+app.use('/', analyticsDashboardRoutes);
+app.use('/', analyticsTotalRevenueRoutes);
+app.use('/', analyticsTotalSalesRoutes);
+app.use('/', analyticsItemsSoldRoutes);
+app.use('/', analyticsAvgBasketRoutes);
+app.use('/', analyticsRevenueTrendRoutes);
+app.use('/', analyticsTopProductsRoutes);
+app.use('/', analyticsCategoryStatsRoutes);
 app.use('/', settingsRoutes);
 // app.use('/', salesApiRoutes); // Removed
 
