@@ -12,6 +12,9 @@ const InventoryState = {
     viewingItemId: null,
     viewingHistoryItemId: null,
     historyFilterDate: null,
+    historyPage: 1,
+    historyPageSize: 6,
+    historyTotal: 0,
     MAX_IMAGES: 5
 };
 

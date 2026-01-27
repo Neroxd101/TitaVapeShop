@@ -29,6 +29,9 @@ const InventoryHistory = {
 
         InventoryState.viewingHistoryItemId = itemId;
         InventoryState.historyFilterDate = null;
+        InventoryState.historyPage = 1;
+        InventoryState.historyPageSize = 6;
+        InventoryState.historyTotal = 0;
         
         // Set product name
         document.getElementById('historyProductName').textContent = item.name;
@@ -44,10 +47,14 @@ const InventoryHistory = {
         // Setup date filter dropdowns
         this.setupDateFilter(itemId);
         
+        // Setup pagination controls
+        this.setupPagination(itemId);
+        
         // Show loading state
         document.getElementById('historyLoading').style.display = 'block';
         document.getElementById('historyTableBody').innerHTML = '';
         document.getElementById('historyEmpty').style.display = 'none';
+        document.getElementById('historyPagination').style.display = 'none';
         
         // Show modal
         InventoryDOM.historyModal.classList.add('show');
@@ -56,9 +63,24 @@ const InventoryHistory = {
         await this.loadSalesHistory(itemId);
     },
 
-    async loadSalesHistory(itemId) {
+    async loadSalesHistory(itemId, page = null) {
         try {
-            const response = await fetch(`/inventory/inventory_get_sales_history/${itemId}`);
+            if (page !== null) {
+                InventoryState.historyPage = page;
+            }
+            
+            const pageSize = InventoryState.historyPageSize || 7;
+            const offset = (InventoryState.historyPage - 1) * pageSize;
+            
+            // Show loading state when changing pages
+            const loadingState = document.getElementById('historyLoading');
+            const tbody = document.getElementById('historyTableBody');
+            if (page !== null) {
+                loadingState.style.display = 'block';
+                tbody.innerHTML = '';
+            }
+            
+            const response = await fetch(`/inventory/inventory_get_sales_history/${itemId}?limit=${pageSize}&offset=${offset}`);
             const result = await response.json();
 
             if (!result.success) {
@@ -66,13 +88,15 @@ const InventoryHistory = {
             }
 
             const sales = result.sales || [];
-            const tbody = document.getElementById('historyTableBody');
+            const total = result.total || 0;
+            InventoryState.historyTotal = total;
+            
             const emptyState = document.getElementById('historyEmpty');
-            const loadingState = document.getElementById('historyLoading');
+            const pagination = document.getElementById('historyPagination');
 
             loadingState.style.display = 'none';
 
-            // Filter sales by date if date filter is set
+            // Filter sales by date if date filter is set (client-side filtering for current page)
             let filteredSales = sales;
             if (InventoryState.historyFilterDate) {
                 const filterDate = new Date(InventoryState.historyFilterDate);
@@ -84,15 +108,34 @@ const InventoryHistory = {
                 });
             }
 
-            if (filteredSales.length === 0) {
+            if (filteredSales.length === 0 && sales.length === 0) {
                 emptyState.style.display = 'block';
+                pagination.style.display = 'none';
                 tbody.innerHTML = '';
             } else {
                 emptyState.style.display = 'none';
                 tbody.innerHTML = filteredSales.map(sale => this.createSaleRow(sale)).join('');
+                
+                // Show pagination if there are more than pageSize items
+                const totalPages = Math.ceil(total / pageSize);
+                if (totalPages > 1) {
+                    pagination.style.display = 'flex';
+                    this.updatePaginationUI(totalPages);
+                } else {
+                    pagination.style.display = 'none';
+                }
+                
+                // Scroll table to top when changing pages
+                if (page !== null) {
+                    const tableContainer = document.querySelector('.history-table-container');
+                    if (tableContainer) {
+                        tableContainer.scrollTop = 0;
+                    }
+                }
             }
 
-            // Update stats based on filtered sales
+            // Update stats based on all sales (need to load all for accurate stats)
+            // For now, calculate from current page only
             const totalSales = filteredSales.length;
             const totalRevenue = filteredSales.reduce((sum, sale) => sum + parseFloat(sale.subtotal || 0), 0);
             const totalCost = filteredSales.reduce((sum, sale) => {
@@ -187,12 +230,55 @@ const InventoryHistory = {
             InventoryState.historyFilterDate = null;
         }
         
+        InventoryState.historyPage = 1; // Reset to first page when filtering
         this.loadSalesHistory(itemId);
+    },
+
+    setupPagination(itemId) {
+        const prevBtn = document.getElementById('historyPrevBtn');
+        const nextBtn = document.getElementById('historyNextBtn');
+        
+        if (prevBtn) {
+            prevBtn.onclick = () => {
+                if (InventoryState.historyPage > 1) {
+                    this.loadSalesHistory(itemId, InventoryState.historyPage - 1);
+                }
+            };
+        }
+        
+        if (nextBtn) {
+            nextBtn.onclick = () => {
+                const totalPages = Math.ceil(InventoryState.historyTotal / (InventoryState.historyPageSize || 7));
+                if (InventoryState.historyPage < totalPages) {
+                    this.loadSalesHistory(itemId, InventoryState.historyPage + 1);
+                }
+            };
+        }
+    },
+
+    updatePaginationUI(totalPages) {
+        const prevBtn = document.getElementById('historyPrevBtn');
+        const nextBtn = document.getElementById('historyNextBtn');
+        const pageInfo = document.getElementById('historyPageInfo');
+        
+        if (prevBtn) {
+            prevBtn.disabled = InventoryState.historyPage <= 1;
+        }
+        
+        if (nextBtn) {
+            nextBtn.disabled = InventoryState.historyPage >= totalPages;
+        }
+        
+        if (pageInfo) {
+            pageInfo.textContent = `Page ${InventoryState.historyPage} of ${totalPages}`;
+        }
     },
 
     closeHistoryModal() {
         InventoryDOM.historyModal?.classList.remove('show');
         InventoryState.viewingHistoryItemId = null;
         InventoryState.historyFilterDate = null;
+        InventoryState.historyPage = 1;
+        InventoryState.historyTotal = 0;
     }
 };

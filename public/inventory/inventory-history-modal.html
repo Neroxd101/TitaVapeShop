@@ -68,6 +68,23 @@
         <div id="historyLoading" class="history-loading" style="display: none;">
           <p>Loading sales history...</p>
         </div>
+        
+        <!-- Pagination Controls -->
+        <div class="history-pagination" id="historyPagination" style="display: none;">
+          <button class="pagination-btn" id="historyPrevBtn" disabled>
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+            Previous
+          </button>
+          <span class="pagination-info" id="historyPageInfo">Page 1 of 1</span>
+          <button class="pagination-btn" id="historyNextBtn" disabled>
+            Next
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
