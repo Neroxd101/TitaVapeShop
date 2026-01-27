@@ -12,10 +12,20 @@ const TransactionsLog = {
             const response = await fetch('/transactions/transactions_log', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
+                credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify(transactionData)
             });
+
+            // Check if response is JSON before parsing
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response received:', text.substring(0, 200));
+                return { success: false, error: 'Server returned non-JSON response. Check authentication.' };
+            }
 
             const result = await response.json();
 

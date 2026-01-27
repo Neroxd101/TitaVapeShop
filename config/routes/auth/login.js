@@ -66,9 +66,27 @@ router.post('/login', async (req, res) => {
       p_user_id: user.id
     });
 
-    // 1. Create JWT
+    // Normalize roles - handle Postgres array format, string, or array
+    let normalizedRoles = user.roles || [];
+    if (typeof normalizedRoles === 'string') {
+      if (normalizedRoles.startsWith('{') && normalizedRoles.endsWith('}')) {
+        // Postgres array format: {admin,staff} or {"admin","staff"}
+        normalizedRoles = normalizedRoles.slice(1, -1).split(',').map(r => r.trim().replace(/^"|"$/g, ''));
+      } else {
+        try {
+          normalizedRoles = JSON.parse(normalizedRoles);
+        } catch (e) {
+          normalizedRoles = [normalizedRoles];
+        }
+      }
+    }
+    if (!Array.isArray(normalizedRoles)) {
+      normalizedRoles = normalizedRoles ? [normalizedRoles] : [];
+    }
+
+    // 1. Create JWT with normalized roles
     const token = jwt.sign(
-      { id: user.id, username: user.username, roles: user.roles },
+      { id: user.id, username: user.username, roles: normalizedRoles },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -83,8 +101,7 @@ router.post('/login', async (req, res) => {
 
     // 3. Handle response based on request type
     if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-      const roles = user.roles || [];
-      if (roles.includes('staff')) return res.redirect('/sales');
+      if (normalizedRoles.includes('staff')) return res.redirect('/sales');
       return res.redirect('/dashboard');
     }
 
@@ -92,7 +109,7 @@ router.post('/login', async (req, res) => {
       message: 'Login successful',
       user: {
         username: user.username,
-        roles: user.roles
+        roles: normalizedRoles
       }
     });
   } catch (error) {

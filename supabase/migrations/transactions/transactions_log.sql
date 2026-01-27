@@ -80,3 +80,6 @@ BEGIN
         new_transaction.created_at;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant execute permission to authenticated users (anon role for service role calls)
+GRANT EXECUTE ON FUNCTION transactions_log TO anon, authenticated, service_role;

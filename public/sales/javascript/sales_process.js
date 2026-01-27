@@ -77,7 +77,12 @@ const SalesCreate = {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ items: state.cart })
+                credentials: 'include', // Include cookies for authentication
+                body: JSON.stringify({ 
+                    items: state.cart,
+                    customer_name: customerName,
+                    customer_email: customerEmail
+                })
             });
 
             const checkoutResult = await checkoutResponse.json();
@@ -155,17 +160,7 @@ const SalesCreate = {
             proceedBtn.disabled = false;
         }
 
-        // Log transaction
-        if (window.TransactionLogger) {
-            TransactionLogger.logSaleComplete({
-                total,
-                items: state.cart,
-                cash,
-                change,
-                customerName,
-                customerEmail
-            });
-        }
+        // Transaction is now logged server-side in sales_process route (like orders)
 
         // Reset cart
         state.cart = [];

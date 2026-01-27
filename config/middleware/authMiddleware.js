@@ -39,12 +39,13 @@ function hasRole(roles) {
 
         if (typeof userRoles === 'string') {
             if (userRoles.startsWith('{') && userRoles.endsWith('}')) {
-                // Postgres array format: {admin,staff}
+                // Postgres array format: {admin,staff} or {"admin","staff"}
                 userRoles = userRoles.slice(1, -1).split(',').map(r => r.trim().replace(/^"|"$/g, ''));
             } else {
                 try {
                     userRoles = JSON.parse(userRoles);
                 } catch (e) {
+                    // If it's not valid JSON, treat as single role string
                     userRoles = [userRoles];
                 }
             }
@@ -54,7 +55,11 @@ function hasRole(roles) {
             userRoles = userRoles ? [userRoles] : [];
         }
 
-        const hasRequiredRole = roles.some(role => userRoles.includes(role));
+        // Normalize role names to lowercase for comparison (case-insensitive)
+        const normalizedUserRoles = userRoles.map(r => String(r).toLowerCase().trim());
+        const normalizedRequiredRoles = roles.map(r => String(r).toLowerCase().trim());
+
+        const hasRequiredRole = normalizedRequiredRoles.some(role => normalizedUserRoles.includes(role));
 
         if (hasRequiredRole) {
             return next();

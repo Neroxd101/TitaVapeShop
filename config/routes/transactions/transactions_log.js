@@ -1,22 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../database/supabase');
-const { isAuthenticated } = require('../../middleware/authMiddleware');
+const { supabaseAdmin } = require('../../database/supabase');
+const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
 /**
  * POST /api/transactions/log
  * Log a transaction/activity via RPC function
+ * Allow any authenticated user (admin/staff) to log transactions
  */
 router.post('/transactions/transactions_log', isAuthenticated, async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        // Get user info from JWT
+        // Get user info from JWT (match the logic from orders_update_status)
         let user_email = 'system';
-        if (req.user?.username) {
-            user_email = req.user.username;
+        if (req.user) {
+            // Try username first, then email, then id as fallback
+            user_email = req.user.username || req.user.email || req.user.id || 'system';
         }
 
         // Validate required fields
@@ -41,8 +43,8 @@ router.post('/transactions/transactions_log', isAuthenticated, async (req, res) 
             p_customer_email: req.body.customer_email || null
         };
 
-        // Call database RPC function
-        const { data, error } = await supabase.rpc('transactions_log', rpcParams);
+        // Call database RPC function using admin client to bypass RLS on transactions table
+        const { data, error } = await supabaseAdmin.rpc('transactions_log', rpcParams);
 
         if (error) {
             console.error('RPC Error:', error);

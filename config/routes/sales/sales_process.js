@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../database/supabase');
+const { supabase, supabaseAdmin } = require('../../database/supabase');
 
 const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 
-// Handle sale checkout: deduct inventory via RPC function
+        // Handle sale checkout: deduct inventory via RPC function
 router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
-        const { items } = req.body;
+        const { items, customer_name, customer_email } = req.body;
 
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ error: 'Invalid cart items' });
@@ -77,6 +77,45 @@ router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff'])
                 errors: errors,
                 processed: results
             });
+        }
+
+        // Log transaction for completed sale (server-side, like orders)
+        let user_email = 'system';
+        if (req.user) {
+            user_email = req.user.username || req.user.email || req.user.id || 'system';
+        }
+
+        // Calculate total from items
+        const saleTotal = items.reduce((sum, item) => sum + (item.qty * item.price), 0);
+        
+        // Format sale items for transaction log
+        const saleItems = items.map(item => ({
+            id: item.id,
+            qty: item.qty,
+            price: item.price,
+            name: item.name || 'Unknown'
+        }));
+
+        // Log transaction using admin client to bypass RLS
+        if (supabaseAdmin) {
+            try {
+                await supabaseAdmin.rpc('transactions_log', {
+                    p_action_type: 'sale_complete',
+                    p_user_email: user_email,
+                    p_entity_type: 'sale',
+                    p_sale_total: saleTotal,
+                    p_sale_items: saleItems,
+                    p_customer_name: customer_name || 'Walk-in',
+                    p_customer_email: customer_email || null,
+                    p_details: {
+                        items_count: items.length,
+                        processed_items: results
+                    }
+                });
+            } catch (logError) {
+                // Don't fail the sale if logging fails, just log the error
+                console.error('Failed to log transaction:', logError);
+            }
         }
 
         // All items processed successfully
