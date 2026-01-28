@@ -7,117 +7,123 @@ const { supabase } = require('../../database/supabase');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // GET /login - Serve login page
+// This route checks if user is already logged in and redirects them accordingly
 router.get('/', (req, res) => {
-  // Check for JWT in cookie
+  // Step 1: Check if user has an existing authentication token in cookies
   const token = req.cookies?.token;
+  
   if (token) {
     try {
+      // Step 2: Verify and decode the JWT token
+      // If token is valid, user is already authenticated
       const decoded = jwt.verify(token, JWT_SECRET);
-      const roles = decoded.roles || [];
+      const roles = decoded.roles;
+      
+      // Step 3: Redirect authenticated users based on their role
+      // Staff users should go to sales page, not dashboard
       if (roles.includes('staff')) return res.redirect('/sales');
+      // Admin and other users go to dashboard
       return res.redirect('/dashboard');
     } catch (err) {
-      // Invalid token, just show login page
+      // Step 4: If token is invalid/expired, ignore error and show login page
+      // This allows users with expired tokens to log in again
     }
   }
+  
+  // Step 5: If no token or invalid token, serve the login page
   res.sendFile(path.join(__dirname, '../../../public/login/login.html'));
 });
 
-// POST /login - JWT-based login via RPC Function
+// POST /login - Handle user login
+// This route authenticates users by verifying credentials and creating a JWT session
 router.post('/login', async (req, res) => {
   try {
+    // Step 1: Extract username and password from request body
     const { username, password } = req.body;
 
+    // Step 2: Validate that both username and password are provided
     if (!username || !password) {
       const message = 'Username and password are required';
-      if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-        return res.redirect('/?error=' + encodeURIComponent(message));
-      }
-      return res.status(400).json({ error: message });
+      // Check if request is from HTML form (form-urlencoded) or API (JSON)
+      return req.headers['content-type'] === 'application/x-www-form-urlencoded'
+        ? res.redirect('/?error=' + encodeURIComponent(message))
+        : res.status(400).json({ error: message });
     }
 
-    // Call RPC function to get user by username
+    // Step 3: Check if Supabase client is configured
+    if (!supabase) {
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+
+    // Step 4: Query database to find user by username
+    // Uses RPC (Remote Procedure Call) to execute PostgreSQL function
     const { data: userData, error: rpcError } = await supabase.rpc('user_get_by_username', {
       p_username: username
     });
 
+    // Step 5: Check if user exists in database
     if (rpcError || !userData || userData.length === 0) {
       const message = 'Invalid credentials';
-      if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-        return res.redirect('/?error=' + encodeURIComponent(message));
-      }
-      return res.status(401).json({ error: message });
+      return req.headers['content-type'] === 'application/x-www-form-urlencoded'
+        ? res.redirect('/?error=' + encodeURIComponent(message))
+        : res.status(401).json({ error: message });
     }
 
+    // Step 6: Get user object from query result
     const user = userData[0];
 
-    // Verify password using bcrypt
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-    if (!isPasswordValid) {
+    // Step 7: Verify password using bcrypt
+    // bcrypt.compareSync compares plain password with hashed password from database
+    if (!user.password || !bcrypt.compareSync(password, user.password)) {
       const message = 'Invalid credentials';
-      if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-        return res.redirect('/?error=' + encodeURIComponent(message));
-      }
-      return res.status(401).json({ error: message });
+      return req.headers['content-type'] === 'application/x-www-form-urlencoded'
+        ? res.redirect('/?error=' + encodeURIComponent(message))
+        : res.status(401).json({ error: message });
     }
 
-    // Update last login via RPC
-    await supabase.rpc('user_update_last_login', {
-      p_user_id: user.id
-    });
+    // Step 8: Update user's last login timestamp in database
+    await supabase.rpc('user_update_last_login', { p_user_id: user.id });
 
-    // Normalize roles - handle Postgres array format, string, or array
-    let normalizedRoles = user.roles || [];
-    if (typeof normalizedRoles === 'string') {
-      if (normalizedRoles.startsWith('{') && normalizedRoles.endsWith('}')) {
-        // Postgres array format: {admin,staff} or {"admin","staff"}
-        normalizedRoles = normalizedRoles.slice(1, -1).split(',').map(r => r.trim().replace(/^"|"$/g, ''));
-      } else {
-        try {
-          normalizedRoles = JSON.parse(normalizedRoles);
-        } catch (e) {
-          normalizedRoles = [normalizedRoles];
-        }
-      }
-    }
-    if (!Array.isArray(normalizedRoles)) {
-      normalizedRoles = normalizedRoles ? [normalizedRoles] : [];
-    }
+    // Step 9: Get user roles (stored as TEXT string, e.g., "admin,staff")
+    const roles = user.roles;
 
-    // 1. Create JWT with normalized roles
+    // Step 10: Create JWT (JSON Web Token) containing user info
+    // JWT is signed with secret key and expires in 24 hours
     const token = jwt.sign(
-      { id: user.id, username: user.username, roles: normalizedRoles },
+      { id: user.id, username: user.username, roles },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    // 2. Set Cookie
+    // Step 11: Set JWT as HTTP-only cookie for security
+    // httpOnly: prevents JavaScript access (XSS protection)
+    // secure: only sent over HTTPS in production
+    // sameSite: prevents CSRF attacks
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
     });
 
-    // 3. Handle response based on request type
+    // Step 12: Redirect user based on their role
+    // Staff users go to sales page, others (admin) go to dashboard
     if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-      if (normalizedRoles.includes('staff')) return res.redirect('/sales');
-      return res.redirect('/dashboard');
+      return roles.includes('staff') ? res.redirect('/sales') : res.redirect('/dashboard');
     }
-
+    
+    // Step 13: For API requests, return JSON response with success message
     res.json({
       message: 'Login successful',
-      user: {
-        username: user.username,
-        roles: normalizedRoles
-      }
+      user: { username: user.username, roles }
     });
   } catch (error) {
+    // Step 14: Handle any unexpected errors
     console.error('Login error:', error);
-    if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-      return res.redirect('/?error=' + encodeURIComponent(error.message || 'Internal server error'));
-    }
-    res.status(500).json({ error: 'Internal server error' });
+    const message = error.message || 'Internal server error';
+    return req.headers['content-type'] === 'application/x-www-form-urlencoded'
+      ? res.redirect('/?error=' + encodeURIComponent(message))
+      : res.status(500).json({ error: message });
   }
 });
 
@@ -125,26 +131,6 @@ router.post('/login', async (req, res) => {
 router.post('/api/logout', (req, res) => {
   res.clearCookie('token');
   res.json({ message: 'Logged out' });
-});
-
-// GET /me - Get current user info from JWT
-router.get('/me', (req, res) => {
-  const token = req.cookies?.token;
-  if (!token) {
-    return res.status(401).json({ error: 'Not authenticated' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    res.json({
-      user: {
-        username: decoded.username,
-        roles: decoded.roles
-      }
-    });
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
 });
 
 module.exports = router;
