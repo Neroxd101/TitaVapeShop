@@ -4,19 +4,19 @@
    ============================================= */
 
 .activity-list {
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.012));
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
 }
 
 .activity-item {
-  padding: 16px 20px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   border-bottom: 1px solid var(--border);
-  transition: background 0.2s ease;
+  transition: background 160ms ease, transform 160ms ease;
 }
 
 .activity-item:last-child {
@@ -24,35 +24,46 @@
 }
 
 .activity-item:hover {
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
 }
 
 .activity-icon {
   width: 40px;
   height: 40px;
-  background: var(--bg-secondary);
-  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: var(--accent);
 }
 
 .activity-icon svg {
   width: 20px;
   height: 20px;
-  fill: var(--text-secondary);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .activity-details {
   flex: 1;
+  min-width: 0;
 }
 
 .activity-title {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .activity-time {
@@ -61,7 +72,7 @@
 }
 
 .activity-empty {
-  padding: 40px;
+  padding: 28px 16px;
   text-align: center;
   color: var(--text-secondary);
 }
@@ -69,8 +80,8 @@
 /* Responsive Styles */
 @media (max-width: 768px) {
   .activity-item {
-    padding: 12px 16px;
-    gap: 12px;
+    padding: 11px 12px;
+    gap: 10px;
   }
 
   .activity-icon {
@@ -91,8 +102,8 @@
   }
 
   .activity-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
   }
 
   .activity-title {
@@ -101,5 +112,16 @@
 
   .activity-time {
     font-size: 11px;
+  }
+}
+
+/* Large screens: slightly tighter + calmer */
+@media (min-width: 1440px) {
+  .activity-item {
+    padding: 11px 14px;
+  }
+
+  .activity-title {
+    font-size: 13px;
   }
 }
