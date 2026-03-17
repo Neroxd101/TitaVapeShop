@@ -157,7 +157,16 @@ const CatalogCheckoutModal = {
                 this.close();
                 this.form.reset();
             } else {
-                alert('Failed to create order: ' + (result.error || 'Unknown error'));
+                // Friendly stock error message (409 from backend)
+                if (response.status === 409 && result?.items?.length) {
+                    const lines = result.items.map(i => {
+                        const name = i.name || 'Item';
+                        return `- ${name}: requested ${i.requested}, available ${i.available}`;
+                    });
+                    alert(`Some items are out of stock or not enough quantity:\n\n${lines.join('\n')}\n\nPlease update your cart and try again.`);
+                } else {
+                    alert('Failed to create order: ' + (result.error || 'Unknown error'));
+                }
             }
         } catch (error) {
             console.error('Error creating order:', error);

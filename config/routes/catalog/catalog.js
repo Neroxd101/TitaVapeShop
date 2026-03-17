@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const { supabase } = require('../../database/supabase');
+const { supabase, supabaseAdmin } = require('../../database/supabase');
 const { sendOrderEmail } = require('../orders/orders_email');
 
 // =============================================
@@ -142,6 +142,57 @@ router.post('/api/orders/create', async (req, res) => {
     }
 
         const { customer_name, contact_number, social_media, customer_email, order_type, items, total_amount } = req.body;
+
+        // Stock check (prevents ordering more than available)
+        // Note: This is a backend validation for better UX. Stronger protection is to enforce this in SQL with row locks.
+        if (!Array.isArray(items) || items.length === 0) {
+          return res.status(400).json({ success: false, error: 'Order must contain at least one item' });
+        }
+
+        const requested = items
+          .map(i => ({
+            id: i?.id,
+            quantity: Number.isFinite(Number(i?.quantity)) ? Number(i.quantity) : NaN
+          }))
+          .filter(i => i.id);
+
+        if (requested.length === 0 || requested.some(i => !Number.isInteger(i.quantity) || i.quantity <= 0)) {
+          return res.status(400).json({ success: false, error: 'Invalid items payload' });
+        }
+
+        const inventoryClient = supabaseAdmin || supabase;
+        const uniqueIds = [...new Set(requested.map(i => i.id))];
+        const { data: invRows, error: invError } = await inventoryClient
+          .from('inventory')
+          .select('id,name,quantity')
+          .in('id', uniqueIds);
+
+        if (invError) {
+          console.error('Inventory check error:', invError);
+          return res.status(400).json({ success: false, error: invError.message || 'Failed to validate stock' });
+        }
+
+        const invMap = new Map((invRows || []).map(r => [r.id, r]));
+        const insufficient = requested
+          .map(r => {
+            const row = invMap.get(r.id);
+            const available = row?.quantity ?? 0;
+            return {
+              id: r.id,
+              name: row?.name || null,
+              requested: r.quantity,
+              available
+            };
+          })
+          .filter(x => x.requested > x.available);
+
+        if (insufficient.length > 0) {
+          return res.status(409).json({
+            success: false,
+            error: 'Insufficient stock',
+            items: insufficient
+          });
+        }
 
         // Call database RPC function
         const { data, error } = await supabase.rpc('orders_create_order', {
