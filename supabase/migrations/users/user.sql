@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE,
     password TEXT NOT NULL, -- Hashed password
-    roles TEXT[] DEFAULT '{user}',
+    roles TEXT DEFAULT 'user',
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT now()
 );

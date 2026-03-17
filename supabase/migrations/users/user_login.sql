@@ -12,7 +12,7 @@ RETURNS TABLE (
     username TEXT,
     email TEXT,
     password TEXT,
-    roles TEXT[],
+    roles TEXT,
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ
 ) AS $$

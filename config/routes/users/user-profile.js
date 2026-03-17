@@ -68,8 +68,6 @@ router.get('/api/user/profile/info', isAuthenticated, hasRole(['admin']), async 
  */
 router.get('/api/users/list', isAuthenticated, hasRole(['admin']), async (req, res) => {
   try {
-    console.log('Fetching users list for admin:', req.user?.username);
-    
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
@@ -81,8 +79,6 @@ router.get('/api/users/list', isAuthenticated, hasRole(['admin']), async (req, r
       console.error('RPC error fetching users:', error);
       return res.status(400).json({ success: false, error: error.message });
     }
-
-    console.log(`Found ${users?.length || 0} users`);
     
     res.json({
       success: true,

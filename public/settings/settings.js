@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Parse user and check if admin
     const user = JSON.parse(userStr || '{}');
-    const isAdmin = user.roles && (Array.isArray(user.roles) ? user.roles.includes('admin') : user.roles === 'admin');
+    // Roles are stored as TEXT string (e.g., "admin,staff")
+    const rolesStr = Array.isArray(user.roles) ? user.roles.join(',') : (user.roles || '');
+    const isAdmin = rolesStr.includes('admin');
     
     // Selected user ID (for admin updates)
     let selectedUserId = null;
@@ -231,7 +233,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             
             const data = await response.json();
-            console.log('Users list response:', data); // Debug log
             
             if (data.success && data.users && Array.isArray(data.users)) {
                 userSelector.innerHTML = '<option value="">Select a user...</option>';

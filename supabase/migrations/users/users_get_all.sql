@@ -12,7 +12,7 @@ RETURNS TABLE (
     id UUID,
     username TEXT,
     email TEXT,
-    roles TEXT[],
+    roles TEXT,
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ
 ) AS $$
