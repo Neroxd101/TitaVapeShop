@@ -68,6 +68,7 @@ setupMiddleware(app);
 // Public routes (no authentication required) - register first
 app.use('/', catalogRoutes); // Public catalog for customers
 app.use('/', passwordResetRoutes); // Password reset (public)
+app.use('/keep-alive', keepAliveRoutes); // Public keep-alive endpoint (token-protected)
 app.use('/', userProfileRoutes); // User profile management (authenticated)
 
 // Protected routes (authentication required)
@@ -87,7 +88,6 @@ app.use('/', salesCreateRoutes);
 app.use('/', salesEmailRoutes);
 app.use('/', googleAuthRoutes);
 app.use('/', uploadRoutes);
-app.use('/keep-alive', keepAliveRoutes);
 app.use('/', transactionsServeRoutes);
 app.use('/', transactionsLogRoutes);
 app.use('/', transactionsListRoutes);
