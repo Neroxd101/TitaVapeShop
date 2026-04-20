@@ -69,6 +69,11 @@
   box-shadow: 0 8px 25px rgba(0, 212, 170, 0.28);
 }
 
+/* Match transactions table corners with filter/button radius. */
+.page-container .table-card {
+  border-radius: 10px;
+}
+
 @media (max-width: 1024px) {
   .transactions-filter-tabs {
     align-items: flex-start;
