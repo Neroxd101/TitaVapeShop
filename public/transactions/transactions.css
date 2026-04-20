@@ -115,7 +115,16 @@
   }
 }
 
-@media (min-width: 280px) {
+@media (max-width: 480px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .transactions-table {
+    min-width: 620px;
+  }
+
   .transactions-table th,
   .transactions-table td {
     padding: 10px 12px;
@@ -123,24 +132,29 @@
   }
 
   .transactions-table th {
-    font-size: 20px;
-    padding: 10px 12px;
-    letter-spacing: 0.5px;
-  }
-
-  .transactions-table td:nth-child(3) {
-    font-size: 20px;
-  }
-
-  .transactions-table td:nth-child(4) {
-    font-size: 20px;
-  }
-  .transactions-table td:nth-child(5) {
-    font-size: 20px;
+    font-size: 11px;
+    letter-spacing: 0.3px;
   }
 
   .transactions-table td:first-child {
-    font-size: 20px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .transactions-table td .time-date {
+    font-size: 12px;
+    margin-bottom: 1px;
+  }
+
+  .transactions-table td .time-time {
+    font-size: 11px;
+  }
+
+  .transactions-table td:nth-child(3),
+  .transactions-table td:nth-child(2),
+  .transactions-table td:nth-child(4),
+  .transactions-table td:nth-child(5) {
+    font-size: 12px;
   }
 }
 
