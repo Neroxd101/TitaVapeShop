@@ -1,0 +1,22 @@
+/* Dashboard-only visual overrides: solid card surfaces like Analytics */
+
+.stat-card,
+.action-card,
+.activity-list {
+  background: var(--bg-card);
+}
+
+.stat-card,
+.action-card {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card:hover,
+.action-card:hover {
+  box-shadow: 0 15px 35px -10px rgba(0, 212, 170, 0.1);
+}
+
+.action-icon,
+.activity-icon {
+  background: var(--bg-secondary);
+}

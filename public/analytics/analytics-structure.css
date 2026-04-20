@@ -54,6 +54,7 @@
 
 /* Analytics-specific stat card enhancements */
 .stat-card {
+  background: var(--bg-card);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.5s ease-out backwards;
 }
