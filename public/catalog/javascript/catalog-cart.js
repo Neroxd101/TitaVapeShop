@@ -177,8 +177,15 @@ const CatalogCart = {
         const badge = document.getElementById('cartBadge');
         if (badge) {
             const total = this.getTotalItems();
-            badge.textContent = total;
-            badge.style.display = 'inline-flex';
+            if (total > 0) {
+                badge.textContent = total > 99 ? '99+' : String(total);
+                badge.classList.add('has-items');
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.textContent = '0';
+                badge.classList.remove('has-items');
+                badge.style.display = 'none';
+            }
         }
     },
 
