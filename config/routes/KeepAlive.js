@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('../../database/mysql-compatible');
+const { supabaseAdmin } = require('../database/supabase');
 
 const keepAliveRouter = express.Router();
 
@@ -22,10 +22,20 @@ keepAliveRouter.get('/', async (req, res) => {
   }
 
   try {
-    await pool.query(
-      'INSERT INTO keep_alive_logs (source) VALUES (?)',
-      ['keep-alive-saas']
-    );
+    if (!supabaseAdmin) {
+      return res.status(500).json({
+        success: false,
+        message: 'Database not configured'
+      });
+    }
+
+    const { error } = await supabaseAdmin
+      .from('keep_alive_logs')
+      .insert({ source: 'keep-alive-saas' });
+
+    if (error) {
+      throw error;
+    }
 
     return res.json({
       success: true,
