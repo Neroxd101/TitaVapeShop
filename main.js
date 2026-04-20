@@ -20,6 +20,7 @@ const dashboardRoutes = require('./config/routes/dashboard/dashboard');
 
 // Upload routes
 const uploadRoutes = require('./config/routes/upload/upload');
+const keepAliveRoutes = require('./config/routes/KeepAlive');
 
 // Inventory routes
 const inventoryLoadRoutes = require('./config/routes/inventory/inventory_get_all');
@@ -86,6 +87,7 @@ app.use('/', salesCreateRoutes);
 app.use('/', salesEmailRoutes);
 app.use('/', googleAuthRoutes);
 app.use('/', uploadRoutes);
+app.use('/keep-alive', keepAliveRoutes);
 app.use('/', transactionsServeRoutes);
 app.use('/', transactionsLogRoutes);
 app.use('/', transactionsListRoutes);
