@@ -53,10 +53,9 @@
             </div>
 
             <!-- Filters -->
-            <div class="filters-card">
-                <div class="filter-group">
-                    <label for="filterAction">Action Type</label>
-                    <select id="filterAction">
+            <div class="filter-tabs transactions-filter-tabs">
+                <div class="filter-tabs-group transactions-filter-group">
+                    <select id="filterAction" class="filter-tab transactions-filter-select">
                         <option value="">All Actions</option>
                         <option value="sale_complete">Sales</option>
                         <option value="order_confirm">Order Confirm</option>
@@ -65,36 +64,30 @@
                         <option value="inventory_edit">Inventory Edit</option>
                         <option value="inventory_delete">Inventory Delete</option>
                     </select>
+                    <select id="filterYear" class="filter-tab transactions-filter-select">
+                        <option value="">Year</option>
+                    </select>
+                    <select id="filterMonth" class="filter-tab transactions-filter-select">
+                        <option value="">Month</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <select id="filterDay" class="filter-tab transactions-filter-select">
+                        <option value="">Day</option>
+                    </select>
                 </div>
 
-                <div class="filter-group">
-                    <label>Date</label>
-                    <div class="date-filter-group">
-                        <select id="filterYear" class="date-select">
-                            <option value="">Year</option>
-                        </select>
-                        <select id="filterMonth" class="date-select">
-                            <option value="">Month</option>
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <select id="filterDay" class="date-select">
-                            <option value="">Day</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="filter-actions">
+                <div class="filter-tabs-actions">
                     <button id="printTransactionsBtn" class="btn btn-secondary">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                             <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
