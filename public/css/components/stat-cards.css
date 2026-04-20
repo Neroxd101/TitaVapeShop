@@ -21,8 +21,8 @@
   margin-bottom: 20px;
 }
 
-/* Minimum ~350px: show 2 stat cards per row */
-@media (min-width: 350px) {
+/* Medium phones/tablets: show 2 stat cards per row */
+@media (min-width: 420px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -146,6 +146,9 @@
   color: var(--text-primary);
   letter-spacing: -0.3px;
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Compact large screens (27" monitors) */
@@ -208,4 +211,36 @@
 .view-stat .stat-value.profit.negative,
 .view-stat .stat-value.low-stock {
   color: var(--error);
+}
+
+/* Small phones (e.g., 360x740): keep 2x2 with tighter spacing. */
+@media (max-width: 420px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px;
+  }
+
+  .stat-card,
+  .stats-card {
+    padding: 14px;
+    gap: 10px;
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .stat-icon,
+  .stats-card-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .stat-value,
+  .stats-value {
+    font-size: 18px;
+  }
+
+  .stat-label,
+  .stats-label {
+    font-size: 11px;
+  }
 }
