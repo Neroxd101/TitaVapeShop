@@ -10,6 +10,48 @@
   animation: fadeUp 0.5s ease-out;
 }
 
+/* Analytics header: print action on its own full row */
+.analytics-container .page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.analytics-container .page-header .header-left {
+  flex: 1 1 100%;
+}
+
+.analytics-container .page-header .header-right {
+  flex: 1 1 100%;
+  margin-left: 0;
+}
+
+.analytics-container .page-header .header-right .btn {
+  width: 100%;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent), #00b894);
+  border-color: transparent;
+  color: var(--bg-primary);
+}
+
+.analytics-container .page-header .header-right .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 212, 170, 0.28);
+}
+
+@media (max-width: 1024px) {
+  .analytics-container .page-header .header-right .btn {
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-container .page-header .header-right .btn {
+    height: 36px;
+  }
+}
+
 /* Analytics-specific stat card enhancements */
 .stat-card {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
@@ -58,6 +100,7 @@
 /* Compact analytics header action button on small screens */
 @media (max-width: 480px) {
   .analytics-container .page-header .header-right .btn {
+    height: 32px;
     padding: 6px 10px !important;
     font-size: 10px !important;
   }
@@ -70,6 +113,7 @@
 
 @media (max-width: 360px) {
   .analytics-container .page-header .header-right .btn {
+    height: 30px;
     padding: 5px 8px !important;
     font-size: 9px !important;
   }
