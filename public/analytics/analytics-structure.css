@@ -14,12 +14,8 @@
 .analytics-container .page-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
-}
-
-.analytics-container .page-header .header-left {
-  flex: 1 1 100%;
 }
 
 .analytics-container .page-header .header-right {
