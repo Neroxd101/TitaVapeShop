@@ -30,6 +30,8 @@
   display: block;
   min-width: 0;
   width: 100%;
+  text-align: center;
+  text-align-last: center;
   padding-right: 34px;
   line-height: 1.25;
   text-indent: 0;
@@ -81,6 +83,11 @@
 
   .transactions-filter-group {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transactions-filter-select,
+  .transactions-filter-tabs .filter-tabs-actions .btn {
+    height: 40px;
   }
 }
 
@@ -166,6 +173,11 @@
 }
 
 @media (max-width: 768px) {
+  .transactions-filter-select,
+  .transactions-filter-tabs .filter-tabs-actions .btn {
+    height: 36px;
+  }
+
   .transactions-table th,
   .transactions-table td {
     padding: 14px 16px;
@@ -231,7 +243,7 @@
     min-width: 0;
     width: 100%;
     font-size: 11px;
-    height: 40px;
+    height: 32px;
     line-height: normal;
     padding: 0 30px 0 10px;
     border-radius: 8px;
@@ -251,7 +263,7 @@
   }
 
   .transactions-filter-tabs .filter-tabs-actions .btn {
-    height: 40px;
+    height: 32px;
     font-size: 11px;
     width: 100%;
   }
@@ -299,6 +311,25 @@
 }
 
 @media (max-width: 360px) {
+  .transactions-filter-select,
+  .transactions-filter-tabs .filter-tabs-actions .btn {
+    height: 30px;
+  }
+
+  .transactions-filter-select {
+    font-size: 10px;
+    padding: 0 26px 0 9px;
+    background-position:
+      calc(100% - 12px) 51%,
+      calc(100% - 8px) 51%;
+    background-size: 3px 3px, 3px 3px;
+  }
+
+  .transactions-filter-tabs .filter-tabs-actions .btn {
+    font-size: 10px;
+    padding: 5px 9px;
+  }
+
   .transactions-filter-group {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

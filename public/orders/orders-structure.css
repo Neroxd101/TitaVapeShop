@@ -108,6 +108,11 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .orders-filter-select,
+  .orders-filter-actions .btn {
+    height: 40px;
+  }
+
   .order-id {
     font-size: 11px;
   }
@@ -118,6 +123,11 @@
 }
 
 @media (max-width: 768px) {
+  .orders-filter-select,
+  .orders-filter-actions .btn {
+    height: 36px;
+  }
+
   .orders-table {
     min-width: 900px;
   }
