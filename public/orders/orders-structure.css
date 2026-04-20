@@ -8,11 +8,62 @@
   margin: 0 auto;
 }
 
-.filters-card {
+.orders-filter-tabs {
   margin-bottom: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.filters-card,
+.orders-filter-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.orders-filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+  text-align-last: center;
+  height: 44px;
+  line-height: normal;
+  padding: 0 34px;
+  font-family: inherit;
+  font-weight: 500;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) 52%,
+    calc(100% - 11px) 52%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.orders-filter-actions {
+  width: auto;
+}
+
+.orders-filter-actions .btn {
+  width: auto;
+  min-width: 120px;
+  background: linear-gradient(135deg, var(--accent), #00b894);
+  border-color: transparent;
+  color: var(--bg-primary);
+}
+
+.orders-filter-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 212, 170, 0.28);
+}
+
+.orders-filter-tabs,
 .orders-table-card {
   backdrop-filter: blur(10px);
 }
@@ -78,6 +129,33 @@
 }
 
 @media (max-width: 480px) {
+  .orders-filter-tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orders-filter-group,
+  .orders-filter-actions,
+  .orders-filter-actions .btn {
+    width: 100%;
+  }
+
+  .orders-filter-select {
+    height: 32px;
+    padding: 0 26px;
+    font-size: 11px;
+    background-position:
+      calc(100% - 13px) 51%,
+      calc(100% - 9px) 51%;
+    background-size: 4px 4px, 4px 4px;
+  }
+
+  .orders-filter-actions .btn {
+    height: 32px;
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
   .orders-table {
     min-width: 760px;
   }
@@ -94,6 +172,22 @@
 }
 
 @media (max-width: 360px) {
+  .orders-filter-select {
+    height: 30px;
+    font-size: 10px;
+    padding: 0 24px;
+    background-position:
+      calc(100% - 12px) 51%,
+      calc(100% - 8px) 51%;
+    background-size: 3px 3px, 3px 3px;
+  }
+
+  .orders-filter-actions .btn {
+    height: 30px;
+    font-size: 10px;
+    padding: 5px 9px;
+  }
+
   .order-id {
     font-size: 9px;
   }
@@ -106,7 +200,7 @@
     max-width: 100% !important;
   }
 
-  .filters-card {
+  .orders-filter-tabs {
     margin-bottom: 12px !important;
   }
 
