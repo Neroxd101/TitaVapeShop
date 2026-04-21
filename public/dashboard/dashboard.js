@@ -210,9 +210,12 @@ function createActivityItem(transaction) {
   const item = document.createElement('div');
   item.className = 'activity-item';
 
-  const icon = getActivityIcon(transaction.action_type);
+  const actionType = normalizeActionType(transaction.action_type);
+  const icon = getActivityIcon(actionType);
   const title = getActivityTitle(transaction);
+  const meta = getActivityMeta(transaction);
   const time = formatActivityTime(transaction.created_at);
+  const exactTime = formatExactDateTime(transaction.created_at);
 
   item.innerHTML = `
     <div class="activity-icon">
@@ -220,7 +223,9 @@ function createActivityItem(transaction) {
     </div>
     <div class="activity-details">
       <div class="activity-title">${title}</div>
+      ${meta ? `<div class="activity-meta">${meta}</div>` : ''}
       <div class="activity-time">${time}</div>
+      ${exactTime ? `<div class="activity-exact-time">${exactTime}</div>` : ''}
     </div>
   `;
 
@@ -229,6 +234,7 @@ function createActivityItem(transaction) {
 
 // Get icon SVG for activity type
 function getActivityIcon(actionType) {
+  const type = normalizeActionType(actionType);
   const icons = {
     'sale_complete': `
       <svg viewBox="0 0 24 24">
@@ -252,7 +258,7 @@ function getActivityIcon(actionType) {
     `
   };
 
-  return icons[actionType] || `
+  return icons[type] || `
     <svg viewBox="0 0 24 24">
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
     </svg>
@@ -274,9 +280,10 @@ function escapeHtml(text) {
 
 // Get activity title text
 function getActivityTitle(transaction) {
+  const actionType = normalizeActionType(transaction.action_type);
   const d = transaction.details || {};
 
-  if (transaction.action_type === 'sale_complete') {
+  if (actionType === 'sale_complete') {
     const items = transaction.sale_items || [];
     const itemCount = items.reduce((sum, i) => sum + (i.qty || 0), 0);
     const customerName = escapeHtml(transaction.customer_name || 'Walk-in');
@@ -284,23 +291,110 @@ function getActivityTitle(transaction) {
     return `Sold ${itemCount} items to ${customerName}${amount ? ` - ${amount}` : ''}`;
   }
 
-  if (transaction.action_type === 'inventory_add') {
+  if (actionType === 'inventory_add') {
     const name = escapeHtml(d.name || 'Item');
     const quantity = d.quantity || 0;
     return `Added "${name}" (${quantity} qty)`;
   }
 
-  if (transaction.action_type === 'inventory_edit') {
+  if (actionType === 'inventory_edit') {
     const itemName = escapeHtml(d.new?.name || d.old?.name || 'Item');
     return `Edited "${itemName}"`;
   }
 
-  if (transaction.action_type === 'inventory_delete') {
+  if (actionType === 'inventory_delete') {
     const name = escapeHtml(d.name || 'Item');
     return `Deleted "${name}"`;
   }
 
-  return 'Activity';
+  if (actionType === 'sale_void') {
+    const reason = escapeHtml(d.reason || 'No reason provided');
+    return `Voided sale (${reason})`;
+  }
+
+  if (actionType === 'order_confirm') {
+    const orderId = d.order_id ? escapeHtml(String(d.order_id).substring(0, 8)) : 'N/A';
+    return `Confirmed order ${orderId}`;
+  }
+
+  if (actionType === 'order_cancel') {
+    const orderId = d.order_id ? escapeHtml(String(d.order_id).substring(0, 8)) : 'N/A';
+    return `Cancelled order ${orderId}`;
+  }
+
+  return humanizeActionType(actionType);
+}
+
+function getActivityMeta(transaction) {
+  const actionType = normalizeActionType(transaction.action_type);
+  const d = transaction.details || {};
+
+  if (actionType === 'sale_complete') {
+    const items = transaction.sale_items || [];
+    const topItem = items[0]?.name ? escapeHtml(items[0].name) : '';
+    const moreItemsCount = items.length > 1 ? items.length - 1 : 0;
+    const amount = transaction.sale_total ? formatCurrency(transaction.sale_total) : '';
+    const cash = d.cash ? formatCurrency(d.cash) : '';
+    const change = d.change ? formatCurrency(d.change) : '';
+
+    const parts = [];
+    if (amount) parts.push(`Total: ${amount}`);
+    if (topItem) {
+      parts.push(
+        `Items: ${topItem}${moreItemsCount > 0 ? ` +${moreItemsCount} more` : ''}`
+      );
+    }
+    if (cash) parts.push(`Cash: ${cash}`);
+    if (change) parts.push(`Change: ${change}`);
+
+    return parts.join(' · ');
+  }
+
+  if (actionType === 'inventory_add') {
+    const name = escapeHtml(d.name || 'Item');
+    const category = escapeHtml(d.category || 'Uncategorized');
+    const quantity = d.quantity || 0;
+    const salePrice = d.sale_price ? formatCurrency(d.sale_price) : '';
+    return `${name} · ${category} · Qty: ${quantity}${salePrice ? ` · Price: ${salePrice}` : ''}`;
+  }
+
+  if (actionType === 'inventory_edit') {
+    const changes = d.changes || {};
+    const changedFields = Object.keys(changes).filter(
+      (field) => !['updated_at', 'images', 'qr_image_url'].includes(field)
+    );
+    if (!changedFields.length) return '';
+
+    return `Updated: ${changedFields
+      .slice(0, 3)
+      .map(formatFieldName)
+      .join(', ')}${changedFields.length > 3 ? ' +more' : ''}`;
+  }
+
+  if (actionType === 'inventory_delete') {
+    const category = escapeHtml(d.category || 'Uncategorized');
+    const quantity = d.quantity || 0;
+    return `${category} · Last qty: ${quantity}`;
+  }
+
+  return '';
+}
+
+function normalizeActionType(actionType) {
+  return String(actionType || '').trim().toLowerCase();
+}
+
+function humanizeActionType(actionType) {
+  if (!actionType) return 'Activity';
+  return actionType
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatFieldName(field) {
+  return String(field)
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 // Format activity time
@@ -323,6 +417,21 @@ function formatActivityTime(dateString) {
     month: 'short',
     day: 'numeric',
     year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+  });
+}
+
+function formatExactDateTime(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '';
+
+  return date.toLocaleString('en-PH', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
   });
 }
 
