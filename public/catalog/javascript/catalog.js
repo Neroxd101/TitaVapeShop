@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentCategory = 'all';
     let searchQuery = '';
 
+    function normalizeCategory(value) {
+        return String(value || '').trim().toLowerCase();
+    }
+
     // Initialize
     async function init() {
         try {
@@ -92,8 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * Filter and render products
      */
     function filterAndRender() {
+        const selectedCategory = normalizeCategory(currentCategory);
         const filtered = allProducts.filter(product => {
-            const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
+            const productCategory = normalizeCategory(product.category);
+            const matchesCategory = selectedCategory === 'all' || productCategory === selectedCategory;
             const matchesSearch = product.name.toLowerCase().includes(searchQuery) ||
                 product.description?.toLowerCase().includes(searchQuery);
             return matchesCategory && matchesSearch;
