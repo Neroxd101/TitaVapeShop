@@ -857,7 +857,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         throw new Error(data.error || 'Failed to save notification settings');
                     }
 
-                    alert('Notification settings saved successfully!');
+                    showSuccessModal('Success', 'Notification settings saved successfully!');
                 } catch (error) {
                     alert(error.message || 'Failed to save notification settings');
                 } finally {
