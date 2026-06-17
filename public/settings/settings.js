@@ -252,10 +252,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
                 
-                data.users.forEach(user => {
+                data.users.forEach(u => {
                     const option = document.createElement('option');
-                    option.value = user.id;
-                    option.textContent = `${user.username}${user.email ? ` (${user.email})` : ''}`;
+                    option.value = u.id;
+                    option.dataset.username = u.username;
+                    option.textContent = `${u.username}${u.email ? ` (${u.email})` : ''}`;
                     userSelector.appendChild(option);
                 });
             } else {
@@ -315,7 +316,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Toggle Current Password visibility and required status
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-        const isSelf = !selectedUserId || selectedUserId === currentUser.id;
+        const selectedOption = userSelector.options[userSelector.selectedIndex];
+        const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
+        const isSelf = !isAdmin || (selectedUsername === currentUser.username);
         const currentPasswordGroup = document.getElementById('currentPasswordGroup');
         const currentPasswordInput = document.getElementById('currentPassword');
         
@@ -380,8 +383,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     otp: otp
                 };
                 
+                const selectedOption = userSelector.options[userSelector.selectedIndex];
+                const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
+                const isSelf = !isAdmin || (selectedUsername === currentUser.username);
+                
                 // Add target_user_id if admin is updating another user
-                if (isAdmin && selectedUserId && selectedUserId !== currentUser.id) {
+                if (isAdmin && !isSelf && selectedUserId) {
                     requestBody.target_user_id = selectedUserId;
                 }
                 
@@ -398,7 +405,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 // Update local storage only if updating own profile
-                if (!isAdmin || !selectedUserId || selectedUserId === currentUser.id) {
+                if (isSelf) {
                     currentUser.username = newUsername;
                     localStorage.setItem('user', JSON.stringify(currentUser));
                 }
@@ -464,7 +471,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     otp: otp
                 };
                 
-                const isSelf = !selectedUserId || selectedUserId === currentUser.id;
+                const selectedOption = userSelector.options[userSelector.selectedIndex];
+                const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
+                const isSelf = !isAdmin || (selectedUsername === currentUser.username);
+                
                 if (isSelf) {
                     const currentPasswordInput = document.getElementById('currentPassword');
                     if (currentPasswordInput) {
@@ -473,7 +483,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 
                 // Add target_user_id if admin is updating another user
-                if (isAdmin && selectedUserId && selectedUserId !== currentUser.id) {
+                if (isAdmin && !isSelf && selectedUserId) {
                     requestBody.target_user_id = selectedUserId;
                 }
                 
