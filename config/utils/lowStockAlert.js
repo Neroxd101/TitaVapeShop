@@ -169,17 +169,17 @@ function generateLowStockEmailHtml(items, threshold) {
     const displayImg = getGoogleDriveThumbnail(item.imageUrl);
     return `
       <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+        <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; vertical-align: middle; width: 60px;">
           ${displayImg 
-            ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block; margin: 0 auto;">`
-            : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #9ca3af; margin: 0 auto; border: 1px solid #e5e7eb; line-height: 50px; text-align: center;">📦</div>`
+            ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #2a2a3a; display: block; margin: 0 auto;">`
+            : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #1a1a24; border: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #8b8b9e; margin: 0 auto; line-height: 50px; text-align: center;">📦</div>`
           }
         </td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 500; color: #111827; vertical-align: middle;">${escapeHtml(item.name)}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #4b5563; text-transform: capitalize; vertical-align: middle;">${escapeHtml(item.category)}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; font-weight: 600; color: #dc2626; background-color: #fef2f2; vertical-align: middle;">${item.quantity}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #4b5563; vertical-align: middle;">${item.deducted > 0 ? `-${item.deducted}` : 'Manual'}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; color: #6b7280; vertical-align: middle;">${item.previousQuantity}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; font-weight: 500; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #8b8b9e; text-transform: capitalize; vertical-align: middle;">${escapeHtml(item.category)}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; font-weight: 700; color: #ff4757; background-color: #25181c; vertical-align: middle;">${item.quantity}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.deducted > 0 ? `-${item.deducted}` : 'Manual'}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #8b8b9e; vertical-align: middle;">${item.previousQuantity}</td>
       </tr>
     `;
   }).join('');
@@ -191,26 +191,27 @@ function generateLowStockEmailHtml(items, threshold) {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Low Stock Alert - Tita Vape Shop</title>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     </head>
-    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+    <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
         <tr>
           <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); overflow: hidden;">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
               <!-- Header with premium warning gradient -->
               <tr>
-                <td style="background: linear-gradient(135deg, #ff9f43, #ff5252); padding: 40px 30px; text-align: center;">
+                <td style="background: linear-gradient(135deg, #ff4757, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
                   <span style="font-size: 40px; margin-bottom: 10px; display: inline-block;">⚠️</span>
-                  <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">Low Stock Warning</h1>
-                  <p style="margin: 8px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">System Inventory Alert</p>
+                  <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 700; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">Low Stock Warning</h1>
+                  <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">System Inventory Alert</p>
                 </td>
               </tr>
               
               <!-- Explanatory message -->
               <tr>
                 <td style="padding: 30px 30px 20px;">
-                  <p style="margin: 0; color: #374151; font-size: 16px; line-height: 1.6;">
-                    The following product(s) have fallen below your configured low stock threshold of <strong>${threshold}</strong> units. Please review and restock them soon to prevent stockouts.
+                  <p style="margin: 0; color: #8b8b9e; font-size: 15px; line-height: 1.6;">
+                    The following product(s) have fallen below your configured low stock threshold of <strong style="color: #ffffff;">${threshold}</strong> units. Please review and restock them soon to prevent stockouts.
                   </p>
                 </td>
               </tr>
@@ -218,15 +219,15 @@ function generateLowStockEmailHtml(items, threshold) {
               <!-- Low Stock Items Table -->
               <tr>
                 <td style="padding: 0 30px 20px;">
-                  <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border: 1px solid #e5e7eb;">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border: 1px solid #2a2a3a;">
                     <thead>
-                      <tr style="background-color: #f9fafb;">
-                        <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb; width: 60px;">Image</th>
-                        <th style="padding: 12px; text-align: left; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Product Name</th>
-                        <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Category</th>
-                        <th style="padding: 12px; text-align: center; color: #dc2626; font-size: 13px; font-weight: 700; border-bottom: 2px solid #e5e7eb; background-color: #fef2f2;">Current Stock</th>
-                        <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Change</th>
-                        <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Prev Stock</th>
+                      <tr style="background-color: #1a1a24;">
+                        <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a; width: 60px;">Image</th>
+                        <th style="padding: 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Product Name</th>
+                        <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Category</th>
+                        <th style="padding: 12px; text-align: center; color: #ff4757; font-size: 13px; font-weight: 700; border-bottom: 2px solid #2a2a3a; background-color: #25181c;">Current Stock</th>
+                        <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Change</th>
+                        <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Prev Stock</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -239,7 +240,7 @@ function generateLowStockEmailHtml(items, threshold) {
               <!-- Action Button -->
               <tr>
                 <td align="center" style="padding: 10px 30px 30px;">
-                  <a href="${process.env.APP_URL || 'http://localhost:3000'}/inventory" style="background-color: #ff5252; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-block; box-shadow: 0 4px 6px rgba(255, 82, 82, 0.2); transition: background-color 0.2s;">
+                  <a href="${process.env.APP_URL || 'http://localhost:3000'}/inventory" style="background-color: #ff4757; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3); transition: background-color 0.2s; font-family: 'Outfit', sans-serif;">
                     Go to Inventory Panel
                   </a>
                 </td>
@@ -247,9 +248,9 @@ function generateLowStockEmailHtml(items, threshold) {
               
               <!-- Footer info -->
               <tr>
-                <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                  <p style="margin: 0; color: #6b7280; font-size: 12px;">This is an automated notification from your Tita Vape Shop POS system.</p>
-                  <p style="margin: 4px 0 0; color: #9ca3af; font-size: 11px;">You can customize threshold limits and recipients in Settings.</p>
+                <td style="background-color: #1a1a24; padding: 24px 30px; text-align: center; border-top: 1px solid #2a2a3a;">
+                  <p style="margin: 0; color: #8b8b9e; font-size: 12px;">This is an automated notification from your Tita Vape Shop POS system.</p>
+                  <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 11px;">You can customize threshold limits and recipients in Settings.</p>
                 </td>
               </tr>
             </table>

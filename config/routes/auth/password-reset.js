@@ -156,47 +156,48 @@ function generateOTPEmail(otpCode) {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Password Reset OTP</title>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     </head>
-    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+    <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
         <tr>
           <td align="center">
-            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
               <!-- Header -->
               <tr>
-                <td style="background: linear-gradient(135deg, #00d4aa, #00b894); padding: 40px 30px; text-align: center;">
-                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Tita Vape Shop</h1>
-                  <p style="margin: 8px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">Password Reset</p>
+                <td style="background: linear-gradient(135deg, #12121a, #1a1a24); padding: 35px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
+                  <h1 style="margin: 0; color: #00d4aa; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                  <p style="margin: 6px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Password Reset</p>
                 </td>
               </tr>
               
               <!-- Content -->
               <tr>
                 <td style="padding: 40px 30px;">
-                  <h2 style="margin: 0 0 16px; color: #111827; font-size: 24px; font-weight: 600;">Password Reset Request</h2>
-                  <p style="margin: 0 0 24px; color: #6b7280; font-size: 16px; line-height: 1.6;">
+                  <h2 style="margin: 0 0 16px; color: #ffffff; font-size: 22px; font-weight: 600; font-family: 'Outfit', sans-serif;">Password Reset Request</h2>
+                  <p style="margin: 0 0 24px; color: #8b8b9e; font-size: 15px; line-height: 1.6;">
                     You have requested to reset your password. Use the OTP code below to verify your identity:
                   </p>
                   
                   <!-- OTP Code Box -->
-                  <div style="background: linear-gradient(135deg, #00d4aa, #00b894); border-radius: 12px; padding: 32px; text-align: center; margin: 32px 0;">
-                    <p style="margin: 0 0 12px; color: rgba(255, 255, 255, 0.9); font-size: 14px; font-weight: 500;">Your OTP Code</p>
-                    <div style="background: rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 16px; display: inline-block;">
-                      <p style="margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otpCode}</p>
+                  <div style="background-color: #1a1a24; border: 2px solid #00d4aa; border-radius: 12px; padding: 24px; text-align: center; margin: 30px 0;">
+                    <p style="margin: 0 0 12px; color: #8b8b9e; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Your OTP Code</p>
+                    <div style="background-color: #12121a; border: 1px dashed #00d4aa; border-radius: 8px; padding: 12px 24px; display: inline-block;">
+                      <p style="margin: 0; color: #00d4aa; font-size: 36px; font-weight: 700; letter-spacing: 8px; font-family: 'Courier New', monospace;">${otpCode}</p>
                     </div>
                   </div>
                   
-                  <p style="margin: 24px 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
-                    This code will expire in <strong>15 minutes</strong>. If you didn't request this, please ignore this email.
+                  <p style="margin: 24px 0 0; color: #8b8b9e; font-size: 14px; line-height: 1.6;">
+                    This code will expire in <strong style="color: #ffffff;">15 minutes</strong>. If you didn't request this, please ignore this email.
                   </p>
                 </td>
               </tr>
               
               <!-- Footer -->
               <tr>
-                <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                  <p style="margin: 0; color: #6b7280; font-size: 13px;">This is an automated email from Tita Vape Shop</p>
-                  <p style="margin: 8px 0 0; color: #9ca3af; font-size: 12px;">Do not share this OTP with anyone</p>
+                <td style="background-color: #1a1a24; padding: 24px 30px; text-align: center; border-top: 1px solid #2a2a3a;">
+                  <p style="margin: 0; color: #8b8b9e; font-size: 12px;">This is an automated email from Tita Vape Shop</p>
+                  <p style="margin: 6px 0 0; color: #ff4757; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Do not share this OTP with anyone</p>
                 </td>
               </tr>
             </table>

@@ -125,33 +125,33 @@ function generateEmailFooter() {
     return `
         <!-- Footer -->
         <tr>
-            <td style="background-color: #f9fafb; padding: 30px 30px; text-align: center; border-top: 1px solid #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+            <td style="background-color: #1a1a24; padding: 30px 30px; text-align: center; border-top: 1px solid #2a2a3a; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #8b8b9e;">
                 <!-- Logo -->
-                <div style="font-size: 20px; font-weight: 700; color: #00b894; margin-bottom: 6px; letter-spacing: 0.5px;">TITA VAPE SHOP</div>
+                <div style="font-size: 20px; font-weight: 700; color: #00d4aa; margin-bottom: 6px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</div>
                 
-                <p style="margin: 0 0 16px; color: #6b7280; font-size: 13px;">We appreciate your business!</p>
+                <p style="margin: 0 0 16px; color: #8b8b9e; font-size: 13px;">We appreciate your business!</p>
                 
                 <!-- Store Info Table -->
-                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #6b7280; line-height: 1.6; border-top: 1px dashed #e5e7eb; padding-top: 16px; text-align: left;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #8b8b9e; line-height: 1.6; border-top: 1px dashed #2a2a3a; padding-top: 16px; text-align: left;">
                     <tr>
-                        <td style="padding-bottom: 4px;">
+                        <td style="padding-bottom: 4px; color: #8b8b9e;">
                             📍 <strong>Location:</strong> Tita Vape Shop Main Branch, Manila, Philippines
                         </td>
-                        <td align="right" style="padding-bottom: 4px;">
+                        <td align="right" style="padding-bottom: 4px; color: #8b8b9e;">
                             📞 <strong>Contact:</strong> +63 912 345 6789
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td style="color: #8b8b9e;">
                             🕒 <strong>Store Hours:</strong> Open Daily: 10:00 AM - 10:00 PM
                         </td>
-                        <td align="right">
+                        <td align="right" style="color: #8b8b9e;">
                             📧 <strong>Email:</strong> vshoptita@gmail.com
                         </td>
                     </tr>
                 </table>
                 
-                <div style="margin-top: 20px; font-size: 11px; color: #9ca3af; border-top: 1px solid #f3f4f6; padding-top: 12px;">
+                <div style="margin-top: 20px; font-size: 11px; color: #8b8b9e; border-top: 1px solid #2a2a3a; padding-top: 12px;">
                     Generated on: ${formattedTime} (PHT)
                 </div>
             </td>
@@ -167,23 +167,23 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
         const displayImg = getGoogleDriveThumbnail(item.imageUrl);
         return `
             <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; vertical-align: middle; width: 60px;">
                     ${displayImg 
-                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block; margin: 0 auto;">`
-                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #9ca3af; margin: 0 auto; border: 1px solid #e5e7eb; line-height: 50px; text-align: center;">📦</div>`
+                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #2a2a3a; display: block; margin: 0 auto;">`
+                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #1a1a24; border: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #8b8b9e; margin: 0 auto; line-height: 50px; text-align: center;">📦</div>`
                     }
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle;">${escapeHtml(item.name)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
             </tr>
         `;
     }).join('');
 
     const orderTypeLabel = orderData.order_type === 'pickup' ? 'Pickup' : 'Delivery (3rd Party)';
     const qrNote = orderData.order_type === 'pickup' 
-        ? '<p style="margin: 16px 0 0; color: #059669; font-size: 14px; font-weight: 600;">📱 Please show your QR code when picking up your order.</p>'
+        ? '<p style="margin: 16px 0 0; color: #00d4aa; font-size: 14px; font-weight: 600;">📱 Please show your QR code when picking up your order.</p>'
         : '';
 
     return `
@@ -193,31 +193,32 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Order Confirmation - Tita Vape Shop</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+        <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
                 <tr>
                     <td align="center">
-                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                             <!-- Header -->
                             <tr>
-                                <td style="background: linear-gradient(135deg, #00d4aa, #00b894); padding: 40px 30px; text-align: center;">
-                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Tita Vape Shop</h1>
-                                    <p style="margin: 8px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">Order Confirmation</p>
+                                <td style="background: linear-gradient(135deg, #00d4aa, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                                    <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Order Confirmation</p>
                                 </td>
                             </tr>
                             
                             <!-- Order Info -->
                             <tr>
                                 <td style="padding: 30px 30px 20px;">
-                                    <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">Hello ${escapeHtml(customerName)},</p>
-                                    <p style="margin: 16px 0 0; color: #111827; font-size: 16px; line-height: 1.6;">
+                                    <p style="margin: 0 0 8px; color: #8b8b9e; font-size: 14px;">Hello ${escapeHtml(customerName)},</p>
+                                    <p style="margin: 16px 0 0; color: #ffffff; font-size: 16px; line-height: 1.6;">
                                         Thank you for your order! We have received your order and it is currently being processed.
                                     </p>
-                                    <div style="margin: 24px 0; padding: 16px; background-color: #f0fdf4; border-left: 4px solid #00d4aa; border-radius: 4px;">
-                                        <p style="margin: 0 0 8px; color: #111827; font-size: 14px; font-weight: 600;">Order ID: <span style="color: #00d4aa;">${orderId}</span></p>
-                                        <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Order Type: ${orderTypeLabel}</p>
-                                        <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Status: <span style="color: #f59e0b; font-weight: 600;">Pending</span></p>
+                                    <div style="margin: 24px 0; padding: 16px; background-color: #1a1a24; border-left: 4px solid #00d4aa; border-radius: 4px; border-top: 1px solid #2a2a3a; border-right: 1px solid #2a2a3a; border-bottom: 1px solid #2a2a3a;">
+                                        <p style="margin: 0 0 8px; color: #ffffff; font-size: 14px; font-weight: 600;">Order ID: <span style="color: #00d4aa;">${orderId}</span></p>
+                                        <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 13px;">Order Type: ${orderTypeLabel}</p>
+                                        <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 13px;">Status: <span style="color: #ff9f43; font-weight: 600;">Pending</span></p>
                                     </div>
                                     ${qrNote}
                                 </td>
@@ -226,14 +227,14 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                             <!-- Items Table -->
                             <tr>
                                 <td style="padding: 0 30px 30px;">
-                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border: 1px solid #2a2a3a;">
                                         <thead>
-                                            <tr style="background-color: #f9fafb;">
-                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb; width: 60px;">Image</th>
-                                                <th style="padding: 12px; text-align: left; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Item</th>
-                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Qty</th>
-                                                <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Price</th>
-                                                <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Subtotal</th>
+                                            <tr style="background-color: #1a1a24;">
+                                                <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a; width: 60px;">Image</th>
+                                                <th style="padding: 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Item</th>
+                                                <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Qty</th>
+                                                <th style="padding: 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Price</th>
+                                                <th style="padding: 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Subtotal</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -246,10 +247,10 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                             <!-- Total -->
                             <tr>
                                 <td style="padding: 0 30px 30px;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #2a2a3a; padding-top: 20px;">
                                         <tr>
-                                            <td style="padding: 8px 0; text-align: right; color: #6b7280; font-size: 15px;">Total Amount:</td>
-                                            <td style="padding: 8px 0; text-align: right; color: #111827; font-size: 20px; font-weight: 700; width: 150px;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 15px;">Total Amount:</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -273,24 +274,24 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
         const displayImg = getGoogleDriveThumbnail(item.imageUrl);
         return `
             <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; vertical-align: middle; width: 60px;">
                     ${displayImg 
-                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block; margin: 0 auto;">`
-                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #9ca3af; margin: 0 auto; border: 1px solid #e5e7eb; line-height: 50px; text-align: center;">📦</div>`
+                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #2a2a3a; display: block; margin: 0 auto;">`
+                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #1a1a24; border: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #8b8b9e; margin: 0 auto; line-height: 50px; text-align: center;">📦</div>`
                     }
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle;">${escapeHtml(item.name)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
             </tr>
         `;
     }).join('');
 
     const orderTypeLabel = orderData.order_type === 'pickup' ? 'Pickup' : 'Delivery (3rd Party)';
     const nextStep = orderData.order_type === 'pickup' 
-        ? '<p style="margin: 16px 0 0; color: #111827; font-size: 15px; line-height: 1.6;">Your order is ready for pickup! Please bring your QR code when you come to collect your order.</p>'
-        : '<p style="margin: 16px 0 0; color: #111827; font-size: 15px; line-height: 1.6;">We will contact you soon through your provided contact number or social media to arrange delivery.</p>';
+        ? '<p style="margin: 16px 0 0; color: #00d4aa; font-size: 15px; font-weight: 600; line-height: 1.6;">Your order is ready for pickup! Please bring your QR code when you come to collect your order.</p>'
+        : '<p style="margin: 16px 0 0; color: #ffffff; font-size: 15px; line-height: 1.6;">We will contact you soon through your provided contact number or social media to arrange delivery.</p>';
 
     return `
         <!DOCTYPE html>
@@ -299,31 +300,32 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Order Confirmed - Tita Vape Shop</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+        <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
                 <tr>
                     <td align="center">
-                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                             <!-- Header -->
                             <tr>
-                                <td style="background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 40px 30px; text-align: center;">
-                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Tita Vape Shop</h1>
-                                    <p style="margin: 8px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">Order Confirmed</p>
+                                <td style="background: linear-gradient(135deg, #3b82f6, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                                    <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Order Confirmed</p>
                                 </td>
                             </tr>
                             
                             <!-- Order Info -->
                             <tr>
                                 <td style="padding: 30px 30px 20px;">
-                                    <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">Hello ${escapeHtml(customerName)},</p>
-                                    <p style="margin: 16px 0 0; color: #111827; font-size: 16px; line-height: 1.6;">
+                                    <p style="margin: 0 0 8px; color: #8b8b9e; font-size: 14px;">Hello ${escapeHtml(customerName)},</p>
+                                    <p style="margin: 16px 0 0; color: #ffffff; font-size: 16px; line-height: 1.6;">
                                         Great news! Your order has been confirmed and is now being prepared.
                                     </p>
-                                    <div style="margin: 24px 0; padding: 16px; background-color: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 4px;">
-                                        <p style="margin: 0 0 8px; color: #111827; font-size: 14px; font-weight: 600;">Order ID: <span style="color: #3b82f6;">${orderId}</span></p>
-                                        <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Order Type: ${orderTypeLabel}</p>
-                                        <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Status: <span style="color: #3b82f6; font-weight: 600;">Confirmed</span></p>
+                                    <div style="margin: 24px 0; padding: 16px; background-color: #1a1a24; border-left: 4px solid #3b82f6; border-radius: 4px; border-top: 1px solid #2a2a3a; border-right: 1px solid #2a2a3a; border-bottom: 1px solid #2a2a3a;">
+                                        <p style="margin: 0 0 8px; color: #ffffff; font-size: 14px; font-weight: 600;">Order ID: <span style="color: #3b82f6;">${orderId}</span></p>
+                                        <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 13px;">Order Type: ${orderTypeLabel}</p>
+                                        <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 13px;">Status: <span style="color: #3b82f6; font-weight: 600;">Confirmed</span></p>
                                     </div>
                                     ${nextStep}
                                 </td>
@@ -332,14 +334,14 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                             <!-- Items Table -->
                             <tr>
                                 <td style="padding: 0 30px 30px;">
-                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border: 1px solid #2a2a3a;">
                                         <thead>
-                                            <tr style="background-color: #f9fafb;">
-                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb; width: 60px;">Image</th>
-                                                <th style="padding: 12px; text-align: left; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Item</th>
-                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Qty</th>
-                                                <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Price</th>
-                                                <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Subtotal</th>
+                                            <tr style="background-color: #1a1a24;">
+                                                <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a; width: 60px;">Image</th>
+                                                <th style="padding: 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Item</th>
+                                                <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Qty</th>
+                                                <th style="padding: 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Price</th>
+                                                <th style="padding: 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Subtotal</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -352,10 +354,10 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                             <!-- Total -->
                             <tr>
                                 <td style="padding: 0 30px 30px;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #2a2a3a; padding-top: 20px;">
                                         <tr>
-                                            <td style="padding: 8px 0; text-align: right; color: #6b7280; font-size: 15px;">Total Amount:</td>
-                                            <td style="padding: 8px 0; text-align: right; color: #111827; font-size: 20px; font-weight: 700; width: 150px;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 15px;">Total Amount:</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -379,16 +381,16 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
         const displayImg = getGoogleDriveThumbnail(item.imageUrl);
         return `
             <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; vertical-align: middle; width: 60px;">
                     ${displayImg 
-                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block; margin: 0 auto;">`
-                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #9ca3af; margin: 0 auto; border: 1px solid #e5e7eb; line-height: 50px; text-align: center;">📦</div>`
+                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #2a2a3a; display: block; margin: 0 auto;">`
+                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #1a1a24; border: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #8b8b9e; margin: 0 auto; line-height: 50px; text-align: center;">📦</div>`
                     }
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle;">${escapeHtml(item.name)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
             </tr>
         `;
     }).join('');
@@ -400,32 +402,33 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Order Completed - Tita Vape Shop</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+        <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
                 <tr>
                     <td align="center">
-                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
                             <!-- Header -->
                             <tr>
-                                <td style="background: linear-gradient(135deg, #10b981, #059669); padding: 40px 30px; text-align: center;">
-                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Tita Vape Shop</h1>
-                                    <p style="margin: 8px 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">Order Completed</p>
+                                <td style="background: linear-gradient(135deg, #00d4aa, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                                    <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Order Completed</p>
                                 </td>
                             </tr>
                             
                             <!-- Order Info -->
                             <tr>
                                 <td style="padding: 30px 30px 20px;">
-                                    <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">Hello ${escapeHtml(customerName)},</p>
-                                    <p style="margin: 16px 0 0; color: #111827; font-size: 16px; line-height: 1.6;">
+                                    <p style="margin: 0 0 8px; color: #8b8b9e; font-size: 14px;">Hello ${escapeHtml(customerName)},</p>
+                                    <p style="margin: 16px 0 0; color: #ffffff; font-size: 16px; line-height: 1.6;">
                                         Your order has been completed successfully! Thank you for your purchase.
                                     </p>
-                                    <div style="margin: 24px 0; padding: 16px; background-color: #f0fdf4; border-left: 4px solid #10b981; border-radius: 4px;">
-                                        <p style="margin: 0 0 8px; color: #111827; font-size: 14px; font-weight: 600;">Order ID: <span style="color: #10b981;">${orderId}</span></p>
-                                        <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Status: <span style="color: #10b981; font-weight: 600;">Completed</span></p>
+                                    <div style="margin: 24px 0; padding: 16px; background-color: #1a1a24; border-left: 4px solid #00d4aa; border-radius: 4px; border-top: 1px solid #2a2a3a; border-right: 1px solid #2a2a3a; border-bottom: 1px solid #2a2a3a;">
+                                        <p style="margin: 0 0 8px; color: #ffffff; font-size: 14px; font-weight: 600;">Order ID: <span style="color: #00d4aa;">${orderId}</span></p>
+                                        <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 13px;">Status: <span style="color: #00d4aa; font-weight: 600;">Completed</span></p>
                                     </div>
-                                    <p style="margin: 16px 0 0; color: #111827; font-size: 15px; line-height: 1.6;">
+                                    <p style="margin: 16px 0 0; color: #8b8b9e; font-size: 15px; line-height: 1.6;">
                                         We hope you enjoy your purchase! If you have any questions or concerns, please don't hesitate to contact us.
                                     </p>
                                 </td>
@@ -434,14 +437,14 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                             <!-- Items Table -->
                             <tr>
                                 <td style="padding: 0 30px 30px;">
-                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border: 1px solid #2a2a3a;">
                                         <thead>
-                                            <tr style="background-color: #f9fafb;">
-                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb; width: 60px;">Image</th>
-                                                <th style="padding: 12px; text-align: left; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Item</th>
-                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Qty</th>
-                                                <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Price</th>
-                                                <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Subtotal</th>
+                                            <tr style="background-color: #1a1a24;">
+                                                <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a; width: 60px;">Image</th>
+                                                <th style="padding: 12px; text-align: left; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Item</th>
+                                                <th style="padding: 12px; text-align: center; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Qty</th>
+                                                <th style="padding: 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Price</th>
+                                                <th style="padding: 12px; text-align: right; color: #ffffff; font-size: 13px; font-weight: 600; border-bottom: 2px solid #2a2a3a;">Subtotal</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -454,10 +457,10 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                             <!-- Total -->
                             <tr>
                                 <td style="padding: 0 30px 30px;">
-                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                    <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #2a2a3a; padding-top: 20px;">
                                         <tr>
-                                            <td style="padding: 8px 0; text-align: right; color: #6b7280; font-size: 15px;">Total Amount:</td>
-                                            <td style="padding: 8px 0; text-align: right; color: #111827; font-size: 20px; font-weight: 700; width: 150px;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 15px;">Total Amount:</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
                                         </tr>
                                     </table>
                                 </td>
