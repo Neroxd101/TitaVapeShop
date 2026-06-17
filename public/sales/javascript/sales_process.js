@@ -55,8 +55,12 @@ const SalesCreate = {
     },
 
     async proceedWithSale() {
+        if (this.isProcessing) return; // Prevent duplicate execution from double clicks
+        
         const pending = window._pendingSale;
         if (!pending) return;
+
+        this.isProcessing = true; // Lock processing
 
         const { customerName, total, cash, change, state } = pending;
         const form = document.getElementById('checkoutForm');
@@ -100,6 +104,7 @@ const SalesCreate = {
                     proceedBtn.classList.remove('loading');
                     proceedBtn.disabled = false;
                 }
+                this.isProcessing = false; // Reset lock on error
                 return; // Stop processing
             }
         } catch (error) {
@@ -109,6 +114,7 @@ const SalesCreate = {
                 proceedBtn.classList.remove('loading');
                 proceedBtn.disabled = false;
             }
+            this.isProcessing = false; // Reset lock on network/server error
             return;
         }
 
@@ -164,6 +170,7 @@ const SalesCreate = {
 
         // Reset cart
         state.cart = [];
+        const cashInput = document.getElementById('cashInput');
         if (cashInput) cashInput.value = '';
         const nameInput = document.getElementById('customerName');
         if (nameInput) nameInput.value = '';
@@ -174,6 +181,8 @@ const SalesCreate = {
 
         // Also reload products to get fresh stock counts from server since we just deducted
         await SalesLoad.loadProducts(state);
+        
+        this.isProcessing = false; // Reset lock on successful completion
     },
 
     showSuccessModal(customerName, total, cash, change, email, emailSent, emailError) {

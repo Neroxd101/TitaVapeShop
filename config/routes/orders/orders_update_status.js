@@ -68,6 +68,23 @@ router.post('/api/orders/update_status', async (req, res) => {
             }
         }
 
+        // Trigger low stock check if order is completed
+        if (updatedOrder && status === 'completed' && updatedOrder.items && Array.isArray(updatedOrder.items)) {
+            try {
+                const { checkAndSendLowStockAlerts } = require('../../utils/lowStockAlert');
+                const alertItems = updatedOrder.items.map(item => ({
+                    id: item.id,
+                    name: item.name || 'Unknown Item',
+                    deducted: parseInt(item.quantity, 10) || 0
+                }));
+                checkAndSendLowStockAlerts(alertItems).catch(err => {
+                    console.error('[Low Stock Alert API] Background alert error for completed order:', err);
+                });
+            } catch (alertError) {
+                console.error('[Low Stock Alert API] Failed to initiate alert check for completed order:', alertError);
+            }
+        }
+
         res.json({ success: true, order: updatedOrder });
     } catch (error) {
         console.error('Error updating order status:', error);

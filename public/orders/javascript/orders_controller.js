@@ -240,6 +240,35 @@ class OrdersController {
                 }
             });
         }
+
+        // Order Completed Success Modal
+        const orderCompletedSuccessModal = document.getElementById('orderCompletedSuccessModal');
+        const closeOrderCompletedSuccessModal = document.getElementById('closeOrderCompletedSuccessModal');
+        const closeOrderCompletedSuccessBtn = document.getElementById('closeOrderCompletedSuccessBtn');
+
+        if (closeOrderCompletedSuccessModal) {
+            closeOrderCompletedSuccessModal.addEventListener('click', () => {
+                if (orderCompletedSuccessModal) {
+                    orderCompletedSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (closeOrderCompletedSuccessBtn) {
+            closeOrderCompletedSuccessBtn.addEventListener('click', () => {
+                if (orderCompletedSuccessModal) {
+                    orderCompletedSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (orderCompletedSuccessModal) {
+            orderCompletedSuccessModal.addEventListener('click', (e) => {
+                if (e.target === orderCompletedSuccessModal) {
+                    orderCompletedSuccessModal.classList.remove('show');
+                }
+            });
+        }
     }
 
     setupEventListeners() {
@@ -554,7 +583,10 @@ class OrdersController {
             const result = await response.json();
 
             if (result.success) {
-                alert('Order completed successfully!');
+                const successModal = document.getElementById('orderCompletedSuccessModal');
+                if (successModal) {
+                    successModal.classList.add('show');
+                }
                 this.loadOrders();
             } else {
                 alert('Failed to complete order: ' + (result.error || 'Unknown error'));

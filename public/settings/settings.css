@@ -58,6 +58,11 @@
     box-shadow: 0 4px 20px rgba(108, 92, 231, 0.35);
 }
 
+.section-icon.notification-icon {
+    background: linear-gradient(135deg, #ff9f43, #ff5252);
+    box-shadow: 0 4px 20px rgba(255, 159, 67, 0.35);
+}
+
 .section-title-group {
     flex: 1;
 }

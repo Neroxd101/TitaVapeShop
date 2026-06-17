@@ -118,6 +118,21 @@ router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff'])
             }
         }
 
+        // Check for low stock items in background
+        try {
+            const { checkAndSendLowStockAlerts } = require('../../utils/lowStockAlert');
+            const alertItems = results.map(item => ({
+                id: item.id,
+                name: item.name,
+                deducted: item.deducted
+            }));
+            checkAndSendLowStockAlerts(alertItems).catch(err => {
+                console.error('[Low Stock Alert API] Background alert error:', err);
+            });
+        } catch (alertError) {
+            console.error('[Low Stock Alert API] Failed to initiate alert check:', alertError);
+        }
+
         // All items processed successfully
         res.json({
             success: true,

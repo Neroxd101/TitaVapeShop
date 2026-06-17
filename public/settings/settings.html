@@ -136,6 +136,53 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Notification Settings Section (Admin Only) -->
+                <div class="card-wrapper settings-section" id="notificationSettingsSection" style="display: none;">
+                    <div class="section-header">
+                        <div class="section-icon notification-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="section-title-group">
+                            <h2>Notification Settings</h2>
+                            <p class="section-subtitle">Configure email alerts for low-stock inventory items</p>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <form id="notificationSettingsForm" class="profile-form">
+                            <!-- Toggle Notifications -->
+                            <div class="form-group" style="display: flex; align-items: center; gap: 12px; padding: 4px 0;">
+                                <input type="checkbox" id="lowStockNotificationsEnabled" name="lowStockNotificationsEnabled" style="width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; border-radius: 4px; border: 1px solid var(--border);">
+                                <label for="lowStockNotificationsEnabled" style="cursor: pointer; margin-bottom: 0; font-weight: 500; color: var(--text-primary);">Enable Low Stock Email Alerts</label>
+                            </div>
+                            
+                            <!-- Low Stock Threshold -->
+                            <div class="form-group">
+                                <label for="lowStockThreshold">Low Stock Threshold</label>
+                                <div class="input-wrapper">
+                                    <input type="number" id="lowStockThreshold" name="lowStockThreshold" min="1" placeholder="e.g. 10" required>
+                                </div>
+                                <p class="form-help-text">Email alerts are sent when a product's stock levels fall at or below this value.</p>
+                            </div>
+                            
+                            <!-- Notification Email -->
+                            <div class="form-group">
+                                <label for="lowStockEmail">Notification Recipient Email</label>
+                                <div class="input-wrapper">
+                                    <input type="email" id="lowStockEmail" name="lowStockEmail" placeholder="e.g. admin@titavapeshop.com" required>
+                                </div>
+                                <p class="form-help-text">The administrator email address that will receive the stock warnings.</p>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-secondary btn-full" id="saveNotificationSettingsBtn">
+                                <span class="btn-text">Save Notification Settings</span>
+                                <div class="spinner"></div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </main>

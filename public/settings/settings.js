@@ -34,8 +34,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadUsersList();
         userSelectorContainer.style.display = 'block';
         userSelector.addEventListener('change', handleUserSelection);
+        
+        // Show notification settings card and load data
+        const notifSection = document.getElementById('notificationSettingsSection');
+        if (notifSection) {
+            notifSection.style.display = 'flex';
+            loadNotificationSettings();
+            setupNotificationSettingsForm();
+        }
     } else {
         userSelectorContainer.style.display = 'none';
+        const notifSection = document.getElementById('notificationSettingsSection');
+        if (notifSection) notifSection.style.display = 'none';
     }
     renderProfileSettings();
 
@@ -560,6 +570,68 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (modal) {
             modal.classList.remove('show');
             document.getElementById('otpInput').value = '';
+        }
+    }
+
+    /**
+     * Load Notification Settings (Admin Only)
+     */
+    async function loadNotificationSettings() {
+        try {
+            const response = await fetch('/api/settings/notifications');
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                document.getElementById('lowStockNotificationsEnabled').checked = result.data.low_stock_notifications_enabled;
+                document.getElementById('lowStockThreshold').value = result.data.low_stock_threshold;
+                document.getElementById('lowStockEmail').value = result.data.low_stock_notification_email;
+            } else {
+                console.error('Failed to load notification settings:', result.error);
+            }
+        } catch (error) {
+            console.error('Error loading notification settings:', error);
+        }
+    }
+
+    /**
+     * Setup Notification Settings Form Submit Handler (Admin Only)
+     */
+    function setupNotificationSettingsForm() {
+        const form = document.getElementById('notificationSettingsForm');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('saveNotificationSettingsBtn');
+                setLoading(btn, true);
+
+                const enabled = document.getElementById('lowStockNotificationsEnabled').checked;
+                const threshold = parseInt(document.getElementById('lowStockThreshold').value, 10);
+                const email = document.getElementById('lowStockEmail').value.trim();
+
+                try {
+                    const response = await fetch('/api/settings/notifications', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            low_stock_threshold: threshold,
+                            low_stock_notifications_enabled: enabled,
+                            low_stock_notification_email: email
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.error || 'Failed to save notification settings');
+                    }
+
+                    alert('Notification settings saved successfully!');
+                } catch (error) {
+                    alert(error.message || 'Failed to save notification settings');
+                } finally {
+                    setLoading(btn, false);
+                }
+            });
         }
     }
 
