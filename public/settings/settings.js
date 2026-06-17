@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userSelectorContainer = document.getElementById('userSelectorContainer');
     const userSelector = document.getElementById('userSelector');
     
-    // Clear current password validation error on input
+    // Clear password validation errors on input
     const currentPasswordInput = document.getElementById('currentPassword');
     const currentPasswordError = document.getElementById('currentPasswordError');
     if (currentPasswordInput) {
@@ -28,6 +28,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (currentPasswordError) {
                 currentPasswordError.textContent = '';
                 currentPasswordError.style.display = 'none';
+            }
+        });
+    }
+
+    const newPasswordInput = document.getElementById('newPassword');
+    const newPasswordError = document.getElementById('newPasswordError');
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', () => {
+            newPasswordInput.classList.remove('input-error');
+            if (newPasswordError) {
+                newPasswordError.textContent = '';
+                newPasswordError.style.display = 'none';
+            }
+        });
+    }
+
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const confirmPasswordError = document.getElementById('confirmPasswordError');
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', () => {
+            confirmPasswordInput.classList.remove('input-error');
+            if (confirmPasswordError) {
+                confirmPasswordError.textContent = '';
+                confirmPasswordError.style.display = 'none';
             }
         });
     }
@@ -459,6 +483,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function handleChangePassword() {
         const currentPasswordInput = document.getElementById('currentPassword');
         const currentPasswordError = document.getElementById('currentPasswordError');
+        const newPasswordInput = document.getElementById('newPassword');
+        const newPasswordError = document.getElementById('newPasswordError');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
         
         // Clear previous error styles
         if (currentPasswordInput) currentPasswordInput.classList.remove('input-error');
@@ -466,17 +494,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentPasswordError.textContent = '';
             currentPasswordError.style.display = 'none';
         }
+        if (newPasswordInput) newPasswordInput.classList.remove('input-error');
+        if (newPasswordError) {
+            newPasswordError.textContent = '';
+            newPasswordError.style.display = 'none';
+        }
+        if (confirmPasswordInput) confirmPasswordInput.classList.remove('input-error');
+        if (confirmPasswordError) {
+            confirmPasswordError.textContent = '';
+            confirmPasswordError.style.display = 'none';
+        }
 
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
+        const newPassword = newPasswordInput ? newPasswordInput.value : '';
+        const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
 
         if (!newPassword || newPassword.length < 6) {
-            alert('Password must be at least 6 characters long');
+            if (newPasswordInput && newPasswordError) {
+                newPasswordError.textContent = 'Password must be at least 6 characters long';
+                newPasswordError.style.display = 'flex';
+                newPasswordInput.classList.add('input-error');
+                newPasswordInput.focus();
+            } else {
+                alert('Password must be at least 6 characters long');
+            }
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            alert('Passwords do not match');
+            if (confirmPasswordInput && confirmPasswordError) {
+                confirmPasswordError.textContent = 'Passwords do not match';
+                confirmPasswordError.style.display = 'flex';
+                confirmPasswordInput.classList.add('input-error');
+                confirmPasswordInput.focus();
+            } else {
+                alert('Passwords do not match');
+            }
             return;
         }
 
