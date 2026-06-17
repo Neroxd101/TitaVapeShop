@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('Username updated successfully!');
                 closeOTPModal();
             } catch (error) {
-                alert(error.message || 'Failed to update username');
+                showModalError(error.message || 'Failed to update username');
             } finally {
                 setLoading(btn, false);
             }
@@ -434,10 +434,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error(data.error || 'Failed to generate OTP');
             }
 
-            alert('OTP has been sent to your email address.');
+            showModalSuccess('OTP has been sent to your email address.');
         } catch (error) {
-            alert(error.message || 'Failed to send OTP');
-            closeOTPModal();
+            showModalError(error.message || 'Failed to send OTP');
         }
     }
 
@@ -505,7 +504,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('Password updated successfully!');
                 closeOTPModal();
             } catch (error) {
-                alert(error.message || 'Failed to update password');
+                showModalError(error.message || 'Failed to update password');
             } finally {
                 setLoading(btn, false);
             }
@@ -523,10 +522,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error(data.error || 'Failed to generate OTP');
             }
 
-            alert('OTP has been sent to your email address.');
+            showModalSuccess('OTP has been sent to your email address.');
         } catch (error) {
-            alert(error.message || 'Failed to send OTP');
-            closeOTPModal();
+            showModalError(error.message || 'Failed to send OTP');
         }
     }
 
@@ -551,6 +549,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </button>
                     </div>
                     <div class="modal-body">
+                        <div id="otpModalError" class="alert alert-error" style="margin-bottom: 16px; display: none;">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                            </svg>
+                            <span id="otpModalErrorText"></span>
+                        </div>
+                        <div id="otpModalSuccess" class="alert alert-success" style="margin-bottom: 16px; display: none;">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                            <span id="otpModalSuccessText"></span>
+                        </div>
                         <p style="color: var(--text-secondary); margin-bottom: 20px;">
                             Enter the 6-digit OTP code sent to your email address.
                         </p>
@@ -582,7 +592,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 e.preventDefault();
                 const otp = document.getElementById('otpInput').value.trim();
                 if (otp.length !== 6) {
-                    alert('Please enter a valid 6-digit OTP code');
+                    showModalError('Please enter a valid 6-digit OTP code');
                     return;
                 }
 
@@ -592,7 +602,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 try {
                     await onVerify(otp);
                 } catch (error) {
-                    alert(error.message || 'Verification failed');
+                    showModalError(error.message || 'Verification failed');
                 } finally {
                     setLoading(btn, false);
                 }
@@ -605,6 +615,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             // Update title if modal exists
             modal.querySelector('.modal-header h3').textContent = title;
+            const errorAlert = modal.querySelector('#otpModalError');
+            if (errorAlert) {
+                errorAlert.style.display = 'none';
+                modal.querySelector('#otpModalErrorText').textContent = '';
+            }
+            const successAlert = modal.querySelector('#otpModalSuccess');
+            if (successAlert) {
+                successAlert.style.display = 'none';
+                modal.querySelector('#otpModalSuccessText').textContent = '';
+            }
         }
 
         modal.classList.add('show');
@@ -621,6 +641,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (modal) {
             modal.classList.remove('show');
             document.getElementById('otpInput').value = '';
+            const errorAlert = modal.querySelector('#otpModalError');
+            if (errorAlert) {
+                errorAlert.style.display = 'none';
+                modal.querySelector('#otpModalErrorText').textContent = '';
+            }
+            const successAlert = modal.querySelector('#otpModalSuccess');
+            if (successAlert) {
+                successAlert.style.display = 'none';
+                modal.querySelector('#otpModalSuccessText').textContent = '';
+            }
+        }
+    }
+
+    function showModalSuccess(message) {
+        const successAlert = document.getElementById('otpModalSuccess');
+        const successText = document.getElementById('otpModalSuccessText');
+        const errorAlert = document.getElementById('otpModalError');
+        if (errorAlert) errorAlert.style.display = 'none';
+        if (successAlert && successText) {
+            successText.textContent = message;
+            successAlert.className = 'alert alert-success show';
+            successAlert.style.display = 'flex';
+        }
+    }
+
+    function showModalError(message) {
+        const errorAlert = document.getElementById('otpModalError');
+        const errorText = document.getElementById('otpModalErrorText');
+        const successAlert = document.getElementById('otpModalSuccess');
+        if (successAlert) successAlert.style.display = 'none';
+        if (errorAlert && errorText) {
+            errorText.textContent = message;
+            errorAlert.className = 'alert alert-error show';
+            errorAlert.style.display = 'flex';
         }
     }
 
