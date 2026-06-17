@@ -795,10 +795,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (isLoading) {
             button.disabled = true;
+            button.classList.add('loading');
             if (btnText) btnText.style.opacity = '0';
             if (spinner) spinner.style.display = 'block';
         } else {
             button.disabled = false;
+            button.classList.remove('loading');
             if (btnText) btnText.style.opacity = '1';
             if (spinner) spinner.style.display = 'none';
         }
