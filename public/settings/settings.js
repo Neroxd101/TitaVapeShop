@@ -413,8 +413,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Reset form
                 document.getElementById('changeUsernameForm').reset();
 
-                alert('Username updated successfully!');
                 closeOTPModal();
+                showSuccessModal('Success', 'Your username has been updated successfully!');
             } catch (error) {
                 showModalError(error.message || 'Failed to update username');
             } finally {
@@ -501,8 +501,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Reset form
                 document.getElementById('changePasswordForm').reset();
 
-                alert('Password updated successfully!');
                 closeOTPModal();
+                showSuccessModal('Success', 'Your password has been updated successfully!');
             } catch (error) {
                 showModalError(error.message || 'Failed to update password');
             } finally {
@@ -676,6 +676,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             errorAlert.className = 'alert alert-error show';
             errorAlert.style.display = 'flex';
         }
+    }
+
+    function showSuccessModal(title, message) {
+        let modal = document.getElementById('successNotificationModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'successNotificationModal';
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal modal-small" style="text-align: center;">
+                    <div class="modal-body" style="padding: 32px 24px;">
+                        <div style="width: 64px; height: 64px; background: rgba(0, 212, 170, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid rgba(0, 212, 170, 0.3);">
+                            <svg viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: var(--success);">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                        </div>
+                        <h3 style="color: var(--text-primary); font-size: 20px; font-weight: 600; margin-bottom: 12px;" id="successModalTitle"></h3>
+                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; line-height: 1.5;" id="successModalMessage"></p>
+                        <button class="btn btn-primary btn-full" id="closeSuccessModalBtn">OK</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('closeSuccessModalBtn').addEventListener('click', () => {
+                modal.classList.remove('show');
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('show');
+            });
+        }
+
+        modal.querySelector('#successModalTitle').textContent = title;
+        modal.querySelector('#successModalMessage').textContent = message;
+        modal.classList.add('show');
     }
 
     /**
