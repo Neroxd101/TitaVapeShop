@@ -102,6 +102,33 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
       return res.status(401).json({ success: false, error: 'User not authenticated' });
     }
 
+    // Verify current password if provided (for UX validation before sending OTP)
+    const { current_password } = req.body || {};
+    if (current_password) {
+      const { supabaseAdmin } = require('../../database/supabase');
+      if (!supabaseAdmin) {
+        return res.status(500).json({ success: false, error: 'Database admin connection not configured' });
+      }
+
+      // Retrieve user's current password hash using supabaseAdmin (bypassing RLS)
+      const { data: userData, error: userError } = await supabaseAdmin
+        .from('users')
+        .select('password')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userData) {
+        console.error('Error fetching user password for verification:', userError);
+        return res.status(400).json({ success: false, error: 'Failed to verify current password' });
+      }
+
+      // Check current password with stored bcrypt hash
+      const isMatch = bcrypt.compareSync(current_password, userData.password);
+      if (!isMatch) {
+        return res.status(400).json({ success: false, error: 'Incorrect current password' });
+      }
+    }
+
     // Generate OTP via RPC
     const { data: otpData, error: rpcError } = await supabase.rpc('user_profile_generate_otp', {
       p_user_id: userId

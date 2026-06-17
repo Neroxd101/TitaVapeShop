@@ -458,63 +458,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const selectedOption = userSelector.options[userSelector.selectedIndex];
+        const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
+        const isSelf = !isAdmin || (selectedUsername === currentUser.username);
 
-        // Step 1: Generate OTP
-        const otpModal = showOTPModal('Change Password', async (otp) => {
-            const btn = document.getElementById('changePasswordBtn');
-            setLoading(btn, true);
+        const currentPasswordInput = document.getElementById('currentPassword');
+        const currentPassword = currentPasswordInput ? currentPasswordInput.value : '';
 
-            try {
-                const requestBody = {
-                    new_password: newPassword,
-                    otp: otp
-                };
-                
-                const selectedOption = userSelector.options[userSelector.selectedIndex];
-                const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
-                const isSelf = !isAdmin || (selectedUsername === currentUser.username);
-                
-                if (isSelf) {
-                    const currentPasswordInput = document.getElementById('currentPassword');
-                    if (currentPasswordInput) {
-                        requestBody.current_password = currentPasswordInput.value;
-                    }
-                }
-                
-                // Add target_user_id if admin is updating another user
-                if (isAdmin && !isSelf && selectedUserId) {
-                    requestBody.target_user_id = selectedUserId;
-                }
-                
-                const response = await fetch('/api/user/profile/update-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestBody)
-                });
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        setLoading(changePasswordBtn, true);
 
-                const data = await response.json();
-
-                if (!response.ok || !data.success) {
-                    throw new Error(data.error || 'Failed to update password');
-                }
-
-                // Reset form
-                document.getElementById('changePasswordForm').reset();
-
-                closeOTPModal();
-                showSuccessModal('Success', 'Your password has been updated successfully!');
-            } catch (error) {
-                showModalError(error.message || 'Failed to update password');
-            } finally {
-                setLoading(btn, false);
-            }
-        });
-
-        // Generate and send OTP
+        // Generate and send OTP (verifying password first if isSelf)
         try {
+            const body = {};
+            if (isSelf) {
+                body.current_password = currentPassword;
+            }
+
             const response = await fetch('/api/user/profile/generate-otp', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
             });
 
             const data = await response.json();
@@ -522,9 +486,55 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error(data.error || 'Failed to generate OTP');
             }
 
+            // Step 2: Show OTP Modal since password is valid
+            const otpModal = showOTPModal('Change Password', async (otp) => {
+                const btn = document.getElementById('changePasswordBtn');
+                setLoading(btn, true);
+
+                try {
+                    const requestBody = {
+                        new_password: newPassword,
+                        otp: otp
+                    };
+                    
+                    if (isSelf) {
+                        requestBody.current_password = currentPassword;
+                    }
+                    
+                    // Add target_user_id if admin is updating another user
+                    if (isAdmin && !isSelf && selectedUserId) {
+                        requestBody.target_user_id = selectedUserId;
+                    }
+                    
+                    const response = await fetch('/api/user/profile/update-password', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.error || 'Failed to update password');
+                    }
+
+                    // Reset form
+                    document.getElementById('changePasswordForm').reset();
+
+                    closeOTPModal();
+                    showSuccessModal('Success', 'Your password has been updated successfully!');
+                } catch (error) {
+                    showModalError(error.message || 'Failed to update password');
+                } finally {
+                    setLoading(btn, false);
+                }
+            });
+
             showModalSuccess('OTP has been sent to your email address.');
         } catch (error) {
-            showModalError(error.message || 'Failed to send OTP');
+            alert(error.message || 'Failed to send OTP');
+        } finally {
+            setLoading(changePasswordBtn, false);
         }
     }
 
