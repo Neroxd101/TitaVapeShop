@@ -19,6 +19,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userSelectorContainer = document.getElementById('userSelectorContainer');
     const userSelector = document.getElementById('userSelector');
     
+    // Clear current password validation error on input
+    const currentPasswordInput = document.getElementById('currentPassword');
+    const currentPasswordError = document.getElementById('currentPasswordError');
+    if (currentPasswordInput) {
+        currentPasswordInput.addEventListener('input', () => {
+            currentPasswordInput.classList.remove('input-error');
+            if (currentPasswordError) {
+                currentPasswordError.textContent = '';
+                currentPasswordError.style.display = 'none';
+            }
+        });
+    }
+    
     // Parse user and check if admin
     const user = JSON.parse(userStr || '{}');
     // Roles are stored as TEXT string (e.g., "admin,staff")
@@ -444,6 +457,16 @@ document.addEventListener('DOMContentLoaded', async () => {
      * Handle Change Password
      */
     async function handleChangePassword() {
+        const currentPasswordInput = document.getElementById('currentPassword');
+        const currentPasswordError = document.getElementById('currentPasswordError');
+        
+        // Clear previous error styles
+        if (currentPasswordInput) currentPasswordInput.classList.remove('input-error');
+        if (currentPasswordError) {
+            currentPasswordError.textContent = '';
+            currentPasswordError.style.display = 'none';
+        }
+
         const newPassword = document.getElementById('newPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
@@ -462,7 +485,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
         const isSelf = !isAdmin || (selectedUsername === currentUser.username);
 
-        const currentPasswordInput = document.getElementById('currentPassword');
         const currentPassword = currentPasswordInput ? currentPasswordInput.value : '';
 
         const changePasswordBtn = document.getElementById('changePasswordBtn');
@@ -532,7 +554,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             showModalSuccess('OTP has been sent to your email address.');
         } catch (error) {
-            alert(error.message || 'Failed to send OTP');
+            const errMessage = error.message || 'Failed to send OTP';
+            if (errMessage.toLowerCase().includes('password') && currentPasswordInput && currentPasswordError) {
+                currentPasswordError.textContent = errMessage;
+                currentPasswordError.style.display = 'flex';
+                currentPasswordInput.classList.add('input-error');
+                currentPasswordInput.focus();
+            } else {
+                alert(errMessage);
+            }
         } finally {
             setLoading(changePasswordBtn, false);
         }

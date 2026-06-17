@@ -521,3 +521,20 @@
         height: 52px;
     }
 }
+
+/* Inline form validation error styling */
+.form-group input.input-error {
+    border-color: var(--error) !important;
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.15) !important;
+}
+
+.form-error-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--error);
+    font-size: 13px;
+    margin-top: 6px;
+    font-weight: 500;
+    animation: fadeIn 0.2s ease;
+}
