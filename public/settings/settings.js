@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (notifSection) notifSection.style.display = 'none';
     }
     renderProfileSettings();
+    setupProfileForms();
 
     // Listen for storage changes (external updates)
     window.addEventListener('storage', (e) => {
@@ -384,8 +385,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Setup form handlers
-        setupProfileForms();
     }
 
     /**
