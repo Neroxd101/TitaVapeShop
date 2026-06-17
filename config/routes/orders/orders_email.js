@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
-const { supabase } = require('../../database/supabase');
+const { supabase, supabaseAdmin } = require('../../database/supabase');
 
 /**
  * Send order notification email
@@ -29,6 +29,42 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
                 pass: process.env.SMTP_PASS
             }
         });
+
+        // Fetch product images from database to display in the email
+        const client = supabaseAdmin || supabase;
+        try {
+            const productIds = orderData.items.map(item => item.id).filter(id => id);
+            if (productIds.length > 0 && client) {
+                const { data: dbItems } = await client
+                    .from('inventory')
+                    .select('id, images')
+                    .in('id', productIds);
+                
+                const imageMap = {};
+                if (dbItems) {
+                    dbItems.forEach(dbItem => {
+                        let firstImg = null;
+                        if (Array.isArray(dbItem.images) && dbItem.images.length > 0) {
+                            firstImg = dbItem.images[0];
+                        } else if (typeof dbItem.images === 'string') {
+                            try {
+                                const parsed = JSON.parse(dbItem.images);
+                                if (Array.isArray(parsed) && parsed.length > 0) {
+                                    firstImg = parsed[0];
+                                }
+                            } catch (e) {}
+                        }
+                        imageMap[dbItem.id] = firstImg;
+                    });
+                }
+
+                orderData.items.forEach(item => {
+                    item.imageUrl = imageMap[item.id] || null;
+                });
+            }
+        } catch (err) {
+            console.error('[Order Email] Error resolving product images:', err);
+        }
 
         let subject, htmlContent;
 
@@ -65,17 +101,85 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
 }
 
 /**
+ * Resolve Google Drive direct viewable image URLs
+ */
+function getGoogleDriveThumbnail(url) {
+    if (!url) return null;
+    const match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (match) {
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    }
+    return url;
+}
+
+/**
+ * Generates the common footer with store information
+ */
+function generateEmailFooter() {
+    const formattedTime = new Date().toLocaleString('en-PH', {
+        timeZone: 'Asia/Manila',
+        dateStyle: 'medium',
+        timeStyle: 'short'
+    });
+
+    return `
+        <!-- Footer -->
+        <tr>
+            <td style="background-color: #f9fafb; padding: 30px 30px; text-align: center; border-top: 1px solid #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                <!-- Logo -->
+                <div style="font-size: 20px; font-weight: 700; color: #00b894; margin-bottom: 6px; letter-spacing: 0.5px;">TITA VAPE SHOP</div>
+                
+                <p style="margin: 0 0 16px; color: #6b7280; font-size: 13px;">We appreciate your business!</p>
+                
+                <!-- Store Info Table -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #6b7280; line-height: 1.6; border-top: 1px dashed #e5e7eb; padding-top: 16px; text-align: left;">
+                    <tr>
+                        <td style="padding-bottom: 4px;">
+                            📍 <strong>Location:</strong> Tita Vape Shop Main Branch, Manila, Philippines
+                        </td>
+                        <td align="right" style="padding-bottom: 4px;">
+                            📞 <strong>Contact:</strong> +63 912 345 6789
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            🕒 <strong>Store Hours:</strong> Open Daily: 10:00 AM - 10:00 PM
+                        </td>
+                        <td align="right">
+                            📧 <strong>Email:</strong> vshoptita@gmail.com
+                        </td>
+                    </tr>
+                </table>
+                
+                <div style="margin-top: 20px; font-size: 11px; color: #9ca3af; border-top: 1px solid #f3f4f6; padding-top: 12px;">
+                    Generated on: ${formattedTime} (PHT)
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+/**
  * Generate HTML for order created email
  */
 function generateOrderCreatedEmail(customerName, orderId, orderData) {
-    const itemsHtml = orderData.items.map(item => `
-        <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(item.name)}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₱${parseFloat(item.price).toFixed(2)}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
-        </tr>
-    `).join('');
+    const itemsHtml = orderData.items.map(item => {
+        const displayImg = getGoogleDriveThumbnail(item.imageUrl);
+        return `
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+                    ${displayImg 
+                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block; margin: 0 auto;">`
+                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #9ca3af; margin: 0 auto; border: 1px solid #e5e7eb; line-height: 50px; text-align: center;">📦</div>`
+                    }
+                </td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+            </tr>
+        `;
+    }).join('');
 
     const orderTypeLabel = orderData.order_type === 'pickup' ? 'Pickup' : 'Delivery (3rd Party)';
     const qrNote = orderData.order_type === 'pickup' 
@@ -125,6 +229,7 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
                                         <thead>
                                             <tr style="background-color: #f9fafb;">
+                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb; width: 60px;">Image</th>
                                                 <th style="padding: 12px; text-align: left; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Item</th>
                                                 <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Qty</th>
                                                 <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Price</th>
@@ -150,13 +255,7 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                                 </td>
                             </tr>
                             
-                            <!-- Footer -->
-                            <tr>
-                                <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                                    <p style="margin: 0; color: #6b7280; font-size: 13px;">We will notify you once your order is confirmed and ready.</p>
-                                    <p style="margin: 8px 0 0; color: #9ca3af; font-size: 12px;">Thank you for choosing Tita Vape Shop!</p>
-                                </td>
-                            </tr>
+                            ${generateEmailFooter()}
                         </table>
                     </td>
                 </tr>
@@ -170,14 +269,23 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
  * Generate HTML for order confirmed email
  */
 function generateOrderConfirmedEmail(customerName, orderId, orderData) {
-    const itemsHtml = orderData.items.map(item => `
-        <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(item.name)}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₱${parseFloat(item.price).toFixed(2)}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
-        </tr>
-    `).join('');
+    const itemsHtml = orderData.items.map(item => {
+        const displayImg = getGoogleDriveThumbnail(item.imageUrl);
+        return `
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+                    ${displayImg 
+                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block; margin: 0 auto;">`
+                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #9ca3af; margin: 0 auto; border: 1px solid #e5e7eb; line-height: 50px; text-align: center;">📦</div>`
+                    }
+                </td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+            </tr>
+        `;
+    }).join('');
 
     const orderTypeLabel = orderData.order_type === 'pickup' ? 'Pickup' : 'Delivery (3rd Party)';
     const nextStep = orderData.order_type === 'pickup' 
@@ -227,6 +335,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
                                         <thead>
                                             <tr style="background-color: #f9fafb;">
+                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb; width: 60px;">Image</th>
                                                 <th style="padding: 12px; text-align: left; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Item</th>
                                                 <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Qty</th>
                                                 <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Price</th>
@@ -252,13 +361,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                                 </td>
                             </tr>
                             
-                            <!-- Footer -->
-                            <tr>
-                                <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                                    <p style="margin: 0; color: #6b7280; font-size: 13px;">We'll notify you once your order is ready for ${orderData.order_type === 'pickup' ? 'pickup' : 'delivery'}.</p>
-                                    <p style="margin: 8px 0 0; color: #9ca3af; font-size: 12px;">Thank you for choosing Tita Vape Shop!</p>
-                                </td>
-                            </tr>
+                            ${generateEmailFooter()}
                         </table>
                     </td>
                 </tr>
@@ -272,14 +375,23 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
  * Generate HTML for order completed email
  */
 function generateOrderCompletedEmail(customerName, orderId, orderData) {
-    const itemsHtml = orderData.items.map(item => `
-        <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(item.name)}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₱${parseFloat(item.price).toFixed(2)}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
-        </tr>
-    `).join('');
+    const itemsHtml = orderData.items.map(item => {
+        const displayImg = getGoogleDriveThumbnail(item.imageUrl);
+        return `
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle; width: 60px;">
+                    ${displayImg 
+                        ? `<img src="${displayImg}" alt="${escapeHtml(item.name)}" width="50" height="50" style="object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; display: block; margin: 0 auto;">`
+                        : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #9ca3af; margin: 0 auto; border: 1px solid #e5e7eb; line-height: 50px; text-align: center;">📦</div>`
+                    }
+                </td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center; vertical-align: middle;">${item.quantity}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: 600; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+            </tr>
+        `;
+    }).join('');
 
     return `
         <!DOCTYPE html>
@@ -325,6 +437,7 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
                                         <thead>
                                             <tr style="background-color: #f9fafb;">
+                                                <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb; width: 60px;">Image</th>
                                                 <th style="padding: 12px; text-align: left; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Item</th>
                                                 <th style="padding: 12px; text-align: center; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Qty</th>
                                                 <th style="padding: 12px; text-align: right; color: #374151; font-size: 13px; font-weight: 600; border-bottom: 2px solid #e5e7eb;">Price</th>
@@ -350,13 +463,7 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                                 </td>
                             </tr>
                             
-                            <!-- Footer -->
-                            <tr>
-                                <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                                    <p style="margin: 0; color: #6b7280; font-size: 13px;">We appreciate your business!</p>
-                                    <p style="margin: 8px 0 0; color: #9ca3af; font-size: 12px;">Thank you for choosing Tita Vape Shop. We hope to serve you again soon!</p>
-                                </td>
-                            </tr>
+                            ${generateEmailFooter()}
                         </table>
                     </td>
                 </tr>
