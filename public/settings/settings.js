@@ -258,12 +258,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     option.textContent = `${user.username}${user.email ? ` (${user.email})` : ''}`;
                     userSelector.appendChild(option);
                 });
-                
-                // Add current user as default
-                if (user.id) {
-                    userSelector.value = user.id;
-                    selectedUserId = user.id;
-                }
             } else {
                 console.error('Unexpected response format:', data);
                 userSelector.innerHTML = '<option value="">Error: Invalid response format</option>';
@@ -289,12 +283,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     /**
+     * Toggle Profile Forms Visibility
+     */
+    function toggleProfileForms(show) {
+        const container = document.getElementById('profileFormsContainer');
+        if (!container) return;
+        if (show) {
+            container.classList.add('show');
+        } else {
+            container.classList.remove('show');
+        }
+    }
+
+    /**
      * Render Profile Settings
      */
     async function renderProfileSettings(targetUserId = null) {
         // Update selected user ID if provided
         if (targetUserId) {
             selectedUserId = targetUserId;
+            toggleProfileForms(true);
+        } else {
+            if (isAdmin) {
+                selectedUserId = null;
+                toggleProfileForms(false);
+            } else {
+                selectedUserId = user.id;
+                toggleProfileForms(true);
+            }
+        }
+
+        // Toggle Current Password visibility and required status
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const isSelf = !selectedUserId || selectedUserId === currentUser.id;
+        const currentPasswordGroup = document.getElementById('currentPasswordGroup');
+        const currentPasswordInput = document.getElementById('currentPassword');
+        
+        if (currentPasswordGroup && currentPasswordInput) {
+            if (isSelf) {
+                currentPasswordGroup.style.display = 'block';
+                currentPasswordInput.required = true;
+            } else {
+                currentPasswordGroup.style.display = 'none';
+                currentPasswordInput.required = false;
+                currentPasswordInput.value = '';
+            }
         }
 
         // Setup form handlers
@@ -430,6 +463,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     new_password: newPassword,
                     otp: otp
                 };
+                
+                const isSelf = !selectedUserId || selectedUserId === currentUser.id;
+                if (isSelf) {
+                    const currentPasswordInput = document.getElementById('currentPassword');
+                    if (currentPasswordInput) {
+                        requestBody.current_password = currentPasswordInput.value;
+                    }
+                }
                 
                 // Add target_user_id if admin is updating another user
                 if (isAdmin && selectedUserId && selectedUserId !== currentUser.id) {

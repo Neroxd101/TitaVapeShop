@@ -95,44 +95,53 @@
                             </div>
                         </div>
 
-                        <!-- Change Username -->
-                        <div class="profile-form-section">
-                            <h3 class="form-section-title">Change Username</h3>
-                            <form id="changeUsernameForm" class="profile-form">
-                                <div class="form-group">
-                                    <label for="newUsername">New Username</label>
-                                    <div class="input-wrapper">
-                                        <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username" required>
+                        <!-- Profile Forms Container (Dynamically toggled) -->
+                        <div id="profileFormsContainer" class="profile-forms-container">
+                            <!-- Change Username -->
+                            <div class="profile-form-section">
+                                <h3 class="form-section-title">Change Username</h3>
+                                <form id="changeUsernameForm" class="profile-form">
+                                    <div class="form-group">
+                                        <label for="newUsername">New Username</label>
+                                        <div class="input-wrapper">
+                                            <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username" required>
+                                        </div>
                                     </div>
-                                </div>
-                                <button type="submit" class="btn btn-secondary btn-full" id="changeUsernameBtn">
-                                    <span class="btn-text">Update Username</span>
-                                    <div class="spinner"></div>
-                                </button>
-                            </form>
-                        </div>
+                                    <button type="submit" class="btn btn-secondary btn-full" id="changeUsernameBtn">
+                                        <span class="btn-text">Update Username</span>
+                                        <div class="spinner"></div>
+                                    </button>
+                                </form>
+                            </div>
 
-                        <!-- Change Password -->
-                        <div class="profile-form-section">
-                            <h3 class="form-section-title">Change Password</h3>
-                            <form id="changePasswordForm" class="profile-form">
-                                <div class="form-group">
-                                    <label for="newPassword">New Password</label>
-                                    <div class="input-wrapper">
-                                        <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required minlength="6">
+                            <!-- Change Password -->
+                            <div class="profile-form-section">
+                                <h3 class="form-section-title">Change Password</h3>
+                                <form id="changePasswordForm" class="profile-form">
+                                    <div class="form-group" id="currentPasswordGroup">
+                                        <label for="currentPassword">Current Password</label>
+                                        <div class="input-wrapper">
+                                            <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter current password" required>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="confirmPassword">Confirm Password</label>
-                                    <div class="input-wrapper">
-                                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" required minlength="6">
+                                    <div class="form-group">
+                                        <label for="newPassword">New Password</label>
+                                        <div class="input-wrapper">
+                                            <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required minlength="6">
+                                        </div>
                                     </div>
-                                </div>
-                                <button type="submit" class="btn btn-secondary btn-full" id="changePasswordBtn">
-                                    <span class="btn-text">Update Password</span>
-                                    <div class="spinner"></div>
-                                </button>
-                            </form>
+                                    <div class="form-group">
+                                        <label for="confirmPassword">Confirm Password</label>
+                                        <div class="input-wrapper">
+                                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" required minlength="6">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary btn-full" id="changePasswordBtn">
+                                        <span class="btn-text">Update Password</span>
+                                        <div class="spinner"></div>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
