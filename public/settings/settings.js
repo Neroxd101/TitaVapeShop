@@ -293,6 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const option = document.createElement('option');
                     option.value = u.id;
                     option.dataset.username = u.username;
+                    option.dataset.roles = Array.isArray(u.roles) ? u.roles.join(',') : (u.roles || '');
                     option.textContent = `${u.username}${u.email ? ` (${u.email})` : ''}`;
                     userSelector.appendChild(option);
                 });
@@ -356,6 +357,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedOption = userSelector.options[userSelector.selectedIndex];
         const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
         const isSelf = !isAdmin || (selectedUsername === currentUser.username);
+
+        // Update the current username display
+        const activeUsername = isSelf ? currentUser.username : selectedUsername;
+        const activeRoles = isSelf 
+            ? (Array.isArray(currentUser.roles) ? currentUser.roles.join(',') : (currentUser.roles || ''))
+            : (selectedOption ? (selectedOption.dataset.roles || '') : '');
+
+        const currentUsernameText = document.getElementById('currentUsernameText');
+        if (currentUsernameText && activeUsername) {
+            const formattedRoles = formatRoles(activeRoles);
+            currentUsernameText.textContent = `${activeUsername}${formattedRoles ? ` (${formattedRoles})` : ''}`;
+        }
+
         const currentPasswordGroup = document.getElementById('currentPasswordGroup');
         const currentPasswordInput = document.getElementById('currentPassword');
         
@@ -452,6 +466,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 closeOTPModal();
                 showSuccessModal('Success', 'Your username has been updated successfully!');
+
+                // Retrieve active roles to preserve display format
+                const activeRoles = isSelf 
+                    ? (Array.isArray(currentUser.roles) ? currentUser.roles.join(',') : (currentUser.roles || ''))
+                    : (selectedOption ? (selectedOption.dataset.roles || '') : '');
+
+                // Update the current username text indicator immediately
+                const currentUsernameText = document.getElementById('currentUsernameText');
+                if (currentUsernameText) {
+                    const formattedRoles = formatRoles(activeRoles);
+                    currentUsernameText.textContent = `${newUsername}${formattedRoles ? ` (${formattedRoles})` : ''}`;
+                }
+
+                // If admin, we should also update the selector's visible option text
+                if (isAdmin && !isSelf && selectedOption) {
+                    selectedOption.dataset.username = newUsername;
+                    selectedOption.textContent = `${newUsername}${selectedOption.textContent.includes('(') ? ` (${selectedOption.textContent.split('(')[1]}` : ''}`;
+                }
             } catch (error) {
                 showModalError(error.message || 'Failed to update username');
             } finally {
@@ -803,6 +835,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         modal.querySelector('#successModalTitle').textContent = title;
         modal.querySelector('#successModalMessage').textContent = message;
         modal.classList.add('show');
+    }
+
+    function formatRoles(rolesString) {
+        if (!rolesString) return '';
+        return rolesString.split(',')
+            .map(r => r.trim())
+            .filter(Boolean)
+            .map(r => r.charAt(0).toUpperCase() + r.slice(1))
+            .join(', ');
     }
 
     /**
