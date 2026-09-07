@@ -67,6 +67,14 @@
                     </svg>
                     <span>Follow Us</span>
                 </a>
+                <button id="ordersBtn" class="cart-button" title="My Recent Orders" style="position: relative;">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                    </svg>
+                    <span>My Orders</span>
+                    <span id="ordersBadge" class="cart-badge" style="background: var(--accent); color: #0a0a0f;">0</span>
+                </button>
                 <button id="cartBtn" class="cart-button">
                     <svg viewBox="0 0 24 24">
                         <path fill="currentColor"
@@ -142,6 +150,7 @@
     <div id="privacy-modal-container"></div>
     <div id="checkout-modal-container"></div>
     <div id="order-success-modal-container"></div>
+    <div id="orders-modal-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <!-- Modal modules -->
@@ -150,6 +159,7 @@
     <script src="/catalog/javascript/catalog-privacy-modal.js"></script>
     <script src="/catalog/javascript/catalog-checkout-modal.js"></script>
     <script src="/catalog/javascript/catalog-order-success-modal.js"></script>
+    <script src="/catalog/javascript/catalog-orders-modal.js"></script>
     <!-- Main modules -->
     <script src="/catalog/javascript/catalog-cart.js"></script>
     <script src="/catalog/javascript/catalog.js"></script>

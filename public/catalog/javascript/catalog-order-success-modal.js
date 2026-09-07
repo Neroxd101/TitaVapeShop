@@ -109,7 +109,7 @@ const CatalogOrderSuccessModal = {
     /**
      * Show the order success modal
      */
-    show(order) {
+    show(order, orderToken, trackingUrl) {
         if (!this.modal) {
             console.error('[Order Success Modal] Modal not initialized');
             alert('Order created successfully!');
@@ -203,9 +203,13 @@ const CatalogOrderSuccessModal = {
             if (saveQrCodeBtn) {
                 saveQrCodeBtn.style.display = 'none';
             }
+        // Show the modal
+        const viewDetailsBtn = document.getElementById('viewLiveOrderDetailsBtn');
+        if (viewDetailsBtn) {
+            const targetUrl = trackingUrl || (orderToken ? `/order-status?token=${encodeURIComponent(orderToken)}` : `/order-status?id=${encodeURIComponent(order.id)}`);
+            viewDetailsBtn.href = targetUrl;
         }
 
-        // Show the modal
         this.modal.classList.add('show');
     },
 

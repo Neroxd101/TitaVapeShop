@@ -1,0 +1,45 @@
+<!-- Customer Recent Orders Modal -->
+<div class="modal-overlay" id="ordersModal">
+  <div class="modal modal-medium orders-modal-container">
+    <div class="modal-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--accent)">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+        </svg>
+        <h3 style="margin: 0;">My Orders</h3>
+      </div>
+      <button class="modal-close-btn" id="closeOrdersModalBtn" aria-label="Close modal">&times;</button>
+    </div>
+
+    <div class="modal-body" style="padding: 20px 24px;">
+      <!-- Lookup Form -->
+      <div class="order-lookup-box" style="margin-bottom: 20px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px;">
+        <label for="trackOrderIdInput" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">TRACK ANOTHER ORDER</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="trackOrderIdInput" placeholder="Enter Order UUID..." style="flex: 1; padding: 8px 12px; font-size: 13px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: #fff;">
+          <button id="trackOrderSubmitBtn" class="btn btn-secondary btn-sm" style="white-space: nowrap;">Track</button>
+        </div>
+      </div>
+
+      <!-- Orders List Container -->
+      <div id="ordersListContainer">
+        <div id="ordersModalLoading" class="text-center" style="padding: 30px 10px; display: none;">
+          <div class="spinner-large" style="margin: 0 auto 12px;"></div>
+          <p style="color: var(--text-secondary); font-size: 13px;">Checking your orders...</p>
+        </div>
+
+        <div id="ordersList" style="display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div id="ordersModalEmpty" class="text-center" style="padding: 40px 10px; display: none;">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--text-secondary)" style="opacity: 0.5; margin-bottom: 12px;">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+          </svg>
+          <h4 style="margin: 0 0 6px; font-size: 16px;">No Recent Orders</h4>
+          <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">You have not placed any orders on this device recently.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

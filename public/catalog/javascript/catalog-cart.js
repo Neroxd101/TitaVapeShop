@@ -281,6 +281,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.CatalogOrderSuccessModal) {
         await CatalogOrderSuccessModal.init();
     }
+    if (window.CatalogOrdersModal) {
+        await CatalogOrdersModal.init();
+    }
 
     // Cart button
     const cartBtn = document.getElementById('cartBtn');

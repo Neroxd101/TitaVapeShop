@@ -22,6 +22,25 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
     }
 
     try {
+        // Ensure tracking URL with token is present
+        if (!orderData.trackingUrl) {
+            const appUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+            let token = orderData.orderToken;
+            if (!token && process.env.JWT_SECRET) {
+                try {
+                    const jwt = require('jsonwebtoken');
+                    token = jwt.sign(
+                        { orderId: orderId, customerName: customerName },
+                        process.env.JWT_SECRET,
+                        { expiresIn: '30d' }
+                    );
+                } catch (e) {}
+            }
+            orderData.trackingUrl = token
+                ? `${appUrl}/order-status?token=${token}`
+                : `${appUrl}/order-status?id=${orderId}`;
+        }
+
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -101,6 +120,17 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
 }
 
 /**
+ * Format number to Philippine Peso with comma separators and 2 decimal places
+ */
+function formatPeso(amount) {
+    const num = parseFloat(amount) || 0;
+    return num.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+/**
  * Resolve Google Drive direct viewable image URLs
  */
 function getGoogleDriveThumbnail(url) {
@@ -175,8 +205,8 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                 </td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${formatPeso(item.price)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.quantity * parseFloat(item.price))}</td>
             </tr>
         `;
     }).join('');
@@ -221,6 +251,11 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                                         <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 13px;">Status: <span style="color: #ff9f43; font-weight: 600;">Pending</span></p>
                                     </div>
                                     ${qrNote}
+                                    <div style="margin: 24px 0 8px; text-align: center;">
+                                        <a href="${orderData.trackingUrl}" style="background-color: #00d4aa; color: #0a0a0f; padding: 13px 26px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; display: inline-block; font-family: 'Outfit', sans-serif;">
+                                            ${orderData.order_type === 'pickup' ? '📱 View Order & Pickup QR Code' : '📦 Track Your Order'}
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             
@@ -250,7 +285,7 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                                     <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #2a2a3a; padding-top: 20px;">
                                         <tr>
                                             <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 15px;">Total Amount:</td>
-                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${formatPeso(orderData.total_amount)}</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -282,8 +317,8 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                 </td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${formatPeso(item.price)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.quantity * parseFloat(item.price))}</td>
             </tr>
         `;
     }).join('');
@@ -328,6 +363,11 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                                         <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 13px;">Status: <span style="color: #3b82f6; font-weight: 600;">Confirmed</span></p>
                                     </div>
                                     ${nextStep}
+                                    <div style="margin: 24px 0 8px; text-align: center;">
+                                        <a href="${orderData.trackingUrl}" style="background-color: #3b82f6; color: #ffffff; padding: 13px 26px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; display: inline-block; font-family: 'Outfit', sans-serif;">
+                                            ${orderData.order_type === 'pickup' ? '📱 Show Pickup QR Code' : '📦 View Live Status'}
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             
@@ -357,7 +397,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                                     <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #2a2a3a; padding-top: 20px;">
                                         <tr>
                                             <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 15px;">Total Amount:</td>
-                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${formatPeso(orderData.total_amount)}</td>
                                         </tr>
                                     </table>
                                 </td>
@@ -389,8 +429,8 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                 </td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${parseFloat(item.price).toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${formatPeso(item.price)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.quantity * parseFloat(item.price))}</td>
             </tr>
         `;
     }).join('');
@@ -431,6 +471,11 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                                     <p style="margin: 16px 0 0; color: #8b8b9e; font-size: 15px; line-height: 1.6;">
                                         We hope you enjoy your purchase! If you have any questions or concerns, please don't hesitate to contact us.
                                     </p>
+                                    <div style="margin: 24px 0 8px; text-align: center;">
+                                        <a href="${orderData.trackingUrl}" style="background-color: #00d4aa; color: #0a0a0f; padding: 13px 26px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; display: inline-block; font-family: 'Outfit', sans-serif;">
+                                            View Order Receipt
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             
@@ -460,7 +505,7 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                                     <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #2a2a3a; padding-top: 20px;">
                                         <tr>
                                             <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 15px;">Total Amount:</td>
-                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${parseFloat(orderData.total_amount).toFixed(2)}</td>
+                                            <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${formatPeso(orderData.total_amount)}</td>
                                         </tr>
                                     </table>
                                 </td>

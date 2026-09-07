@@ -149,9 +149,31 @@ const CatalogCheckoutModal = {
             const result = await response.json();
 
             if (result.success && result.order) {
-                // Show success modal
+                // Save to customer's local recent orders cache
+                try {
+                    let orders = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
+                    if (!Array.isArray(orders)) orders = [];
+                    orders.unshift({
+                        id: result.order.id,
+                        token: result.orderToken || null,
+                        order_type: result.order.order_type,
+                        total_amount: result.order.total_amount,
+                        status: result.order.status || 'pending',
+                        created_at: result.order.created_at || new Date().toISOString(),
+                        customer_name: result.order.customer_name
+                    });
+                    orders = orders.slice(0, 15);
+                    localStorage.setItem('tita_recent_orders', JSON.stringify(orders));
+                    if (window.CatalogOrdersModal) {
+                        window.CatalogOrdersModal.updateBadge();
+                    }
+                } catch (e) {
+                    console.warn('Failed to save recent order to localStorage:', e);
+                }
+
+                // Show success modal with token and trackingUrl
                 if (window.CatalogOrderSuccessModal) {
-                    window.CatalogOrderSuccessModal.show(result.order);
+                    window.CatalogOrderSuccessModal.show(result.order, result.orderToken, result.trackingUrl);
                 }
                 window.CatalogCart.clearCart();
                 this.close();
