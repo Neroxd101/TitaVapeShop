@@ -24,7 +24,7 @@ function isAuthenticated(req, res, next) {
             return res.status(401).json({ error: 'Unauthorized: Please log in' });
         }
         // HTML requests get redirected to login page
-        return res.redirect('/');
+        return res.redirect('/login');
     }
 
     try {
@@ -48,7 +48,7 @@ function isAuthenticated(req, res, next) {
             return res.status(401).json({ error: 'Unauthorized: Session expired' });
         }
         // Redirect HTML requests to login page
-        res.redirect('/');
+        res.redirect('/login');
     }
 }
 
@@ -73,7 +73,7 @@ function hasRole(roles) {
             if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
-            return res.redirect('/');
+            return res.redirect('/login');
         }
 
         // Step 3: Check if user has at least one of the required roles
@@ -92,7 +92,7 @@ function hasRole(roles) {
         if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
             return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
         }
-        return res.redirect('/?error=' + encodeURIComponent('Insufficient permissions'));
+        return res.redirect('/login?error=' + encodeURIComponent('Insufficient permissions'));
     };
 }
 

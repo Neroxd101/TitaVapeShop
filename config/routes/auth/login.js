@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // GET /login - Serve login page
 // This route checks if user is already logged in and redirects them accordingly
-router.get('/', (req, res) => {
+router.get('/login', (req, res) => {
   // Step 1: Check if user has an existing authentication token in cookies
   const token = req.cookies?.token;
   
@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
       const message = 'Username and password are required';
       // Check if request is from HTML form (form-urlencoded) or API (JSON)
       return req.headers['content-type'] === 'application/x-www-form-urlencoded'
-        ? res.redirect('/?error=' + encodeURIComponent(message))
+        ? res.redirect('/login?error=' + encodeURIComponent(message))
         : res.status(400).json({ error: message });
     }
 
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
     if (rpcError || !userData || userData.length === 0) {
       const message = 'Invalid credentials';
       return req.headers['content-type'] === 'application/x-www-form-urlencoded'
-        ? res.redirect('/?error=' + encodeURIComponent(message))
+        ? res.redirect('/login?error=' + encodeURIComponent(message))
         : res.status(401).json({ error: message });
     }
 
@@ -77,7 +77,7 @@ router.post('/login', async (req, res) => {
     if (!user.password || !bcrypt.compareSync(password, user.password)) {
       const message = 'Invalid credentials';
       return req.headers['content-type'] === 'application/x-www-form-urlencoded'
-        ? res.redirect('/?error=' + encodeURIComponent(message))
+        ? res.redirect('/login?error=' + encodeURIComponent(message))
         : res.status(401).json({ error: message });
     }
 
@@ -122,7 +122,7 @@ router.post('/login', async (req, res) => {
     console.error('Login error:', error);
     const message = error.message || 'Internal server error';
     return req.headers['content-type'] === 'application/x-www-form-urlencoded'
-      ? res.redirect('/?error=' + encodeURIComponent(message))
+      ? res.redirect('/login?error=' + encodeURIComponent(message))
       : res.status(500).json({ error: message });
   }
 });

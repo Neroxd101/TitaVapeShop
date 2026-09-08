@@ -13,7 +13,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Public product catalog page - accessible without login
 // GET /catalog
-router.get('/catalog', (req, res) => {
+router.get(['/', '/catalog'], (req, res) => {
   res.sendFile(path.join(__dirname, '../../../public/catalog/catalog.html'));
 });
 
