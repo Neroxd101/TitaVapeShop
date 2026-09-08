@@ -30,6 +30,53 @@ body {
   backdrop-filter: blur(20px);
 }
 
+.login-card #password {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.password-toggle svg {
+  position: static;
+  transform: none;
+  width: 20px;
+  height: 20px;
+  fill: var(--text-secondary);
+  pointer-events: none;
+}
+
+.password-toggle .icon-eye-off {
+  display: none;
+}
+
+.password-toggle.is-visible .icon-eye {
+  display: none;
+}
+
+.password-toggle.is-visible .icon-eye-off {
+  display: block;
+}
+
+.password-toggle:hover svg,
+.input-wrapper:focus-within .password-toggle svg {
+  fill: var(--accent);
+}
+
 .forgot-password-link {
   text-align: center;
   margin-top: 16px;

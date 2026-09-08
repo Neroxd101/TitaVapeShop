@@ -2,6 +2,16 @@ const form = document.getElementById('loginForm');
 const loginBtn = document.getElementById('loginBtn');
 const errorMessage = document.getElementById('errorMessage');
 const errorText = document.getElementById('errorText');
+const passwordInput = document.getElementById('password');
+const togglePassword = document.getElementById('togglePassword');
+
+togglePassword.addEventListener('click', () => {
+  const showing = passwordInput.type === 'password';
+  passwordInput.type = showing ? 'text' : 'password';
+  togglePassword.classList.toggle('is-visible', showing);
+  togglePassword.setAttribute('aria-pressed', showing ? 'true' : 'false');
+  togglePassword.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
+});
 
 function showError(message) {
   errorText.textContent = message;
