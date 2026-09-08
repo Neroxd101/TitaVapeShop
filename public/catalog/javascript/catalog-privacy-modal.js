@@ -52,6 +52,9 @@ const CatalogPrivacyModal = {
      * Setup event listeners
      */
     setupEventListeners() {
+        document.getElementById('privacyDeclinedModal').addEventListener('close', () => {
+            document.getElementById('cartBtn')?.focus();
+        });
         if (this.checkbox) {
             this.checkbox.addEventListener('change', (e) => {
                 if (this.acceptBtn) {
@@ -73,8 +76,8 @@ const CatalogPrivacyModal = {
 
         if (this.declineBtn) {
             this.declineBtn.addEventListener('click', () => {
-                alert('We cannot process your order without your consent to collect and process your personal information. If you have any concerns, please contact us.');
                 this.close();
+                document.getElementById('privacyDeclinedModal').showModal();
             });
         }
 

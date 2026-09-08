@@ -70,12 +70,24 @@ const CatalogCartModal = {
         }
 
         if (this.clearCartBtn) {
+            const clearDialog = document.getElementById('clearCartModal');
             this.clearCartBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to clear your cart?')) {
-                    if (window.CatalogCart) {
-                        window.CatalogCart.clearCart();
-                        window.CatalogCart.renderCart();
-                    }
+                if (window.CatalogCart?.cart.length && !clearDialog.open) {
+                    clearDialog.showModal();
+                }
+            });
+            document.getElementById('confirmClearCartBtn').addEventListener('click', () => {
+                if (window.CatalogCart) {
+                    window.CatalogCart.clearCart();
+                    window.CatalogCart.renderCart();
+                }
+                clearDialog.close();
+            });
+            clearDialog.addEventListener('close', () => {
+                if (window.CatalogCart?.cart.length) {
+                    this.clearCartBtn.focus();
+                } else {
+                    document.getElementById('closeEmptyCartBtn')?.focus();
                 }
             });
         }

@@ -1,4 +1,12 @@
 <!-- Cart Modal -->
+<dialog id="clearCartModal" aria-labelledby="clearCartTitle" aria-describedby="clearCartMessage">
+    <h3 id="clearCartTitle">Clear your cart?</h3>
+    <p id="clearCartMessage">This will remove all items from your cart. This cannot be undone.</p>
+    <form method="dialog" class="clear-cart-dialog-actions">
+        <button type="submit" class="btn btn-secondary" autofocus>Keep Items</button>
+        <button type="button" id="confirmClearCartBtn" class="btn btn-primary">Clear Cart</button>
+    </form>
+</dialog>
 <div class="modal-overlay" id="cartModal">
     <div class="modal modal-large">
         <div class="modal-header">
