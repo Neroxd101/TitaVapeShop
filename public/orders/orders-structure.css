@@ -69,8 +69,63 @@
 }
 
 /* Orders Table */
-.orders-table th:first-child {
-  min-width: 140px;
+.orders-table {
+  width: 100%;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.orders-table th.col-order-id,
+.orders-table td.col-order-id {
+  width: 110px;
+}
+
+.orders-table th.col-customer,
+.orders-table td.col-customer {
+  width: 140px;
+}
+
+.orders-table th.col-contact,
+.orders-table td.col-contact {
+  width: 130px;
+  white-space: nowrap;
+}
+
+.orders-table th.col-items,
+.orders-table td.col-items {
+  min-width: 160px;
+}
+
+.orders-table th.col-total,
+.orders-table td.col-total {
+  width: 110px;
+  text-align: right;
+}
+
+.orders-table th.col-type,
+.orders-table td.col-type {
+  width: 120px;
+}
+
+.orders-table th.col-status,
+.orders-table td.col-status {
+  width: 110px;
+}
+
+.orders-table th.col-date,
+.orders-table td.col-date {
+  width: 140px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.orders-table th.col-actions,
+.orders-table td.col-actions {
+  width: 160px;
 }
 
 .order-id {
@@ -84,6 +139,49 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.contact-number {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 12.5px;
+  transition: color 0.15s ease;
+}
+
+.contact-number:hover {
+  color: var(--accent);
+}
+
+.contact-icon {
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.items-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.items-count {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.items-summary {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.total-amount {
+  font-weight: 700;
+  color: var(--accent);
 }
 
 /* Override button danger to use translucent style for orders */
@@ -122,19 +220,232 @@
   }
 }
 
+/* Mobile & Tablet Portrait: Modern Card Layout */
 @media (max-width: 768px) {
   .orders-filter-select,
   .orders-filter-actions .btn {
     height: 36px;
   }
 
+  .orders-container .table-card,
+  .orders-table-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .orders-table-card .table-responsive {
+    overflow: visible !important;
+    max-height: none !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
   .orders-table {
-    min-width: 900px;
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    border: none !important;
+  }
+
+  .orders-table thead {
+    display: none !important;
+  }
+
+  .orders-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .orders-table tbody tr {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "id type status"
+      "customer customer contact"
+      "items items items"
+      "date date total"
+      "actions actions actions";
+    gap: 8px 10px;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px !important;
+    margin: 0 !important;
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .orders-table tbody tr:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .orders-table tbody tr.empty-row {
+    display: block !important;
+    text-align: center;
+    padding: 30px 16px !important;
+  }
+
+  .orders-table td {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    min-width: 0 !important;
+  }
+
+  /* 1. ID */
+  .orders-table td.col-order-id {
+    grid-area: id;
+    display: flex !important;
+    align-items: center;
+    width: auto !important;
+  }
+
+  /* 2. Type */
+  .orders-table td.col-type {
+    grid-area: type;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto !important;
+  }
+
+  .orders-table td.col-type .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  /* 3. Status */
+  .orders-table td.col-status {
+    grid-area: status;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto !important;
+    margin-left: auto;
+  }
+
+  .orders-table td.col-status .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  /* 4. Customer */
+  .orders-table td.col-customer {
+    grid-area: customer;
+    font-size: 14.5px !important;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* 5. Contact */
+  .orders-table td.col-contact {
+    grid-area: contact;
+    font-size: 12.5px !important;
+    color: var(--text-secondary);
+    text-align: right;
+    justify-content: flex-end;
+    display: flex !important;
+  }
+
+  .orders-table td.col-contact .contact-number {
+    color: var(--accent);
+    text-decoration: none;
+    background: rgba(0, 212, 170, 0.08);
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 212, 170, 0.2);
+  }
+
+  /* 6. Items */
+  .orders-table td.col-items {
+    grid-area: items;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 8px 12px !important;
+    width: 100% !important;
+  }
+
+  .orders-table td.col-items .items-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .orders-table td.col-items .items-summary {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    display: block;
+    line-height: 1.35;
+  }
+
+  /* 7. Date */
+  .orders-table td.col-date {
+    grid-area: date;
+    font-size: 12px !important;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  /* 8. Total */
+  .orders-table td.col-total {
+    grid-area: total;
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .orders-table td.col-total .total-amount {
+    font-size: 16px !important;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* 9. Actions */
+  .orders-table td.col-actions {
+    grid-area: actions;
+    border-top: 1px solid var(--border);
+    padding-top: 10px !important;
+    margin-top: 4px;
+    width: 100% !important;
+  }
+
+  .orders-table .order-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    overflow-x: visible !important;
+  }
+
+  .orders-table .order-actions .btn {
+    flex: 1 1 auto;
+    min-width: 68px;
+    justify-content: center;
+    text-align: center;
+    padding: 7px 12px;
+    font-size: 12px;
+    height: 34px;
   }
 
   .orders-table-card .pagination-controls {
-    padding: 12px 16px;
+    padding: 14px 16px;
     justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 12px;
   }
 }
 
@@ -167,17 +478,56 @@
   }
 
   .orders-table {
-    min-width: 760px;
+    min-width: 0 !important;
+  }
+
+  .orders-table tbody tr {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "id type status"
+      "customer customer customer"
+      "contact contact contact"
+      "items items items"
+      "date date total"
+      "actions actions actions";
+    padding: 12px !important;
+    gap: 6px 8px !important;
+    border-radius: 10px;
+  }
+
+  .orders-table td.col-customer {
+    font-size: 14px !important;
+  }
+
+  .orders-table td.col-contact {
+    font-size: 12px !important;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .orders-table td.col-total .total-amount {
+    font-size: 15px !important;
+  }
+
+  .orders-table td.col-date {
+    font-size: 11.5px !important;
+  }
+
+  .orders-table .order-actions .btn {
+    height: 32px;
+    font-size: 11px;
+    padding: 6px 8px;
+    min-width: 60px;
   }
 
   .order-id {
-    font-size: 10px;
+    font-size: 10.5px;
     padding: 3px 6px;
   }
 
   .orders-table-card .pagination-controls {
     padding: 10px 12px;
-    gap: 12px;
+    gap: 10px;
   }
 }
 
@@ -198,8 +548,32 @@
     padding: 5px 9px;
   }
 
+  .orders-table tbody tr {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "id status"
+      "type type"
+      "customer customer"
+      "contact contact"
+      "items items"
+      "date date"
+      "total total"
+      "actions actions";
+    padding: 10px !important;
+    gap: 5px 6px !important;
+  }
+
+  .orders-table td.col-total {
+    text-align: left;
+    margin-left: 0;
+  }
+
+  .orders-table .order-actions .btn {
+    flex: 1 1 45%;
+  }
+
   .order-id {
-    font-size: 9px;
+    font-size: 9.5px;
   }
 }
 
