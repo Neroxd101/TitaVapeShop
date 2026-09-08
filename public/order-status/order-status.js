@@ -117,12 +117,6 @@
       });
     }
 
-    const tryAgainBtn = document.getElementById('tryAgainBtn');
-    if (tryAgainBtn) {
-      tryAgainBtn.addEventListener('click', () => {
-        window.location.reload();
-      });
-    }
   }
 
   /**

@@ -550,7 +550,8 @@ body {
 }
 
 
-.help-card .btn {
+.help-card .btn,
+#errorState .btn {
   font-style: normal;
   text-decoration: none;
 }
