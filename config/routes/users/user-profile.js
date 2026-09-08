@@ -150,9 +150,9 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
       });
 
       const mailOptions = {
-        from: `"Tita Vape Shop" <${process.env.SMTP_USER}>`,
+        from: `"Tita\'s Vape Shop" <${process.env.SMTP_USER}>`,
         to: otpData.email,
-        subject: 'Profile Update OTP - Tita Vape Shop',
+        subject: 'Profile Update OTP - Tita\'s Vape Shop',
         html: generateProfileOTPEmail(otpData.otp_code)
       };
 
@@ -376,7 +376,7 @@ function generateProfileOTPEmail(otpCode) {
               <!-- Header -->
               <tr>
                 <td style="background: linear-gradient(135deg, #12121a, #1a1a24); padding: 35px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
-                  <h1 style="margin: 0; color: #00d4aa; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                  <h1 style="margin: 0; color: #00d4aa; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA\'S VAPE SHOP</h1>
                   <p style="margin: 6px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Profile Update Verification</p>
                 </td>
               </tr>
@@ -406,7 +406,7 @@ function generateProfileOTPEmail(otpCode) {
               <!-- Footer -->
               <tr>
                 <td style="background-color: #1a1a24; padding: 24px 30px; text-align: center; border-top: 1px solid #2a2a3a;">
-                  <p style="margin: 0; color: #8b8b9e; font-size: 12px;">This is an automated email from Tita Vape Shop</p>
+                  <p style="margin: 0; color: #8b8b9e; font-size: 12px;">This is an automated email from Tita\'s Vape Shop</p>
                   <p style="margin: 6px 0 0; color: #ff4757; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Do not share this OTP with anyone</p>
                 </td>
               </tr>

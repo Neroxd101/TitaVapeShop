@@ -138,7 +138,7 @@ async function checkAndSendLowStockAlerts(itemsToCheck) {
 
     // Step 6: Send email
     const mailOptions = {
-      from: `"Tita Vape Shop Alert" <${process.env.SMTP_USER}>`,
+      from: `"Tita\'s Vape Shop Alert" <${process.env.SMTP_USER}>`,
       to: recipientEmail,
       subject: `⚠️ Low Stock Alert: ${lowStockAlerts.length} product(s) running low`,
       html: emailHtml
@@ -190,7 +190,7 @@ function generateLowStockEmailHtml(items, threshold) {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Low Stock Alert - Tita Vape Shop</title>
+      <title>Low Stock Alert - Tita\'s Vape Shop</title>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
@@ -249,7 +249,7 @@ function generateLowStockEmailHtml(items, threshold) {
               <!-- Footer info -->
               <tr>
                 <td style="background-color: #1a1a24; padding: 24px 30px; text-align: center; border-top: 1px solid #2a2a3a;">
-                  <p style="margin: 0; color: #8b8b9e; font-size: 12px;">This is an automated notification from your Tita Vape Shop POS system.</p>
+                  <p style="margin: 0; color: #8b8b9e; font-size: 12px;">This is an automated notification from your Tita\'s Vape Shop POS system.</p>
                   <p style="margin: 4px 0 0; color: #8b8b9e; font-size: 11px;">You can customize threshold limits and recipients in Settings.</p>
                 </td>
               </tr>

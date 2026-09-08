@@ -144,7 +144,7 @@ const TransactionsPrint = {
 </head>
 <body>
     <div class="print-header">
-        <h1>Tita Vape Shop</h1>
+        <h1>Tita\'s Vape Shop</h1>
         <p>Activity Log / Transactions Report</p>
         <p>Date: ${currentDate}</p>
     </div>

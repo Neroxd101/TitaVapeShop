@@ -89,15 +89,15 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
 
         switch (status) {
             case 'pending':
-                subject = `Order Confirmation - Tita Vape Shop`;
+                subject = `Order Confirmation - Tita\'s Vape Shop`;
                 htmlContent = generateOrderCreatedEmail(customerName, orderId, orderData);
                 break;
             case 'confirmed':
-                subject = `Order Confirmed - Tita Vape Shop`;
+                subject = `Order Confirmed - Tita\'s Vape Shop`;
                 htmlContent = generateOrderConfirmedEmail(customerName, orderId, orderData);
                 break;
             case 'completed':
-                subject = `Order Completed - Tita Vape Shop`;
+                subject = `Order Completed - Tita\'s Vape Shop`;
                 htmlContent = generateOrderCompletedEmail(customerName, orderId, orderData);
                 break;
             default:
@@ -105,7 +105,7 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
         }
 
         const mailOptions = {
-            from: `"Tita Vape Shop" <${process.env.SMTP_USER}>`,
+            from: `"Tita\'s Vape Shop" <${process.env.SMTP_USER}>`,
             to: customerEmail,
             subject: subject,
             html: htmlContent
@@ -157,7 +157,7 @@ function generateEmailFooter() {
         <tr>
             <td style="background-color: #1a1a24; padding: 30px 30px; text-align: center; border-top: 1px solid #2a2a3a; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #8b8b9e;">
                 <!-- Logo -->
-                <div style="font-size: 20px; font-weight: 700; color: #00d4aa; margin-bottom: 6px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</div>
+                <div style="font-size: 20px; font-weight: 700; color: #00d4aa; margin-bottom: 6px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif;">TITA\'S VAPE SHOP</div>
                 
                 <p style="margin: 0 0 16px; color: #8b8b9e; font-size: 13px;">We appreciate your business!</p>
                 
@@ -165,7 +165,7 @@ function generateEmailFooter() {
                 <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #8b8b9e; line-height: 1.6; border-top: 1px dashed #2a2a3a; padding-top: 16px; text-align: left;">
                     <tr>
                         <td style="padding-bottom: 4px; color: #8b8b9e;">
-                            📍 <strong>Location:</strong> Tita Vape Shop Main Branch, Manila, Philippines
+                            📍 <strong>Location:</strong> Tita\'s Vape Shop Main Branch, Manila, Philippines
                         </td>
                         <td align="right" style="padding-bottom: 4px; color: #8b8b9e;">
                             📞 <strong>Contact:</strong> +63 912 345 6789
@@ -222,7 +222,7 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Order Confirmation - Tita Vape Shop</title>
+            <title>Order Confirmation - Tita\'s Vape Shop</title>
             <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         </head>
         <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
@@ -233,7 +233,7 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                             <!-- Header -->
                             <tr>
                                 <td style="background: linear-gradient(135deg, #00d4aa, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
-                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA\'S VAPE SHOP</h1>
                                     <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Order Confirmation</p>
                                 </td>
                             </tr>
@@ -334,7 +334,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Order Confirmed - Tita Vape Shop</title>
+            <title>Order Confirmed - Tita\'s Vape Shop</title>
             <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         </head>
         <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
@@ -345,7 +345,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                             <!-- Header -->
                             <tr>
                                 <td style="background: linear-gradient(135deg, #3b82f6, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
-                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA\'S VAPE SHOP</h1>
                                     <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Order Confirmed</p>
                                 </td>
                             </tr>
@@ -441,7 +441,7 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Order Completed - Tita Vape Shop</title>
+            <title>Order Completed - Tita\'s Vape Shop</title>
             <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         </head>
         <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
@@ -452,7 +452,7 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                             <!-- Header -->
                             <tr>
                                 <td style="background: linear-gradient(135deg, #00d4aa, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
-                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA VAPE SHOP</h1>
+                                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA\'S VAPE SHOP</h1>
                                     <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Order Completed</p>
                                 </td>
                             </tr>

@@ -165,7 +165,7 @@ const AnalyticsPrint = {
 </head>
 <body>
     <div class="print-header">
-        <h1>Tita Vape Shop</h1>
+        <h1>Tita\'s Vape Shop</h1>
         <p>Business Analytics Report</p>
         <p>Date: ${currentDate} | Period: ${timeRangeLabel}</p>
     </div>
