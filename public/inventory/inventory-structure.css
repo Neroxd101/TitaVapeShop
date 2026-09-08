@@ -14,6 +14,9 @@
 
 /* Inventory Card - base styles */
 .inventory-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -22,6 +25,7 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .inventory-card:hover {
@@ -30,9 +34,32 @@
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
 }
 
+/* Ensure consistent card name height (reserves 2 lines) so buttons align horizontally */
+.inventory-card .card-name {
+  font-size: 15px;
+  line-height: 1.35;
+  height: 2.7em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.inventory-card .card-details {
+  margin-bottom: 14px;
+}
+
+/* Pin Edit and Delete buttons to the exact bottom of every card */
 .inventory-card .card-actions {
   position: relative;
   z-index: 2;
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+  width: 100%;
 }
 
 /* Card QR styles moved to /css/components/qr-preview.css */
