@@ -479,6 +479,25 @@ router.post('/api/orders/cancel', async (req, res) => {
     if (!order) {
       return res.status(409).json({ success: false, error: 'Only pending orders can be cancelled. This order may already have been updated.' });
     }
+    // Attribute this customer-token action independently of any staff session.
+    const { error: logError } = await supabaseAdmin.rpc('transactions_log', {
+      p_action_type: 'order_cancel',
+      p_user_email: 'Customer',
+      p_entity_id: order.id,
+      p_entity_type: 'order',
+      p_sale_total: order.total_amount,
+      p_sale_items: order.items,
+      p_customer_name: order.customer_name,
+      p_customer_email: order.customer_email,
+      p_details: {
+        order_id: order.id,
+        order_type: order.order_type,
+        previous_status: 'pending',
+        cancelled_by: 'customer',
+        items_count: Array.isArray(order.items) ? order.items.length : 0
+      }
+    });
+    if (logError) console.error('Customer cancellation audit log failed:', logError);
     return res.json({ success: true, order });
   } catch (error) {
     console.error('Order cancellation failed:', error);

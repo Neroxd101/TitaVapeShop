@@ -21,6 +21,10 @@
   const copyOrderIdBtn = document.getElementById('copyOrderIdBtn');
   const cancelOrderBtn = document.getElementById('cancelOrderBtn');
   const cancelOrderMessage = document.getElementById('cancelOrderMessage');
+  const cancelOrderDialog = document.getElementById('cancelOrderDialog');
+  const keepOrderBtn = document.getElementById('keepOrderBtn');
+  const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+  const cancelDialogError = document.getElementById('cancelDialogError');
   let isCancelling = false;
   let orderRequestVersion = 0;
 
@@ -73,7 +77,16 @@
    * Setup event listeners
    */
   function setupEventListeners() {
-    cancelOrderBtn.addEventListener('click', cancelOrder);
+    cancelOrderBtn.addEventListener('click', () => {
+      if (isCancelling || currentOrder?.status !== 'pending') return;
+      cancelDialogError.hidden = true;
+      cancelOrderDialog.showModal();
+    });
+    keepOrderBtn.addEventListener('click', () => cancelOrderDialog.close());
+    confirmCancelBtn.addEventListener('click', cancelOrder);
+    cancelOrderDialog.addEventListener('cancel', event => {
+      if (isCancelling) event.preventDefault();
+    });
     if (copyOrderIdBtn) {
       copyOrderIdBtn.addEventListener('click', () => {
         if (!currentOrder || !currentOrder.id) return;
@@ -124,8 +137,11 @@
    */
   async function cancelOrder() {
     if (isCancelling || currentOrder?.status !== 'pending') return;
-    if (!window.confirm('Cancel this order? This cannot be undone.')) return;
     isCancelling = true;
+    confirmCancelBtn.disabled = true;
+    keepOrderBtn.disabled = true;
+    confirmCancelBtn.textContent = 'Cancelling...';
+    cancelDialogError.hidden = true;
     orderRequestVersion++;
     setupPolling('cancelled');
     cancelOrderBtn.disabled = true;
@@ -137,6 +153,9 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: currentOrder.id, token: currentToken })
       });
+      if (response.redirected || !response.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('Cancellation is unavailable. The app server may need restarting to load the latest update.');
+      }
       const data = await response.json();
       if (!response.ok || !data.success || !data.order) {
         throw new Error(data.error || 'Unable to cancel your order. Please try again.');
@@ -145,10 +164,16 @@
       saveOrderToLocalStorage(currentOrder, currentToken);
       renderOrder(currentOrder);
       cancelOrderMessage.textContent = 'Your order has been cancelled.';
+      cancelOrderDialog.close();
     } catch (error) {
       cancelOrderMessage.textContent = error.message || 'Unable to cancel your order. Please try again.';
+      cancelDialogError.textContent = cancelOrderMessage.textContent;
+      cancelDialogError.hidden = false;
     } finally {
       isCancelling = false;
+      confirmCancelBtn.disabled = false;
+      keepOrderBtn.disabled = false;
+      confirmCancelBtn.textContent = 'Yes, Cancel Order';
       cancelOrderBtn.disabled = false;
       cancelOrderBtn.textContent = 'Cancel Order';
       cancelOrderMessage.hidden = false;

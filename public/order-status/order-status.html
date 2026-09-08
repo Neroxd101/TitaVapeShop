@@ -286,6 +286,16 @@
     </div>
   </main>
 
+  <dialog id="cancelOrderDialog" aria-labelledby="cancelDialogTitle" aria-describedby="cancelDialogDescription">
+    <h2 id="cancelDialogTitle">Cancel this order?</h2>
+    <p id="cancelDialogDescription">Your order will be cancelled. This cannot be undone.</p>
+    <p id="cancelDialogError" role="alert" hidden></p>
+    <div class="cancel-dialog-actions">
+      <button type="button" class="btn btn-secondary" id="keepOrderBtn" autofocus>Keep Order</button>
+      <button type="button" class="btn btn-secondary" id="confirmCancelBtn">Yes, Cancel Order</button>
+    </div>
+  </dialog>
+
 
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="/order-status/order-status.js"></script>

@@ -397,7 +397,8 @@ class TransactionsUI {
             const orderId = d.order_id ? d.order_id.substring(0, 8) : 'N/A';
             const itemsCount = d.items_count || 0;
             const orderType = d.order_type || 'pickup';
-            return `Cancelled order ${orderId} (${itemsCount} items, ${orderType})`;
+            const action = d.cancelled_by === 'customer' ? 'Customer cancelled order' : 'Cancelled order';
+            return `${action} ${orderId} (${itemsCount} items, ${orderType})`;
         }
 
         return JSON.stringify(d).substring(0, 50) + '...';
