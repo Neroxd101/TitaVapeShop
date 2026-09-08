@@ -56,6 +56,7 @@ const CatalogCartModal = {
      * Setup event listeners
      */
     setupEventListeners() {
+        document.getElementById('closeEmptyCartBtn')?.addEventListener('click', () => this.close());
         if (this.closeButton) {
             this.closeButton.addEventListener('click', () => this.close());
         }
@@ -82,7 +83,7 @@ const CatalogCartModal = {
         if (this.nextToCheckoutBtn) {
             this.nextToCheckoutBtn.addEventListener('click', () => {
                 if (window.CatalogCart && window.CatalogCart.cart.length === 0) {
-                    alert('Your cart is empty');
+                    window.CatalogCart.renderCart();
                     return;
                 }
                 this.close();

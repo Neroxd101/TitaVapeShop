@@ -2824,3 +2824,38 @@ main {
         white-space: nowrap;
     }
 }
+
+/* Empty cart modal */
+#cartModal .cart-empty-state {
+    display: none;
+    padding: 32px 16px;
+    text-align: center;
+}
+
+#cartModal.is-empty .cart-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+#cartModal .cart-empty-state svg,
+#cartModal .cart-empty-state p {
+    color: var(--text-secondary);
+}
+
+#cartModal .cart-empty-state h3,
+#cartModal .cart-empty-state p {
+    margin: 0;
+}
+
+#cartModal .cart-empty-state .btn {
+    min-height: 44px;
+    margin-top: 8px;
+}
+
+#cartModal.is-empty .cart-items,
+#cartModal.is-empty .cart-summary,
+#cartModal.is-empty .cart-actions {
+    display: none;
+}

@@ -207,8 +207,9 @@ const CatalogCart = {
             cartTotal.textContent = `₱${this.getTotalAmount().toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
         }
 
+        document.getElementById('cartModal')?.classList.toggle('is-empty', this.cart.length === 0);
         if (this.cart.length === 0) {
-            cartItems.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
+            cartItems.innerHTML = '';
             return;
         }
 

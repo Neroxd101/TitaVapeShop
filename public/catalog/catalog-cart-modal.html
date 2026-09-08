@@ -12,6 +12,14 @@
         </div>
         <div class="modal-body">
             <div class="cart-container">
+                <div class="cart-empty-state" role="status">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path d="M3 3h2l3 12h11l2-9H6M9 20h.01M18 20h.01" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <h3>Your cart is empty</h3>
+                    <p>There are no items in your cart.</p>
+                    <button type="button" id="closeEmptyCartBtn" class="btn btn-secondary">Close</button>
+                </div>
                 <div id="cartItems" class="cart-items">
                     <!-- Cart items will be rendered here -->
                 </div>
