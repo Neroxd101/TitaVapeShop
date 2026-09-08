@@ -7,10 +7,9 @@
   <title>Dashboard | Tita's Vape Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/components/variables.css">
   <link rel="stylesheet" href="/css/components/resets.css">
-  <link rel="stylesheet" href="/css/components/background-effects.css">
   <link rel="stylesheet" href="/css/components/animations.css">
   <link rel="stylesheet" href="/css/components/cards.css">
   <link rel="stylesheet" href="/css/components/forms.css">
@@ -23,163 +22,308 @@
   <link rel="stylesheet" href="/css/components/footer.css">
   <link rel="stylesheet" href="/navigation/navigation.css">
   <link rel="stylesheet" href="/css/components/main-layout.css">
-  <link rel="stylesheet" href="/css/components/page-header.css">
-  <link rel="stylesheet" href="/css/components/page-content.css">
-  <link rel="stylesheet" href="/css/components/sections.css">
-  <link rel="stylesheet" href="/css/components/stat-cards.css">
-  <link rel="stylesheet" href="/css/components/action-cards.css">
-  <link rel="stylesheet" href="/css/components/activity-list.css">
-  <link rel="stylesheet" href="/css/components/google-connect.css">
-  <link rel="stylesheet" href="/dashboard/dashboard-theme.css">
+  <link rel="stylesheet" href="/dashboard/dashboard.css">
 </head>
 
 <body>
-  <div class="bg-pattern"></div>
-
-  <!-- Sidebar - Loaded dynamically -->
+  <!-- Sidebar / Bottom Navigation (Loaded dynamically) -->
   <div id="navigation-container"></div>
 
   <!-- Main Content -->
   <main class="main-content">
-    <div class="page-content">
-      <div class="page-header">
-        <h1>Dashboard</h1>
-        <p class="subtitle">Overview of your shop's performance</p>
-      </div>
+    <div class="page-content dashboard-container">
 
-      <!-- Stats Cards -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon blue">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M4 7h16M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M6 7v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M9 12h6M9 16h6" />
-            </svg>
+      <!-- Store Status & Retail Header -->
+      <header class="dash-header">
+        <div class="dash-welcome">
+          <div class="dash-store-badge">
+            <span class="pulse-dot"></span>
+            <span class="store-status-text">Store Open · POS Active</span>
+            <span class="badge-separator">·</span>
+            <span id="liveDateText" class="store-date-text">Today</span>
           </div>
-          <div class="stat-details">
-            <span class="stat-value" id="totalProducts">0</span>
-            <span class="stat-label">Total Products</span>
+          <h1 class="dash-title">
+            <span id="greetingTimeOfDay">Welcome back</span>, <span id="greetingUserName">Admin</span>
+          </h1>
+          <p class="dash-subtitle">Store command center for sales, stock levels, and order fulfillment</p>
+        </div>
+
+        <div class="dash-actions">
+          <a href="/sales" class="btn btn-primary dash-btn-sale" id="headerNewSaleBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span>New Sale (POS)</span>
+          </a>
+          <a href="/inventory" id="headerAddProductBtn" class="btn btn-secondary dash-btn-add">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Stock</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Store Core Metrics Grid -->
+      <div class="metrics-grid">
+        <!-- Metric 1: Today's Revenue (Neutral Card) -->
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <span class="metric-label">Today's Gross Sales</span>
+            <span class="metric-pill pill-neutral">
+              <span>Today</span>
+            </span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value" id="todaySales">₱0</span>
+          </div>
+          <div class="metric-card-footer">
+            <span class="metric-subtext">This Month: <strong id="monthSales">₱0</strong></span>
+            <a href="/sales" class="metric-link">Open POS →</a>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon green">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M12 1v22" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M17 5H10a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8H6" />
-            </svg>
+        <!-- Metric 2: Low Stock Warning (Neutral Card) -->
+        <div class="metric-card" id="lowStockCard">
+          <div class="metric-card-top">
+            <span class="metric-label">Stock Warnings</span>
+            <span class="metric-pill pill-neutral" id="lowStockPill">
+              <span id="lowStockPillText">Threshold: ≤10</span>
+            </span>
           </div>
-          <div class="stat-details">
-            <span class="stat-value" id="todaySales">₱0</span>
-            <span class="stat-label">Today's Sales</span>
+          <div class="metric-value-row">
+            <span class="metric-value" id="lowStock">0</span>
+            <span class="metric-unit">items low</span>
           </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon orange">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M6 7h12" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M6 12h12" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M6 17h8" />
-            </svg>
-          </div>
-          <div class="stat-details">
-            <span class="stat-value" id="lowStock">0</span>
-            <span class="stat-label">Low Stock Items</span>
+          <div class="metric-card-footer">
+            <span class="metric-subtext" id="lowStockStatusMsg">Checking inventory...</span>
+            <a href="/inventory" class="metric-link">Restock →</a>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon purple">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M4 19V5" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M4 19h16" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M8 17v-6" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M12 17V9" />
-              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                d="M16 17v-3" />
-            </svg>
+        <!-- Metric 3: Active Products Catalog -->
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <span class="metric-label">Catalog Products</span>
+            <span class="metric-pill pill-neutral">Active</span>
           </div>
-          <div class="stat-details">
-            <span class="stat-value" id="monthSales">₱0</span>
-            <span class="stat-label">This Month</span>
+          <div class="metric-value-row">
+            <span class="metric-value" id="totalProducts">0</span>
+            <span class="metric-unit">items</span>
+          </div>
+          <div class="metric-card-footer">
+            <span class="metric-subtext">Pods, juices, coils & mods</span>
+            <a href="/inventory" class="metric-link">Inventory →</a>
           </div>
         </div>
-      </div>
 
-      <!-- Quick Actions -->
-      <div class="section">
-        <h3 class="section-title">Quick Actions</h3>
-        <div class="actions-grid">
-          <a href="/inventory" class="action-card" id="quickActionAddProduct" data-action="add-product">
-            <div class="action-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 5v14" />
-                <path d="M5 12h14" />
-              </svg>
-            </div>
-            <span>Add Product</span>
-          </a>
-          <a href="/sales" class="action-card" id="quickActionNewSale">
-            <div class="action-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6 7h15l-2 8H8L6 7Z" />
-                <path d="M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
-                <path d="M18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
-                <path d="M6 7 5 3H2" />
-              </svg>
-            </div>
-            <span>New Sale</span>
-          </a>
-          <a href="/analytics" class="action-card" id="quickActionViewReports">
-            <div class="action-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 6h12" />
-                <path d="M8 12h12" />
-                <path d="M8 18h8" />
-                <path d="M4 6h.01" />
-                <path d="M4 12h.01" />
-                <path d="M4 18h.01" />
-              </svg>
-            </div>
-            <span>View Reports</span>
-          </a>
-          <a href="/orders" class="action-card" id="quickActionSearchStock">
-            <div class="action-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
-                <path d="M21 21l-4.3-4.3" />
-              </svg>
-            </div>
-            <span>Check Orders</span>
-          </a>
+        <!-- Metric 4: Online Orders Queue -->
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <span class="metric-label">Pending Orders</span>
+            <span class="metric-pill pill-blue">Pickup / Delivery</span>
+          </div>
+          <div class="metric-value-row">
+            <span class="metric-value" id="pendingOrders">0</span>
+            <span class="metric-unit">pending</span>
+          </div>
+          <div class="metric-card-footer">
+            <span class="metric-subtext">Customer pickup queue</span>
+            <a href="/orders" class="metric-link">View Orders →</a>
+          </div>
         </div>
       </div>
 
-      <!-- Recent Activity -->
-      <div class="section">
-        <h3 class="section-title">Recent Activity</h3>
-        <div class="activity-list" id="activityList">
-          <div class="activity-empty">
-            <p>No recent activity</p>
-          </div>
+      <!-- Main Operational Split Layout -->
+      <div class="dash-operational-grid">
+        
+        <!-- Left: Retail Operations & Activity Ledger -->
+        <div class="dash-main-column">
+
+          <!-- Quick Operations Shortcuts -->
+          <section class="dash-section">
+            <div class="dash-section-header">
+              <div>
+                <h2 class="dash-section-title">Quick Operations</h2>
+                <p class="dash-section-sub">Direct access to daily store tasks and cash register</p>
+              </div>
+            </div>
+
+            <div class="operations-grid">
+              <a href="/sales" class="op-card" id="quickActionNewSale">
+                <div class="op-icon op-icon-green">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                </div>
+                <div class="op-details">
+                  <div class="op-title-wrap">
+                    <span class="op-title">Cash Register / POS</span>
+                    <span class="op-tag">Checkout</span>
+                  </div>
+                  <span class="op-desc">Process walk-in sales & fast barcode scanning</span>
+                </div>
+              </a>
+
+              <a href="/inventory" class="op-card" id="quickActionAddProduct" data-action="add-product">
+                <div class="op-icon op-icon-blue">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </div>
+                <div class="op-details">
+                  <span class="op-title">Add New Product</span>
+                  <span class="op-desc">Register e-liquids, disposables, pods & accessories</span>
+                </div>
+              </a>
+
+              <a href="/orders" class="op-card" id="quickActionSearchStock">
+                <div class="op-icon op-icon-amber">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                </div>
+                <div class="op-details">
+                  <span class="op-title">Customer Orders</span>
+                  <span class="op-desc">Verify pickup QR codes & arrange rider dispatch</span>
+                </div>
+              </a>
+
+              <a href="/analytics" class="op-card" id="quickActionViewReports">
+                <div class="op-icon op-icon-purple">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                </div>
+                <div class="op-details">
+                  <span class="op-title">Sales Analytics</span>
+                  <span class="op-desc">Profit margins, best-sellers & daily revenue breakdown</span>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <!-- Store Activity Ledger -->
+          <section class="dash-section">
+            <div class="dash-section-header">
+              <div>
+                <h2 class="dash-section-title">Recent Store Activity</h2>
+                <p class="dash-section-sub">Live log of completed sales, stock adjustments, and order updates</p>
+              </div>
+              <a href="/transactions" class="dash-header-link">View Full History →</a>
+            </div>
+
+            <div class="ledger-card">
+              <div class="activity-list" id="activityList">
+                <div class="activity-empty">
+                  <div class="empty-icon-wrap">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <h4>No recent transactions</h4>
+                  <p>Transactions from the POS register and catalog will appear here in real time.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
         </div>
+
+        <!-- Right: Store Sidebar Widgets -->
+        <aside class="dash-side-column">
+
+          <!-- Store Info Widget -->
+          <div class="side-widget store-info-widget">
+            <div class="widget-header">
+              <span class="widget-badge">STORE PROFILE</span>
+              <h3 class="widget-title">Tita's Vape Shop</h3>
+            </div>
+            <div class="store-details-list">
+              <div class="store-detail-row">
+                <span class="detail-icon">📍</span>
+                <div class="detail-content">
+                  <span class="detail-label">Location</span>
+                  <span class="detail-val">Main Branch Store</span>
+                </div>
+              </div>
+              <div class="store-detail-row">
+                <span class="detail-icon">🕒</span>
+                <div class="detail-content">
+                  <span class="detail-label">Operating Hours</span>
+                  <span class="detail-val">8:00 AM – 8:30 PM Daily</span>
+                </div>
+              </div>
+              <div class="store-detail-row">
+                <span class="detail-icon">💳</span>
+                <div class="detail-content">
+                  <span class="detail-label">Payment Methods</span>
+                  <span class="detail-val">Cash · GCash · QR Ph</span>
+                </div>
+              </div>
+            </div>
+            <div class="widget-footer">
+              <a href="/catalog" target="_blank" class="store-catalog-link">
+                <span>Open Online Customer Catalog</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Low Stock Watchlist Widget -->
+          <div class="side-widget" id="lowStockWatchWidget">
+            <div class="widget-header">
+              <span class="widget-badge alert-badge">STOCK WATCHLIST</span>
+              <h3 class="widget-title">Items Needing Restock</h3>
+            </div>
+            <div id="lowStockWatchList" class="low-stock-list">
+              <p class="low-stock-empty">Loading inventory status...</p>
+            </div>
+            <div class="widget-footer">
+              <a href="/inventory" class="widget-action-link">Open Inventory Manager →</a>
+            </div>
+          </div>
+
+          <!-- Cloud Image Storage Widget -->
+          <div class="side-widget cloud-widget">
+            <div class="cloud-widget-content">
+              <div class="cloud-icon-wrap">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                  <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="cloud-title">Google Drive Sync</h4>
+                <p class="cloud-desc" id="googleStatusDesc">Product photos & receipt storage</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="manageGoogleBtn" style="width: 100%; margin-top: 12px; font-size: 12px;">
+              Manage Connection
+            </button>
+          </div>
+
+        </aside>
       </div>
+
     </div>
   </main>
 
-  <!-- Google Connect Modal -->
+  <!-- Google Connect Modal (For Admin setup) -->
   <div class="modal-overlay" id="googleConnectModal">
     <div class="modal modal-small">
       <div class="modal-header">
@@ -205,15 +349,15 @@
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
           </div>
-          <p class="google-prompt-text">Connect your Google account to enable image uploads for products and QR codes.
+          <p class="google-prompt-text">Connect your Google account to enable product image uploads and secure cloud storage.
           </p>
-          <p class="google-prompt-sub">This allows storing images securely in Google Drive.</p>
+          <p class="google-prompt-sub">This stores images in your connected Google Drive folder.</p>
         </div>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" id="skipGoogleBtn">Skip for now</button>
         <button type="button" class="btn btn-google" id="googleConnectBtn">
-          <svg viewBox="0 0 24 24" width="20" height="20">
+          <svg viewBox="0 0 24 24" width="18" height="18">
             <path fill="currentColor"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
             <path fill="currentColor"

@@ -64,23 +64,51 @@ function connectGoogleAccount() {
   window.location.href = '/settings';
 }
 
+// Update greeting based on time of day and user
+function updateGreeting(user) {
+  const greetingEl = document.getElementById('greetingUserName');
+  const greetingTimeEl = document.getElementById('greetingTimeOfDay');
+  const hour = new Date().getHours();
+  let timeOfDay = 'Good morning';
+  if (hour >= 12 && hour < 18) timeOfDay = 'Good afternoon';
+  else if (hour >= 18 || hour < 5) timeOfDay = 'Good evening';
+
+  if (greetingTimeEl) greetingTimeEl.textContent = timeOfDay;
+  if (greetingEl && user) {
+    const name = user.username || user.email?.split('@')[0] || 'Admin';
+    greetingEl.textContent = name;
+  }
+}
+
+// Update live date in header
+function updateLiveDate() {
+  const dateEl = document.getElementById('liveDateText');
+  if (dateEl) {
+    const now = new Date();
+    dateEl.textContent = now.toLocaleDateString('en-PH', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+}
+
 // Initialize dashboard
 function initDashboard() {
   const user = checkAuth();
   if (!user) return;
 
-  // User info is now set by sidebar.js
+  // Personalize greeting & live date
+  updateGreeting(user);
+  updateLiveDate();
 
   // Check if admin needs to connect Google
-  // Show modal after a brief delay to ensure DOM is ready
   const roles = user.roles || [];
   if (roles.includes('admin') && !isGoogleConnected()) {
     setTimeout(() => {
       showGoogleConnectModal();
     }, 500);
   }
-
-  // Google connection status in header is handled by HeaderStatus
 
   // Load dashboard data
   loadDashboardData();
@@ -109,40 +137,77 @@ async function loadDashboardData() {
     const monthEndISO = todayEnd.toISOString();
 
     // Fetch all data in parallel
-    const [inventoryResponse, todayStatsResponse, monthStatsResponse] = await Promise.all([
-      // Get all inventory items
-      fetch('/inventory/inventory_get_all'),
-      // Get today's sales stats
-      fetch(`/transactions/transactions_get_stats?start_date=${encodeURIComponent(todayStartISO)}&end_date=${encodeURIComponent(todayEndISO)}`),
-      // Get this month's sales stats
-      fetch(`/transactions/transactions_get_stats?start_date=${encodeURIComponent(monthStartISO)}&end_date=${encodeURIComponent(monthEndISO)}`)
+    const [inventoryResponse, todayStatsResponse, monthStatsResponse, ordersResponse] = await Promise.all([
+      fetch('/inventory/inventory_get_all').catch(() => null),
+      fetch(`/transactions/transactions_get_stats?start_date=${encodeURIComponent(todayStartISO)}&end_date=${encodeURIComponent(todayEndISO)}`).catch(() => null),
+      fetch(`/transactions/transactions_get_stats?start_date=${encodeURIComponent(monthStartISO)}&end_date=${encodeURIComponent(monthEndISO)}`).catch(() => null),
+      fetch('/api/orders/get_all?status=pending&limit=1').catch(() => null)
     ]);
 
-    // Parse responses
-    const inventoryData = await inventoryResponse.json();
-    const todayStatsData = await todayStatsResponse.json();
-    const monthStatsData = await monthStatsResponse.json();
+    // Parse responses safely
+    const inventoryData = inventoryResponse ? await inventoryResponse.json().catch(() => ({})) : {};
+    const todayStatsData = todayStatsResponse ? await todayStatsResponse.json().catch(() => ({})) : {};
+    const monthStatsData = monthStatsResponse ? await monthStatsResponse.json().catch(() => ({})) : {};
+    const ordersData = ordersResponse ? await ordersResponse.json().catch(() => ({})) : {};
 
     // Get DOM elements
     const totalProductsEl = document.getElementById('totalProducts');
     const todaySalesEl = document.getElementById('todaySales');
     const lowStockEl = document.getElementById('lowStock');
     const monthSalesEl = document.getElementById('monthSales');
+    const pendingOrdersEl = document.getElementById('pendingOrders');
+    const lowStockPill = document.getElementById('lowStockPill');
+    const lowStockPillText = document.getElementById('lowStockPillText');
+    const lowStockStatusMsg = document.getElementById('lowStockStatusMsg');
+    const lowStockCard = document.getElementById('lowStockCard');
+    const lowStockWatchList = document.getElementById('lowStockWatchList');
 
-    // Calculate total products
-    if (inventoryData.success && inventoryData.data) {
-      const totalProducts = inventoryData.data.length;
+    // Calculate total products & low stock items
+    if (inventoryData.success && Array.isArray(inventoryData.data)) {
+      const products = inventoryData.data;
+      const totalProducts = products.length;
       if (totalProductsEl) totalProductsEl.textContent = totalProducts;
 
-      // Calculate low stock items (quantity <= 10)
-      const lowStockCount = inventoryData.data.filter(item => item.quantity <= 10).length;
+      // Low stock items (quantity <= 10)
+      const lowStockItems = products.filter(item => (Number(item.quantity) || 0) <= 10);
+      const lowStockCount = lowStockItems.length;
       if (lowStockEl) lowStockEl.textContent = lowStockCount;
+
+      if (lowStockCount > 0) {
+        if (lowStockPill) {
+          lowStockPill.className = 'metric-pill pill-neutral';
+          if (lowStockPillText) lowStockPillText.textContent = `${lowStockCount} items low`;
+        }
+        if (lowStockStatusMsg) lowStockStatusMsg.textContent = `${lowStockCount} items need restock`;
+
+        // Render low stock watchlist in sidebar
+        if (lowStockWatchList) {
+          lowStockWatchList.innerHTML = lowStockItems.slice(0, 4).map(item => `
+            <div class="low-stock-row">
+              <span class="low-stock-name" title="${escapeHtml(item.name || 'Product')}">${escapeHtml(item.name || 'Product')}</span>
+              <span class="low-stock-qty">${item.quantity || 0} in stock</span>
+            </div>
+          `).join('');
+        }
+      } else {
+        if (lowStockPill) {
+          lowStockPill.className = 'metric-pill pill-neutral';
+          if (lowStockPillText) lowStockPillText.textContent = 'All Healthy';
+        }
+        if (lowStockStatusMsg) lowStockStatusMsg.textContent = 'All inventory levels safe';
+        if (lowStockWatchList) {
+          lowStockWatchList.innerHTML = '<p class="low-stock-empty">✓ All products have healthy stock levels.</p>';
+        }
+      }
     } else {
       if (totalProductsEl) totalProductsEl.textContent = '0';
       if (lowStockEl) lowStockEl.textContent = '0';
+      if (lowStockWatchList) {
+        lowStockWatchList.innerHTML = '<p class="low-stock-empty">No stock warnings available.</p>';
+      }
     }
 
-    // Get today's sales
+    // Today's sales
     if (todayStatsData.success && todayStatsData.stats) {
       const todaySalesAmount = parseFloat(todayStatsData.stats.total_sales_amount || 0);
       if (todaySalesEl) todaySalesEl.textContent = formatCurrency(todaySalesAmount);
@@ -150,49 +215,81 @@ async function loadDashboardData() {
       if (todaySalesEl) todaySalesEl.textContent = formatCurrency(0);
     }
 
-    // Get this month's sales
+    // Month's sales
     if (monthStatsData.success && monthStatsData.stats) {
       const monthSalesAmount = parseFloat(monthStatsData.stats.total_sales_amount || 0);
       if (monthSalesEl) monthSalesEl.textContent = formatCurrency(monthSalesAmount);
     } else {
       if (monthSalesEl) monthSalesEl.textContent = formatCurrency(0);
     }
+
+    // Pending online orders count
+    if (pendingOrdersEl) {
+      const orderCount = ordersData.success ? (ordersData.total || (Array.isArray(ordersData.orders) ? ordersData.orders.length : 0)) : 0;
+      pendingOrdersEl.textContent = orderCount;
+    }
+
+    // Google Drive status description
+    const googleStatusDesc = document.getElementById('googleStatusDesc');
+    if (googleStatusDesc) {
+      if (isGoogleConnected()) {
+        googleStatusDesc.textContent = 'Connected · Product photos synced with Google Drive';
+        googleStatusDesc.style.color = 'var(--dash-emerald)';
+      } else {
+        googleStatusDesc.textContent = 'Not connected · Connect to enable cloud image storage';
+        googleStatusDesc.style.color = 'var(--dash-text-dim)';
+      }
+    }
   } catch (error) {
     console.error('Error loading dashboard data:', error);
     
-    // Set default values on error
+    // Fallbacks
     const totalProducts = document.getElementById('totalProducts');
     const todaySales = document.getElementById('todaySales');
     const lowStock = document.getElementById('lowStock');
     const monthSales = document.getElementById('monthSales');
+    const pendingOrders = document.getElementById('pendingOrders');
 
     if (totalProducts) totalProducts.textContent = '0';
     if (todaySales) todaySales.textContent = formatCurrency(0);
     if (lowStock) lowStock.textContent = '0';
     if (monthSales) monthSales.textContent = formatCurrency(0);
+    if (pendingOrders) pendingOrders.textContent = '0';
   }
 }
 
-// Load recent activity
+// Load recent activity (limited to 8 items)
 async function loadRecentActivity() {
   try {
-    // Fetch recent transactions (last 10)
-    const response = await fetch('/transactions/transactions_get_all?limit=10&offset=0');
+    // Fetch recent transactions (limit to 8)
+    const response = await fetch('/transactions/transactions_get_all?limit=8&offset=0');
     const result = await response.json();
 
     const activityList = document.getElementById('activityList');
     if (!activityList) return;
 
     if (!result.transactions || result.transactions.length === 0) {
-      activityList.innerHTML = '<div class="activity-empty"><p>No recent activity</p></div>';
+      activityList.innerHTML = `
+        <div class="activity-empty">
+          <div class="empty-icon-wrap">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <h4>No recent transactions</h4>
+          <p>Transactions from the POS register and catalog will appear here in real time.</p>
+        </div>
+      `;
       return;
     }
 
     // Clear existing content
     activityList.innerHTML = '';
 
-    // Render each activity item
-    result.transactions.forEach(transaction => {
+    // Render at most 8 activity items
+    const recentTransactions = (result.transactions || []).slice(0, 8);
+    recentTransactions.forEach(transaction => {
       const activityItem = createActivityItem(transaction);
       activityList.appendChild(activityItem);
     });
@@ -200,32 +297,45 @@ async function loadRecentActivity() {
     console.error('Error loading recent activity:', error);
     const activityList = document.getElementById('activityList');
     if (activityList) {
-      activityList.innerHTML = '<div class="activity-empty"><p>Error loading activity</p></div>';
+      activityList.innerHTML = '<div class="activity-empty"><p>Error loading activity records.</p></div>';
     }
   }
 }
 
-// Create activity item element
+// Create activity item element with clean retail ledger tags
 function createActivityItem(transaction) {
   const item = document.createElement('div');
   item.className = 'activity-item';
 
   const actionType = normalizeActionType(transaction.action_type);
-  const icon = getActivityIcon(actionType);
   const title = getActivityTitle(transaction);
   const meta = getActivityMeta(transaction);
   const time = formatActivityTime(transaction.created_at);
-  const exactTime = formatExactDateTime(transaction.created_at);
+
+  let badgeTag = 'LOG';
+  let badgeClass = 'tag-inventory';
+  if (actionType === 'sale_complete') {
+    badgeTag = 'SALE';
+    badgeClass = 'tag-sale';
+  } else if (actionType.startsWith('inventory')) {
+    badgeTag = 'STOCK';
+    badgeClass = 'tag-inventory';
+  } else if (actionType.startsWith('order')) {
+    badgeTag = 'ORDER';
+    badgeClass = 'tag-order';
+  } else if (actionType.includes('void') || actionType.includes('cancel')) {
+    badgeTag = 'VOID';
+    badgeClass = 'tag-void';
+  }
 
   item.innerHTML = `
-    <div class="activity-icon">
-      ${icon}
-    </div>
+    <span class="activity-badge-tag ${badgeClass}">${badgeTag}</span>
     <div class="activity-details">
-      <div class="activity-title">${title}</div>
+      <div class="activity-top-row">
+        <span class="activity-title">${title}</span>
+        <span class="activity-time">${time}</span>
+      </div>
       ${meta ? `<div class="activity-meta">${meta}</div>` : ''}
-      <div class="activity-time">${time}</div>
-      ${exactTime ? `<div class="activity-exact-time">${exactTime}</div>` : ''}
     </div>
   `;
 
@@ -485,7 +595,24 @@ function setupQuickActions() {
   if (ordersBtn) {
     ordersBtn.addEventListener('click', (e) => {
       // Let default link behavior work (navigate to /orders)
-      // No preventDefault needed
+    });
+  }
+
+  // Header Add Stock button
+  const headerAddProductBtn = document.getElementById('headerAddProductBtn');
+  if (headerAddProductBtn) {
+    headerAddProductBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      sessionStorage.setItem('openAddItemModal', 'true');
+      window.location.href = '/inventory';
+    });
+  }
+
+  // Manage Google Drive button
+  const manageGoogleBtn = document.getElementById('manageGoogleBtn');
+  if (manageGoogleBtn) {
+    manageGoogleBtn.addEventListener('click', () => {
+      window.location.href = '/settings';
     });
   }
 }
@@ -527,3 +654,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 });
+
