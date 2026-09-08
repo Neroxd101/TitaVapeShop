@@ -267,7 +267,7 @@ class TransactionsUI {
      * Show empty state
      */
     showEmpty() {
-        this.elements.transactionsList.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-secondary);">No transactions found</td></tr>`;
+        this.elements.transactionsList.innerHTML = `<tr class="empty-row"><td colspan="5" style="text-align:center; color: var(--text-secondary); padding: 40px 20px !important;">No transactions found</td></tr>`;
     }
 
     /**
@@ -286,11 +286,19 @@ class TransactionsUI {
             const row = document.createElement('tr');
             row.style.animationDelay = `${index * 50}ms`;
             row.innerHTML = `
-                <td>${this.formatDate(t.created_at)}</td>
-                <td>${this.getActionBadge(t.action_type)}</td>
-                <td>${this.formatDetails(t)}</td>
-                <td>${this.escapeHtml(t.user_email || 'System')}</td>
-                <td>${this.formatAmount(t)}</td>
+                <td class="col-time" data-label="Time">${this.formatDate(t.created_at)}</td>
+                <td class="col-action" data-label="Action">${this.getActionBadge(t.action_type)}</td>
+                <td class="col-details" data-label="Details">${this.formatDetails(t)}</td>
+                <td class="col-user" data-label="User" title="${this.escapeHtml(t.user_email || 'System')}">
+                    <span class="user-chip">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="user-icon">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span class="user-text">${this.escapeHtml(t.user_email || 'System')}</span>
+                    </span>
+                </td>
+                <td class="col-amount" data-label="Amount">${this.formatAmount(t)}</td>
             `;
             this.elements.transactionsList.appendChild(row);
         });
