@@ -128,6 +128,7 @@ const CatalogCheckoutModal = {
         const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = 'Creating Order...';
+        let isRedirecting = false;
 
         try {
             const response = await fetch('/api/orders/create', {
@@ -149,6 +150,9 @@ const CatalogCheckoutModal = {
             const result = await response.json();
 
             if (result.success && result.order) {
+                isRedirecting = true;
+                submitBtn.textContent = 'Redirecting to Order Status...';
+
                 // Save to customer's local recent orders cache
                 try {
                     let orders = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
@@ -171,13 +175,17 @@ const CatalogCheckoutModal = {
                     console.warn('Failed to save recent order to localStorage:', e);
                 }
 
-                // Show success modal with token and trackingUrl
-                if (window.CatalogOrderSuccessModal) {
-                    window.CatalogOrderSuccessModal.show(result.order, result.orderToken, result.trackingUrl);
+                // Clear cart and reset form
+                if (window.CatalogCart) {
+                    window.CatalogCart.clearCart();
                 }
-                window.CatalogCart.clearCart();
                 this.close();
                 this.form.reset();
+
+                // Direct to order status page
+                const targetUrl = result.trackingUrl || (result.orderToken ? `/order-status?token=${encodeURIComponent(result.orderToken)}` : `/order-status?id=${encodeURIComponent(result.order.id)}`);
+                window.location.href = targetUrl;
+                return;
             } else {
                 // Friendly stock error message (409 from backend)
                 if (response.status === 409 && result?.items?.length) {
@@ -194,8 +202,10 @@ const CatalogCheckoutModal = {
             console.error('Error creating order:', error);
             alert('Error creating order. Please try again.');
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
+            if (!isRedirecting) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
         }
     },
 
