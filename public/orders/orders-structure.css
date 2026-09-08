@@ -14,12 +14,17 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+}
+
+.orders-search-box {
+  flex: 1;
+  min-width: 220px;
 }
 
 .orders-filter-group {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 180px;
+  min-width: 140px;
 }
 
 .orders-filter-select {
@@ -222,8 +227,32 @@
 
 /* Mobile & Tablet Portrait: Modern Card Layout */
 @media (max-width: 768px) {
-  .orders-filter-select,
+  .orders-filter-tabs {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .orders-search-box {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  .orders-filter-group {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  .orders-filter-actions {
+    width: 100% !important;
+  }
+
   .orders-filter-actions .btn {
+    width: 100% !important;
+    height: 36px;
+  }
+
+  .orders-filter-select {
     height: 36px;
   }
 

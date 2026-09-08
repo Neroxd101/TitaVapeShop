@@ -7,6 +7,7 @@ class OrdersController {
         this.state = {
             filters: {
                 status: '',
+                search: '',
                 limit: 20,
                 offset: 0
             },
@@ -16,6 +17,7 @@ class OrdersController {
         };
 
         this.elements = {
+            orderSearchInput: document.getElementById('orderSearchInput'),
             filterStatus: document.getElementById('filterStatus'),
             resetFiltersBtn: document.getElementById('resetFiltersBtn'),
             ordersList: document.getElementById('ordersList'),
@@ -272,6 +274,18 @@ class OrdersController {
     }
 
     setupEventListeners() {
+        if (this.elements.orderSearchInput) {
+            let debounceTimer;
+            this.elements.orderSearchInput.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    this.state.filters.search = e.target.value.trim();
+                    this.state.filters.offset = 0;
+                    this.loadOrders();
+                }, 300);
+            });
+        }
+
         if (this.elements.filterStatus) {
             this.elements.filterStatus.addEventListener('change', () => {
                 this.state.filters.status = this.elements.filterStatus.value;
@@ -332,7 +346,10 @@ class OrdersController {
         if (!listEl) return;
 
         if (this.state.orders.length === 0) {
-            listEl.innerHTML = '<tr class="empty-row"><td colspan="9" style="text-align: center; padding: 40px; color: var(--text-secondary);">No orders found</td></tr>';
+            const emptyMsg = this.state.filters.search
+                ? `No orders found matching "${this.escapeHtml(this.state.filters.search)}"`
+                : 'No orders found';
+            listEl.innerHTML = `<tr class="empty-row"><td colspan="9" style="text-align: center; padding: 40px; color: var(--text-secondary);">${emptyMsg}</td></tr>`;
             return;
         }
 
@@ -748,9 +765,13 @@ class OrdersController {
 
     resetFilters() {
         this.state.filters.status = '';
+        this.state.filters.search = '';
         this.state.filters.offset = 0;
         if (this.elements.filterStatus) {
             this.elements.filterStatus.value = '';
+        }
+        if (this.elements.orderSearchInput) {
+            this.elements.orderSearchInput.value = '';
         }
         this.loadOrders();
     }
