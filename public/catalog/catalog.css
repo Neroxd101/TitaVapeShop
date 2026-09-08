@@ -2696,3 +2696,87 @@ main {
         border-radius: 5px !important;
     }
 }
+/* Keep compact navigation readable across phone and tablet sizes.
+   Scoped overrides also cover the older device-specific rules above. */
+@media (max-width: 1100px) {
+    .nav .nav-container {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 14px 16px !important;
+    }
+
+    .nav .nav-container .logo {
+        position: static !important;
+        transform: none !important;
+        margin: 0 !important;
+    }
+
+    .nav .logo-text {
+        font-size: 22px !important;
+    }
+
+    .nav .nav-links {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        width: 100% !important;
+        max-width: 640px;
+        margin: 0 !important;
+        gap: 10px !important;
+    }
+
+    .nav .header-hours {
+        grid-column: 1 / -1;
+        justify-content: center;
+        padding: 0 !important;
+        background: transparent;
+        border: 0;
+    }
+
+    .nav .header-hours span {
+        display: inline !important;
+        font-size: 12px !important;
+    }
+
+    .nav .social-link,
+    .nav .cart-button {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        min-height: 30px;
+        padding: 8px 6px !important;
+        gap: 6px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    .nav .social-link svg,
+    .nav .cart-button svg,
+    .nav .header-hours svg {
+        flex-shrink: 0;
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .nav .cart-badge {
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 10px !important;
+        top: -6px !important;
+        right: -4px !important;
+    }
+
+    .nav .social-link:focus-visible,
+    .nav .cart-button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav .nav-links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
