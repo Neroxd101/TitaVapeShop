@@ -83,14 +83,250 @@
 }
 
 /* Analytics-specific table overrides */
-.data-table {
+.data-table:not(.product-performance-table) {
   min-width: 600px;
+}
+
+/* Product Performance Details Table */
+.product-performance-table {
+  width: 100%;
+}
+
+.product-performance-table th,
+.product-performance-table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.product-performance-table th.col-product-name,
+.product-performance-table td.col-product-name {
+  min-width: 180px;
+}
+
+.product-performance-table td.col-product-name .product-name-text {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.product-performance-table th.col-category,
+.product-performance-table td.col-category {
+  width: 140px;
+}
+
+.product-performance-table th.col-units-sold,
+.product-performance-table td.col-units-sold {
+  width: 120px;
+}
+
+.product-performance-table th.col-revenue,
+.product-performance-table td.col-revenue {
+  width: 130px;
+}
+
+.product-performance-table td.col-revenue .revenue-val {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.product-performance-table th.col-stock-left,
+.product-performance-table td.col-stock-left {
+  width: 110px;
+}
+
+.product-performance-table .metric-label {
+  display: none;
+}
+
+.product-performance-table .stock-val.stock-out {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.product-performance-table .stock-val.stock-low {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.product-performance-table .stock-val.stock-normal {
+  color: var(--text-secondary);
 }
 
 /* Keep analytics stat cards at 2 per row on small screens */
 @media (max-width: 768px) {
   .analytics-container .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Product Performance Cards on Mobile & Tablet */
+  .product-performance-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  .product-performance-card .card-header {
+    padding: 0 0 12px 0 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .product-performance-card .table-responsive {
+    overflow: visible !important;
+    max-height: none !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  .product-performance-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    border: none !important;
+  }
+
+  .product-performance-table thead {
+    display: none !important;
+  }
+
+  .product-performance-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .product-performance-table tbody tr {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "product product"
+      "category revenue"
+      "units stock";
+    gap: 8px 12px;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px !important;
+    margin: 0 !important;
+    box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .product-performance-table tbody tr:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .product-performance-table tbody tr.empty-row {
+    display: block !important;
+    text-align: center;
+    padding: 30px 16px !important;
+  }
+
+  .product-performance-table td {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    min-width: 0 !important;
+    width: auto !important;
+    white-space: normal !important;
+  }
+
+  /* 1. Product Name */
+  .product-performance-table td.col-product-name {
+    grid-area: product;
+    font-size: 14.5px !important;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: normal !important;
+    padding-bottom: 2px !important;
+    width: 100% !important;
+  }
+
+  /* 2. Category */
+  .product-performance-table td.col-category {
+    grid-area: category;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .product-performance-table td.col-category .badge,
+  .product-performance-table td.col-category .category-badge {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 12px !important;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+    letter-spacing: normal;
+    line-height: 1.2;
+  }
+
+  /* 3. Revenue */
+  .product-performance-table td.col-revenue {
+    grid-area: revenue;
+    display: flex !important;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 6px;
+    text-align: right;
+    width: auto !important;
+    margin-left: auto;
+  }
+
+  .product-performance-table td.col-revenue .revenue-val {
+    font-size: 15px !important;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* 4. Units Sold */
+  .product-performance-table td.col-units-sold {
+    grid-area: units;
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px !important;
+    color: var(--text-secondary);
+    width: auto !important;
+  }
+
+  .product-performance-table td.col-units-sold .units-val {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  /* 5. Stock Left */
+  .product-performance-table td.col-stock-left {
+    grid-area: stock;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    text-align: right;
+    font-size: 12.5px !important;
+    width: auto !important;
+    margin-left: auto;
+  }
+
+  .product-performance-table .metric-label {
+    display: inline-block !important;
+    font-size: 11.5px !important;
+    color: #64748b;
+    font-weight: 400;
+    line-height: 1;
+    white-space: nowrap !important;
   }
 }
 
@@ -106,6 +342,29 @@
     width: 14px !important;
     height: 14px !important;
   }
+
+  .product-performance-table tbody tr {
+    padding: 12px 14px !important;
+    gap: 6px 10px !important;
+    border-radius: 10px;
+  }
+
+  .product-performance-table td.col-product-name {
+    font-size: 13.5px !important;
+  }
+
+  .product-performance-table td.col-revenue .revenue-val {
+    font-size: 14px !important;
+  }
+
+  .product-performance-table td.col-units-sold,
+  .product-performance-table td.col-stock-left {
+    font-size: 12px !important;
+  }
+
+  .product-performance-table .metric-label {
+    font-size: 11px !important;
+  }
 }
 
 @media (max-width: 360px) {
@@ -118,6 +377,30 @@
   .analytics-container .page-header .header-right .btn svg {
     width: 12px !important;
     height: 12px !important;
+  }
+
+  .product-performance-table tbody tr {
+    padding: 10px 12px !important;
+    gap: 5px 8px !important;
+  }
+
+  .product-performance-table td.col-product-name {
+    font-size: 13px !important;
+  }
+
+  .product-performance-table td.col-category .badge {
+    font-size: 11px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .product-performance-table td.col-revenue .revenue-val {
+    font-size: 13px !important;
+  }
+
+  .product-performance-table td.col-units-sold,
+  .product-performance-table td.col-stock-left {
+    font-size: 11px !important;
   }
 }
 
