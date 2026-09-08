@@ -2056,12 +2056,24 @@
   }
 }
 
-@media (min-width: 1200px) and (min-height: 800px) and (orientation: landscape){
-  /* Override the portrait "100px" compact image sizing */
+@media (min-width: 1024px) and (orientation: landscape), (min-width: 1200px) and (min-height: 800px) and (orientation: landscape) {
+  /* Allow image column and main image to expand and occupy available space when description is long */
+  #viewModal .view-col-images {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+
   #viewModal .view-main-image {
-    height: 47vh !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
     min-height: 47vh !important;
-    max-height: 47vh !important;
+    max-height: 65vh !important;
+    aspect-ratio: unset !important;
+  }
+
+  #viewModal .view-thumbnails {
+    flex-shrink: 0 !important;
   }
 
   #viewModal .view-col-details {
