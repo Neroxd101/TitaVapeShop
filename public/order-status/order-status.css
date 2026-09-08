@@ -588,6 +588,59 @@ body {
 }
 
 /* Phone Verification Card */
+.verify-phone-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 36px);
+}
+
+.verify-phone-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.verify-phone-header h2 {
+  font-size: clamp(21px, 5vw, 26px);
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+
+.verify-phone-header p {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.verify-phone-card .form-group {
+  margin-bottom: 20px;
+}
+
+.verify-phone-card input {
+  font-size: 16px;
+  min-height: 48px;
+}
+
+.verify-phone-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.verify-phone-card .btn {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+  white-space: normal;
+}
+
+.verify-phone-card .alert {
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .verify-icon-wrap {
   width: 60px;
   height: 60px;

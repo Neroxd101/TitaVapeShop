@@ -51,8 +51,8 @@
     </div>
 
     <!-- Phone Verification State (Fallback if token missing) -->
-    <div id="verifyPhoneState" class="status-card" style="display: none; max-width: 480px; margin: 0 auto;">
-      <div class="card-header text-center">
+    <div id="verifyPhoneState" class="status-card verify-phone-card" style="display: none;">
+      <div class="verify-phone-header">
         <div class="verify-icon-wrap">
           <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
             <path
@@ -64,15 +64,16 @@
         </p>
       </div>
 
-      <div class="alert alert-error" id="verifyPhoneError" style="display: none;">
+      <div class="alert alert-error" id="verifyPhoneError" role="alert" style="display: none;">
         <span id="verifyPhoneErrorText">Invalid contact number</span>
       </div>
 
       <form id="verifyPhoneForm" class="phone-form">
         <div class="form-group">
           <label for="contactNumberInput">Contact Number</label>
-          <input type="tel" id="contactNumberInput" placeholder="09123456789 or last 4 digits" required
-            autocomplete="tel">
+          <input type="tel" id="contactNumberInput" placeholder="e.g. 09123456789" required
+            autocomplete="tel" inputmode="tel" aria-describedby="verifyPhoneHint">
+          <p id="verifyPhoneHint" class="verify-phone-hint">You can also enter the last 4 digits of your contact number.</p>
         </div>
         <button type="submit" class="btn btn-primary btn-full" id="verifyPhoneBtn">
           Verify & View Order
