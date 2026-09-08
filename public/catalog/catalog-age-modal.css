@@ -1,0 +1,312 @@
+/* =============================================
+   Age Verification Gate Modal
+   Compliant with RA 11900 (18+ Requirement)
+   ============================================= */
+
+.age-gate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 10, 15, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.age-gate-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.age-gate-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Modal Card */
+.age-gate-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-card, #13141f);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 36px 32px 30px;
+  text-align: center;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.7),
+              0 0 40px -10px rgba(0, 212, 170, 0.15);
+  transform: scale(0.94);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.age-gate-overlay.active .age-gate-card {
+  transform: scale(1);
+}
+
+/* 18+ Icon Badge */
+.age-gate-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  background: radial-gradient(circle, rgba(0, 212, 170, 0.2) 0%, rgba(0, 212, 170, 0.04) 70%);
+  border: 2px solid var(--accent, #00d4aa);
+  box-shadow: 0 0 24px rgba(0, 212, 170, 0.3);
+}
+
+.age-gate-badge-text {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--accent, #00d4aa);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+/* Content */
+.age-gate-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+  margin: 0 0 8px;
+  line-height: 1.25;
+}
+
+.age-gate-subtitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.age-gate-notice {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.age-gate-notice-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary, #cbd5e1);
+  margin: 0 0 8px;
+}
+
+.age-gate-notice-law {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Action Buttons */
+.age-gate-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-age-verify {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(135deg, var(--accent, #00d4aa), #00b894);
+  color: #0a0a0f;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-age-verify:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 212, 170, 0.4);
+}
+
+.btn-age-verify:active {
+  transform: translateY(0);
+}
+
+.btn-age-decline {
+  width: 100%;
+  height: 42px;
+  background: transparent;
+  color: var(--text-secondary, #94a3b8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-age-decline:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+/* Declined State View */
+.age-gate-declined-view {
+  display: none;
+  text-align: center;
+}
+
+.age-gate-card.is-declined .age-gate-main-view {
+  display: none;
+}
+
+.age-gate-card.is-declined .age-gate-declined-view {
+  display: block;
+}
+
+.age-gate-declined-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+  border: 2px solid #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+}
+
+.age-gate-declined-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.age-gate-declined-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ef4444;
+  margin: 0 0 10px;
+}
+
+.age-gate-declined-text {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 24px;
+}
+
+.age-gate-declined-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-age-exit {
+  width: 100%;
+  height: 44px;
+  background: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+.btn-age-exit:hover {
+  opacity: 0.9;
+}
+
+.btn-age-retry {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+
+.btn-age-retry:hover {
+  color: var(--text-primary, #ffffff);
+}
+
+/* Lock scrolling while modal is active */
+body.age-gate-locked {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+/* Small Screens Responsive */
+@media (max-width: 480px) {
+  .age-gate-card {
+    padding: 28px 20px 24px;
+    border-radius: 16px;
+  }
+
+  .age-gate-badge {
+    width: 62px;
+    height: 62px;
+    margin-bottom: 16px;
+  }
+
+  .age-gate-badge-text {
+    font-size: 22px;
+  }
+
+  .age-gate-title {
+    font-size: 19px;
+  }
+
+  .age-gate-subtitle {
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+
+  .age-gate-notice {
+    padding: 12px 14px;
+    margin-bottom: 20px;
+  }
+
+  .age-gate-notice-text {
+    font-size: 12px;
+  }
+
+  .age-gate-notice-law {
+    font-size: 10.5px;
+  }
+
+  .btn-age-verify {
+    height: 44px;
+    font-size: 13.5px;
+  }
+
+  .btn-age-decline {
+    height: 40px;
+    font-size: 12.5px;
+  }
+}
