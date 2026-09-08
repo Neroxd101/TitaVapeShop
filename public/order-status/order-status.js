@@ -19,7 +19,10 @@
   const orderTypeBadge = document.getElementById('orderTypeBadge');
   const orderStatusBadge = document.getElementById('orderStatusBadge');
   const copyOrderIdBtn = document.getElementById('copyOrderIdBtn');
-  const refreshBtn = document.getElementById('refreshBtn');
+  const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+  const cancelOrderMessage = document.getElementById('cancelOrderMessage');
+  let isCancelling = false;
+  let orderRequestVersion = 0;
 
   const pickupQrCard = document.getElementById('pickupQrCard');
   const deliveryNoticeCard = document.getElementById('deliveryNoticeCard');
@@ -70,6 +73,7 @@
    * Setup event listeners
    */
   function setupEventListeners() {
+    cancelOrderBtn.addEventListener('click', cancelOrder);
     if (copyOrderIdBtn) {
       copyOrderIdBtn.addEventListener('click', () => {
         if (!currentOrder || !currentOrder.id) return;
@@ -86,14 +90,6 @@
             copyOrderIdBtn.style.color = '';
           }, 2000);
         });
-      });
-    }
-
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', async () => {
-        refreshBtn.classList.add('rotating');
-        await fetchOrder(null, true);
-        setTimeout(() => refreshBtn.classList.remove('rotating'), 600);
       });
     }
 
@@ -132,7 +128,43 @@
   /**
    * Fetch order from backend API
    */
+  async function cancelOrder() {
+    if (isCancelling || currentOrder?.status !== 'pending') return;
+    if (!window.confirm('Cancel this order? This cannot be undone.')) return;
+    isCancelling = true;
+    orderRequestVersion++;
+    setupPolling('cancelled');
+    cancelOrderBtn.disabled = true;
+    cancelOrderBtn.textContent = 'Cancelling...';
+    cancelOrderMessage.hidden = true;
+    try {
+      const response = await fetch('/api/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: currentOrder.id, token: currentToken })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success || !data.order) {
+        throw new Error(data.error || 'Unable to cancel your order. Please try again.');
+      }
+      currentOrder = data.order;
+      saveOrderToLocalStorage(currentOrder, currentToken);
+      renderOrder(currentOrder);
+      cancelOrderMessage.textContent = 'Your order has been cancelled.';
+    } catch (error) {
+      cancelOrderMessage.textContent = error.message || 'Unable to cancel your order. Please try again.';
+    } finally {
+      isCancelling = false;
+      cancelOrderBtn.disabled = false;
+      cancelOrderBtn.textContent = 'Cancel Order';
+      cancelOrderMessage.hidden = false;
+      await fetchOrder(null, true);
+    }
+  }
+
   async function fetchOrder(phoneInput = null, isSilentRefresh = false) {
+    if (isCancelling) return;
+    const requestVersion = ++orderRequestVersion;
     if (!isSilentRefresh && !phoneInput) {
       showState('loading');
     }
@@ -153,6 +185,8 @@
     try {
       const response = await fetch(url);
       const data = await response.json();
+
+      if (requestVersion !== orderRequestVersion) return;
 
       if (response.ok && data.success && data.order) {
         currentOrder = data.order;
@@ -183,6 +217,7 @@
         showError('Order Not Found', data.error || 'We could not find the order matching this request.');
       }
     } catch (err) {
+      if (requestVersion !== orderRequestVersion) return;
       console.error('Failed to fetch order:', err);
       if (!isSilentRefresh) {
         showError('Connection Error', 'Unable to retrieve order. Please check your internet connection.');
@@ -254,15 +289,20 @@
 
     // Status Badge & Stepper
     renderStatus(order.status, isPickup);
+    cancelOrderBtn.hidden = order.status !== 'pending';
+    document.querySelector('.order-layout-grid').classList.toggle('is-cancelled', order.status === 'cancelled');
 
     // QR Code / Delivery Notice
-    if (isPickup) {
+    if (order.status === 'cancelled') {
+      pickupQrCard.style.display = 'none';
+      deliveryNoticeCard.style.display = 'none';
+    } else if (isPickup) {
       pickupQrCard.style.display = 'block';
       deliveryNoticeCard.style.display = 'none';
       renderQRCode(order.id);
     } else {
       pickupQrCard.style.display = 'none';
-      deliveryNoticeCard.style.display = 'block';
+      deliveryNoticeCard.style.display = 'flex';
     }
 
     // Customer details
@@ -318,7 +358,7 @@
     const finalStepLabel = document.getElementById('finalStepLabel');
     const finalStepSub = document.getElementById('finalStepSub');
 
-    finalStepLabel.textContent = isPickup ? 'Ready / Claimed' : 'Delivered';
+    finalStepLabel.textContent = isPickup ? 'Claimed' : 'Delivered';
     finalStepSub.textContent = isPickup ? 'Picked up in store' : 'Order received';
 
     // Reset steps

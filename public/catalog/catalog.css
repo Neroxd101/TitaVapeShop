@@ -482,6 +482,12 @@ main {
     color: var(--text-primary);
     margin: 0;
     line-height: 1.4;
+    min-height: 2lh;
+    overflow-wrap: anywhere;
+}
+
+.product-card .card-details {
+    margin-top: auto;
 }
 
 .card-details {
@@ -2698,7 +2704,7 @@ main {
 }
 /* Keep compact navigation readable across phone and tablet sizes.
    Scoped overrides also cover the older device-specific rules above. */
-@media (max-width: 1100px) {
+@media (max-width: 1366px) {
     .nav .nav-container {
         flex-direction: column !important;
         align-items: center !important;
@@ -2778,5 +2784,43 @@ main {
 @media (max-width: 480px) {
     .nav .nav-links {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Tablets and desktops share a left logo and right navigation layout. */
+@media (min-width: 768px) {
+    .nav .nav-container {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        gap: 20px !important;
+    }
+
+    .nav .nav-container .logo {
+        position: static !important;
+        transform: none !important;
+        flex-shrink: 0;
+        margin: 0 !important;
+    }
+
+    .nav .logo-text {
+        white-space: nowrap;
+    }
+
+    .nav .nav-links {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        width: auto !important;
+        min-width: 0;
+        max-width: none;
+        margin-left: auto !important;
+    }
+
+    .nav .header-hours {
+        padding: 8px 10px !important;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        white-space: nowrap;
     }
 }

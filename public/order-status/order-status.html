@@ -104,7 +104,7 @@
           <div>
             <span class="order-type-tag" id="orderTypeBadge">PICKUP ORDER</span>
             <h1 class="order-title">
-              Order #<span id="orderIdText"></span>
+              <span class="order-title-text">Order #<span id="orderIdText"></span></span>
               <button class="copy-btn" id="copyOrderIdBtn" title="Copy Order ID">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                   <path
@@ -116,15 +116,11 @@
           </div>
           <div class="order-status-pill-wrap">
             <span class="badge" id="orderStatusBadge">Pending</span>
-            <button class="refresh-pill-btn" id="refreshBtn" title="Refresh Live Status">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-                <path
-                  d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
-              </svg>
-              <span>Refresh</span>
-            </button>
+            
           </div>
         </div>
+
+        <p id="cancelOrderMessage" role="status" aria-live="polite" hidden></p>
 
         <!-- Progress Tracker -->
         <div class="tracker-wrapper">
@@ -273,11 +269,13 @@
         <!-- Need Help Section (Spans across grid) -->
         <div class="help-card text-center">
           <p class="text-secondary" style="font-size: 13px;">Have questions about your order?</p>
+          
           <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
             <a href="https://www.facebook.com/profile.php?id=61579947539937" target="_blank"
               class="btn btn-secondary btn-sm">
               Message on Facebook
             </a>
+            <button type="button" class="btn btn-secondary btn-sm" id="cancelOrderBtn" hidden>Cancel Order</button>
             <a href="/catalog" class="btn btn-secondary btn-sm">
               Return to Shop
             </a>

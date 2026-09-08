@@ -212,6 +212,9 @@ const CatalogOrdersModal = {
       } else if (status === 'completed') {
         badgeClass = 'badge-success';
         statusText = 'Completed';
+      } else if (status === 'cancelled') {
+        badgeClass = 'badge-danger';
+        statusText = 'Cancelled';
       }
 
       let dateStr = 'Recent';
@@ -238,7 +241,7 @@ const CatalogOrdersModal = {
           </div>
         </div>
         <a href="${orderUrl}" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
-          <span>${isPickup ? 'View QR' : 'Track'}</span>
+          <span>View Details</span>
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
             <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
           </svg>

@@ -441,6 +441,51 @@ router.get('/api/orders/track', async (req, res) => {
   }
 });
 
+// Customers may cancel only their own pending orders.
+router.post('/api/orders/cancel', async (req, res) => {
+  const { id, token } = req.body || {};
+  if (typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    return res.status(400).json({ success: false, error: 'A valid order ID is required.' });
+  }
+  if (!JWT_SECRET || !supabaseAdmin) {
+    return res.status(503).json({ success: false, error: 'Order cancellation is currently unavailable.' });
+  }
+
+  const tokens = typeof token === 'string' ? [token] : [];
+  try {
+    const saved = JSON.parse(req.cookies?.tita_customer_orders || '[]');
+    if (Array.isArray(saved)) tokens.push(...saved);
+  } catch (_) {}
+  const verified = tokens.some(value => {
+    try {
+      return jwt.verify(value, JWT_SECRET, { algorithms: ['HS256'] }).orderId === id;
+    } catch (_) {
+      return false;
+    }
+  });
+  if (!verified) {
+    return res.status(403).json({ success: false, error: 'Please reopen your order link and verify your order before cancelling.' });
+  }
+
+  try {
+    // Check eligibility in the UPDATE itself, including concurrent status changes.
+    const { data: order, error } = await supabaseAdmin.from('orders')
+      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('status', 'pending')
+      .select('id, customer_name, contact_number, social_media, customer_email, order_type, items, total_amount, status, created_at, updated_at')
+      .maybeSingle();
+    if (error) throw error;
+    if (!order) {
+      return res.status(409).json({ success: false, error: 'Only pending orders can be cancelled. This order may already have been updated.' });
+    }
+    return res.json({ success: true, order });
+  } catch (error) {
+    console.error('Order cancellation failed:', error);
+    return res.status(500).json({ success: false, error: 'Unable to cancel your order. Please try again.' });
+  }
+});
+
 // Track batch orders for customer's recent orders modal
 // POST /api/orders/track-batch
 router.post('/api/orders/track-batch', async (req, res) => {
