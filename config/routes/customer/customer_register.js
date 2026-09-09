@@ -152,7 +152,6 @@ router.post('/api/customer/register', async (req, res) => {
         .from('customer_verification_codes')
         .insert({
           customer_id: customerId,
-          user_id: customerId,
           email: cleanEmail,
           otp_code: otpCode,
           expires_at: expiresAt,

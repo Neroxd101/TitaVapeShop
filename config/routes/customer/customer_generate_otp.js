@@ -103,7 +103,6 @@ router.post('/api/customer/resend-otp', async (req, res) => {
         .from('customer_verification_codes')
         .insert({
           customer_id: targetUserId,
-          user_id: targetUserId,
           email: cleanEmail,
           otp_code: otpCode,
           expires_at: expiresAt,

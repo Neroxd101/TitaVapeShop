@@ -64,7 +64,6 @@ router.post('/api/customer/login', async (req, res) => {
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
       await client.from('customer_verification_codes').insert({
         customer_id: customer.id,
-        user_id: customer.id,
         email: cleanEmail,
         otp_code: otpCode,
         expires_at: expiresAt,

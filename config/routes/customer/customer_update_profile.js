@@ -155,7 +155,6 @@ router.put('/api/customer/profile', async (req, res) => {
         .from('customer_verification_codes')
         .insert({
           customer_id: decoded.id,
-          user_id: decoded.id,
           email: normalizedEmail,
           otp_code: otpCode,
           expires_at: expiresAt,
