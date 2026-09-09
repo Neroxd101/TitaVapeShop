@@ -55,8 +55,8 @@ router.get('/catalog/catalog-orders-modal.html', (req, res) => {
 });
 
 // Public customer auth modal HTML
-router.get('/catalog/customer-auth-modal.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../public/catalog/customer-auth-modal.html'));
+router.get(['/customer/customer-auth-modal.html', '/catalog/customer-auth-modal.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../public/customer/customer-auth-modal.html'));
 });
 
 // Public catalog products / inventory list route (1-to-1 modular router)
