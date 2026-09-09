@@ -75,6 +75,10 @@ const CustomerAuth = {
               <strong style="font-size: 13px; display: block; color: var(--text-primary);">${this.escapeHtml(this.currentUser.full_name || 'Customer')}</strong>
               <span class="customer-dropdown-email">${this.escapeHtml(this.currentUser.email)}</span>
             </div>
+            <button type="button" class="customer-dropdown-item" id="navProfileItem">
+              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              <span>My Profile</span>
+            </button>
             <button type="button" class="customer-dropdown-item" id="navMyOrdersItem">
               <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
               <span>My Orders</span>
@@ -93,6 +97,14 @@ const CustomerAuth = {
         pill.addEventListener('click', (e) => {
           e.stopPropagation();
           menu.classList.toggle('show');
+        });
+      }
+
+      const profileItem = document.getElementById('navProfileItem');
+      if (profileItem) {
+        profileItem.addEventListener('click', () => {
+          this.openProfile();
+          if (menu) menu.classList.remove('show');
         });
       }
 
@@ -195,10 +207,23 @@ const CustomerAuth = {
     const signInView = document.getElementById('customerSignInView');
     const regView = document.getElementById('customerRegisterView');
     const verifyView = document.getElementById('customerVerifyView');
+    const privacyView = document.getElementById('customerPrivacyView');
+    const profileView = document.getElementById('customerProfileView');
+
+    const modalContent = document.querySelector('.customer-auth-modal-content');
+    if (modalContent) {
+      modalContent.classList.toggle('privacy-active', view === 'privacy');
+      modalContent.classList.toggle('signin-active', view === 'signin');
+      modalContent.classList.toggle('verify-active', view === 'verify');
+      modalContent.classList.toggle('register-active', view === 'register');
+      modalContent.classList.toggle('profile-active', view === 'profile');
+    }
 
     if (signInView) signInView.style.display = view === 'signin' ? 'block' : 'none';
     if (regView) regView.style.display = view === 'register' ? 'block' : 'none';
     if (verifyView) verifyView.style.display = view === 'verify' ? 'block' : 'none';
+    if (privacyView) privacyView.style.display = view === 'privacy' ? 'block' : 'none';
+    if (profileView) profileView.style.display = view === 'profile' ? 'block' : 'none';
 
     // Clear error messages
     this.clearErrors();
@@ -209,6 +234,12 @@ const CustomerAuth = {
     } else if (view === 'register') {
       const nameInput = document.getElementById('customerRegName');
       if (nameInput) setTimeout(() => nameInput.focus(), 50);
+      const bday = document.getElementById('customerRegBirthday');
+      if (bday && !bday.max) {
+        const maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() - 18);
+        bday.max = maxDate.toISOString().split('T')[0];
+      }
     } else if (view === 'verify') {
       const otpInput = document.getElementById('customerOtpInput');
       if (otpInput) {
@@ -217,6 +248,9 @@ const CustomerAuth = {
       }
       const emailTarget = document.getElementById('customerVerifyEmailTarget');
       if (emailTarget) emailTarget.textContent = this.activeEmail;
+    } else if (view === 'profile') {
+      const nameInput = document.getElementById('customerProfileName');
+      if (nameInput) setTimeout(() => nameInput.focus(), 50);
     }
   },
 
@@ -224,7 +258,14 @@ const CustomerAuth = {
    * Clear all error banners
    */
   clearErrors() {
-    const errors = ['customerSignInError', 'customerRegisterError', 'customerVerifyError', 'customerVerifySuccess'];
+    const errors = [
+      'customerSignInError',
+      'customerRegisterError',
+      'customerVerifyError',
+      'customerVerifySuccess',
+      'customerProfileError',
+      'customerProfileSuccess'
+    ];
     errors.forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -274,6 +315,28 @@ const CustomerAuth = {
     const backToRegBtn = document.getElementById('customerBackToRegBtn');
     if (backToRegBtn) backToRegBtn.addEventListener('click', () => this.switchView('register'));
 
+    // Privacy View Triggers
+    const openPrivacyBtn = document.getElementById('openPrivacyModalBtn');
+    if (openPrivacyBtn) {
+      openPrivacyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.switchView('privacy');
+      });
+    }
+
+    const closePrivacyBtn = document.getElementById('customerClosePrivacyBtn');
+    if (closePrivacyBtn) {
+      closePrivacyBtn.addEventListener('click', () => this.switchView('register'));
+    }
+
+    // Set max date for birthday picker (must be at least 18 years ago)
+    const birthdayInput = document.getElementById('customerRegBirthday');
+    if (birthdayInput) {
+      const maxDate = new Date();
+      maxDate.setFullYear(maxDate.getFullYear() - 18);
+      birthdayInput.max = maxDate.toISOString().split('T')[0];
+    }
+
     // 1. Sign In Form
     const signInForm = document.getElementById('customerSignInForm');
     if (signInForm) {
@@ -308,6 +371,113 @@ const CustomerAuth = {
           verifyForm.dispatchEvent(new Event('submit', { cancelable: true }));
         }
       });
+    }
+
+    // Password Strength live evaluation
+    const regPasswordInput = document.getElementById('customerRegPassword');
+    const strengthWrap = document.getElementById('passwordStrengthWrap');
+    const strengthFill = document.getElementById('passwordStrengthBarFill');
+    const strengthLabel = document.getElementById('passwordStrengthLabelText');
+
+    const badgeLength = document.getElementById('pwdReqLength');
+    const badgeUpper = document.getElementById('pwdReqUpper');
+    const badgeLower = document.getElementById('pwdReqLower');
+    const badgeNumber = document.getElementById('pwdReqNumber');
+    const badgeSymbol = document.getElementById('pwdReqSymbol');
+
+    if (regPasswordInput) {
+      regPasswordInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (!val) {
+          if (strengthWrap) strengthWrap.style.display = 'none';
+          [badgeLength, badgeUpper, badgeLower, badgeNumber, badgeSymbol].forEach(b => b && b.classList.remove('met'));
+          return;
+        }
+
+        if (strengthWrap) strengthWrap.style.display = 'flex';
+
+        const isLen = val.length >= 8;
+        const isUp = /[A-Z]/.test(val);
+        const isLow = /[a-z]/.test(val);
+        const isNum = /[0-9]/.test(val);
+        const isSym = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(val);
+
+        if (badgeLength) badgeLength.classList.toggle('met', isLen);
+        if (badgeUpper) badgeUpper.classList.toggle('met', isUp);
+        if (badgeLower) badgeLower.classList.toggle('met', isLow);
+        if (badgeNumber) badgeNumber.classList.toggle('met', isNum);
+        if (badgeSymbol) badgeSymbol.classList.toggle('met', isSym);
+
+        const score = [isLen, isUp, isLow, isNum, isSym].filter(Boolean).length;
+
+        if (strengthFill && strengthLabel) {
+          if (score <= 1) {
+            strengthFill.style.width = '20%';
+            strengthFill.style.backgroundColor = 'var(--error, #ff4757)';
+            strengthLabel.textContent = 'Weak';
+            strengthLabel.style.color = 'var(--error, #ff4757)';
+          } else if (score === 2) {
+            strengthFill.style.width = '40%';
+            strengthFill.style.backgroundColor = '#ffa502';
+            strengthLabel.textContent = 'Fair';
+            strengthLabel.style.color = '#ffa502';
+          } else if (score === 3) {
+            strengthFill.style.width = '65%';
+            strengthFill.style.backgroundColor = '#eccc68';
+            strengthLabel.textContent = 'Good';
+            strengthLabel.style.color = '#eccc68';
+          } else if (score === 4) {
+            strengthFill.style.width = '85%';
+            strengthFill.style.backgroundColor = '#7bed9f';
+            strengthLabel.textContent = 'Almost';
+            strengthLabel.style.color = '#7bed9f';
+          } else {
+            strengthFill.style.width = '100%';
+            strengthFill.style.backgroundColor = 'var(--accent, #00d4aa)';
+            strengthLabel.textContent = 'Strong ✓';
+            strengthLabel.style.color = 'var(--accent, #00d4aa)';
+          }
+        }
+      });
+    }
+
+    // Confirm password real-time match feedback
+    const regConfirmInput = document.getElementById('customerRegConfirmPassword');
+    const matchHint = document.getElementById('passwordMatchHint');
+    if (regConfirmInput) {
+      regConfirmInput.addEventListener('input', (e) => {
+        const pwd = regPasswordInput ? regPasswordInput.value : '';
+        const conf = e.target.value;
+        if (!conf) {
+          if (matchHint) {
+            matchHint.textContent = '(re-enter)';
+            matchHint.style.color = '';
+          }
+          return;
+        }
+        if (pwd === conf) {
+          if (matchHint) {
+            matchHint.textContent = '✓ Match';
+            matchHint.style.color = 'var(--accent, #00d4aa)';
+          }
+        } else {
+          if (matchHint) {
+            matchHint.textContent = '✗ Mismatch';
+            matchHint.style.color = 'var(--error, #ff4757)';
+          }
+        }
+      });
+    }
+
+    // 4. Customer Profile Form
+    const profileForm = document.getElementById('customerProfileForm');
+    if (profileForm) {
+      profileForm.addEventListener('submit', (e) => this.handleUpdateProfile(e));
+    }
+
+    const cancelProfileBtn = document.getElementById('customerCancelProfileBtn');
+    if (cancelProfileBtn) {
+      cancelProfileBtn.addEventListener('click', () => this.close());
     }
   },
 
@@ -374,12 +544,57 @@ const CustomerAuth = {
     const fullName = document.getElementById('customerRegName').value.trim();
     const email = document.getElementById('customerRegEmail').value.trim();
     const phone = document.getElementById('customerRegPhone').value.trim();
+    const birthday = document.getElementById('customerRegBirthday').value;
     const password = document.getElementById('customerRegPassword').value;
-    const ageCheck = document.getElementById('customerRegAgeCheck').checked;
+    const confirmPassword = document.getElementById('customerRegConfirmPassword') ? document.getElementById('customerRegConfirmPassword').value : '';
+    const privacyCheck = document.getElementById('customerRegPrivacyCheck').checked;
     const submitBtn = document.getElementById('customerRegisterSubmitBtn');
 
-    if (!ageCheck) {
-      this.showError('customerRegisterError', 'You must be at least 18 years old to create an account.');
+    if (!birthday) {
+      this.showError('customerRegisterError', 'Please enter your date of birth.');
+      return;
+    }
+
+    const birthDate = new Date(birthday);
+    if (isNaN(birthDate.getTime())) {
+      this.showError('customerRegisterError', 'Please enter a valid date of birth.');
+      return;
+    }
+
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    if (age < 18) {
+      this.showError('customerRegisterError', 'You must be at least 18 years old to create an account and purchase vape products (Republic Act No. 11900).');
+      return;
+    }
+
+    if (!password || password.length < 8) {
+      this.showError('customerRegisterError', 'Password must be at least 8 characters long.');
+      return;
+    }
+
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password);
+
+    if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+      this.showError('customerRegisterError', 'Password must include uppercase, lowercase, a number, and a special character.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      this.showError('customerRegisterError', 'Passwords do not match. Please re-enter your password.');
+      return;
+    }
+
+    if (!privacyCheck) {
+      this.showError('customerRegisterError', 'You must consent to the Data Privacy Act terms to register.');
       return;
     }
 
@@ -395,6 +610,7 @@ const CustomerAuth = {
           full_name: fullName,
           email,
           contact_number: phone,
+          birthday,
           password
         })
       });
@@ -537,6 +753,139 @@ const CustomerAuth = {
     this.updateNavUI();
     // Refresh page to sync cart & modals
     window.location.reload();
+  },
+
+  /**
+   * Open Profile modal view with active customer data
+   */
+  openProfile() {
+    if (!this.currentUser) {
+      this.open('signin');
+      return;
+    }
+
+    const nameInput = document.getElementById('customerProfileName');
+    const phoneInput = document.getElementById('customerProfilePhone');
+    const emailInput = document.getElementById('customerProfileEmail');
+    const avatarBadge = document.getElementById('profileModalAvatar');
+    const ageBadgeText = document.getElementById('profileAgeBadgeText');
+
+    if (nameInput) nameInput.value = this.currentUser.full_name || '';
+    if (phoneInput) phoneInput.value = this.currentUser.contact_number || '';
+    if (emailInput) emailInput.value = this.currentUser.email || '';
+
+    if (avatarBadge) {
+      const initial = (this.currentUser.full_name || this.currentUser.email || 'C')
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+      avatarBadge.textContent = initial;
+    }
+
+    if (ageBadgeText && this.currentUser.birthday) {
+      ageBadgeText.textContent = `Verified 18+ Customer (Born ${this.currentUser.birthday}) • RA 11900`;
+    }
+
+    this.open('profile');
+  },
+
+  /**
+   * Handle Customer Profile Update submission
+   */
+  async handleUpdateProfile(e) {
+    if (e) e.preventDefault();
+    this.clearErrors();
+
+    const nameInput = document.getElementById('customerProfileName');
+    const phoneInput = document.getElementById('customerProfilePhone');
+    const emailInput = document.getElementById('customerProfileEmail');
+    const submitBtn = document.getElementById('customerProfileSubmitBtn');
+
+    const fullName = nameInput ? nameInput.value.trim() : '';
+    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+
+    if (!fullName || fullName.length < 2) {
+      this.showError('customerProfileError', 'Please enter your full name (at least 2 characters).');
+      if (nameInput) nameInput.focus();
+      return;
+    }
+
+    const phonePattern = /^(09|\+639)\d{9}$/;
+    if (!phone || !phonePattern.test(phone)) {
+      this.showError('customerProfileError', 'Please enter a valid 11-digit mobile number (e.g. 09123456789).');
+      if (phoneInput) phoneInput.focus();
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailPattern.test(email)) {
+      this.showError('customerProfileError', 'Please enter a valid email address.');
+      if (emailInput) emailInput.focus();
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving Changes...';
+    }
+
+    try {
+      const res = await fetch('/api/customer/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          full_name: fullName,
+          contact_number: phone,
+          email: email
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        this.showError('customerProfileError', data.error || 'Failed to update profile.');
+        return;
+      }
+
+      // Update current user state and navbar
+      this.currentUser = data.user;
+      this.renderNav();
+
+      // Update avatar badge in modal
+      const avatarBadge = document.getElementById('profileModalAvatar');
+      if (avatarBadge) {
+        avatarBadge.textContent = (this.currentUser.full_name || 'C').trim().charAt(0).toUpperCase();
+      }
+
+      // Sync customer details to checkout form autofill if active
+      const checkoutName = document.getElementById('customerName');
+      const checkoutPhone = document.getElementById('customerPhone');
+      const checkoutEmail = document.getElementById('customerEmail');
+      if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
+      if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
+      if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
+
+      this.showSuccess('customerProfileSuccess', '✓ Profile updated successfully!');
+
+      // Smoothly close after a brief delay
+      setTimeout(() => {
+        const profileView = document.getElementById('customerProfileView');
+        if (profileView && profileView.style.display !== 'none') {
+          this.close();
+        }
+      }, 1400);
+
+    } catch (err) {
+      console.error('[Customer Auth] Profile update error:', err);
+      this.showError('customerProfileError', 'Unable to reach the server. Please check your connection.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Changes';
+      }
+    }
   },
 
   escapeHtml(str) {

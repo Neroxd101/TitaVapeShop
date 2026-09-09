@@ -1,6 +1,6 @@
 <!-- Customer Authentication & Verification Modal -->
 <div class="modal-overlay" id="customerAuthModal">
-  <div class="modal modal-small customer-auth-modal-content">
+  <div class="modal customer-auth-modal-content">
     
     <!-- Modal Close Button -->
     <button class="modal-close" id="closeCustomerAuthModal" aria-label="Close modal">
@@ -55,49 +55,88 @@
       <div class="modal-header">
         <h3>Create Customer Account</h3>
       </div>
-      <p class="text-secondary" style="font-size: 13px; margin-bottom: 18px;">
+      <p class="customer-auth-subtext">
         A 6-digit verification code will be sent to your email before ordering.
       </p>
 
       <form id="customerRegisterForm">
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label for="customerRegName">Full Name <span style="color: var(--error);">*</span></label>
-          <input type="text" id="customerRegName" required placeholder="Juan Dela Cruz" autocomplete="name">
+        <div class="customer-reg-grid">
+          <!-- Row 1: Full Name & Contact Number -->
+          <div class="form-group">
+            <label for="customerRegName">Full Name <span style="color: var(--error);">*</span></label>
+            <input type="text" id="customerRegName" required placeholder="Juan Dela Cruz" autocomplete="name">
+          </div>
+
+          <div class="form-group">
+            <label for="customerRegPhone">
+              <span>Contact <span style="color: var(--error);">*</span></span>
+              <span class="label-hint">(11 digits)</span>
+            </label>
+            <input type="tel" id="customerRegPhone" required maxlength="11" placeholder="09123456789" pattern="[0-9]{11}" autocomplete="tel">
+          </div>
+
+          <!-- Row 2: Email Address & Date of Birth -->
+          <div class="form-group">
+            <label for="customerRegEmail">
+              <span>Email <span style="color: var(--error);">*</span></span>
+              <span class="label-hint">(for OTP)</span>
+            </label>
+            <input type="email" id="customerRegEmail" required placeholder="you@example.com" autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label for="customerRegBirthday">
+              <span>Date of Birth <span style="color: var(--error);">*</span></span>
+              <span class="label-hint">(18+ only)</span>
+            </label>
+            <input type="date" id="customerRegBirthday" required style="color-scheme: dark;">
+          </div>
+
+          <!-- Row 3: Create Password & Confirm Password -->
+          <div class="form-group">
+            <label for="customerRegPassword">
+              <span>Password <span style="color: var(--error);">*</span></span>
+              <span class="label-hint" id="customerPasswordStrengthLabel">(min. 8)</span>
+            </label>
+            <input type="password" id="customerRegPassword" required minlength="8" placeholder="Min. 8 chars (Aa1!)" autocomplete="new-password">
+            <div id="passwordStrengthWrap" class="password-strength-wrap" style="display: none;">
+              <div class="password-strength-bar">
+                <div id="passwordStrengthBarFill" class="strength-bar-fill"></div>
+              </div>
+              <span id="passwordStrengthLabelText" class="strength-label-text">Too short</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="customerRegConfirmPassword">
+              <span>Confirm <span style="color: var(--error);">*</span></span>
+              <span class="label-hint" id="passwordMatchHint">(re-enter)</span>
+            </label>
+            <input type="password" id="customerRegConfirmPassword" required minlength="8" placeholder="Re-enter password" autocomplete="new-password">
+          </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label for="customerRegEmail">Email Address <span style="color: var(--error);">*</span></label>
-          <input type="email" id="customerRegEmail" required placeholder="juan@example.com" autocomplete="email">
-          <small class="form-hint" style="color: var(--text-secondary); font-size: 11px; margin-top: 4px; display: block;">
-            We'll send your 6-digit verification code here
-          </small>
+        <!-- Password Requirements Micro Badges -->
+        <div class="password-requirements-hint" id="passwordRequirementsHint">
+          <span id="pwdReqLength" class="pwd-req-badge">8+ chars</span>
+          <span id="pwdReqUpper" class="pwd-req-badge">Uppercase</span>
+          <span id="pwdReqLower" class="pwd-req-badge">Lowercase</span>
+          <span id="pwdReqNumber" class="pwd-req-badge">Number</span>
+          <span id="pwdReqSymbol" class="pwd-req-badge">Symbol</span>
         </div>
 
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label for="customerRegPhone">Contact Number <span style="color: var(--error);">*</span></label>
-          <input type="tel" id="customerRegPhone" required maxlength="11" placeholder="09123456789" pattern="[0-9]{11}" autocomplete="tel">
-          <small class="form-hint" style="color: var(--text-secondary); font-size: 11px; margin-top: 4px; display: block;">
-            Must be exactly 11 digits
-          </small>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label for="customerRegPassword">Create Password <span style="color: var(--error);">*</span></label>
-          <input type="password" id="customerRegPassword" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
-        </div>
-
-        <div class="form-group" style="margin-bottom: 18px;">
-          <label class="age-confirm-checkbox" style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; text-transform: none; font-size: 12.5px; color: var(--text-primary); font-weight: 400;">
-            <input type="checkbox" id="customerRegAgeCheck" required style="width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent);">
-            <span>I confirm that I am at least <strong>18 years old</strong> and legally permitted to purchase vape products.</span>
+        <div class="form-group" style="margin-bottom: 8px;">
+          <label class="privacy-confirm-checkbox">
+            <input type="checkbox" id="customerRegPrivacyCheck" required>
+            <span>I consent to data processing under the <strong>Data Privacy Act (RA 10173)</strong> &amp; <button type="button" id="openPrivacyModalBtn" class="btn-link" style="color: var(--accent); text-decoration: underline; padding: 0; font-size: inherit; background: none; border: none; cursor: pointer; display: inline;">Privacy Notice</button>.</span>
           </label>
         </div>
 
         <p id="customerRegisterError" class="customer-auth-error" role="alert" style="display: none;"></p>
 
-        <div class="modal-actions" style="padding: 0;">
+        <div class="modal-actions">
           <button type="submit" id="customerRegisterSubmitBtn" class="btn btn-primary btn-full">
-            Continue & Send Code
+            Continue &amp; Send Code
           </button>
         </div>
       </form>
@@ -162,6 +201,113 @@
           Change email address
         </button>
       </div>
+    </div>
+
+    <!-- 4. DATA PRIVACY ACT VIEW -->
+    <div id="customerPrivacyView" class="customer-auth-view" style="display: none;">
+      <div class="modal-header privacy-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="var(--accent)">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+          </svg>
+          <h3 style="font-size: 22px; margin: 0;">Data Privacy Notice</h3>
+        </div>
+      </div>
+      
+      <div class="privacy-content">
+        <p class="privacy-intro">In compliance with <strong>Republic Act No. 10173 (Data Privacy Act of 2012)</strong> and the National Privacy Commission (NPC), Tita's Vape Shop is dedicated to protecting your privacy and personal data.</p>
+        
+        <div class="privacy-grid">
+          <div class="privacy-section">
+            <h5>1. Information We Collect</h5>
+            <p>• <strong>Identity:</strong> Full name &amp; date of birth (verifies 18+ under RA 11900).<br>
+            • <strong>Contact:</strong> Email address &amp; 11-digit mobile number.<br>
+            • <strong>Delivery:</strong> Shipping address &amp; order history.</p>
+          </div>
+
+          <div class="privacy-section">
+            <h5>2. Purpose of Processing</h5>
+            <p>• Ensuring strict compliance with minimum age restrictions.<br>
+            • Dispatching OTP codes for customer account security.<br>
+            • Fulfilling orders, logistics, and real-time package updates.</p>
+          </div>
+
+          <div class="privacy-section">
+            <h5>3. Data Security &amp; Encryption</h5>
+            <p>Your data is encrypted in transit and securely held. Passwords are cryptographically hashed. We will never sell, lease, or distribute your personal details to third parties.</p>
+          </div>
+
+          <div class="privacy-section">
+            <h5>4. Your NPC Rights (RA 10173)</h5>
+            <p>You have the legal right to be informed, access, correct, object, or request blocking/erasure of your stored personal data at any time.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions privacy-actions">
+        <button type="button" id="customerClosePrivacyBtn" class="btn btn-primary btn-full">
+          I Understand &amp; Return to Sign Up
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. PROFILE VIEW -->
+    <div id="customerProfileView" class="customer-auth-view" style="display: none;">
+      <div class="modal-header profile-header">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div class="profile-avatar-badge" id="profileModalAvatar">C</div>
+          <div>
+            <h3 style="font-size: 22px; margin: 0; color: #fff;">My Profile</h3>
+            <p class="customer-auth-subtext" style="margin: 3px 0 0 !important; font-size: 13px;">Manage your name, contact number, and email</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="customerProfileForm">
+        <div class="profile-form-grid">
+          <div class="form-group">
+            <label for="customerProfileName">
+              <span>Full Name <span style="color: var(--error);">*</span></span>
+            </label>
+            <input type="text" id="customerProfileName" required placeholder="Juan Dela Cruz" autocomplete="name">
+          </div>
+
+          <div class="form-group">
+            <label for="customerProfilePhone">
+              <span>Mobile Number <span style="color: var(--error);">*</span></span>
+              <span class="label-hint">11-digit (09...)</span>
+            </label>
+            <input type="tel" id="customerProfilePhone" required placeholder="09123456789" maxlength="11" pattern="^(09|\+639)\d{9}$" autocomplete="tel">
+          </div>
+
+          <div class="form-group profile-full-col">
+            <label for="customerProfileEmail">
+              <span>Email Address <span style="color: var(--error);">*</span></span>
+            </label>
+            <input type="email" id="customerProfileEmail" required placeholder="name@example.com" autocomplete="email">
+          </div>
+        </div>
+
+        <!-- Compliance & Age Verification Status -->
+        <div class="profile-age-badge" id="profileAgeBadge">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent)">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+          </svg>
+          <span id="profileAgeBadgeText">Verified 18+ Customer (RA 11900 Compliant)</span>
+        </div>
+
+        <p id="customerProfileError" class="customer-auth-error" role="alert" style="display: none;"></p>
+        <p id="customerProfileSuccess" class="customer-auth-success" role="status" style="display: none;"></p>
+
+        <div class="modal-actions profile-actions">
+          <button type="button" class="btn btn-secondary" id="customerCancelProfileBtn">
+            Cancel
+          </button>
+          <button type="submit" id="customerProfileSubmitBtn" class="btn btn-primary">
+            Save Changes
+          </button>
+        </div>
+      </form>
     </div>
 
   </div>

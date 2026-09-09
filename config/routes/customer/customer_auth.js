@@ -122,7 +122,7 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
-    const { full_name, email, contact_number, password } = req.body;
+    const { full_name, email, contact_number, password, birthday } = req.body;
 
     if (!full_name || full_name.trim().length < 2) {
       return res.status(400).json({ success: false, error: 'Please enter your full name (minimum 2 characters).' });
@@ -139,8 +139,46 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Contact number must be exactly 11 digits (e.g. 09123456789).' });
     }
 
-    if (!password || password.length < 6) {
-      return res.status(400).json({ success: false, error: 'Password must be at least 6 characters long.' });
+    if (!birthday) {
+      return res.status(400).json({ success: false, error: 'Please provide your date of birth.' });
+    }
+
+    const birthDate = new Date(birthday);
+    if (isNaN(birthDate.getTime())) {
+      return res.status(400).json({ success: false, error: 'Please provide a valid date of birth.' });
+    }
+
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    if (age < 18) {
+      return res.status(400).json({
+        success: false,
+        error: 'You must be at least 18 years old to create an account and purchase vape products (Republic Act No. 11900).'
+      });
+    }
+
+    if (!password || password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 8 characters long.'
+      });
+    }
+
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password);
+
+    if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must include an uppercase letter, lowercase letter, number, and special character.'
+      });
     }
 
     // Check if email is already in users table
@@ -157,6 +195,7 @@ router.post('/api/customer/register', async (req, res) => {
 
     let userId = null;
     const hashedPassword = bcrypt.hashSync(password, 10);
+    const birthDateFormatted = birthDate.toISOString().split('T')[0];
 
     if (existingUser) {
       if (existingUser.is_verified) {
@@ -167,15 +206,24 @@ router.post('/api/customer/register', async (req, res) => {
       }
       // Existing unverified user: update their record
       userId = existingUser.id;
-      const { error: updateError } = await client
+      const updatePayload = {
+        full_name: full_name.trim(),
+        contact_number: digitsOnly,
+        birthday: birthDateFormatted,
+        password: hashedPassword,
+        roles: 'customer'
+      };
+
+      let { error: updateError } = await client
         .from('users')
-        .update({
-          full_name: full_name.trim(),
-          contact_number: digitsOnly,
-          password: hashedPassword,
-          roles: 'customer'
-        })
+        .update(updatePayload)
         .eq('id', userId);
+
+      if (updateError && updateError.message && updateError.message.includes('birthday')) {
+        delete updatePayload.birthday;
+        const retry = await client.from('users').update(updatePayload).eq('id', userId);
+        updateError = retry.error;
+      }
 
       if (updateError) {
         console.error('[Customer Register] Update unverified error:', updateError);
@@ -184,19 +232,29 @@ router.post('/api/customer/register', async (req, res) => {
     } else {
       // Create new user record
       const newUsername = `${cleanEmail.split('@')[0]}_${Date.now().toString().slice(-4)}`;
-      const { data: newUser, error: insertError } = await client
+      const insertPayload = {
+        username: newUsername,
+        email: cleanEmail,
+        password: hashedPassword,
+        full_name: full_name.trim(),
+        contact_number: digitsOnly,
+        birthday: birthDateFormatted,
+        roles: 'customer',
+        is_verified: false
+      };
+
+      let { data: newUser, error: insertError } = await client
         .from('users')
-        .insert({
-          username: newUsername,
-          email: cleanEmail,
-          password: hashedPassword,
-          full_name: full_name.trim(),
-          contact_number: digitsOnly,
-          roles: 'customer',
-          is_verified: false
-        })
+        .insert(insertPayload)
         .select('id')
         .single();
+
+      if (insertError && insertError.message && insertError.message.includes('birthday')) {
+        delete insertPayload.birthday;
+        const retry = await client.from('users').insert(insertPayload).select('id').single();
+        newUser = retry.data;
+        insertError = retry.error;
+      }
 
       if (insertError) {
         console.error('[Customer Register] Insert error:', insertError);
@@ -500,9 +558,9 @@ router.post('/api/customer/login', async (req, res) => {
 
 /**
  * GET /api/customer/me
- * Check current customer authentication state
+ * Check current customer authentication state with fresh database data
  */
-router.get('/api/customer/me', (req, res) => {
+router.get('/api/customer/me', async (req, res) => {
   const token = req.cookies?.customer_token;
   if (!token) {
     return res.json({ authenticated: false });
@@ -510,18 +568,146 @@ router.get('/api/customer/me', (req, res) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    const client = dbClient();
+
+    // Query fresh profile data from DB
+    const { data: user, error } = await client
+      .from('users')
+      .select('id, email, full_name, contact_number, birthday')
+      .eq('id', decoded.id)
+      .single();
+
+    if (error || !user) {
+      return res.json({
+        authenticated: true,
+        user: {
+          id: decoded.id,
+          email: decoded.email,
+          full_name: decoded.full_name || '',
+          contact_number: decoded.contact_number || '',
+          birthday: decoded.birthday || null
+        }
+      });
+    }
+
     return res.json({
       authenticated: true,
       user: {
-        id: decoded.id,
-        email: decoded.email,
-        full_name: decoded.full_name,
-        contact_number: decoded.contact_number
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name || '',
+        contact_number: user.contact_number || '',
+        birthday: user.birthday || null
       }
     });
   } catch (err) {
     res.clearCookie('customer_token');
     return res.json({ authenticated: false });
+  }
+});
+
+/**
+ * PUT /api/customer/profile
+ * Update customer profile (name, mobile number, email)
+ */
+router.put('/api/customer/profile', async (req, res) => {
+  const token = req.cookies?.customer_token;
+  if (!token) {
+    return res.status(401).json({ success: false, error: 'Please sign in to update your profile.' });
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    res.clearCookie('customer_token');
+    return res.status(401).json({ success: false, error: 'Session expired. Please sign in again.' });
+  }
+
+  const { full_name, contact_number, email } = req.body;
+  const client = dbClient();
+
+  // Validate full_name
+  if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
+    return res.status(400).json({ success: false, error: 'Please enter a valid full name (at least 2 characters).' });
+  }
+
+  // Validate contact_number (Philippine mobile e.g. 09XXXXXXXXX or +639...)
+  const phonePattern = /^(09|\+639)\d{9}$/;
+  if (!contact_number || !phonePattern.test(contact_number.trim())) {
+    return res.status(400).json({ success: false, error: 'Please enter a valid 11-digit mobile number (e.g. 09123456789).' });
+  }
+
+  // Validate email
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailPattern.test(email.trim())) {
+    return res.status(400).json({ success: false, error: 'Please enter a valid email address.' });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedPhone = contact_number.trim();
+  const normalizedName = full_name.trim();
+
+  try {
+    // Check if changing email and new email already belongs to someone else
+    if (normalizedEmail !== decoded.email.toLowerCase()) {
+      const { data: existingUser, error: checkErr } = await client
+        .from('users')
+        .select('id')
+        .ilike('email', normalizedEmail)
+        .neq('id', decoded.id)
+        .maybeSingle();
+
+      if (checkErr) {
+        console.error('[Customer Update Profile] Check email error:', checkErr);
+      } else if (existingUser) {
+        return res.status(400).json({ success: false, error: 'This email is already associated with another account.' });
+      }
+    }
+
+    // Update user record
+    const { data: updatedUser, error: updateErr } = await client
+      .from('users')
+      .update({
+        full_name: normalizedName,
+        contact_number: normalizedPhone,
+        email: normalizedEmail
+      })
+      .eq('id', decoded.id)
+      .select('id, email, full_name, contact_number, birthday')
+      .single();
+
+    if (updateErr || !updatedUser) {
+      console.error('[Customer Update Profile] DB update error:', updateErr);
+      return res.status(500).json({ success: false, error: 'Failed to update profile details.' });
+    }
+
+    // Sign new JWT token with updated profile
+    const customerPayload = {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      full_name: updatedUser.full_name || '',
+      contact_number: updatedUser.contact_number || '',
+      birthday: updatedUser.birthday || null,
+      role: 'customer'
+    };
+
+    const newToken = jwt.sign(customerPayload, JWT_SECRET, { expiresIn: '30d' });
+    res.cookie('customer_token', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
+
+    return res.json({
+      success: true,
+      message: 'Profile updated successfully!',
+      user: customerPayload
+    });
+  } catch (err) {
+    console.error('[Customer Update Profile] Exception:', err);
+    return res.status(500).json({ success: false, error: 'Internal server error while updating profile.' });
   }
 });
 

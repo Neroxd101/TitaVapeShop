@@ -33,6 +33,13 @@ BEGIN
     ) THEN
         ALTER TABLE public.users ADD COLUMN email_verified_at TIMESTAMPTZ;
     END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'birthday'
+    ) THEN
+        ALTER TABLE public.users ADD COLUMN birthday DATE;
+    END IF;
 END $$;
 
 -- 2. Create customer email verification codes table
