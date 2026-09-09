@@ -37,6 +37,9 @@
               </svg>
             </button>
           </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+            <button type="button" class="btn-link" id="switchToForgotPwdBtn" style="font-size: 12px; color: var(--accent); background: none; border: none; padding: 0; cursor: pointer;">Forgot password?</button>
+          </div>
         </div>
 
         <!-- Context Banner (shown when opening from checkout attempt) -->
@@ -319,6 +322,137 @@
           </button>
         </div>
       </form>
+    </div>
+
+    <!-- 4. FORGOT PASSWORD VIEW (Step 1: Request Code) -->
+    <div id="customerForgotPwdView" class="customer-auth-view" style="display: none;">
+      <div class="modal-header">
+        <h3>Reset Password</h3>
+      </div>
+      <p class="customer-auth-subtext">
+        Enter your registered email address and we will send you a 6-digit code to reset your password.
+      </p>
+
+      <form id="customerForgotPwdForm">
+        <div class="form-group">
+          <label for="customerForgotEmail">Email Address</label>
+          <input type="email" id="customerForgotEmail" required placeholder="name@example.com" autocomplete="email">
+        </div>
+
+        <p id="customerForgotPwdError" class="customer-auth-error" role="alert" style="display: none;"></p>
+        <p id="customerForgotPwdSuccess" class="customer-auth-success" role="status" style="display: none;"></p>
+
+        <div class="modal-actions" style="padding: 0; margin-top: 20px;">
+          <button type="submit" id="customerForgotSubmitBtn" class="btn btn-primary btn-full">
+            Send Reset Code
+          </button>
+        </div>
+      </form>
+
+      <div class="customer-auth-footer">
+        <span>Remember your password?</span>
+        <button type="button" class="btn-link" id="switchToSignInFromForgotBtn">Back to Sign In</button>
+      </div>
+    </div>
+
+    <!-- 5. VERIFY RESET OTP VIEW (Step 2: Verify Code) -->
+    <div id="customerResetOtpView" class="customer-auth-view" style="display: none;">
+      <div class="modal-header">
+        <h3>Verify Reset Code</h3>
+      </div>
+      <p class="customer-auth-subtext">
+        Enter the 6-digit code sent to <strong id="customerResetOtpEmailTarget" style="color: #ffffff;"></strong> to verify your request.
+      </p>
+
+      <form id="customerResetOtpForm">
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="customerResetOtpInput" style="text-align: center; display: block; font-size: 12px; letter-spacing: 1px;">ENTER 6-DIGIT CODE</label>
+          <input 
+            type="text" 
+            id="customerResetOtpInput" 
+            required 
+            maxlength="6" 
+            placeholder="000000" 
+            class="otp-input-field" 
+            autocomplete="one-time-code"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+          >
+        </div>
+
+        <div class="otp-resend-wrap" style="margin-bottom: 16px; text-align: center;">
+          <span style="font-size: 13px; color: var(--text-secondary, #94a3b8);">Didn't receive code? </span>
+          <button type="button" id="customerResetResendBtn" class="btn-link" style="font-size: 13px;">Resend Code</button>
+        </div>
+
+        <p id="customerResetOtpError" class="customer-auth-error" role="alert" style="display: none;"></p>
+        <p id="customerResetOtpSuccess" class="customer-auth-success" role="status" style="display: none;"></p>
+
+        <div class="modal-actions" style="padding: 0; margin-top: 18px;">
+          <button type="submit" id="customerResetOtpSubmitBtn" class="btn btn-primary btn-full">
+            Verify Code
+          </button>
+        </div>
+      </form>
+
+      <div class="customer-auth-footer">
+        <button type="button" class="btn-link" id="switchToSignInFromResetOtpBtn">Back to Sign In</button>
+      </div>
+    </div>
+
+    <!-- 6. NEW PASSWORD VIEW (Step 3: Create New Password after verification) -->
+    <div id="customerResetPwdView" class="customer-auth-view" style="display: none;">
+      <div class="modal-header">
+        <h3>Create New Password</h3>
+      </div>
+      <p class="customer-auth-subtext">
+        Code verified! Please create a strong new password for your account.
+      </p>
+
+      <form id="customerResetPwdForm">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="customerResetNewPassword">New Password</label>
+          <div class="customer-password-wrap">
+            <input type="password" id="customerResetNewPassword" required placeholder="••••••••" autocomplete="new-password">
+            <button type="button" class="customer-password-toggle" id="toggleCustomerResetPassword" aria-label="Show password" aria-pressed="false" tabindex="-1">
+              <svg class="icon-eye" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+              <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="pwd-req-badges" style="margin-bottom: 14px;">
+          <span id="pwdResetReqLength" class="pwd-req-badge">8+ chars</span>
+          <span id="pwdResetReqUpper" class="pwd-req-badge">Uppercase</span>
+          <span id="pwdResetReqLower" class="pwd-req-badge">Lowercase</span>
+          <span id="pwdResetReqNumber" class="pwd-req-badge">Number</span>
+          <span id="pwdResetReqSymbol" class="pwd-req-badge">Symbol</span>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="customerResetConfirmPassword">Confirm Password</label>
+          <div class="customer-password-wrap">
+            <input type="password" id="customerResetConfirmPassword" required placeholder="••••••••" autocomplete="new-password">
+          </div>
+        </div>
+
+        <p id="customerResetPwdError" class="customer-auth-error" role="alert" style="display: none;"></p>
+        <p id="customerResetPwdSuccess" class="customer-auth-success" role="status" style="display: none;"></p>
+
+        <div class="modal-actions" style="padding: 0; margin-top: 18px;">
+          <button type="submit" id="customerResetSubmitBtn" class="btn btn-primary btn-full">
+            Save New Password
+          </button>
+        </div>
+      </form>
+
+      <div class="customer-auth-footer">
+        <button type="button" class="btn-link" id="switchToSignInFromResetBtn">Back to Sign In</button>
+      </div>
     </div>
 
   </div>

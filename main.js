@@ -19,6 +19,7 @@ const customerCreateOrderRoutes = require('./config/routes/customer/customer_cre
 const customerGetOrdersRoutes = require('./config/routes/customer/customer_get_orders');
 const customerCancelOrderRoutes = require('./config/routes/customer/customer_cancel_order');
 const customerTrackOrderRoutes = require('./config/routes/customer/customer_track_order');
+const customerResetPasswordRoutes = require('./config/routes/customer/customer_reset_password');
 
 // User routes
 const userProfileRoutes = require('./config/routes/users/user-profile');
@@ -91,6 +92,7 @@ app.use('/', customerCreateOrderRoutes);
 app.use('/', customerGetOrdersRoutes);
 app.use('/', customerCancelOrderRoutes);
 app.use('/', customerTrackOrderRoutes);
+app.use('/', customerResetPasswordRoutes);
 app.use('/', catalogGetProductsRoutes); // Public product listing
 app.use('/', catalogImageProxyRoutes); // Public product image proxy
 app.use('/', catalogRoutes); // Public catalog for customers

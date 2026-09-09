@@ -14,6 +14,8 @@ const CustomerAuth = {
   currentUser: null,
   pendingSuccessAction: null,
   activeEmail: '',
+  resetEmail: '',
+  resetOtp: '',
   isEmailChangeVerification: false,
 
   /**
@@ -90,7 +92,7 @@ const CustomerAuth = {
 
   /**
    * Open modal in specific view
-   * @param {'signin'|'register'|'verify'|'profile'|'privacy'} view
+   * @param {'signin'|'register'|'verify'|'profile'|'privacy'|'forgot'|'reset-otp'|'reset-pwd'} view
    * @param {string} [notice]
    */
   open(view = 'signin', notice = null) {
@@ -131,6 +133,12 @@ const CustomerAuth = {
     const verifyView = document.getElementById('customerVerifyView');
     const privacyView = document.getElementById('customerPrivacyView');
     const profileView = document.getElementById('customerProfileView');
+    const forgotPwdView = document.getElementById('customerForgotPwdView');
+    const resetOtpView = document.getElementById('customerResetOtpView');
+    const resetPwdView = document.getElementById('customerResetPwdView');
+
+    const isResetOtp = view === 'reset-otp' || view === 'reset';
+    const isResetPwd = view === 'reset-pwd';
 
     const modalContent = document.querySelector('.customer-auth-modal-content');
     if (modalContent) {
@@ -139,6 +147,9 @@ const CustomerAuth = {
       modalContent.classList.toggle('verify-active', view === 'verify');
       modalContent.classList.toggle('register-active', view === 'register');
       modalContent.classList.toggle('profile-active', view === 'profile');
+      modalContent.classList.toggle('forgot-active', view === 'forgot');
+      modalContent.classList.toggle('reset-otp-active', isResetOtp);
+      modalContent.classList.toggle('reset-pwd-active', isResetPwd);
     }
 
     if (signInView) signInView.style.display = view === 'signin' ? 'block' : 'none';
@@ -146,6 +157,9 @@ const CustomerAuth = {
     if (verifyView) verifyView.style.display = view === 'verify' ? 'block' : 'none';
     if (privacyView) privacyView.style.display = view === 'privacy' ? 'block' : 'none';
     if (profileView) profileView.style.display = view === 'profile' ? 'block' : 'none';
+    if (forgotPwdView) forgotPwdView.style.display = view === 'forgot' ? 'block' : 'none';
+    if (resetOtpView) resetOtpView.style.display = isResetOtp ? 'block' : 'none';
+    if (resetPwdView) resetPwdView.style.display = isResetPwd ? 'block' : 'none';
 
     this.clearErrors();
 
@@ -180,6 +194,42 @@ const CustomerAuth = {
     } else if (view === 'profile') {
       const nameInput = document.getElementById('customerProfileName');
       if (nameInput) setTimeout(() => nameInput.focus(), 50);
+    } else if (view === 'forgot') {
+      const forgotEmail = document.getElementById('customerForgotEmail');
+      const signInEmail = document.getElementById('customerSignInEmail');
+      if (forgotEmail) {
+        if (signInEmail && signInEmail.value.trim() && !forgotEmail.value) {
+          forgotEmail.value = signInEmail.value.trim();
+        }
+        setTimeout(() => forgotEmail.focus(), 50);
+      }
+    } else if (isResetOtp) {
+      const resetOtpInput = document.getElementById('customerResetOtpInput');
+      const emailTarget = document.getElementById('customerResetOtpEmailTarget');
+      if (emailTarget) emailTarget.textContent = this.resetEmail || '';
+      if (resetOtpInput) {
+        resetOtpInput.value = '';
+        setTimeout(() => resetOtpInput.focus(), 50);
+      }
+    } else if (isResetPwd) {
+      const newPwd = document.getElementById('customerResetNewPassword');
+      const confirmPwd = document.getElementById('customerResetConfirmPassword');
+      if (newPwd) {
+        newPwd.value = '';
+        newPwd.type = 'password';
+        setTimeout(() => newPwd.focus(), 50);
+      }
+      if (confirmPwd) confirmPwd.value = '';
+      const toggleBtn = document.getElementById('toggleCustomerResetPassword');
+      if (toggleBtn) {
+        toggleBtn.classList.remove('is-visible');
+        toggleBtn.setAttribute('aria-pressed', 'false');
+        toggleBtn.setAttribute('aria-label', 'Show password');
+      }
+      ['pwdResetReqLength', 'pwdResetReqUpper', 'pwdResetReqLower', 'pwdResetReqNumber', 'pwdResetReqSymbol'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('met');
+      });
     }
   },
 
@@ -193,7 +243,13 @@ const CustomerAuth = {
       'customerVerifyError',
       'customerVerifySuccess',
       'customerProfileError',
-      'customerProfileSuccess'
+      'customerProfileSuccess',
+      'customerForgotPwdError',
+      'customerForgotPwdSuccess',
+      'customerResetOtpError',
+      'customerResetOtpSuccess',
+      'customerResetPwdError',
+      'customerResetPwdSuccess'
     ];
     errors.forEach(id => {
       const el = document.getElementById(id);
@@ -248,6 +304,27 @@ const CustomerAuth = {
         }
         this.switchView('signin');
       });
+    }
+
+    // Forgot Password navigation switchers
+    const switchToForgotPwdBtn = document.getElementById('switchToForgotPwdBtn');
+    if (switchToForgotPwdBtn) {
+      switchToForgotPwdBtn.addEventListener('click', () => this.switchView('forgot'));
+    }
+
+    const switchToSignInFromForgotBtn = document.getElementById('switchToSignInFromForgotBtn');
+    if (switchToSignInFromForgotBtn) {
+      switchToSignInFromForgotBtn.addEventListener('click', () => this.switchView('signin'));
+    }
+
+    const switchToSignInFromResetOtpBtn = document.getElementById('switchToSignInFromResetOtpBtn');
+    if (switchToSignInFromResetOtpBtn) {
+      switchToSignInFromResetOtpBtn.addEventListener('click', () => this.switchView('signin'));
+    }
+
+    const switchToSignInFromResetBtn = document.getElementById('switchToSignInFromResetBtn');
+    if (switchToSignInFromResetBtn) {
+      switchToSignInFromResetBtn.addEventListener('click', () => this.switchView('signin'));
     }
 
     const backToRegBtn = document.getElementById('customerBackToRegBtn');
@@ -358,6 +435,71 @@ const CustomerAuth = {
     const cancelProfileBtn = document.getElementById('customerCancelProfileBtn');
     if (cancelProfileBtn) {
       cancelProfileBtn.addEventListener('click', () => this.close());
+    }
+
+    // Forgot Password Form Submission (Step 1)
+    const forgotPwdForm = document.getElementById('customerForgotPwdForm');
+    if (forgotPwdForm) {
+      forgotPwdForm.addEventListener('submit', (e) => this.handleForgotPassword(e));
+    }
+
+    // Verify Reset OTP Form Submission (Step 2)
+    const resetOtpForm = document.getElementById('customerResetOtpForm');
+    const resetOtpInput = document.getElementById('customerResetOtpInput');
+    if (resetOtpInput) {
+      resetOtpInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+        if (e.target.value.length === 6 && resetOtpForm) {
+          resetOtpForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+      });
+    }
+    if (resetOtpForm) {
+      resetOtpForm.addEventListener('submit', (e) => this.handleVerifyResetOtp(e));
+    }
+
+    // Resend Reset Code Button
+    const resetResendBtn = document.getElementById('customerResetResendBtn');
+    if (resetResendBtn) {
+      resetResendBtn.addEventListener('click', () => this.handleResendResetOtp());
+    }
+
+    // Reset Password Form Submission (Step 3)
+    const resetPwdForm = document.getElementById('customerResetPwdForm');
+    if (resetPwdForm) {
+      resetPwdForm.addEventListener('submit', (e) => this.handleResetPassword(e));
+    }
+
+    // Reset Password Visibility Toggle
+    const toggleResetPassword = document.getElementById('toggleCustomerResetPassword');
+    const resetPasswordInput = document.getElementById('customerResetNewPassword');
+    if (toggleResetPassword && resetPasswordInput) {
+      toggleResetPassword.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isPassword = resetPasswordInput.type === 'password';
+        resetPasswordInput.type = isPassword ? 'text' : 'password';
+        toggleResetPassword.classList.toggle('is-visible', isPassword);
+        toggleResetPassword.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+        toggleResetPassword.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      });
+    }
+
+    // Live Password Criteria Badges on Reset Password
+    if (resetPasswordInput) {
+      resetPasswordInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        const bLen = document.getElementById('pwdResetReqLength');
+        const bUp = document.getElementById('pwdResetReqUpper');
+        const bLow = document.getElementById('pwdResetReqLower');
+        const bNum = document.getElementById('pwdResetReqNumber');
+        const bSym = document.getElementById('pwdResetReqSymbol');
+
+        if (bLen) bLen.classList.toggle('met', val.length >= 8);
+        if (bUp) bUp.classList.toggle('met', /[A-Z]/.test(val));
+        if (bLow) bLow.classList.toggle('met', /[a-z]/.test(val));
+        if (bNum) bNum.classList.toggle('met', /[0-9]/.test(val));
+        if (bSym) bSym.classList.toggle('met', /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(val));
+      });
     }
   },
 
@@ -761,6 +903,208 @@ const CustomerAuth = {
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Save Changes';
+    }
+  },
+
+  async handleForgotPassword(e) {
+    e.preventDefault();
+    this.clearErrors();
+
+    const emailInput = document.getElementById('customerForgotEmail');
+    const email = emailInput ? emailInput.value.trim() : '';
+    const submitBtn = document.getElementById('customerForgotSubmitBtn');
+
+    if (!email) {
+      this.showError('customerForgotPwdError', 'Please enter your email address.');
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending Code...';
+    }
+
+    try {
+      if (!window.CustomerResetPassword) {
+        throw new Error('Customer reset password module is not loaded.');
+      }
+      const res = await window.CustomerResetPassword.requestReset(email);
+      if (res && res.success) {
+        this.resetEmail = email;
+        this.switchView('reset-otp');
+        this.showSuccess('customerResetOtpSuccess', 'Verification code sent! Please check your email.');
+      } else {
+        this.showError('customerForgotPwdError', res?.error || 'Failed to send reset code.');
+      }
+    } catch (err) {
+      console.error('[Customer Auth] Forgot password error:', err);
+      this.showError('customerForgotPwdError', err.message || 'An unexpected error occurred.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Reset Code';
+      }
+    }
+  },
+
+  async handleVerifyResetOtp(e) {
+    e.preventDefault();
+    this.clearErrors();
+
+    const otpInput = document.getElementById('customerResetOtpInput');
+    const otp = otpInput ? otpInput.value.trim() : '';
+    const submitBtn = document.getElementById('customerResetOtpSubmitBtn');
+
+    if (!otp || otp.length !== 6) {
+      this.showError('customerResetOtpError', 'Please enter the 6-digit verification code sent to your email.');
+      if (otpInput) otpInput.focus();
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying...';
+    }
+
+    try {
+      if (!window.CustomerResetPassword) {
+        throw new Error('Customer reset password module is not loaded.');
+      }
+      const res = await window.CustomerResetPassword.verifyCode(this.resetEmail, otp);
+      if (res && res.success) {
+        this.resetOtp = otp;
+        this.switchView('reset-pwd');
+        this.showSuccess('customerResetPwdSuccess', 'Code verified! Now choose a new password.');
+      } else {
+        this.showError('customerResetOtpError', res?.error || 'Invalid or expired verification code.');
+      }
+    } catch (err) {
+      console.error('[Customer Auth] Verify OTP error:', err);
+      this.showError('customerResetOtpError', err.message || 'An unexpected error occurred.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Verify Code';
+      }
+    }
+  },
+
+  async handleResendResetOtp() {
+    this.clearErrors();
+    const resendBtn = document.getElementById('customerResetResendBtn');
+    if (!this.resetEmail) {
+      this.switchView('forgot');
+      return;
+    }
+
+    if (resendBtn) {
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Resending...';
+    }
+
+    try {
+      if (!window.CustomerResetPassword) {
+        throw new Error('Customer reset password module is not loaded.');
+      }
+      const res = await window.CustomerResetPassword.requestReset(this.resetEmail);
+      if (res && res.success) {
+        this.showSuccess('customerResetOtpSuccess', 'New 6-digit code has been sent to your email.');
+      } else {
+        this.showError('customerResetOtpError', res?.error || 'Failed to resend code.');
+      }
+    } catch (err) {
+      this.showError('customerResetOtpError', err.message || 'Failed to resend code.');
+    } finally {
+      if (resendBtn) {
+        let count = 30;
+        const interval = setInterval(() => {
+          if (count <= 0) {
+            clearInterval(interval);
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend Code';
+          } else {
+            resendBtn.textContent = `Resend in ${count}s`;
+            count--;
+          }
+        }, 1000);
+      }
+    }
+  },
+
+  async handleResetPassword(e) {
+    e.preventDefault();
+    this.clearErrors();
+
+    const newPwdInput = document.getElementById('customerResetNewPassword');
+    const confirmPwdInput = document.getElementById('customerResetConfirmPassword');
+    const submitBtn = document.getElementById('customerResetSubmitBtn');
+
+    const newPassword = newPwdInput ? newPwdInput.value : '';
+    const confirmPassword = confirmPwdInput ? confirmPwdInput.value : '';
+    const otp = this.resetOtp;
+
+    if (!otp) {
+      this.showError('customerResetPwdError', 'Session expired. Please verify your OTP code again.');
+      this.switchView('reset-otp');
+      return;
+    }
+
+    if (!newPassword) {
+      this.showError('customerResetPwdError', 'Please enter a new password.');
+      if (newPwdInput) newPwdInput.focus();
+      return;
+    }
+
+    // Password criteria validation
+    const hasLen = newPassword.length >= 8;
+    const hasUp = /[A-Z]/.test(newPassword);
+    const hasLow = /[a-z]/.test(newPassword);
+    const hasNum = /[0-9]/.test(newPassword);
+    const hasSym = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(newPassword);
+
+    if (!hasLen || !hasUp || !hasLow || !hasNum || !hasSym) {
+      this.showError('customerResetPwdError', 'Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.');
+      if (newPwdInput) newPwdInput.focus();
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      this.showError('customerResetPwdError', 'Passwords do not match.');
+      if (confirmPwdInput) confirmPwdInput.focus();
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving Password...';
+    }
+
+    try {
+      if (!window.CustomerResetPassword) {
+        throw new Error('Customer reset password module is not loaded.');
+      }
+      const res = await window.CustomerResetPassword.confirmReset(this.resetEmail, otp, newPassword);
+      if (res && res.success) {
+        this.showSuccess('customerResetPwdSuccess', 'Password successfully reset! You can now sign in.');
+        setTimeout(() => {
+          const signInEmail = document.getElementById('customerSignInEmail');
+          if (signInEmail && this.resetEmail) {
+            signInEmail.value = this.resetEmail;
+          }
+          this.switchView('signin');
+          this.showSuccess('customerSignInError', 'Password reset successfully. Please sign in with your new password.');
+        }, 1500);
+      } else {
+        this.showError('customerResetPwdError', res?.error || 'Failed to reset password.');
+      }
+    } catch (err) {
+      console.error('[Customer Auth] Reset password error:', err);
+      this.showError('customerResetPwdError', err.message || 'An unexpected error occurred.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save New Password';
+      }
     }
   },
 
