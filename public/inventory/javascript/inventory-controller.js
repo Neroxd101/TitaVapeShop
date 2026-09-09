@@ -37,6 +37,7 @@ const Inventory = {
 
   // Setup event listeners
   setupEventListeners() {
+    document.getElementById('printStocksBtn')?.addEventListener('click', () => InventoryPrint.print());
     // Add item button
     document.getElementById('addItemBtn')?.addEventListener('click', () => InventoryCreate.openAddModal());
 
