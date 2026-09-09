@@ -43,7 +43,7 @@ BEGIN
     SELECT inv.quantity, inv.sale_price, inv.total_profit
     INTO cur_qty, cur_sale_price, cur_profit
     FROM inventory AS inv
-    WHERE inv.id = p_id;
+    WHERE inv.id = p_id FOR UPDATE;
 
     IF NOT FOUND THEN
         RAISE EXCEPTION 'Item not found';

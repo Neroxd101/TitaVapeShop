@@ -229,6 +229,7 @@ const TransactionsPrint = {
         if (action) {
             const actionMap = {
                 'sale_complete': 'Sales',
+                'sale_void': 'Void',
                 'inventory_add': 'Inventory Add',
                 'inventory_edit': 'Inventory Edit',
                 'inventory_delete': 'Inventory Delete'

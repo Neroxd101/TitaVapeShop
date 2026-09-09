@@ -402,6 +402,7 @@ class OrdersController {
                     <td class="col-date" data-label="Date"><span class="order-date-val">${orderDate}</span></td>
                     <td class="col-actions" data-label="Actions">
                         <div class="order-actions">
+                            ${order.status === 'completed' ? `<button class="btn btn-small btn-danger" onclick="window.ordersController.voidOrder('${order.id}')">Void</button>` : ''}
                             <button class="btn btn-small btn-secondary" onclick="OrdersController.viewOrder('${order.id}')">View</button>
                             ${order.status === 'pending' 
                                 ? `
@@ -441,6 +442,7 @@ class OrdersController {
             'pending': '<span class="badge badge-warning">Pending</span>',
             'confirmed': '<span class="badge badge-info">Confirmed</span>',
             'completed': '<span class="badge badge-success">Completed</span>',
+            'voided': '<span class="badge badge-danger">Voided</span>',
             'cancelled': '<span class="badge badge-danger">Cancelled</span>'
         };
         return badges[status] || `<span class="badge">${status}</span>`;
@@ -623,6 +625,48 @@ class OrdersController {
         } finally {
             this.pendingOrderId = null;
         }
+    }
+
+    voidOrder(orderId) {
+        const modal = document.getElementById('voidOrderModal');
+        const form = document.getElementById('voidOrderForm');
+        const button = document.getElementById('submitVoidOrder');
+        const errorBox = document.getElementById('voidOrderError');
+        if (button.disabled) return;
+        form.reset();
+        errorBox.textContent = '';
+        modal.classList.add('show');
+        document.getElementById('voidReason').focus();
+        document.getElementById('dismissVoidOrder').onclick = () => {
+            if (!button.disabled) modal.classList.remove('show');
+        };
+        form.onsubmit = async (event) => {
+            event.preventDefault();
+            if (button.disabled) return;
+            const reason = document.getElementById('voidReason').value.trim();
+            if (!reason || reason.length > 1000) {
+                errorBox.textContent = 'Enter a reason of 1?1000 characters.';
+                return;
+            }
+            button.disabled = true;
+            errorBox.textContent = '';
+            try {
+                const response = await fetch('/api/orders/update_status', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ order_id: orderId, status: 'voided', reason })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.error || 'Unable to void order.');
+                modal.classList.remove('show');
+                await this.loadOrders();
+                alert('Order voided. Stock restored and transaction recorded.');
+            } catch (error) {
+                errorBox.textContent = error.message || 'Unable to void order. Please try again.';
+            } finally {
+                button.disabled = false;
+            }
+        };
     }
 
     cancelOrder(orderId) {

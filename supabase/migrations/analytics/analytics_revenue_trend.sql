@@ -22,8 +22,15 @@ BEGIN
         SELECT 
             date_trunc('day', created_at)::date as daily_date,
             SUM(sale_total) as daily_total
-        FROM transactions
-        WHERE action_type = 'sale_complete'
+        FROM transactions sale_tx
+        WHERE sale_tx.action_type = 'sale_complete'
+        -- Voids remove the original sale even when voided outside the selected dates.
+        AND NOT EXISTS (
+            SELECT 1 FROM transactions void_tx
+            WHERE void_tx.action_type = 'sale_void'
+                AND void_tx.entity_type = sale_tx.entity_type
+                AND void_tx.entity_id = sale_tx.entity_id
+        )
             AND (p_start_date IS NULL OR created_at >= p_start_date)
             AND (p_end_date IS NULL OR created_at < (p_end_date + INTERVAL '1 day'))
         GROUP BY date_trunc('day', created_at)::date

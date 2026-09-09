@@ -1,6 +1,6 @@
 -- =============================================
 -- Inventory Get Sales History Function
--- Gets all sales transactions for a specific inventory item
+-- Gets non-voided sales transactions for a specific inventory item
 -- Returns JSONB with sales array and metadata
 -- =============================================
 
@@ -25,6 +25,13 @@ BEGIN
     FROM transactions t,
     LATERAL jsonb_array_elements(t.sale_items) as sale_item
     WHERE t.action_type = 'sale_complete'
+        -- Match voids regardless of date so restored items no longer count as sold.
+        AND NOT EXISTS (
+            SELECT 1 FROM transactions void_tx
+            WHERE void_tx.action_type = 'sale_void'
+                AND void_tx.entity_type = t.entity_type
+                AND void_tx.entity_id = t.entity_id
+        )
         AND t.sale_items IS NOT NULL
         AND (sale_item->>'id')::UUID = p_item_id;
 
@@ -57,6 +64,12 @@ BEGIN
         LATERAL jsonb_array_elements(t.sale_items) as sale_item
         LEFT JOIN inventory inv ON inv.id = (sale_item->>'id')::UUID
         WHERE t.action_type = 'sale_complete'
+            AND NOT EXISTS (
+                SELECT 1 FROM transactions void_tx
+                WHERE void_tx.action_type = 'sale_void'
+                    AND void_tx.entity_type = t.entity_type
+                    AND void_tx.entity_id = t.entity_id
+            )
             AND t.sale_items IS NOT NULL
             AND (sale_item->>'id')::UUID = p_item_id
         ORDER BY t.created_at DESC

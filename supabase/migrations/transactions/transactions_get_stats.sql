@@ -18,7 +18,7 @@ BEGIN
         'inventory_deletes', COUNT(*) FILTER (WHERE action_type = 'inventory_delete'),
         'sales_completed', COUNT(*) FILTER (WHERE action_type = 'sale_complete'),
         'sales_voided', COUNT(*) FILTER (WHERE action_type = 'sale_void'),
-        'total_sales_amount', COALESCE(SUM(sale_total) FILTER (WHERE action_type = 'sale_complete'), 0)
+        'total_sales_amount', COALESCE(SUM(sale_total) FILTER (WHERE action_type IN ('sale_complete', 'sale_void')), 0)
     ) INTO stats
     FROM transactions
     WHERE

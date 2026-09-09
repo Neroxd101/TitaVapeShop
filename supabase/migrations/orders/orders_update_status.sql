@@ -45,10 +45,14 @@ BEGIN
     SELECT o.items, o.status, o.customer_name, o.customer_email, o.total_amount, o.order_type
     INTO order_items, current_status, order_customer_name, order_customer_email, order_total_amount, order_type
     FROM orders o
-    WHERE o.id = p_order_id;
+    WHERE o.id = p_order_id FOR UPDATE;
 
     IF order_items IS NULL THEN
         RAISE EXCEPTION 'Order not found';
+    END IF;
+
+    IF current_status IN ('completed', 'voided', 'cancelled') AND p_status IS DISTINCT FROM current_status THEN
+        RAISE EXCEPTION 'This order cannot change status; completed orders must use Void';
     END IF;
 
     -- Log transaction for order confirmation

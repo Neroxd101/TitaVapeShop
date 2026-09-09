@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../database/supabase');
+const { supabase, supabaseAdmin } = require('../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
 const { sendOrderEmail } = require('./orders_email');
 
@@ -14,7 +14,13 @@ router.post('/api/orders/update_status', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { order_id, status } = req.body;
+        const { order_id, status, reason } = req.body;
+        if (status === 'voided' && (typeof reason !== 'string' || !reason.trim() || reason.trim().length > 1000)) {
+            return res.status(400).json({ success: false, error: 'A void reason of 1–1000 characters is required.' });
+        }
+        if (status === 'voided' && !supabaseAdmin) {
+            return res.status(503).json({ success: false, error: 'Order voiding requires the server database service key.' });
+        }
 
         if (!order_id || !status) {
             return res.status(400).json({
@@ -31,7 +37,11 @@ router.post('/api/orders/update_status', async (req, res) => {
         }
 
         // Call database RPC function
-        const { data, error } = await supabase.rpc('orders_update_status', {
+        const { data, error } = status === 'voided' ? await supabaseAdmin.rpc('orders_void', {
+            p_order_id: order_id,
+            p_reason: reason.trim(),
+            p_user_email: user_email
+        }) : await supabase.rpc('orders_update_status', {
             p_order_id: order_id,
             p_status: status,
             p_user_email: user_email

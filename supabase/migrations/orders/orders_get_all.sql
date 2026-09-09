@@ -6,7 +6,8 @@
 CREATE OR REPLACE FUNCTION orders_get_all(
     p_status VARCHAR(50) DEFAULT NULL,
     p_limit INTEGER DEFAULT 50,
-    p_offset INTEGER DEFAULT 0
+    p_offset INTEGER DEFAULT 0,
+    p_search VARCHAR(255) DEFAULT NULL
 )
 RETURNS TABLE (
     id UUID,
@@ -40,6 +41,15 @@ BEGIN
             COUNT(*) OVER() as total_count
         FROM orders o
         WHERE (p_status IS NULL OR o.status = p_status)
+          AND (
+              p_search IS NULL 
+              OR o.id::text ILIKE '%' || TRIM(LEADING '#' FROM p_search) || '%'
+              OR o.customer_name ILIKE '%' || p_search || '%'
+              OR o.contact_number ILIKE '%' || p_search || '%'
+              OR o.customer_email ILIKE '%' || p_search || '%'
+              OR o.social_media ILIKE '%' || p_search || '%'
+              OR o.items::text ILIKE '%' || p_search || '%'
+          )
         ORDER BY o.created_at DESC
         LIMIT p_limit
         OFFSET p_offset

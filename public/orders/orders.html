@@ -74,6 +74,7 @@
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
                         <option value="completed">Completed</option>
+                        <option value="voided">Voided</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
@@ -117,6 +118,22 @@
 
     <!-- Order Details Modal - Loaded dynamically -->
     <div id="order-details-modal-container"></div>
+
+    <div id="voidOrderModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="voidOrderTitle">
+        <form id="voidOrderForm" class="modal modal-small">
+            <div class="modal-header"><h3 id="voidOrderTitle">Void Completed Order</h3></div>
+            <div class="modal-body">
+                <p>This will return all items to stock and record a void transaction. This cannot be undone.</p>
+                <label for="voidReason">Reason for voiding</label>
+                <textarea id="voidReason" required maxlength="1000" rows="4" style="width:100%;box-sizing:border-box" placeholder="Enter the reason for voiding this order"></textarea>
+                <p id="voidOrderError" role="alert"></p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="dismissVoidOrder">Keep Order</button>
+                <button type="submit" class="btn btn-danger" id="submitVoidOrder">Void Order</button>
+            </div>
+        </form>
+    </div>
 
     <!-- Confirm Order Modal -->
     <div id="confirmOrderModal" class="modal-overlay">

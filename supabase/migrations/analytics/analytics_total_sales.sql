@@ -17,6 +17,13 @@ BEGIN
     INTO total_sales
     FROM transactions t
     WHERE t.action_type = 'sale_complete'
+        -- Voids remove the original sale even when voided outside the selected dates.
+        AND NOT EXISTS (
+            SELECT 1 FROM transactions void_tx
+            WHERE void_tx.action_type = 'sale_void'
+                AND void_tx.entity_type = t.entity_type
+                AND void_tx.entity_id = t.entity_id
+        )
         AND (p_start_date IS NULL OR t.created_at >= p_start_date)
         AND (p_end_date IS NULL OR t.created_at < (p_end_date + INTERVAL '1 day'));
 

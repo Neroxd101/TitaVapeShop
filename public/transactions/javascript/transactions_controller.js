@@ -336,6 +336,7 @@ class TransactionsUI {
 
     getActionBadge(type) {
         const map = {
+            'sale_void': '<span class="badge badge-cancel">Void</span>',
             'sale_complete': '<span class="badge badge-sale">Sale</span>',
             'inventory_add': '<span class="badge badge-add">Add</span>',
             'inventory_edit': '<span class="badge badge-edit">Edit</span>',
@@ -348,6 +349,9 @@ class TransactionsUI {
 
     formatDetails(t) {
         const d = t.details || {};
+        if (t.action_type === 'sale_void') {
+            return `Voided order ${this.escapeHtml(d.order_id || t.entity_id || '')}; stock restored. Reason: ${this.escapeHtml(d.reason || '')}`;
+        }
 
         if (t.action_type === 'sale_complete') {
             const items = t.sale_items || [];

@@ -309,10 +309,10 @@
     // Status Badge & Stepper
     renderStatus(order.status, isPickup);
     cancelOrderBtn.hidden = order.status !== 'pending';
-    document.querySelector('.order-layout-grid').classList.toggle('is-cancelled', order.status === 'cancelled');
+    document.querySelector('.order-layout-grid').classList.toggle('is-cancelled', ['cancelled', 'voided'].includes(order.status));
 
     // QR Code / Delivery Notice
-    if (order.status === 'cancelled') {
+    if (['cancelled', 'voided'].includes(order.status)) {
       pickupQrCard.style.display = 'none';
       deliveryNoticeCard.style.display = 'none';
     } else if (isPickup) {
