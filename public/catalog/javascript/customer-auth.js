@@ -1,17 +1,23 @@
 /**
- * Customer Authentication & Email Verification Controller
- * Handles client-side customer login, registration, OTP email verification, and session state
+ * Customer Authentication Controller
+ * Orchestrates customer modals and delegates to specific modular modules:
+ * - CustomerLogin (customer_login.js)
+ * - CustomerRegister (customer_register.js)
+ * - CustomerVerifyOtp (customer_verify_otp.js)
+ * - CustomerGenerateOtp (customer_generate_otp.js)
+ * - CustomerUpdateProfile (customer_update_profile.js)
+ * - CustomerCheckEmail (customer_check_email.js)
+ * - CustomerCheckPhone (customer_check_phone.js)
  */
 
 const CustomerAuth = {
   currentUser: null,
   pendingSuccessAction: null,
-  resendTimerInterval: null,
   activeEmail: '',
   isEmailChangeVerification: false,
 
   /**
-   * Initialize Customer Auth
+   * Initialize Customer Auth Modal & Session
    */
   async init() {
     const container = document.getElementById('customer-auth-modal-container');
@@ -35,16 +41,8 @@ const CustomerAuth = {
    * Check if customer is currently logged in
    */
   async checkSession() {
-    try {
-      const res = await fetch('/api/customer/me', { credentials: 'include' });
-      const data = await res.json();
-      if (data.authenticated && data.user) {
-        this.currentUser = data.user;
-      } else {
-        this.currentUser = null;
-      }
-    } catch (e) {
-      this.currentUser = null;
+    if (window.CustomerLogin) {
+      this.currentUser = await window.CustomerLogin.checkSession();
     }
     this.updateNavUI();
     return this.currentUser;
@@ -54,102 +52,15 @@ const CustomerAuth = {
    * Update navigation bar with Sign In button or Profile Pill
    */
   updateNavUI() {
-    const container = document.getElementById('customerNavContainer');
-    if (!container) return;
-
-    const ordersBtn = document.getElementById('ordersBtn');
-    if (ordersBtn) {
-      ordersBtn.style.display = this.currentUser ? 'none' : '';
+    if (window.CustomerLogin) {
+      window.CustomerLogin.updateNavUI(this.currentUser, {
+        onOpenProfile: () => this.openProfile(),
+        onOpenOrders: () => {
+          if (window.CatalogOrdersModal) window.CatalogOrdersModal.open();
+        },
+        onOpenSignIn: () => this.open('signin')
+      });
     }
-    document.body.classList.toggle('customer-logged-in', Boolean(this.currentUser));
-
-    if (this.currentUser) {
-      const initials = (this.currentUser.full_name || this.currentUser.email || 'C')
-        .trim()
-        .charAt(0)
-        .toUpperCase();
-      const displayName = (this.currentUser.full_name || this.currentUser.email || 'Customer').split(' ')[0];
-
-      container.innerHTML = `
-        <div class="cart-button customer-profile-pill" id="customerProfileBtn" title="Account Menu">
-          <div class="customer-avatar">${initials}</div>
-          <span class="customer-profile-name">${this.escapeHtml(displayName)}</span>
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="opacity: 0.7; flex-shrink: 0;">
-            <path d="M7 10l5 5 5-5z"/>
-          </svg>
-          <div class="customer-dropdown-menu" id="customerDropdownMenu">
-            <div class="customer-dropdown-header">
-              <strong style="font-size: 13px; display: block; color: var(--text-primary);">${this.escapeHtml(this.currentUser.full_name || 'Customer')}</strong>
-              <span class="customer-dropdown-email">${this.escapeHtml(this.currentUser.email)}</span>
-            </div>
-            <button type="button" class="customer-dropdown-item" id="navProfileItem">
-              <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-              <span>My Profile</span>
-            </button>
-            <button type="button" class="customer-dropdown-item" id="navMyOrdersItem">
-              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-              <span>My Orders</span>
-              <span id="navOrdersBadge" style="display: none; margin-left: auto; background: var(--accent); color: #0a0a0f; border-radius: 10px; padding: 1px 7px; font-size: 11px; font-weight: 700;"></span>
-            </button>
-            <button type="button" class="customer-dropdown-item logout-item" id="navLogoutItem">
-              <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-              <span>Sign Out</span>
-            </button>
-          </div>
-        </div>
-      `;
-
-      const pill = document.getElementById('customerProfileBtn');
-      const menu = document.getElementById('customerDropdownMenu');
-      if (pill && menu) {
-        pill.addEventListener('click', (e) => {
-          e.stopPropagation();
-          menu.classList.toggle('show');
-        });
-      }
-
-      const profileItem = document.getElementById('navProfileItem');
-      if (profileItem) {
-        profileItem.addEventListener('click', () => {
-          this.openProfile();
-          if (menu) menu.classList.remove('show');
-        });
-      }
-
-      const myOrdersItem = document.getElementById('navMyOrdersItem');
-      if (myOrdersItem) {
-        myOrdersItem.addEventListener('click', () => {
-          if (window.CatalogOrdersModal) {
-            window.CatalogOrdersModal.open();
-          }
-          if (menu) menu.classList.remove('show');
-        });
-      }
-
-      const logoutItem = document.getElementById('navLogoutItem');
-      if (logoutItem) {
-        logoutItem.addEventListener('click', () => this.handleLogout());
-      }
-    } else {
-      container.innerHTML = `
-        <button type="button" class="cart-button customer-nav-btn" id="customerSignInNavBtn">
-          <svg viewBox="0 0 24 24">
-            <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-          </svg>
-          <span>Sign In</span>
-        </button>
-      `;
-      const signInBtn = document.getElementById('customerSignInNavBtn');
-      if (signInBtn) {
-        signInBtn.addEventListener('click', () => this.open('signin'));
-      }
-    }
-
-    // Close dropdown on outside click
-    document.addEventListener('click', () => {
-      const menu = document.getElementById('customerDropdownMenu');
-      if (menu) menu.classList.remove('show');
-    });
 
     if (window.CatalogOrdersModal && typeof window.CatalogOrdersModal.updateBadge === 'function') {
       window.CatalogOrdersModal.updateBadge();
@@ -175,9 +86,9 @@ const CustomerAuth = {
   },
 
   /**
-   * Open the Customer Auth Modal in specific view
-   * @param {'signin'|'register'|'verify'} view
-   * @param {string} notice
+   * Open modal in specific view
+   * @param {'signin'|'register'|'verify'|'profile'|'privacy'} view
+   * @param {string} [notice]
    */
   open(view = 'signin', notice = null) {
     const modal = document.getElementById('customerAuthModal');
@@ -233,7 +144,6 @@ const CustomerAuth = {
     if (privacyView) privacyView.style.display = view === 'privacy' ? 'block' : 'none';
     if (profileView) profileView.style.display = view === 'profile' ? 'block' : 'none';
 
-    // Clear error messages
     this.clearErrors();
 
     if (view === 'signin') {
@@ -308,7 +218,7 @@ const CustomerAuth = {
   },
 
   /**
-   * Setup Event Listeners
+   * Setup Event Listeners across modular actions
    */
   setupEventListeners() {
     const modal = document.getElementById('customerAuthModal');
@@ -321,7 +231,7 @@ const CustomerAuth = {
       });
     }
 
-    // View Switchers
+    // View switchers
     const toRegisterBtn = document.getElementById('switchToRegisterBtn');
     if (toRegisterBtn) toRegisterBtn.addEventListener('click', () => this.switchView('register'));
 
@@ -348,7 +258,7 @@ const CustomerAuth = {
       });
     }
 
-    // Privacy View Triggers
+    // Privacy View
     const openPrivacyBtn = document.getElementById('openPrivacyModalBtn');
     if (openPrivacyBtn) {
       openPrivacyBtn.addEventListener('click', (e) => {
@@ -356,21 +266,12 @@ const CustomerAuth = {
         this.switchView('privacy');
       });
     }
-
     const closePrivacyBtn = document.getElementById('customerClosePrivacyBtn');
     if (closePrivacyBtn) {
       closePrivacyBtn.addEventListener('click', () => this.switchView('register'));
     }
 
-    // Set max date for birthday picker (must be at least 18 years ago)
-    const birthdayInput = document.getElementById('customerRegBirthday');
-    if (birthdayInput) {
-      const maxDate = new Date();
-      maxDate.setFullYear(maxDate.getFullYear() - 18);
-      birthdayInput.max = maxDate.toISOString().split('T')[0];
-    }
-
-    // 1. Sign In Form & Password Visibility Toggle
+    // Sign In Password Toggle
     const toggleSignInPassword = document.getElementById('toggleCustomerSignInPassword');
     const signInPasswordInput = document.getElementById('customerSignInPassword');
     if (toggleSignInPassword && signInPasswordInput) {
@@ -384,111 +285,83 @@ const CustomerAuth = {
       });
     }
 
+    // Sign In Form Submission
     const signInForm = document.getElementById('customerSignInForm');
     if (signInForm) {
       signInForm.addEventListener('submit', (e) => this.handleSignIn(e));
     }
 
-    // 2. Register Form & Email Uniqueness Check
+    // Live Validation on Registration Email via CustomerCheckEmail
+    const regEmailInput = document.getElementById('customerRegEmail');
+    const regErrorEl = document.getElementById('customerRegisterError');
+    if (window.CustomerCheckEmail && regEmailInput) {
+      window.CustomerCheckEmail.attachLiveValidation(regEmailInput, regErrorEl, (existingEmail) => {
+        const signInEmail = document.getElementById('customerSignInEmail');
+        if (signInEmail) signInEmail.value = existingEmail;
+      });
+    }
+
+    // Live Validation on Registration Phone via CustomerCheckPhone
+    const regPhoneInput = document.getElementById('customerRegPhone');
+    if (window.CustomerCheckPhone && regPhoneInput) {
+      window.CustomerCheckPhone.attachLiveValidation(regPhoneInput, regErrorEl);
+    }
+
+    // Password strength meters & confirm password matches
+    this.setupPasswordStrength();
+
+    // Registration Form Submission
     const regForm = document.getElementById('customerRegisterForm');
     if (regForm) {
       regForm.addEventListener('submit', (e) => this.handleRegister(e));
     }
 
-    const regEmailInput = document.getElementById('customerRegEmail');
-    if (regEmailInput) {
-      regEmailInput.addEventListener('blur', async () => {
-        const val = regEmailInput.value.trim().toLowerCase();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!val || !emailRegex.test(val)) return;
-
-        try {
-          const res = await fetch(`/api/customer/check-email?email=${encodeURIComponent(val)}`);
-          const data = await res.json();
-          if (data.success && data.exists) {
-            this.showError('customerRegisterError', 'This email already exists. Please sign in.');
-            regEmailInput.style.borderColor = 'var(--error, #ff4757)';
-            const signInEmail = document.getElementById('customerSignInEmail');
-            if (signInEmail) signInEmail.value = val;
-          } else {
-            const errEl = document.getElementById('customerRegisterError');
-            if (errEl && errEl.textContent.includes('already exists')) {
-              errEl.style.display = 'none';
-              errEl.textContent = '';
-            }
-            regEmailInput.style.borderColor = '';
-          }
-        } catch (_) { }
-      });
-
-      regEmailInput.addEventListener('input', () => {
-        regEmailInput.style.borderColor = '';
-        const errEl = document.getElementById('customerRegisterError');
-        if (errEl && errEl.textContent.includes('already exists')) {
-          errEl.style.display = 'none';
-          errEl.textContent = '';
-        }
-      });
-    }
-
-    const regPhoneInput = document.getElementById('customerRegPhone');
-    if (regPhoneInput) {
-      regPhoneInput.addEventListener('blur', async () => {
-        const val = regPhoneInput.value.replace(/\D/g, '');
-        if (!val || val.length !== 11) return;
-
-        try {
-          const res = await fetch(`/api/customer/check-phone?phone=${encodeURIComponent(val)}`);
-          const data = await res.json();
-          if (data.success && data.exists) {
-            this.showError('customerRegisterError', 'This mobile number already exists. Please use another number or sign in.');
-            regPhoneInput.style.borderColor = 'var(--error, #ff4757)';
-          } else {
-            const errEl = document.getElementById('customerRegisterError');
-            if (errEl && errEl.textContent.includes('mobile number already exists')) {
-              errEl.style.display = 'none';
-              errEl.textContent = '';
-            }
-            regPhoneInput.style.borderColor = '';
-          }
-        } catch (_) { }
-      });
-
-      regPhoneInput.addEventListener('input', () => {
-        regPhoneInput.style.borderColor = '';
-        const errEl = document.getElementById('customerRegisterError');
-        if (errEl && errEl.textContent.includes('mobile number already exists')) {
-          errEl.style.display = 'none';
-          errEl.textContent = '';
-        }
-      });
-    }
-
-    // 3. Verify OTP Form
+    // OTP Verification Form & auto-submit
     const verifyForm = document.getElementById('customerVerifyForm');
+    const otpInput = document.getElementById('customerOtpInput');
+    if (window.CustomerVerifyOtp && otpInput) {
+      window.CustomerVerifyOtp.bindOtpInput(otpInput, () => {
+        if (verifyForm) verifyForm.dispatchEvent(new Event('submit', { cancelable: true }));
+      });
+    }
     if (verifyForm) {
       verifyForm.addEventListener('submit', (e) => this.handleVerify(e));
     }
 
-    // Resend OTP button
+    // Resend OTP Button
     const resendBtn = document.getElementById('customerResendBtn');
     if (resendBtn) {
       resendBtn.addEventListener('click', () => this.handleResendCode());
     }
 
-    // Auto submit OTP on 6th digit entered
-    const otpInput = document.getElementById('customerOtpInput');
-    if (otpInput) {
-      otpInput.addEventListener('input', (e) => {
-        const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-        e.target.value = val;
-        if (val.length === 6 && verifyForm) {
-          verifyForm.dispatchEvent(new Event('submit', { cancelable: true }));
-        }
-      });
+    // Live Validation on Profile Phone & Email
+    const profilePhoneInput = document.getElementById('customerProfilePhone');
+    const profileEmailInput = document.getElementById('customerProfileEmail');
+    const profileErrorEl = document.getElementById('customerProfileError');
+
+    if (window.CustomerCheckPhone && profilePhoneInput) {
+      window.CustomerCheckPhone.attachLiveValidation(profilePhoneInput, profileErrorEl, null, this.currentUser?.id);
+    }
+    if (window.CustomerCheckEmail && profileEmailInput) {
+      window.CustomerCheckEmail.attachLiveValidation(profileEmailInput, profileErrorEl, null, this.currentUser?.id);
     }
 
-    // Password Strength live evaluation
+    // Profile Form Submission
+    const profileForm = document.getElementById('customerProfileForm');
+    if (profileForm) {
+      profileForm.addEventListener('submit', (e) => this.handleUpdateProfile(e));
+    }
+
+    const cancelProfileBtn = document.getElementById('customerCancelProfileBtn');
+    if (cancelProfileBtn) {
+      cancelProfileBtn.addEventListener('click', () => this.close());
+    }
+  },
+
+  /**
+   * Password strength meter setup
+   */
+  setupPasswordStrength() {
     const regPasswordInput = document.getElementById('customerRegPassword');
     const strengthWrap = document.getElementById('passwordStrengthWrap');
     const strengthFill = document.getElementById('passwordStrengthBarFill');
@@ -556,7 +429,6 @@ const CustomerAuth = {
       });
     }
 
-    // Confirm password real-time match feedback
     const regConfirmInput = document.getElementById('customerRegConfirmPassword');
     const matchHint = document.getElementById('passwordMatchHint');
     if (regConfirmInput) {
@@ -583,94 +455,10 @@ const CustomerAuth = {
         }
       });
     }
-
-    // 4. Customer Profile Form
-    const profileForm = document.getElementById('customerProfileForm');
-    if (profileForm) {
-      profileForm.addEventListener('submit', (e) => this.handleUpdateProfile(e));
-    }
-
-    const profilePhoneInput = document.getElementById('customerProfilePhone');
-    if (profilePhoneInput) {
-      profilePhoneInput.addEventListener('blur', async () => {
-        const val = profilePhoneInput.value.replace(/\D/g, '');
-        if (!val || val.length !== 11) return;
-        const currentPhone = (this.currentUser?.contact_number || '').replace(/\D/g, '');
-        if (val === currentPhone) return;
-
-        try {
-          const excludeId = this.currentUser?.id ? `&exclude_user_id=${encodeURIComponent(this.currentUser.id)}` : '';
-          const res = await fetch(`/api/customer/check-phone?phone=${encodeURIComponent(val)}${excludeId}`);
-          const data = await res.json();
-          if (data.success && data.exists) {
-            this.showError('customerProfileError', 'This mobile number is already associated with another account.');
-            profilePhoneInput.style.borderColor = 'var(--error, #ff4757)';
-          } else {
-            const errEl = document.getElementById('customerProfileError');
-            if (errEl && errEl.textContent.includes('mobile number is already')) {
-              errEl.style.display = 'none';
-              errEl.textContent = '';
-            }
-            profilePhoneInput.style.borderColor = '';
-          }
-        } catch (_) { }
-      });
-
-      profilePhoneInput.addEventListener('input', () => {
-        profilePhoneInput.style.borderColor = '';
-        const errEl = document.getElementById('customerProfileError');
-        if (errEl && errEl.textContent.includes('mobile number is already')) {
-          errEl.style.display = 'none';
-          errEl.textContent = '';
-        }
-      });
-    }
-
-    const profileEmailInput = document.getElementById('customerProfileEmail');
-    if (profileEmailInput) {
-      profileEmailInput.addEventListener('blur', async () => {
-        const val = profileEmailInput.value.trim().toLowerCase();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!val || !emailRegex.test(val)) return;
-        const currentEmail = (this.currentUser?.email || '').trim().toLowerCase();
-        if (val === currentEmail) return;
-
-        try {
-          const excludeId = this.currentUser?.id ? `&exclude_user_id=${encodeURIComponent(this.currentUser.id)}` : '';
-          const res = await fetch(`/api/customer/check-email?email=${encodeURIComponent(val)}${excludeId}`);
-          const data = await res.json();
-          if (data.success && data.exists) {
-            this.showError('customerProfileError', 'This email is already associated with another account.');
-            profileEmailInput.style.borderColor = 'var(--error, #ff4757)';
-          } else {
-            const errEl = document.getElementById('customerProfileError');
-            if (errEl && errEl.textContent.includes('email is already associated')) {
-              errEl.style.display = 'none';
-              errEl.textContent = '';
-            }
-            profileEmailInput.style.borderColor = '';
-          }
-        } catch (_) { }
-      });
-
-      profileEmailInput.addEventListener('input', () => {
-        profileEmailInput.style.borderColor = '';
-        const errEl = document.getElementById('customerProfileError');
-        if (errEl && errEl.textContent.includes('email is already associated')) {
-          errEl.style.display = 'none';
-          errEl.textContent = '';
-        }
-      });
-    }
-
-    const cancelProfileBtn = document.getElementById('customerCancelProfileBtn');
-    if (cancelProfileBtn) {
-      cancelProfileBtn.addEventListener('click', () => this.close());
-    }
   },
 
   /**
-   * Handle Sign In Submission
+   * Handle Sign In Submission using CustomerLogin module
    */
   async handleSignIn(e) {
     e.preventDefault();
@@ -683,158 +471,96 @@ const CustomerAuth = {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Signing In...';
 
-    try {
-      const res = await fetch('/api/customer/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-      });
-      const result = await res.json();
+    const result = await window.CustomerLogin.login(email, password);
 
-      if (result.requires_verification) {
-        this.activeEmail = result.email || email;
-        this.switchView('verify');
-        this.startResendCountdown(60);
-        this.showError('customerVerifyError', result.message || 'Please enter the verification code sent to your email.');
-        return;
-      }
-
-      if (!res.ok || !result.success) {
-        throw new Error(result.error || 'Invalid credentials');
-      }
-
-      this.currentUser = result.user;
-      this.updateNavUI();
-      this.close();
-
-      // If opening checkout was pending, trigger it
-      if (typeof this.pendingSuccessAction === 'function') {
-        const action = this.pendingSuccessAction;
-        this.pendingSuccessAction = null;
-        action(this.currentUser);
-      }
-    } catch (err) {
-      this.showError('customerSignInError', err.message || 'Sign in failed. Please try again.');
-    } finally {
+    if (result.requires_verification) {
+      this.activeEmail = result.email || email;
+      this.switchView('verify');
+      this.startResendCountdown(60);
+      this.showError('customerVerifyError', result.message || 'Please enter the verification code sent to your email.');
       submitBtn.disabled = false;
       submitBtn.textContent = 'Sign In';
+      return;
     }
+
+    if (!result.success) {
+      this.showError('customerSignInError', result.error || 'Sign in failed. Please try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign In';
+      return;
+    }
+
+    this.currentUser = result.user;
+    this.updateNavUI();
+    this.close();
+
+    if (typeof this.pendingSuccessAction === 'function') {
+      const action = this.pendingSuccessAction;
+      this.pendingSuccessAction = null;
+      action(this.currentUser);
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Sign In';
   },
 
   /**
-   * Handle Registration Submission
+   * Handle Registration Submission using CustomerRegister module
    */
   async handleRegister(e) {
     e.preventDefault();
     this.clearErrors();
 
-    const fullName = document.getElementById('customerRegName').value.trim();
-    const email = document.getElementById('customerRegEmail').value.trim();
-    const phone = document.getElementById('customerRegPhone').value.trim();
-    const birthday = document.getElementById('customerRegBirthday').value;
-    const password = document.getElementById('customerRegPassword').value;
-    const confirmPassword = document.getElementById('customerRegConfirmPassword') ? document.getElementById('customerRegConfirmPassword').value : '';
-    const privacyCheck = document.getElementById('customerRegPrivacyCheck').checked;
+    const payload = {
+      full_name: document.getElementById('customerRegName').value.trim(),
+      email: document.getElementById('customerRegEmail').value.trim(),
+      contact_number: document.getElementById('customerRegPhone').value.trim(),
+      birthday: document.getElementById('customerRegBirthday').value,
+      password: document.getElementById('customerRegPassword').value,
+      confirm_password: document.getElementById('customerRegConfirmPassword')?.value || '',
+      privacy_check: document.getElementById('customerRegPrivacyCheck')?.checked || false
+    };
+
+    const validation = window.CustomerRegister.validate(payload);
+    if (!validation.valid) {
+      this.showError('customerRegisterError', validation.error);
+      return;
+    }
+
     const submitBtn = document.getElementById('customerRegisterSubmitBtn');
-
-    if (!birthday) {
-      this.showError('customerRegisterError', 'Please enter your date of birth.');
-      return;
-    }
-
-    const birthDate = new Date(birthday);
-    if (isNaN(birthDate.getTime())) {
-      this.showError('customerRegisterError', 'Please enter a valid date of birth.');
-      return;
-    }
-
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-
-    if (age < 18) {
-      this.showError('customerRegisterError', 'You must be at least 18 years old to create an account and purchase vape products (Republic Act No. 11900).');
-      return;
-    }
-
-    if (!password || password.length < 8) {
-      this.showError('customerRegisterError', 'Password must be at least 8 characters long.');
-      return;
-    }
-
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password);
-
-    if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
-      this.showError('customerRegisterError', 'Password must include uppercase, lowercase, a number, and a special character.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      this.showError('customerRegisterError', 'Passwords do not match. Please re-enter your password.');
-      return;
-    }
-
-    if (!privacyCheck) {
-      this.showError('customerRegisterError', 'You must consent to the Data Privacy Act terms to register.');
-      return;
-    }
-
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending Verification Code...';
 
-    try {
-      const res = await fetch('/api/customer/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          full_name: fullName,
-          email,
-          contact_number: phone,
-          birthday,
-          password
-        })
-      });
-      const result = await res.json();
+    const result = await window.CustomerRegister.submit({
+      full_name: payload.full_name,
+      email: payload.email,
+      contact_number: payload.contact_number,
+      birthday: payload.birthday,
+      password: payload.password
+    });
 
-      if (!res.ok || !result.success) {
-        throw new Error(result.error || 'Failed to register');
-      }
-
-      this.activeEmail = result.email || email;
-      this.isEmailChangeVerification = false;
-      const verifyBtn = document.getElementById('customerVerifySubmitBtn');
-      if (verifyBtn) {
-        verifyBtn.textContent = this.pendingSuccessAction ? 'Verify & Place Order' : 'Verify Email';
-      }
-      this.switchView('verify');
-      this.startResendCountdown(60);
-    } catch (err) {
-      this.showError('customerRegisterError', err.message || 'Registration failed. Please check your information.');
-      if (err.message && err.message.toLowerCase().includes('mobile number')) {
-        const regPhoneInput = document.getElementById('customerRegPhone');
-        if (regPhoneInput) regPhoneInput.style.borderColor = 'var(--error, #ff4757)';
-      } else if (err.message && err.message.toLowerCase().includes('already exists')) {
-        const regEmailInput = document.getElementById('customerRegEmail');
-        if (regEmailInput) regEmailInput.style.borderColor = 'var(--error, #ff4757)';
-        const signInEmail = document.getElementById('customerSignInEmail');
-        if (signInEmail && email) signInEmail.value = email;
-      }
-    } finally {
+    if (!result.success) {
+      this.showError('customerRegisterError', result.error || 'Registration failed. Please check your details.');
       submitBtn.disabled = false;
       submitBtn.textContent = 'Continue & Send Code';
+      return;
     }
+
+    this.activeEmail = result.email || payload.email;
+    this.isEmailChangeVerification = false;
+    const verifyBtn = document.getElementById('customerVerifySubmitBtn');
+    if (verifyBtn) {
+      verifyBtn.textContent = this.pendingSuccessAction ? 'Verify & Place Order' : 'Verify Email';
+    }
+    this.switchView('verify');
+    this.startResendCountdown(60);
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Continue & Send Code';
   },
 
   /**
-   * Handle 6-Digit OTP Verification Submission
+   * Handle OTP Verification Submission using CustomerVerifyOtp module
    */
   async handleVerify(e) {
     e.preventDefault();
@@ -844,173 +570,91 @@ const CustomerAuth = {
     const code = otpInput ? otpInput.value.trim() : '';
     const submitBtn = document.getElementById('customerVerifySubmitBtn');
 
-    if (code.length !== 6) {
-      this.showError('customerVerifyError', 'Please enter the complete 6-digit verification code.');
-      return;
-    }
-
     submitBtn.disabled = true;
     submitBtn.textContent = 'Verifying...';
 
-    try {
-      const res = await fetch('/api/customer/verify-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: this.activeEmail, code })
-      });
-      const result = await res.json();
+    const result = await window.CustomerVerifyOtp.verify(this.activeEmail, code);
 
-      if (!res.ok || !result.success) {
-        throw new Error(result.error || 'Verification failed');
-      }
-
-      this.currentUser = result.user;
-      this.isEmailChangeVerification = false;
-      this.updateNavUI();
-
-      // Sync profile modal inputs with the verified user
-      const nameInput = document.getElementById('customerProfileName');
-      const phoneInput = document.getElementById('customerProfilePhone');
-      const emailInput = document.getElementById('customerProfileEmail');
-      if (nameInput) nameInput.value = this.currentUser.full_name || '';
-      if (phoneInput) phoneInput.value = this.currentUser.contact_number || '';
-      if (emailInput) emailInput.value = this.currentUser.email || '';
-
-      // Sync customer details to checkout form autofill if present
-      const checkoutName = document.getElementById('customerName');
-      const checkoutPhone = document.getElementById('customerPhone');
-      const checkoutEmail = document.getElementById('customerEmail');
-      if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
-      if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
-      if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
-
-      this.showSuccess('customerVerifySuccess', '✓ Email verified successfully!');
-
-      clearInterval(this.resendTimerInterval);
-
-      setTimeout(() => {
-        this.close();
-        if (typeof this.pendingSuccessAction === 'function') {
-          const action = this.pendingSuccessAction;
-          this.pendingSuccessAction = null;
-          action(this.currentUser);
-        }
-      }, 700);
-    } catch (err) {
-      this.showError('customerVerifyError', err.message || 'Invalid code. Please try again.');
-    } finally {
+    if (!result.success) {
+      this.showError('customerVerifyError', result.error || 'Verification failed. Please check the code.');
       submitBtn.disabled = false;
       submitBtn.textContent = this.pendingSuccessAction ? 'Verify & Place Order' : 'Verify Email';
+      return;
     }
+
+    this.currentUser = result.user;
+    this.isEmailChangeVerification = false;
+    this.updateNavUI();
+
+    // Sync profile and checkout form
+    if (window.CustomerUpdateProfile) {
+      window.CustomerUpdateProfile.populate(this.currentUser);
+    }
+    const checkoutName = document.getElementById('customerName');
+    const checkoutPhone = document.getElementById('customerPhone');
+    const checkoutEmail = document.getElementById('customerEmail');
+    if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
+    if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
+    if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
+
+    this.showSuccess('customerVerifySuccess', '✓ Email verified successfully!');
+
+    if (window.CustomerGenerateOtp) {
+      window.CustomerGenerateOtp.clearTimer();
+    }
+
+    setTimeout(() => {
+      this.close();
+      if (typeof this.pendingSuccessAction === 'function') {
+        const action = this.pendingSuccessAction;
+        this.pendingSuccessAction = null;
+        action(this.currentUser);
+      }
+    }, 700);
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = this.pendingSuccessAction ? 'Verify & Place Order' : 'Verify Email';
   },
 
   /**
-   * Handle Resend OTP Code
+   * Handle Resend OTP using CustomerGenerateOtp module
    */
   async handleResendCode() {
-    const resendBtn = document.getElementById('customerResendBtn');
-    if (!resendBtn || resendBtn.disabled) return;
-
-    resendBtn.disabled = true;
     this.clearErrors();
+    const result = await window.CustomerGenerateOtp.resend(this.activeEmail);
 
-    try {
-      const res = await fetch('/api/customer/resend-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email: this.activeEmail })
-      });
-      const result = await res.json();
-
-      if (!res.ok || !result.success) {
-        throw new Error(result.error || 'Unable to resend code');
-      }
-
-      this.showSuccess('customerVerifySuccess', 'A fresh 6-digit code has been sent to your email.');
+    if (result.success) {
+      this.showSuccess('customerVerifySuccess', result.message || 'A fresh 6-digit code has been sent to your email.');
       this.startResendCountdown(60);
-    } catch (err) {
-      this.showError('customerVerifyError', err.message || 'Failed to resend code.');
-      resendBtn.disabled = false;
+    } else {
+      this.showError('customerVerifyError', result.error || 'Failed to resend code.');
     }
   },
 
   startResendCountdown(seconds) {
     const resendBtn = document.getElementById('customerResendBtn');
     const countdownEl = document.getElementById('customerResendCountdown');
-    if (!resendBtn) return;
-
-    clearInterval(this.resendTimerInterval);
-    resendBtn.disabled = true;
-
-    let remaining = seconds;
-    if (countdownEl) countdownEl.textContent = `(${remaining}s)`;
-
-    this.resendTimerInterval = setInterval(() => {
-      remaining--;
-      if (remaining <= 0) {
-        clearInterval(this.resendTimerInterval);
-        resendBtn.disabled = false;
-        if (countdownEl) countdownEl.textContent = '';
-      } else {
-        if (countdownEl) countdownEl.textContent = `(${remaining}s)`;
-      }
-    }, 1000);
+    if (window.CustomerGenerateOtp) {
+      window.CustomerGenerateOtp.startCountdown(seconds, resendBtn, countdownEl);
+    }
   },
 
   /**
-   * Handle Customer Sign Out
-   */
-  async handleLogout() {
-    try {
-      await fetch('/api/customer/logout', { method: 'POST', credentials: 'include' });
-    } catch (e) { }
-    try {
-      localStorage.removeItem('tita_recent_orders');
-    } catch (_) { }
-    this.currentUser = null;
-    this.updateNavUI();
-    // Refresh page to sync cart & modals
-    window.location.reload();
-  },
-
-  /**
-   * Open Profile modal view with active customer data
+   * Open Profile View
    */
   openProfile() {
     if (!this.currentUser) {
       this.open('signin');
       return;
     }
-
-    const nameInput = document.getElementById('customerProfileName');
-    const phoneInput = document.getElementById('customerProfilePhone');
-    const emailInput = document.getElementById('customerProfileEmail');
-    const avatarBadge = document.getElementById('profileModalAvatar');
-    const ageBadgeText = document.getElementById('profileAgeBadgeText');
-
-    if (nameInput) nameInput.value = this.currentUser.full_name || '';
-    if (phoneInput) phoneInput.value = this.currentUser.contact_number || '';
-    if (emailInput) emailInput.value = this.currentUser.email || '';
-
-    if (avatarBadge) {
-      const initial = (this.currentUser.full_name || this.currentUser.email || 'C')
-        .trim()
-        .charAt(0)
-        .toUpperCase();
-      avatarBadge.textContent = initial;
+    if (window.CustomerUpdateProfile) {
+      window.CustomerUpdateProfile.populate(this.currentUser);
     }
-
-    if (ageBadgeText && this.currentUser.birthday) {
-      ageBadgeText.textContent = `Verified 18+ Customer (Born ${this.currentUser.birthday}) • RA 11900`;
-    }
-
     this.open('profile');
   },
 
   /**
-   * Handle Customer Profile Update submission
+   * Handle Profile Update Submission using CustomerUpdateProfile module
    */
   async handleUpdateProfile(e) {
     if (e) e.preventDefault();
@@ -1050,94 +694,77 @@ const CustomerAuth = {
       submitBtn.textContent = 'Saving Changes...';
     }
 
-    try {
-      const res = await fetch('/api/customer/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          full_name: fullName,
-          contact_number: phone,
-          email: email
-        })
-      });
+    const result = await window.CustomerUpdateProfile.update({
+      full_name: fullName,
+      contact_number: phone,
+      email: email
+    });
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        this.showError('customerProfileError', data.error || 'Failed to update profile.');
-        if (data.error && data.error.toLowerCase().includes('mobile number')) {
-          if (phoneInput) phoneInput.style.borderColor = 'var(--error, #ff4757)';
-        } else if (data.error && data.error.toLowerCase().includes('email')) {
-          if (emailInput) emailInput.style.borderColor = 'var(--error, #ff4757)';
-        }
-        return;
-      }
-
-      // If email was changed, require 6-digit OTP verification before applying the new email address
-      if (data.email_changed) {
-        this.activeEmail = data.email;
-        this.isEmailChangeVerification = true;
-        // Keep current session active so user is not logged out during verification
-
-        // Switch to OTP verify view
-        this.switchView('verify');
-        this.startResendCountdown(60);
-
-        const emailTarget = document.getElementById('customerVerifyEmailTarget');
-        if (emailTarget) emailTarget.textContent = data.email;
-
-        const verifyBtn = document.getElementById('customerVerifySubmitBtn');
-        if (verifyBtn) verifyBtn.textContent = 'Verify & Update Email';
-
-        this.showSuccess('customerVerifySuccess', data.message || `Verification code sent to ${data.email}. Please verify to confirm.`);
-        return;
-      }
-
-      // Normal profile update without changing email
-      this.currentUser = data.user;
-      this.updateNavUI();
-
-      // Update avatar badge in modal
-      const avatarBadge = document.getElementById('profileModalAvatar');
-      if (avatarBadge) {
-        avatarBadge.textContent = (this.currentUser.full_name || 'C').trim().charAt(0).toUpperCase();
-      }
-
-      // Sync customer details to checkout form autofill if active
-      const checkoutName = document.getElementById('customerName');
-      const checkoutPhone = document.getElementById('customerPhone');
-      const checkoutEmail = document.getElementById('customerEmail');
-      if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
-      if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
-      if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
-
-      this.showSuccess('customerProfileSuccess', '✓ Profile updated successfully!');
-
-      // Smoothly close after a brief delay
-      setTimeout(() => {
-        const profileView = document.getElementById('customerProfileView');
-        if (profileView && profileView.style.display !== 'none') {
-          this.close();
-        }
-      }, 1400);
-
-    } catch (err) {
-      console.error('[Customer Auth] Profile update error:', err);
-      this.showError('customerProfileError', 'Unable to reach the server. Please check your connection.');
-    } finally {
+    if (!result.success) {
+      this.showError('customerProfileError', result.error || 'Failed to update profile.');
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Save Changes';
       }
+      return;
+    }
+
+    // If email was changed, require OTP verification
+    if (result.email_changed) {
+      this.activeEmail = result.email;
+      this.isEmailChangeVerification = true;
+
+      this.switchView('verify');
+      this.startResendCountdown(60);
+
+      const emailTarget = document.getElementById('customerVerifyEmailTarget');
+      if (emailTarget) emailTarget.textContent = result.email;
+
+      const verifyBtn = document.getElementById('customerVerifySubmitBtn');
+      if (verifyBtn) verifyBtn.textContent = 'Verify & Update Email';
+
+      this.showSuccess('customerVerifySuccess', result.message || `Verification code sent to ${result.email}. Please verify to confirm.`);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Changes';
+      }
+      return;
+    }
+
+    // Unchanged email update
+    this.currentUser = result.user;
+    this.updateNavUI();
+
+    if (window.CustomerUpdateProfile) {
+      window.CustomerUpdateProfile.populate(this.currentUser);
+    }
+
+    const checkoutName = document.getElementById('customerName');
+    const checkoutPhone = document.getElementById('customerPhone');
+    const checkoutEmail = document.getElementById('customerEmail');
+    if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
+    if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
+    if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
+
+    this.showSuccess('customerProfileSuccess', '✓ Profile updated successfully!');
+
+    setTimeout(() => {
+      const profileView = document.getElementById('customerProfileView');
+      if (profileView && profileView.style.display !== 'none') {
+        this.close();
+      }
+    }, 1400);
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Save Changes';
     }
   },
 
-  escapeHtml(str) {
-    if (!str) return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+  handleLogout() {
+    if (window.CustomerLogin) {
+      window.CustomerLogin.logout();
+    }
   }
 };
 

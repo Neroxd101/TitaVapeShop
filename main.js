@@ -7,7 +7,14 @@ const setupMiddleware = require('./config/middleware/middlewareSetup');
 const loginRoutes = require('./config/routes/auth/login');
 const googleAuthRoutes = require('./config/routes/auth/google-auth');
 const passwordResetRoutes = require('./config/routes/auth/password-reset');
-const customerAuthRoutes = require('./config/routes/customer/customer_auth');
+// Customer routes (1-to-1 matching Supabase RPC names)
+const customerCheckEmailRoutes = require('./config/routes/customer/customer_check_email');
+const customerCheckPhoneRoutes = require('./config/routes/customer/customer_check_phone');
+const customerRegisterRoutes = require('./config/routes/customer/customer_register');
+const customerVerifyOtpRoutes = require('./config/routes/customer/customer_verify_otp');
+const customerGenerateOtpRoutes = require('./config/routes/customer/customer_generate_otp');
+const customerLoginRoutes = require('./config/routes/customer/customer_login');
+const customerUpdateProfileRoutes = require('./config/routes/customer/customer_update_profile');
 
 // User routes
 const userProfileRoutes = require('./config/routes/users/user-profile');
@@ -66,8 +73,14 @@ setupMiddleware(app);
 // Routes
 // All routes now define their full paths explicitly within their respective files
 
-// Public routes (no authentication required) - register first
-app.use('/', customerAuthRoutes); // Customer registration, verification, auth
+// Customer routes (1-to-1 matching Supabase RPC names)
+app.use('/', customerCheckEmailRoutes);
+app.use('/', customerCheckPhoneRoutes);
+app.use('/', customerRegisterRoutes);
+app.use('/', customerVerifyOtpRoutes);
+app.use('/', customerGenerateOtpRoutes);
+app.use('/', customerLoginRoutes);
+app.use('/', customerUpdateProfileRoutes);
 app.use('/', catalogRoutes); // Public catalog for customers
 app.use('/', passwordResetRoutes); // Password reset (public)
 app.use('/keep-alive', keepAliveRoutes); // Public keep-alive endpoint (token-protected)

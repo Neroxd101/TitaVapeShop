@@ -180,7 +180,7 @@ router.post('/api/orders/create', async (req, res) => {
 
     const client = supabaseAdmin || supabase;
     const { data: dbCustomer, error: customerErr } = await client
-      .from('users')
+      .from('customers')
       .select('id, is_verified, email, full_name, contact_number')
       .eq('id', customerPayload.id)
       .maybeSingle();
