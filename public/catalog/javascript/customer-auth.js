@@ -431,6 +431,39 @@ const CustomerAuth = {
       });
     }
 
+    const regPhoneInput = document.getElementById('customerRegPhone');
+    if (regPhoneInput) {
+      regPhoneInput.addEventListener('blur', async () => {
+        const val = regPhoneInput.value.replace(/\D/g, '');
+        if (!val || val.length !== 11) return;
+
+        try {
+          const res = await fetch(`/api/customer/check-phone?phone=${encodeURIComponent(val)}`);
+          const data = await res.json();
+          if (data.success && data.exists) {
+            this.showError('customerRegisterError', 'This mobile number already exists. Please use another number or sign in.');
+            regPhoneInput.style.borderColor = 'var(--error, #ff4757)';
+          } else {
+            const errEl = document.getElementById('customerRegisterError');
+            if (errEl && errEl.textContent.includes('mobile number already exists')) {
+              errEl.style.display = 'none';
+              errEl.textContent = '';
+            }
+            regPhoneInput.style.borderColor = '';
+          }
+        } catch (_) { }
+      });
+
+      regPhoneInput.addEventListener('input', () => {
+        regPhoneInput.style.borderColor = '';
+        const errEl = document.getElementById('customerRegisterError');
+        if (errEl && errEl.textContent.includes('mobile number already exists')) {
+          errEl.style.display = 'none';
+          errEl.textContent = '';
+        }
+      });
+    }
+
     // 3. Verify OTP Form
     const verifyForm = document.getElementById('customerVerifyForm');
     if (verifyForm) {
@@ -555,6 +588,79 @@ const CustomerAuth = {
     const profileForm = document.getElementById('customerProfileForm');
     if (profileForm) {
       profileForm.addEventListener('submit', (e) => this.handleUpdateProfile(e));
+    }
+
+    const profilePhoneInput = document.getElementById('customerProfilePhone');
+    if (profilePhoneInput) {
+      profilePhoneInput.addEventListener('blur', async () => {
+        const val = profilePhoneInput.value.replace(/\D/g, '');
+        if (!val || val.length !== 11) return;
+        const currentPhone = (this.currentUser?.contact_number || '').replace(/\D/g, '');
+        if (val === currentPhone) return;
+
+        try {
+          const excludeId = this.currentUser?.id ? `&exclude_user_id=${encodeURIComponent(this.currentUser.id)}` : '';
+          const res = await fetch(`/api/customer/check-phone?phone=${encodeURIComponent(val)}${excludeId}`);
+          const data = await res.json();
+          if (data.success && data.exists) {
+            this.showError('customerProfileError', 'This mobile number is already associated with another account.');
+            profilePhoneInput.style.borderColor = 'var(--error, #ff4757)';
+          } else {
+            const errEl = document.getElementById('customerProfileError');
+            if (errEl && errEl.textContent.includes('mobile number is already')) {
+              errEl.style.display = 'none';
+              errEl.textContent = '';
+            }
+            profilePhoneInput.style.borderColor = '';
+          }
+        } catch (_) { }
+      });
+
+      profilePhoneInput.addEventListener('input', () => {
+        profilePhoneInput.style.borderColor = '';
+        const errEl = document.getElementById('customerProfileError');
+        if (errEl && errEl.textContent.includes('mobile number is already')) {
+          errEl.style.display = 'none';
+          errEl.textContent = '';
+        }
+      });
+    }
+
+    const profileEmailInput = document.getElementById('customerProfileEmail');
+    if (profileEmailInput) {
+      profileEmailInput.addEventListener('blur', async () => {
+        const val = profileEmailInput.value.trim().toLowerCase();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!val || !emailRegex.test(val)) return;
+        const currentEmail = (this.currentUser?.email || '').trim().toLowerCase();
+        if (val === currentEmail) return;
+
+        try {
+          const excludeId = this.currentUser?.id ? `&exclude_user_id=${encodeURIComponent(this.currentUser.id)}` : '';
+          const res = await fetch(`/api/customer/check-email?email=${encodeURIComponent(val)}${excludeId}`);
+          const data = await res.json();
+          if (data.success && data.exists) {
+            this.showError('customerProfileError', 'This email is already associated with another account.');
+            profileEmailInput.style.borderColor = 'var(--error, #ff4757)';
+          } else {
+            const errEl = document.getElementById('customerProfileError');
+            if (errEl && errEl.textContent.includes('email is already associated')) {
+              errEl.style.display = 'none';
+              errEl.textContent = '';
+            }
+            profileEmailInput.style.borderColor = '';
+          }
+        } catch (_) { }
+      });
+
+      profileEmailInput.addEventListener('input', () => {
+        profileEmailInput.style.borderColor = '';
+        const errEl = document.getElementById('customerProfileError');
+        if (errEl && errEl.textContent.includes('email is already associated')) {
+          errEl.style.display = 'none';
+          errEl.textContent = '';
+        }
+      });
     }
 
     const cancelProfileBtn = document.getElementById('customerCancelProfileBtn');
@@ -712,7 +818,10 @@ const CustomerAuth = {
       this.startResendCountdown(60);
     } catch (err) {
       this.showError('customerRegisterError', err.message || 'Registration failed. Please check your information.');
-      if (err.message && err.message.toLowerCase().includes('already exists')) {
+      if (err.message && err.message.toLowerCase().includes('mobile number')) {
+        const regPhoneInput = document.getElementById('customerRegPhone');
+        if (regPhoneInput) regPhoneInput.style.borderColor = 'var(--error, #ff4757)';
+      } else if (err.message && err.message.toLowerCase().includes('already exists')) {
         const regEmailInput = document.getElementById('customerRegEmail');
         if (regEmailInput) regEmailInput.style.borderColor = 'var(--error, #ff4757)';
         const signInEmail = document.getElementById('customerSignInEmail');
@@ -957,6 +1066,11 @@ const CustomerAuth = {
 
       if (!res.ok || !data.success) {
         this.showError('customerProfileError', data.error || 'Failed to update profile.');
+        if (data.error && data.error.toLowerCase().includes('mobile number')) {
+          if (phoneInput) phoneInput.style.borderColor = 'var(--error, #ff4757)';
+        } else if (data.error && data.error.toLowerCase().includes('email')) {
+          if (emailInput) emailInput.style.borderColor = 'var(--error, #ff4757)';
+        }
         return;
       }
 

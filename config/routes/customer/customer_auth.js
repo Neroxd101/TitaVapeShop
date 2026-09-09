@@ -123,15 +123,22 @@ router.get('/api/customer/check-email', async (req, res) => {
     }
 
     const cleanEmail = (req.query.email || '').trim().toLowerCase();
+    const excludeUserId = req.query.exclude_user_id || null;
+
     if (!cleanEmail) {
       return res.status(400).json({ success: false, error: 'Email parameter is required.' });
     }
 
-    const { data: existingUser, error: checkError } = await client
+    let query = client
       .from('users')
       .select('id, email, is_verified')
-      .ilike('email', cleanEmail)
-      .maybeSingle();
+      .ilike('email', cleanEmail);
+
+    if (excludeUserId) {
+      query = query.neq('id', excludeUserId);
+    }
+
+    const { data: existingUser, error: checkError } = await query.maybeSingle();
 
     if (checkError) {
       console.error('[Customer Check Email] Error:', checkError);
@@ -145,6 +152,50 @@ router.get('/api/customer/check-email', async (req, res) => {
     });
   } catch (err) {
     console.error('[Customer Check Email] Exception:', err);
+    return res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
+/**
+ * GET /api/customer/check-phone
+ * Check if contact number is already registered in the database
+ */
+router.get('/api/customer/check-phone', async (req, res) => {
+  try {
+    const client = dbClient();
+    if (!client) {
+      return res.status(500).json({ success: false, error: 'Database service unavailable' });
+    }
+
+    const cleanPhone = (req.query.phone || '').trim().replace(/\D/g, '');
+    const excludeUserId = req.query.exclude_user_id || null;
+
+    if (!cleanPhone || cleanPhone.length < 10) {
+      return res.status(400).json({ success: false, error: 'Valid phone number is required.' });
+    }
+
+    let query = client
+      .from('users')
+      .select('id, contact_number')
+      .or(`contact_number.eq.${cleanPhone},contact_number.eq.0${cleanPhone.slice(-10)},contact_number.eq.+63${cleanPhone.slice(-10)}`);
+
+    if (excludeUserId) {
+      query = query.neq('id', excludeUserId);
+    }
+
+    const { data: existingUser, error: checkError } = await query.maybeSingle();
+
+    if (checkError) {
+      console.error('[Customer Check Phone] Error:', checkError);
+      return res.status(500).json({ success: false, error: 'Error checking phone availability.' });
+    }
+
+    return res.json({
+      success: true,
+      exists: Boolean(existingUser)
+    });
+  } catch (err) {
+    console.error('[Customer Check Phone] Exception:', err);
     return res.status(500).json({ success: false, error: 'Internal server error.' });
   }
 });
@@ -233,6 +284,22 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'This email already exists. Please sign in.'
+      });
+    }
+
+    // Check if contact number already exists in users table
+    const { data: existingPhoneUser, error: phoneCheckError } = await client
+      .from('users')
+      .select('id, contact_number')
+      .or(`contact_number.eq.${digitsOnly},contact_number.eq.0${digitsOnly.slice(-10)},contact_number.eq.+63${digitsOnly.slice(-10)}`)
+      .maybeSingle();
+
+    if (phoneCheckError) {
+      console.error('[Customer Register] Check existing phone error:', phoneCheckError);
+    } else if (existingPhoneUser) {
+      return res.status(400).json({
+        success: false,
+        error: 'This mobile number already exists. Please use a different number or sign in.'
       });
     }
 
@@ -697,6 +764,21 @@ router.put('/api/customer/profile', async (req, res) => {
   const normalizedName = full_name.trim();
 
   try {
+    // Check if phone number is already associated with another account
+    const phoneDigits = normalizedPhone.replace(/\D/g, '');
+    const { data: existingPhone, error: phoneErr } = await client
+      .from('users')
+      .select('id')
+      .or(`contact_number.eq.${phoneDigits},contact_number.eq.0${phoneDigits.slice(-10)},contact_number.eq.+63${phoneDigits.slice(-10)}`)
+      .neq('id', decoded.id)
+      .maybeSingle();
+
+    if (phoneErr) {
+      console.error('[Customer Update Profile] Check phone error:', phoneErr);
+    } else if (existingPhone) {
+      return res.status(400).json({ success: false, error: 'This mobile number is already associated with another account.' });
+    }
+
     const isEmailChanging = normalizedEmail !== (decoded.email || '').toLowerCase();
 
     if (isEmailChanging) {
