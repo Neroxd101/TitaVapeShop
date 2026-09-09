@@ -66,10 +66,17 @@
           </svg>
           <input type="text" id="searchInput" placeholder="Search products...">
         </div>
+        <div class="inventory-category-stock">
         <div class="filter-tabs-group">
           <button class="filter-tab active" data-category="all">All</button>
           <button class="filter-tab" data-category="hardware">Hardware</button>
           <button class="filter-tab" data-category="juices">Juices</button>
+        </div>
+        <select id="stockFilter" class="stock-filter" aria-label="Filter by stock level">
+          <option value="all">All Stock</option>
+          <option value="low">Low Stock (1–5)</option>
+          <option value="none">No Stock (0)</option>
+        </select>
         </div>
         <div class="filter-tabs-actions filter-tabs-actions-single">
           <button class="btn btn-primary" id="addItemBtn">
