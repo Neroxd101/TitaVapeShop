@@ -22,23 +22,10 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
     }
 
     try {
-        // Ensure tracking URL with token is present
+        // Ensure tracking URL is present
         if (!orderData.trackingUrl) {
             const appUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
-            let token = orderData.orderToken;
-            if (!token && process.env.JWT_SECRET) {
-                try {
-                    const jwt = require('jsonwebtoken');
-                    token = jwt.sign(
-                        { orderId: orderId, customerName: customerName },
-                        process.env.JWT_SECRET,
-                        { expiresIn: '30d' }
-                    );
-                } catch (e) {}
-            }
-            orderData.trackingUrl = token
-                ? `${appUrl}/order-status?token=${token}`
-                : `${appUrl}/order-status?id=${orderId}`;
+            orderData.trackingUrl = `${appUrl}/order-status?id=${orderId}`;
         }
 
         const transporter = nodemailer.createTransport({

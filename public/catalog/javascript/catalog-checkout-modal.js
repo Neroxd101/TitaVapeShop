@@ -171,7 +171,6 @@ const CatalogCheckoutModal = {
                     if (!Array.isArray(orders)) orders = [];
                     orders.unshift({
                         id: result.order.id,
-                        token: result.orderToken || null,
                         order_type: result.order.order_type,
                         total_amount: result.order.total_amount,
                         status: result.order.status || 'pending',
@@ -195,7 +194,7 @@ const CatalogCheckoutModal = {
                 this.form.reset();
 
                 // Direct to order status page
-                const targetUrl = result.trackingUrl || (result.orderToken ? `/order-status?token=${encodeURIComponent(result.orderToken)}` : `/order-status?id=${encodeURIComponent(result.order.id)}`);
+                const targetUrl = result.trackingUrl || `/order-status?id=${encodeURIComponent(result.order.id)}`;
                 window.location.href = targetUrl;
                 return;
             } else {

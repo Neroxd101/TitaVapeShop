@@ -93,6 +93,13 @@ const CatalogOrdersModal = {
     }
     if (!this.badgeEl) return;
 
+    const isLoggedIn = Boolean(window.CustomerAuth && window.CustomerAuth.currentUser);
+    if (!isLoggedIn) {
+      this.badgeEl.textContent = '0';
+      this.badgeEl.classList.remove('has-items');
+      return;
+    }
+
     const orders = this.getSavedOrders();
     // Count active orders (pending or confirmed)
     const activeCount = orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
@@ -131,6 +138,40 @@ const CatalogOrdersModal = {
    * Render orders list
    */
   async render() {
+    const isLoggedIn = Boolean(window.CustomerAuth && window.CustomerAuth.currentUser);
+
+    if (!isLoggedIn) {
+      if (this.ordersList) {
+        this.ordersList.innerHTML = '';
+        this.ordersList.style.display = 'none';
+      }
+      if (this.emptyState) {
+        this.emptyState.innerHTML = `
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--text-secondary)" style="opacity: 0.5; margin-bottom: 12px;">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+          </svg>
+          <h4 style="margin: 0 0 6px; font-size: 16px; color: #fff;">Sign In to View Orders</h4>
+          <p style="color: var(--text-secondary); font-size: 13px; margin: 0 0 16px;">Sign in to your account to view your past orders and live tracking status.</p>
+          <button id="ordersModalSignInBtn" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; margin: 0 auto;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+            Sign In to Account
+          </button>
+        `;
+        this.emptyState.style.display = 'block';
+        const signInBtn = document.getElementById('ordersModalSignInBtn');
+        if (signInBtn) {
+          signInBtn.addEventListener('click', () => {
+            this.close();
+            if (window.CustomerAuth) {
+              window.CustomerAuth.open('signin');
+            }
+          });
+        }
+      }
+      this.updateBadge();
+      return;
+    }
+
     let orders = this.getSavedOrders();
 
     if (orders.length > 0) {
@@ -139,21 +180,19 @@ const CatalogOrdersModal = {
       this.renderCards(orders);
     }
 
-    // Sync from server (works for local cached orders and logged-in customer accounts)
+    // Sync from server for authenticated customer account
     try {
-      const payload = orders.map(o => ({ id: o.id, token: o.token }));
       const response = await fetch('/api/orders/track-batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ orders: payload })
+        body: JSON.stringify({})
       });
       const data = await response.json();
 
-      if (data.success && Array.isArray(data.orders) && data.orders.length > 0) {
+      if (data.success && Array.isArray(data.orders)) {
         orders = data.orders.map(remote => ({
           id: remote.id,
-          token: remote.token,
           order_type: remote.order_type,
           total_amount: remote.total_amount,
           status: remote.status,
@@ -163,9 +202,23 @@ const CatalogOrdersModal = {
         try {
           localStorage.setItem('tita_recent_orders', JSON.stringify(orders));
         } catch (_) {}
-        this.emptyState.style.display = 'none';
-        this.ordersList.style.display = 'flex';
-        this.renderCards(orders);
+
+        if (orders.length > 0) {
+          this.emptyState.style.display = 'none';
+          this.ordersList.style.display = 'flex';
+          this.renderCards(orders);
+        } else {
+          this.ordersList.innerHTML = '';
+          this.ordersList.style.display = 'none';
+          this.emptyState.innerHTML = `
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--text-secondary)" style="opacity: 0.5; margin-bottom: 12px;">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+            </svg>
+            <h4 style="margin: 0 0 6px; font-size: 16px;">No Recent Orders</h4>
+            <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">You have not placed any orders on this account yet.</p>
+          `;
+          this.emptyState.style.display = 'block';
+        }
         this.updateBadge();
         return;
       }
@@ -225,9 +278,7 @@ const CatalogOrdersModal = {
         } catch (e) {}
       }
 
-      const orderUrl = order.token
-        ? `/order-status?token=${encodeURIComponent(order.token)}`
-        : `/order-status?id=${encodeURIComponent(order.id)}`;
+      const orderUrl = `/order-status?id=${encodeURIComponent(order.id)}`;
 
       card.innerHTML = `
         <div style="flex: 1; min-width: 0;">

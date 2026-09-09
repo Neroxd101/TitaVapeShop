@@ -54,16 +54,7 @@
   let currentOrder = null;
   let pollInterval = null;
 
-  // Check if localStorage has a token for this order ID
-  if (!currentToken && currentOrderId) {
-    try {
-      const saved = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
-      const match = saved.find(o => o.id === currentOrderId && o.token);
-      if (match) {
-        currentToken = match.token;
-      }
-    } catch (e) {}
-  }
+
 
   /**
    * Initialize and fetch order
@@ -151,7 +142,7 @@
       const response = await fetch('/api/orders/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: currentOrder.id, token: currentToken })
+        body: JSON.stringify({ id: currentOrder.id, phone: contactNumberInput?.value?.trim() })
       });
       if (response.redirected || !response.headers.get('content-type')?.includes('application/json')) {
         throw new Error('Cancellation is unavailable. The app server may need restarting to load the latest update.');
@@ -161,7 +152,7 @@
         throw new Error(data.error || 'Unable to cancel your order. Please try again.');
       }
       currentOrder = data.order;
-      saveOrderToLocalStorage(currentOrder, currentToken);
+      saveOrderToLocalStorage(currentOrder);
       renderOrder(currentOrder);
       cancelOrderMessage.textContent = 'Your order has been cancelled.';
       cancelOrderDialog.close();
@@ -188,17 +179,15 @@
       showState('loading');
     }
 
-    let url = '/api/orders/track?';
-    if (currentToken) {
-      url += `token=${encodeURIComponent(currentToken)}`;
-    } else if (currentOrderId) {
-      url += `id=${encodeURIComponent(currentOrderId)}`;
-      if (phoneInput) {
-        url += `&phone=${encodeURIComponent(phoneInput)}`;
-      }
-    } else {
-      showError('Missing Information', 'No Order ID or tracking token was provided in the link.');
+    const targetId = currentOrderId || currentToken;
+    if (!targetId) {
+      showError('Missing Information', 'No Order ID was provided in the link.');
       return;
+    }
+
+    let url = `/api/orders/track?id=${encodeURIComponent(targetId)}`;
+    if (phoneInput) {
+      url += `&phone=${encodeURIComponent(phoneInput)}`;
     }
 
     try {
@@ -209,16 +198,9 @@
 
       if (response.ok && data.success && data.order) {
         currentOrder = data.order;
-        if (data.token) {
-          currentToken = data.token;
-          // Update URL without page reload
-          const newUrl = new URL(window.location.href);
-          newUrl.searchParams.set('token', data.token);
-          window.history.replaceState({}, '', newUrl.toString());
-        }
 
         // Save order to localStorage for recent orders modal
-        saveOrderToLocalStorage(currentOrder, currentToken);
+        saveOrderToLocalStorage(currentOrder);
 
         renderOrder(currentOrder);
         showState('content');
@@ -247,7 +229,7 @@
   /**
    * Save order to localStorage for quick customer retrieval
    */
-  function saveOrderToLocalStorage(order, token) {
+  function saveOrderToLocalStorage(order) {
     if (!order || !order.id) return;
     try {
       let orders = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
@@ -256,7 +238,6 @@
       const existingIndex = orders.findIndex(o => o.id === order.id);
       const orderEntry = {
         id: order.id,
-        token: token || (existingIndex >= 0 ? orders[existingIndex].token : null),
         order_type: order.order_type,
         total_amount: order.total_amount,
         status: order.status,

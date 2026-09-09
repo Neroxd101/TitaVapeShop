@@ -130,6 +130,10 @@ const CustomerAuth = {
       const menu = document.getElementById('customerDropdownMenu');
       if (menu) menu.classList.remove('show');
     });
+
+    if (window.CatalogOrdersModal && typeof window.CatalogOrdersModal.updateBadge === 'function') {
+      window.CatalogOrdersModal.updateBadge();
+    }
   },
 
   /**
@@ -526,6 +530,9 @@ const CustomerAuth = {
     try {
       await fetch('/api/customer/logout', { method: 'POST', credentials: 'include' });
     } catch (e) {}
+    try {
+      localStorage.removeItem('tita_recent_orders');
+    } catch (_) {}
     this.currentUser = null;
     this.updateNavUI();
     // Refresh page to sync cart & modals

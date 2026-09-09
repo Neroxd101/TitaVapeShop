@@ -282,82 +282,31 @@ router.post('/api/orders/create', async (req, res) => {
       }
     }
 
-    // Generate secure Order JWT token (valid for 30 days)
-    let orderToken = null;
-    if (JWT_SECRET && order && order.id) {
-      try {
-        orderToken = jwt.sign(
-          {
-            orderId: order.id,
-            customerName: finalName,
-            contactNumber: finalContact
-          },
-          JWT_SECRET,
-          { expiresIn: '30d' }
-        );
-      } catch (tokenErr) {
-        console.error('Error generating order token:', tokenErr);
-      }
-    }
-
-    // Set or append to customer HTTP-only cookie
-    if (orderToken) {
-      try {
-        let cookieTokens = [];
-        if (req.cookies && req.cookies.tita_customer_orders) {
-          try {
-            const parsed = JSON.parse(req.cookies.tita_customer_orders);
-            if (Array.isArray(parsed)) cookieTokens = parsed;
-          } catch (e) {
-            if (typeof req.cookies.tita_customer_orders === 'string') {
-              cookieTokens = [req.cookies.tita_customer_orders];
-            }
-          }
-        }
-        if (!cookieTokens.includes(orderToken)) {
-          cookieTokens.unshift(orderToken);
-          cookieTokens = cookieTokens.slice(0, 20);
-          res.cookie('tita_customer_orders', JSON.stringify(cookieTokens), {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-          });
-        }
-      } catch (cookieErr) {
-        console.error('Error setting order cookie:', cookieErr);
-      }
-    }
-
-    const trackingUrl = orderToken
-      ? `/order-status?token=${orderToken}`
-      : `/order-status?id=${order.id}`;
+    const trackingUrl = `/order-status?id=${order.id}`;
 
     // Send order confirmation email
     if (order && finalEmail) {
-        try {
-            await sendOrderEmail(
-                finalEmail,
-                finalName,
-                order.id,
-                'pending',
-                {
-                    items: items,
-                    total_amount: total_amount,
-                    order_type: order_type,
-                    orderToken: orderToken,
-                    trackingUrl: trackingUrl
-                }
-            );
-        } catch (emailError) {
-            console.error('[Order Creation] Error sending email:', emailError);
-        }
+      try {
+        await sendOrderEmail(
+          finalEmail,
+          finalName,
+          order.id,
+          'pending',
+          {
+            items: items,
+            total_amount: total_amount,
+            order_type: order_type,
+            trackingUrl: trackingUrl
+          }
+        );
+      } catch (emailError) {
+        console.error('[Order Creation] Error sending email:', emailError);
+      }
     }
-    
+
     res.json({
       success: true,
       order: order,
-      orderToken: orderToken,
       trackingUrl: trackingUrl
     });
   } catch (err) {
@@ -366,76 +315,16 @@ router.post('/api/orders/create', async (req, res) => {
   }
 });
 
-// Track single order
 // GET /api/orders/track
 router.get('/api/orders/track', async (req, res) => {
   try {
-    const { token, id, phone } = req.query;
-    let targetOrderId = null;
-    let isVerified = false;
+    const { id, phone } = req.query;
+    const targetOrderId = id;
 
-    // 1. Verify via token parameter
-    if (token && JWT_SECRET) {
-      try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded && decoded.orderId) {
-          targetOrderId = decoded.orderId;
-          isVerified = true;
-        }
-      } catch (e) {
-        // Token invalid or expired, continue to fallback
-      }
-    }
-
-    // 2. Fallback to cookie if order ID matches a token inside cookie
-    if (!isVerified && id && req.cookies && req.cookies.tita_customer_orders && JWT_SECRET) {
-      try {
-        let cookieTokens = [];
-        const parsed = JSON.parse(req.cookies.tita_customer_orders);
-        if (Array.isArray(parsed)) cookieTokens = parsed;
-        for (const t of cookieTokens) {
-          try {
-            const dec = jwt.verify(t, JWT_SECRET);
-            if (dec && dec.orderId === id) {
-              targetOrderId = id;
-              isVerified = true;
-              break;
-            }
-          } catch (e) {}
-        }
-      } catch (e) {}
-    }
-
-    // 3. Fallback to logged-in customer matching
-    if (!isVerified && id && req.cookies && req.cookies.customer_token && JWT_SECRET) {
-      try {
-        const decCust = jwt.verify(req.cookies.customer_token, JWT_SECRET);
-        if (decCust && decCust.id) {
-          const client = supabaseAdmin || supabase;
-          const { data: ownedOrder } = await client
-            .from('orders')
-            .select('id')
-            .eq('id', id)
-            .eq('customer_id', decCust.id)
-            .maybeSingle();
-
-          if (ownedOrder) {
-            targetOrderId = id;
-            isVerified = true;
-          }
-        }
-      } catch (e) {}
-    }
-
-    // 4. Fallback to ID for phone verification
-    if (!isVerified && id) {
-      targetOrderId = id;
-    }
-
-    if (!targetOrderId) {
+    if (!targetOrderId || typeof targetOrderId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetOrderId)) {
       return res.status(400).json({
         success: false,
-        error: 'Please provide a valid order token or order ID'
+        error: 'Please provide a valid order ID'
       });
     }
 
@@ -446,12 +335,24 @@ router.get('/api/orders/track', async (req, res) => {
 
     const { data: order, error } = await client
       .from('orders')
-      .select('id, customer_name, contact_number, social_media, customer_email, order_type, items, total_amount, status, created_at, updated_at')
+      .select('id, customer_name, contact_number, social_media, customer_email, customer_id, order_type, items, total_amount, status, created_at, updated_at')
       .eq('id', targetOrderId)
       .maybeSingle();
 
     if (error || !order) {
       return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    let isVerified = false;
+
+    // Verify if logged-in customer owns this order
+    if (req.cookies && req.cookies.customer_token && JWT_SECRET) {
+      try {
+        const decCust = jwt.verify(req.cookies.customer_token, JWT_SECRET);
+        if (decCust && decCust.id && (order.customer_id === decCust.id || order.customer_email === decCust.email)) {
+          isVerified = true;
+        }
+      } catch (e) {}
     }
 
     if (!isVerified) {
@@ -476,25 +377,6 @@ router.get('/api/orders/track', async (req, res) => {
           error: 'The contact number entered does not match this order.'
         });
       }
-
-      let newToken = null;
-      if (JWT_SECRET) {
-        newToken = jwt.sign(
-          {
-            orderId: order.id,
-            customerName: order.customer_name,
-            contactNumber: order.contact_number
-          },
-          JWT_SECRET,
-          { expiresIn: '30d' }
-        );
-      }
-
-      return res.json({
-        success: true,
-        order: order,
-        token: newToken
-      });
     }
 
     res.json({
@@ -509,52 +391,54 @@ router.get('/api/orders/track', async (req, res) => {
 
 // Customers may cancel only their own pending orders.
 router.post('/api/orders/cancel', async (req, res) => {
-  const { id, token } = req.body || {};
+  const { id, phone } = req.body || {};
   if (typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
     return res.status(400).json({ success: false, error: 'A valid order ID is required.' });
   }
-  if (!JWT_SECRET || !supabaseAdmin) {
+  if (!supabaseAdmin) {
     return res.status(503).json({ success: false, error: 'Order cancellation is currently unavailable.' });
   }
 
-  const tokens = typeof token === 'string' ? [token] : [];
-  try {
-    const saved = JSON.parse(req.cookies?.tita_customer_orders || '[]');
-    if (Array.isArray(saved)) tokens.push(...saved);
-  } catch (_) {}
-
-  // Also check customer_token
-  let customerLoggedInId = null;
-  if (req.cookies?.customer_token) {
+  // Check if customer is logged in
+  let customerLoggedIn = null;
+  if (req.cookies?.customer_token && JWT_SECRET) {
     try {
-      const dec = jwt.verify(req.cookies.customer_token, JWT_SECRET);
-      customerLoggedInId = dec.id;
+      customerLoggedIn = jwt.verify(req.cookies.customer_token, JWT_SECRET);
     } catch (_) {}
   }
 
-  const verified = tokens.some(value => {
-    try {
-      return jwt.verify(value, JWT_SECRET, { algorithms: ['HS256'] }).orderId === id;
-    } catch (_) {
-      return false;
-    }
-  });
+  // Verify ownership
+  const { data: existingOrder, error: fetchErr } = await supabaseAdmin
+    .from('orders')
+    .select('id, customer_id, customer_email, contact_number, status')
+    .eq('id', id)
+    .eq('status', 'pending')
+    .maybeSingle();
 
-  if (!verified && !customerLoggedInId) {
-    return res.status(403).json({ success: false, error: 'Please reopen your order link and verify your order before cancelling.' });
+  if (fetchErr || !existingOrder) {
+    return res.status(409).json({ success: false, error: 'Only pending orders can be cancelled. This order may already have been updated.' });
+  }
+
+  let isVerified = false;
+  if (customerLoggedIn && (existingOrder.customer_id === customerLoggedIn.id || existingOrder.customer_email === customerLoggedIn.email)) {
+    isVerified = true;
+  } else if (phone) {
+    const inputDigits = String(phone).replace(/\D/g, '');
+    const orderDigits = String(existingOrder.contact_number || '').replace(/\D/g, '');
+    if ((inputDigits.length >= 4 && orderDigits.endsWith(inputDigits)) || orderDigits === inputDigits) {
+      isVerified = true;
+    }
+  }
+
+  if (!isVerified) {
+    return res.status(403).json({ success: false, error: 'You are not authorized to cancel this order. Please sign in with your account.' });
   }
 
   try {
-    let query = supabaseAdmin.from('orders')
+    const { data: order, error } = await supabaseAdmin.from('orders')
       .update({ status: 'cancelled', updated_at: new Date().toISOString() })
       .eq('id', id)
-      .eq('status', 'pending');
-
-    if (!verified && customerLoggedInId) {
-      query = query.eq('customer_id', customerLoggedInId);
-    }
-
-    const { data: order, error } = await query
+      .eq('status', 'pending')
       .select('id, customer_name, contact_number, social_media, customer_email, order_type, items, total_amount, status, created_at, updated_at')
       .maybeSingle();
 
@@ -565,7 +449,7 @@ router.post('/api/orders/cancel', async (req, res) => {
 
     const { error: logError } = await supabaseAdmin.rpc('transactions_log', {
       p_action_type: 'order_cancel',
-      p_user_email: 'Customer',
+      p_user_email: customerLoggedIn ? customerLoggedIn.email : 'Customer',
       p_entity_id: order.id,
       p_entity_type: 'order',
       p_sale_total: order.total_amount,
@@ -592,49 +476,12 @@ router.post('/api/orders/cancel', async (req, res) => {
 // POST /api/orders/track-batch
 router.post('/api/orders/track-batch', async (req, res) => {
   try {
-    const { orders } = req.body || {}; // Array of { id, token }
-    const verifiedIds = [];
-    const idToToken = {};
-
-    if (Array.isArray(orders)) {
-      for (const item of orders) {
-        if (!item || !item.id) continue;
-        idToToken[item.id] = item.token || null;
-
-        if (item.token && JWT_SECRET) {
-          try {
-            const dec = jwt.verify(item.token, JWT_SECRET);
-            if (dec && dec.orderId === item.id) {
-              verifiedIds.push(item.id);
-              continue;
-            }
-          } catch (e) {}
-        }
-
-        if (req.cookies && req.cookies.tita_customer_orders && JWT_SECRET) {
-          try {
-            const cookieTokens = JSON.parse(req.cookies.tita_customer_orders);
-            for (const ct of cookieTokens) {
-              try {
-                const dec = jwt.verify(ct, JWT_SECRET);
-                if (dec && dec.orderId === item.id) {
-                  verifiedIds.push(item.id);
-                  idToToken[item.id] = ct;
-                  break;
-                }
-              } catch (e) {}
-            }
-          } catch (e) {}
-        }
-      }
-    }
-
     const client = supabaseAdmin || supabase;
     if (!client) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
 
-    // Check if customer is logged in
+    // Require verified logged-in customer session
     let loggedInCustomer = null;
     if (req.cookies?.customer_token && JWT_SECRET) {
       try {
@@ -642,25 +489,21 @@ router.post('/api/orders/track-batch', async (req, res) => {
       } catch (e) {}
     }
 
-    let query = client
-      .from('orders')
-      .select('id, customer_name, order_type, total_amount, status, created_at, items');
-
-    if (loggedInCustomer && loggedInCustomer.id) {
-      // Return orders placed by this customer OR verified by token
-      if (verifiedIds.length > 0) {
-        query = query.or(`customer_id.eq.${loggedInCustomer.id},customer_email.eq.${loggedInCustomer.email},id.in.(${verifiedIds.join(',')})`);
-      } else {
-        query = query.or(`customer_id.eq.${loggedInCustomer.id},customer_email.eq.${loggedInCustomer.email}`);
-      }
-    } else {
-      if (verifiedIds.length === 0) {
-        return res.json({ success: true, orders: [] });
-      }
-      query = query.in('id', verifiedIds);
+    if (!loggedInCustomer || !loggedInCustomer.id) {
+      return res.json({
+        success: false,
+        requiresAuth: true,
+        error: 'Please sign in to view your orders.',
+        orders: []
+      });
     }
 
-    const { data: orderRows, error } = await query.order('created_at', { ascending: false }).limit(25);
+    const { data: orderRows, error } = await client
+      .from('orders')
+      .select('id, customer_name, order_type, total_amount, status, created_at, items')
+      .or(`customer_id.eq.${loggedInCustomer.id},customer_email.eq.${loggedInCustomer.email}`)
+      .order('created_at', { ascending: false })
+      .limit(25);
 
     if (error) {
       return res.status(400).json({ success: false, error: error.message });
@@ -673,8 +516,7 @@ router.post('/api/orders/track-batch', async (req, res) => {
       total_amount: row.total_amount,
       status: row.status,
       created_at: row.created_at,
-      items_count: Array.isArray(row.items) ? row.items.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0) : 0,
-      token: idToToken[row.id] || null
+      items_count: Array.isArray(row.items) ? row.items.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0) : 0
     }));
 
     res.json({ success: true, orders: results });

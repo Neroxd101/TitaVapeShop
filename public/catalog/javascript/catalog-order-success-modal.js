@@ -206,7 +206,7 @@ const CatalogOrderSuccessModal = {
         // Show the modal
         const viewDetailsBtn = document.getElementById('viewLiveOrderDetailsBtn');
         if (viewDetailsBtn) {
-            const targetUrl = trackingUrl || (orderToken ? `/order-status?token=${encodeURIComponent(orderToken)}` : `/order-status?id=${encodeURIComponent(order.id)}`);
+            const targetUrl = trackingUrl || `/order-status?id=${encodeURIComponent(order.id)}`;
             viewDetailsBtn.href = targetUrl;
         }
 
