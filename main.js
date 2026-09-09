@@ -47,7 +47,7 @@ const analyticsDashboardRoutes = require('./config/routes/analytics/analytics_da
 const analyticsTotalProfitRoutes = require('./config/routes/analytics/analytics_total_profit');
 const analyticsTotalOrdersRoutes = require('./config/routes/analytics/analytics_total_orders');
 const analyticsItemsSoldRoutes = require('./config/routes/analytics/analytics_items_sold');
-const analyticsAvgBasketRoutes = require('./config/routes/analytics/analytics_avg_basket');
+const analyticsGrossSalesRoutes = require('./config/routes/analytics/analytics_gross_sales');
 const analyticsRevenueTrendRoutes = require('./config/routes/analytics/analytics_revenue_trend');
 const analyticsTopProductsRoutes = require('./config/routes/analytics/analytics_top_products');
 const analyticsCategoryStatsRoutes = require('./config/routes/analytics/analytics_category_stats');
@@ -98,7 +98,7 @@ app.use('/', analyticsDashboardRoutes);
 app.use('/', analyticsTotalProfitRoutes);
 app.use('/', analyticsTotalOrdersRoutes);
 app.use('/', analyticsItemsSoldRoutes);
-app.use('/', analyticsAvgBasketRoutes);
+app.use('/', analyticsGrossSalesRoutes);
 app.use('/', analyticsRevenueTrendRoutes);
 app.use('/', analyticsTopProductsRoutes);
 app.use('/', analyticsCategoryStatsRoutes);

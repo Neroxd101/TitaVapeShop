@@ -1,24 +1,20 @@
 -- =============================================
--- Analytics: Average Basket (Average Sale Amount)
--- Calculates the average sale amount per transaction
+-- Analytics: Gross Sales
+-- Calculates the total gross sales amount from all sales transactions
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_avg_basket(
+CREATE OR REPLACE FUNCTION analytics_gross_sales(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
 RETURNS DECIMAL(10, 2) AS $$
 DECLARE
-    total_revenue DECIMAL(10, 2);
-    total_transactions INTEGER;
-    average_basket DECIMAL(10, 2);
+    total_gross DECIMAL(10, 2);
 BEGIN
-    -- Calculate total revenue and transaction count
+    -- Calculate total gross sales amount from all non-voided sale transactions
     -- If end_date is provided, include the entire day (up to end of day)
-    SELECT 
-        COALESCE(SUM(t.sale_total), 0),
-        COUNT(*)
-    INTO total_revenue, total_transactions
+    SELECT COALESCE(SUM(t.sale_total), 0)
+    INTO total_gross
     FROM transactions t
     WHERE t.action_type = 'sale_complete'
         -- Voids remove the original sale even when voided outside the selected dates.
@@ -31,13 +27,17 @@ BEGIN
         AND (p_start_date IS NULL OR t.created_at >= p_start_date)
         AND (p_end_date IS NULL OR t.created_at < (p_end_date + INTERVAL '1 day'));
 
-    -- Calculate average basket (average sale amount)
-    IF total_transactions > 0 THEN
-        average_basket := total_revenue / total_transactions;
-    ELSE
-        average_basket := 0;
-    END IF;
+    RETURN total_gross;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
-    RETURN average_basket;
+-- Backwards compatibility alias for analytics_avg_basket if needed
+CREATE OR REPLACE FUNCTION analytics_avg_basket(
+    p_start_date TIMESTAMPTZ DEFAULT NULL,
+    p_end_date TIMESTAMPTZ DEFAULT NULL
+)
+RETURNS DECIMAL(10, 2) AS $$
+BEGIN
+    RETURN analytics_gross_sales(p_start_date, p_end_date);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

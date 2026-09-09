@@ -185,8 +185,8 @@ const AnalyticsPrint = {
             <div class="stat-value">${report.itemsSold || 0}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Avg. Basket</div>
-            <div class="stat-value">₱${this.formatNumber(report.averageSale || 0)}</div>
+            <div class="stat-label">Gross Sales</div>
+            <div class="stat-value">₱${this.formatNumber(report.grossSales !== undefined ? report.grossSales : (report.averageSale || 0))}</div>
         </div>
     </div>
 

@@ -50,7 +50,12 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
                 return res;
             }),
             supabase.rpc('analytics_items_sold', rpcParams),
-            supabase.rpc('analytics_avg_basket', rpcParams),
+            supabase.rpc('analytics_gross_sales', rpcParams).then(res => {
+                if (res.error && res.error.message && res.error.message.includes('analytics_gross_sales')) {
+                    return supabase.rpc('analytics_avg_basket', rpcParams);
+                }
+                return res;
+            }),
             supabase.rpc('analytics_revenue_trend', rpcParams),
             supabase.rpc('analytics_top_products', rpcParams),
             supabase.rpc('analytics_category_stats', rpcParams)
@@ -63,7 +68,7 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
             { name: 'analytics_total_profit', result: totalRevenueResult },
             { name: 'analytics_total_orders', result: totalOrdersResult },
             { name: 'analytics_items_sold', result: itemsSoldResult },
-            { name: 'analytics_avg_basket', result: avgBasketResult },
+            { name: 'analytics_gross_sales', result: avgBasketResult },
             { name: 'analytics_revenue_trend', result: revenueTrendResult },
             { name: 'analytics_top_products', result: topProductsResult },
             { name: 'analytics_category_stats', result: categoryStatsResult }
@@ -95,7 +100,7 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
         const totalRevenue = totalRevenueResult.data ?? 0;
         const ordersCount = totalOrdersResult.data ?? 0;
         const itemsSold = itemsSoldResult.data ?? 0;
-        const averageSale = avgBasketResult.data ?? 0;
+        const grossSales = avgBasketResult.data ?? 0;
         const dailyRevenue = revenueTrendResult.data ?? [];
         const topProducts = topProductsResult.data ?? [];
         const categoryStats = categoryStatsResult.data ?? {};
@@ -112,7 +117,8 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
                 ordersCount: ordersCount,
                 salesCount: ordersCount,
                 itemsSold: itemsSold,
-                averageSale: averageSale,
+                grossSales: grossSales,
+                averageSale: grossSales,
                 dailyRevenue: dailyRevenue,
                 topProducts: topProducts,
                 categoryStats: categoryStats,

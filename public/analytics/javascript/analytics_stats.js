@@ -32,11 +32,11 @@ const AnalyticsStats = {
             elItems.textContent = stats.itemsSold || 0;
         }
 
-        // Avg. Basket
-        const elAvg = document.getElementById('statAvgSale');
-        if (elAvg) {
-            const avg = stats.averageSale !== undefined ? stats.averageSale : (stats.salesCount > 0 ? (stats.totalRevenue / stats.salesCount) : 0);
-            elAvg.textContent = `₱${formatNum(avg)}`;
+        // Gross Sales
+        const elGross = document.getElementById('statAvgSale');
+        if (elGross) {
+            const gross = stats.grossSales !== undefined ? stats.grossSales : (stats.averageSale !== undefined ? stats.averageSale : 0);
+            elGross.textContent = `₱${formatNum(gross)}`;
         }
     }
 };
