@@ -46,6 +46,11 @@ const Inventory = {
       InventoryLoad.renderInventory();
     });
 
+    document.getElementById('stockFilter')?.addEventListener('change', (e) => {
+      InventoryState.stockFilter = e.target.value;
+      InventoryLoad.renderInventory();
+    });
+
     // Filter tabs
     InventoryDOM.filterTabs.forEach(tab => {
       tab.addEventListener('click', () => {

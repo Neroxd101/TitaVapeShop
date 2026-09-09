@@ -61,12 +61,17 @@ const InventoryLoad = {
         return InventoryState.inventoryItems.filter(item => {
             const matchesCategory = InventoryState.currentFilter === 'all' || item.category === InventoryState.currentFilter;
             const matchesSearch = item.name.toLowerCase().includes(InventoryState.searchQuery.toLowerCase());
-            return matchesCategory && matchesSearch;
+            const quantity = Number(item.quantity);
+            const matchesStock = InventoryState.stockFilter === 'all'
+                || (InventoryState.stockFilter === 'low' && quantity > 0 && quantity <= 5)
+                || (InventoryState.stockFilter === 'none' && quantity === 0);
+            return matchesCategory && matchesSearch && matchesStock;
         });
     },
 
     createCard(item) {
         const isLowStock = item.quantity <= 5;
+        const stockLabel = Number(item.quantity) === 0 ? '(No Stock)' : (isLowStock ? '(Low)' : '');
         const images = InventoryImage.parseImages(item);
         const nonQrImages = images.filter(url => url && url !== item.qr_image_url);
         const firstImage = nonQrImages.length > 0 ? nonQrImages[0] : (images.length > 0 ? images[0] : null);
@@ -85,7 +90,7 @@ const InventoryLoad = {
         <div class="card-header"><span class="card-category ${item.category}">${item.category}</span></div>
         <h3 class="card-name">${item.name}</h3>
         <div class="card-details">
-          <div class="detail-item"><span class="detail-label">Quantity</span><span class="detail-value ${isLowStock ? 'low-stock' : ''}">${item.quantity} ${isLowStock ? '(Low)' : ''}</span></div>
+          <div class="detail-item"><span class="detail-label">Quantity</span><span class="detail-value ${isLowStock ? 'low-stock' : ''}">${item.quantity} ${stockLabel}</span></div>
           <div class="detail-item"><span class="detail-label">Sale Price</span><span class="detail-value price">${InventoryUtils.formatCurrency(item.sale_price)}</span></div>
         </div>
         <div class="card-actions">
