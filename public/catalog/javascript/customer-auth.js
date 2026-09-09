@@ -412,7 +412,7 @@ const CustomerAuth = {
             if (signInEmail) signInEmail.value = val;
           } else {
             const errEl = document.getElementById('customerRegisterError');
-            if (errEl && errEl.textContent.includes('already exists in our database')) {
+            if (errEl && errEl.textContent.includes('already exists')) {
               errEl.style.display = 'none';
               errEl.textContent = '';
             }
@@ -424,7 +424,7 @@ const CustomerAuth = {
       regEmailInput.addEventListener('input', () => {
         regEmailInput.style.borderColor = '';
         const errEl = document.getElementById('customerRegisterError');
-        if (errEl && errEl.textContent.includes('already exists in our database')) {
+        if (errEl && errEl.textContent.includes('already exists')) {
           errEl.style.display = 'none';
           errEl.textContent = '';
         }

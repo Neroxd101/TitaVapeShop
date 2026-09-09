@@ -7,6 +7,23 @@ body.customer-logged-in #ordersBtn {
   display: none !important;
 }
 
+/* On smaller screens, pair Cart and Profile Pill side-by-side in balanced 2-column row */
+@media (max-width: 767px) {
+  body.customer-logged-in .nav #cartBtn {
+    grid-column: auto !important;
+    width: 100% !important;
+  }
+
+  body.customer-logged-in .nav #customerNavContainer {
+    grid-column: auto !important;
+    width: 100% !important;
+  }
+
+  body.customer-logged-in .nav #customerNavContainer .customer-profile-pill {
+    width: 100% !important;
+  }
+}
+
 .customer-auth-modal-content {
   position: relative;
   width: 100% !important;
@@ -795,9 +812,12 @@ body.customer-logged-in #ordersBtn {
 
   #customerNavContainer .customer-profile-name {
     display: inline-block !important;
-    max-width: 140px !important;
+    max-width: 90px !important;
     font-size: 12px !important;
     font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   /* Make privacy modal fit vertically on tablets & medium viewports */

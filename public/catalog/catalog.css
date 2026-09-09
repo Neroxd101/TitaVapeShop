@@ -2804,6 +2804,11 @@ main {
         display: flex !important;
     }
 
+    /* When customer is logged in on smaller screens, pair Cart and Profile Pill side-by-side in 2-column grid */
+    body.customer-logged-in .nav #customerNavContainer {
+        grid-column: auto !important;
+    }
+
     .nav #customerNavContainer .customer-nav-btn,
     .nav #customerNavContainer .customer-profile-pill {
         width: 100% !important;
