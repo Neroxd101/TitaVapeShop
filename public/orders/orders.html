@@ -255,6 +255,33 @@
         </div>
     </div>
 
+    <!-- Order Voided Success Modal -->
+    <div id="orderVoidedSuccessModal" class="modal-overlay">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>Order Voided</h3>
+                <button class="modal-close" id="closeOrderVoidedSuccessModal">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="success-icon-wrapper">
+                    <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke: #f59e0b;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+                </div>
+                <p style="text-align: center; margin-top: 16px; font-weight: 600; font-size: 1.05rem;">Order Voided</p>
+                <p class="text-muted" style="text-align: center; margin-top: 8px;">Stock restored and transaction recorded.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary btn-full" id="closeOrderVoidedSuccessBtn">Continue</button>
+            </div>
+        </div>
+    </div>
+
     <!-- QR Scanner Modal -->
     <div id="qrScannerModal" class="modal-overlay">
         <div class="modal modal-medium">

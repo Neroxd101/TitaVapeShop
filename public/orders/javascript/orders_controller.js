@@ -271,6 +271,35 @@ class OrdersController {
                 }
             });
         }
+
+        // Order Voided Success Modal
+        const orderVoidedSuccessModal = document.getElementById('orderVoidedSuccessModal');
+        const closeOrderVoidedSuccessModal = document.getElementById('closeOrderVoidedSuccessModal');
+        const closeOrderVoidedSuccessBtn = document.getElementById('closeOrderVoidedSuccessBtn');
+
+        if (closeOrderVoidedSuccessModal) {
+            closeOrderVoidedSuccessModal.addEventListener('click', () => {
+                if (orderVoidedSuccessModal) {
+                    orderVoidedSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (closeOrderVoidedSuccessBtn) {
+            closeOrderVoidedSuccessBtn.addEventListener('click', () => {
+                if (orderVoidedSuccessModal) {
+                    orderVoidedSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (orderVoidedSuccessModal) {
+            orderVoidedSuccessModal.addEventListener('click', (e) => {
+                if (e.target === orderVoidedSuccessModal) {
+                    orderVoidedSuccessModal.classList.remove('show');
+                }
+            });
+        }
     }
 
     setupEventListeners() {
@@ -660,7 +689,10 @@ class OrdersController {
                 if (!response.ok || !result.success) throw new Error(result.error || 'Unable to void order.');
                 modal.classList.remove('show');
                 await this.loadOrders();
-                alert('Order voided. Stock restored and transaction recorded.');
+                const voidedModal = document.getElementById('orderVoidedSuccessModal');
+                if (voidedModal) {
+                    voidedModal.classList.add('show');
+                }
             } catch (error) {
                 errorBox.textContent = error.message || 'Unable to void order. Please try again.';
             } finally {
