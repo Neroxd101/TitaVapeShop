@@ -1,23 +1,23 @@
 -- =============================================
--- Analytics: Total Revenue
--- Calculates the total revenue from all sales
+-- Analytics: Total Orders (Order Transactions Count)
+-- Counts the total number of completed order/sale transactions
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_total_revenue(
+CREATE OR REPLACE FUNCTION analytics_total_orders(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
-RETURNS DECIMAL(10, 2) AS $$
+RETURNS INTEGER AS $$
 DECLARE
-    total_revenue DECIMAL(10, 2);
+    total_orders INTEGER;
 BEGIN
-    -- Calculate total revenue from all sale transactions
+    -- Count total number of completed order/sale transactions
     -- If end_date is provided, include the entire day (up to end of day)
-    SELECT COALESCE(SUM(t.sale_total), 0)
-    INTO total_revenue
+    SELECT COUNT(*)
+    INTO total_orders
     FROM transactions t
     WHERE t.action_type = 'sale_complete'
-        -- Voids remove the original sale even when voided outside the selected dates.
+        -- Voids remove the original sale/order even when voided outside the selected dates.
         AND NOT EXISTS (
             SELECT 1 FROM transactions void_tx
             WHERE void_tx.action_type = 'sale_void'
@@ -27,6 +27,17 @@ BEGIN
         AND (p_start_date IS NULL OR t.created_at >= p_start_date)
         AND (p_end_date IS NULL OR t.created_at < (p_end_date + INTERVAL '1 day'));
 
-    RETURN total_revenue;
+    RETURN total_orders;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Backwards compatibility alias
+CREATE OR REPLACE FUNCTION analytics_total_sales(
+    p_start_date TIMESTAMPTZ DEFAULT NULL,
+    p_end_date TIMESTAMPTZ DEFAULT NULL
+)
+RETURNS INTEGER AS $$
+BEGIN
+    RETURN analytics_total_orders(p_start_date, p_end_date);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

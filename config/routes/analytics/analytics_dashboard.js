@@ -30,15 +30,25 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
         // ========================================
         const [
             totalRevenueResult,
-            totalSalesResult,
+            totalOrdersResult,
             itemsSoldResult,
             avgBasketResult,
             revenueTrendResult,
             topProductsResult,
             categoryStatsResult
         ] = await Promise.all([
-            supabase.rpc('analytics_total_revenue', rpcParams),
-            supabase.rpc('analytics_total_sales', rpcParams),
+            supabase.rpc('analytics_total_profit', rpcParams).then(res => {
+                if (res.error && res.error.message && res.error.message.includes('analytics_total_profit')) {
+                    return supabase.rpc('analytics_total_revenue', rpcParams);
+                }
+                return res;
+            }),
+            supabase.rpc('analytics_total_orders', rpcParams).then(res => {
+                if (res.error && res.error.message && res.error.message.includes('analytics_total_orders')) {
+                    return supabase.rpc('analytics_total_sales', rpcParams);
+                }
+                return res;
+            }),
             supabase.rpc('analytics_items_sold', rpcParams),
             supabase.rpc('analytics_avg_basket', rpcParams),
             supabase.rpc('analytics_revenue_trend', rpcParams),
@@ -50,8 +60,8 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
         // STEP 2: Check for errors in any of the RPC calls
         // ========================================
         const rpcResults = [
-            { name: 'analytics_total_revenue', result: totalRevenueResult },
-            { name: 'analytics_total_sales', result: totalSalesResult },
+            { name: 'analytics_total_profit', result: totalRevenueResult },
+            { name: 'analytics_total_orders', result: totalOrdersResult },
             { name: 'analytics_items_sold', result: itemsSoldResult },
             { name: 'analytics_avg_basket', result: avgBasketResult },
             { name: 'analytics_revenue_trend', result: revenueTrendResult },
@@ -83,7 +93,7 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
         // STEP 3: Extract data from each result
         // ========================================
         const totalRevenue = totalRevenueResult.data ?? 0;
-        const salesCount = totalSalesResult.data ?? 0;
+        const ordersCount = totalOrdersResult.data ?? 0;
         const itemsSold = itemsSoldResult.data ?? 0;
         const averageSale = avgBasketResult.data ?? 0;
         const dailyRevenue = revenueTrendResult.data ?? [];
@@ -97,7 +107,10 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
             success: true,
             report: {
                 totalRevenue: totalRevenue,
-                salesCount: salesCount,
+                totalProfit: totalRevenue,
+                totalOrders: ordersCount,
+                ordersCount: ordersCount,
+                salesCount: ordersCount,
                 itemsSold: itemsSold,
                 averageSale: averageSale,
                 dailyRevenue: dailyRevenue,

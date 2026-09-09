@@ -13,16 +13,17 @@ const AnalyticsStats = {
             maximumFractionDigits: 2 
         });
 
-        // Total Revenue
+        // Total Profit
         const elRevenue = document.getElementById('statRevenue');
         if (elRevenue) {
-            elRevenue.textContent = `₱${formatNum(stats.totalRevenue)}`;
+            const profitValue = stats.totalProfit !== undefined ? stats.totalProfit : stats.totalRevenue;
+            elRevenue.textContent = `₱${formatNum(profitValue)}`;
         }
 
-        // Total Sales
+        // Total Orders
         const elSales = document.getElementById('statSalesCount');
         if (elSales) {
-            elSales.textContent = stats.salesCount || 0;
+            elSales.textContent = stats.ordersCount !== undefined ? stats.ordersCount : (stats.totalOrders !== undefined ? stats.totalOrders : (stats.salesCount || 0));
         }
 
         // Items Sold
@@ -34,7 +35,7 @@ const AnalyticsStats = {
         // Avg. Basket
         const elAvg = document.getElementById('statAvgSale');
         if (elAvg) {
-            const avg = stats.salesCount > 0 ? (stats.totalRevenue / stats.salesCount) : 0;
+            const avg = stats.averageSale !== undefined ? stats.averageSale : (stats.salesCount > 0 ? (stats.totalRevenue / stats.salesCount) : 0);
             elAvg.textContent = `₱${formatNum(avg)}`;
         }
     }

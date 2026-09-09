@@ -44,8 +44,8 @@ const transactionsReportRoutes = require('./config/routes/transactions/transacti
 // Analytics routes
 const analyticsServeRoutes = require('./config/routes/analytics/analytics_controller');
 const analyticsDashboardRoutes = require('./config/routes/analytics/analytics_dashboard');
-const analyticsTotalRevenueRoutes = require('./config/routes/analytics/analytics_total_revenue');
-const analyticsTotalSalesRoutes = require('./config/routes/analytics/analytics_total_sales');
+const analyticsTotalProfitRoutes = require('./config/routes/analytics/analytics_total_profit');
+const analyticsTotalOrdersRoutes = require('./config/routes/analytics/analytics_total_orders');
 const analyticsItemsSoldRoutes = require('./config/routes/analytics/analytics_items_sold');
 const analyticsAvgBasketRoutes = require('./config/routes/analytics/analytics_avg_basket');
 const analyticsRevenueTrendRoutes = require('./config/routes/analytics/analytics_revenue_trend');
@@ -95,8 +95,8 @@ app.use('/', transactionsStatsRoutes);
 app.use('/', transactionsReportRoutes);
 app.use('/', analyticsServeRoutes);
 app.use('/', analyticsDashboardRoutes);
-app.use('/', analyticsTotalRevenueRoutes);
-app.use('/', analyticsTotalSalesRoutes);
+app.use('/', analyticsTotalProfitRoutes);
+app.use('/', analyticsTotalOrdersRoutes);
 app.use('/', analyticsItemsSoldRoutes);
 app.use('/', analyticsAvgBasketRoutes);
 app.use('/', analyticsRevenueTrendRoutes);

@@ -173,12 +173,12 @@ const AnalyticsPrint = {
     <!-- Summary Statistics -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-label">Total Revenue</div>
-            <div class="stat-value">₱${this.formatNumber(report.totalRevenue || 0)}</div>
+            <div class="stat-label">Total Profit</div>
+            <div class="stat-value">₱${this.formatNumber(report.totalProfit !== undefined ? report.totalProfit : (report.totalRevenue || 0))}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Total Sales</div>
-            <div class="stat-value">${report.salesCount || 0}</div>
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value">${report.ordersCount !== undefined ? report.ordersCount : (report.totalOrders !== undefined ? report.totalOrders : (report.salesCount || 0))}</div>
         </div>
         <div class="stat-card">
             <div class="stat-label">Items Sold</div>
