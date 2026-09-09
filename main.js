@@ -15,12 +15,18 @@ const customerVerifyOtpRoutes = require('./config/routes/customer/customer_verif
 const customerGenerateOtpRoutes = require('./config/routes/customer/customer_generate_otp');
 const customerLoginRoutes = require('./config/routes/customer/customer_login');
 const customerUpdateProfileRoutes = require('./config/routes/customer/customer_update_profile');
+const customerCreateOrderRoutes = require('./config/routes/customer/customer_create_order');
+const customerGetOrdersRoutes = require('./config/routes/customer/customer_get_orders');
+const customerCancelOrderRoutes = require('./config/routes/customer/customer_cancel_order');
+const customerTrackOrderRoutes = require('./config/routes/customer/customer_track_order');
 
 // User routes
 const userProfileRoutes = require('./config/routes/users/user-profile');
 const settingsRoutes = require('./config/routes/users/settings');
 
 // Catalog routes
+const catalogGetProductsRoutes = require('./config/routes/catalog/catalog_get_products');
+const catalogImageProxyRoutes = require('./config/routes/catalog/catalog_image_proxy');
 const catalogRoutes = require('./config/routes/catalog/catalog');
 
 // Dashboard routes
@@ -81,6 +87,12 @@ app.use('/', customerVerifyOtpRoutes);
 app.use('/', customerGenerateOtpRoutes);
 app.use('/', customerLoginRoutes);
 app.use('/', customerUpdateProfileRoutes);
+app.use('/', customerCreateOrderRoutes);
+app.use('/', customerGetOrdersRoutes);
+app.use('/', customerCancelOrderRoutes);
+app.use('/', customerTrackOrderRoutes);
+app.use('/', catalogGetProductsRoutes); // Public product listing
+app.use('/', catalogImageProxyRoutes); // Public product image proxy
 app.use('/', catalogRoutes); // Public catalog for customers
 app.use('/', passwordResetRoutes); // Password reset (public)
 app.use('/keep-alive', keepAliveRoutes); // Public keep-alive endpoint (token-protected)

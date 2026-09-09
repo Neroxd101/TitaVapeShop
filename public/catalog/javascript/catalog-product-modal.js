@@ -128,21 +128,9 @@ const CatalogProductModal = {
             return [url];
         }
 
-        const directUrl = `https://drive.usercontent.google.com/download?id=${fileId}&export=view`;
-        
-        if (size <= 200) {
-            return [
-                directUrl,
-                `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
-                `/api/catalog/image/${fileId}`,
-                url
-            ];
-        }
-        
         return [
-            directUrl,
-            `/api/catalog/image/${fileId}`,
             `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
+            `/api/catalog/image/${fileId}`,
             url
         ];
     },

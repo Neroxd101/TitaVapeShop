@@ -139,19 +139,26 @@
     cancelOrderBtn.textContent = 'Cancelling...';
     cancelOrderMessage.hidden = true;
     try {
-      const response = await fetch('/api/orders/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: currentOrder.id, phone: contactNumberInput?.value?.trim() })
-      });
-      if (response.redirected || !response.headers.get('content-type')?.includes('application/json')) {
-        throw new Error('Cancellation is unavailable. The app server may need restarting to load the latest update.');
+      let result = null;
+      if (window.CustomerCancelOrder && typeof window.CustomerCancelOrder.cancelOrder === 'function') {
+        result = await window.CustomerCancelOrder.cancelOrder(currentOrder.id, contactNumberInput?.value?.trim());
+      } else {
+        const response = await fetch('/api/orders/cancel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: currentOrder.id, phone: contactNumberInput?.value?.trim() })
+        });
+        if (response.redirected || !response.headers.get('content-type')?.includes('application/json')) {
+          throw new Error('Cancellation is unavailable. The app server may need restarting to load the latest update.');
+        }
+        const data = await response.json();
+        result = data;
       }
-      const data = await response.json();
-      if (!response.ok || !data.success || !data.order) {
-        throw new Error(data.error || 'Unable to cancel your order. Please try again.');
+
+      if (!result || !result.success || !result.order) {
+        throw new Error(result?.error || 'Unable to cancel your order. Please try again.');
       }
-      currentOrder = data.order;
+      currentOrder = result.order;
       saveOrderToLocalStorage(currentOrder);
       renderOrder(currentOrder);
       cancelOrderMessage.textContent = 'Your order has been cancelled.';
@@ -185,19 +192,30 @@
       return;
     }
 
-    let url = `/api/orders/track?id=${encodeURIComponent(targetId)}`;
-    if (phoneInput) {
-      url += `&phone=${encodeURIComponent(phoneInput)}`;
-    }
-
     try {
-      const response = await fetch(url);
-      const data = await response.json();
+      let result = null;
+      if (window.CustomerTrackOrder && typeof window.CustomerTrackOrder.trackOrder === 'function') {
+        result = await window.CustomerTrackOrder.trackOrder(targetId, phoneInput || '');
+      } else {
+        let url = `/api/orders/track?id=${encodeURIComponent(targetId)}`;
+        if (phoneInput) {
+          url += `&phone=${encodeURIComponent(phoneInput)}`;
+        }
+        const response = await fetch(url);
+        const data = await response.json().catch(() => null);
+        result = {
+          success: response.ok && data?.success,
+          order: data?.order,
+          requiresPhone: response.status === 401 && data?.requiresPhone,
+          status: response.status,
+          error: data?.error
+        };
+      }
 
       if (requestVersion !== orderRequestVersion) return;
 
-      if (response.ok && data.success && data.order) {
-        currentOrder = data.order;
+      if (result && result.success && result.order) {
+        currentOrder = result.order;
 
         // Save order to localStorage for recent orders modal
         saveOrderToLocalStorage(currentOrder);
@@ -207,15 +225,15 @@
 
         // Setup polling if pending/confirmed
         setupPolling(currentOrder.status);
-      } else if (response.status === 401 && data.requiresPhone) {
+      } else if (result?.requiresPhone || result?.status === 401) {
         showState('verifyPhone');
         if (phoneInput) {
-          showPhoneError(data.error || 'Contact number does not match.');
+          showPhoneError(result?.error || 'Contact number does not match.');
         }
-      } else if (response.status === 403) {
-        showPhoneError(data.error || 'Contact number does not match this order.');
+      } else if (result?.status === 403) {
+        showPhoneError(result?.error || 'Contact number does not match this order.');
       } else {
-        showError('Order Not Found', data.error || 'We could not find the order matching this request.');
+        showError('Order Not Found', result?.error || 'We could not find the order matching this request.');
       }
     } catch (err) {
       if (requestVersion !== orderRequestVersion) return;

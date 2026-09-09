@@ -153,26 +153,40 @@ const CatalogCheckoutModal = {
         let isRedirecting = false;
 
         try {
-            const response = await fetch('/api/orders/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({
+            let result;
+            if (window.CustomerCreateOrder) {
+                result = await window.CustomerCreateOrder.submit({
                     customer_name: customerName,
                     contact_number: digitsOnly,
                     customer_email: customerEmail,
                     order_type: orderType,
                     items: items,
                     total_amount: totalAmount
-                })
-            });
-
-            const result = await response.json();
+                });
+            } else {
+                const response = await fetch('/api/orders/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        customer_name: customerName,
+                        contact_number: digitsOnly,
+                        customer_email: customerEmail,
+                        order_type: orderType,
+                        items: items,
+                        total_amount: totalAmount
+                    })
+                });
+                result = await response.json();
+                if (response.status === 401 || response.status === 403) {
+                    result.requiresAuth = true;
+                }
+            }
 
             // Authentication or verification required from server
-            if (response.status === 401 || response.status === 403) {
+            if (result.requiresAuth) {
                 this.close();
                 if (window.CustomerAuth) {
                     window.CustomerAuth.requireAuth(() => this.show(), result.error || 'Please sign in or verify your email to create an order.');
@@ -185,27 +199,6 @@ const CatalogCheckoutModal = {
             if (result.success && result.order) {
                 isRedirecting = true;
                 submitBtn.textContent = 'Redirecting to Order Status...';
-
-                // Save to customer's local recent orders cache
-                try {
-                    let orders = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
-                    if (!Array.isArray(orders)) orders = [];
-                    orders.unshift({
-                        id: result.order.id,
-                        order_type: result.order.order_type,
-                        total_amount: result.order.total_amount,
-                        status: result.order.status || 'pending',
-                        created_at: result.order.created_at || new Date().toISOString(),
-                        customer_name: result.order.customer_name
-                    });
-                    orders = orders.slice(0, 15);
-                    localStorage.setItem('tita_recent_orders', JSON.stringify(orders));
-                    if (window.CatalogOrdersModal) {
-                        window.CatalogOrdersModal.updateBadge();
-                    }
-                } catch (e) {
-                    console.warn('Failed to save recent order to localStorage:', e);
-                }
 
                 // Clear cart and reset form
                 if (window.CatalogCart) {

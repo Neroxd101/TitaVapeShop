@@ -195,13 +195,18 @@ const CatalogOrdersModal = {
 
     // Sync from server for authenticated customer account
     try {
-      const response = await fetch('/api/orders/track-batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({})
-      });
-      const data = await response.json();
+      let data;
+      if (window.CustomerGetOrders) {
+        data = await window.CustomerGetOrders.fetchOrders(25);
+      } else {
+        const response = await fetch('/api/orders/track-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({})
+        });
+        data = await response.json();
+      }
 
       if (data.success && Array.isArray(data.orders)) {
         orders = data.orders.map(remote => ({

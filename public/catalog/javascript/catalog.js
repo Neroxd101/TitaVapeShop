@@ -69,16 +69,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /**
-     * Fetch products from the RPC function
+     * Fetch products from CatalogGetProducts module
      */
     async function fetchProducts() {
         try {
-            const response = await fetch('/api/inventory/list');
+            if (window.CatalogGetProducts) {
+                const result = await window.CatalogGetProducts.fetchProducts();
+                if (result.success) {
+                    allProducts = result.data;
+                    if (window.CatalogProductModal) {
+                        CatalogProductModal.allProducts = allProducts;
+                    }
+                    filterAndRender();
+                    return;
+                }
+            }
+
+            const response = await fetch('/api/catalog/products');
             const result = await response.json();
 
             if (result.success) {
                 allProducts = result.data;
-                // Update modal with products
                 if (window.CatalogProductModal) {
                     CatalogProductModal.allProducts = allProducts;
                 }
@@ -364,23 +375,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return [url];
         }
 
-        const directUrl = `https://drive.usercontent.google.com/download?id=${fileId}&export=view`;
-        
-        // For thumbnails, use smaller size in thumbnail endpoint
-        if (size <= 200) {
-            return [
-                directUrl, // Primary: Direct view URL (works for public files)
-                `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`, // Thumbnail endpoint
-                `/api/catalog/image/${fileId}`, // Proxy endpoint
-                url // Original URL
-            ];
-        }
-        
-        // For larger images
         return [
-            directUrl,
-            `/api/catalog/image/${fileId}`,
             `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
+            `/api/catalog/image/${fileId}`,
             url
         ];
     }

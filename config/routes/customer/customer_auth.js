@@ -9,6 +9,8 @@ const verifyOtpRoutes = require('./customer_verify_otp');
 const generateOtpRoutes = require('./customer_generate_otp');
 const loginRoutes = require('./customer_login');
 const updateProfileRoutes = require('./customer_update_profile');
+const createOrderRoutes = require('./customer_create_order');
+const getOrdersRoutes = require('./customer_get_orders');
 
 // Mount all modular routes
 router.use('/', checkEmailRoutes);
@@ -18,5 +20,7 @@ router.use('/', verifyOtpRoutes);
 router.use('/', generateOtpRoutes);
 router.use('/', loginRoutes);
 router.use('/', updateProfileRoutes);
+router.use('/', createOrderRoutes);
+router.use('/', getOrdersRoutes);
 
 module.exports = router;
