@@ -118,3 +118,212 @@
         margin-right: 6px !important;
     }
 }
+
+/* =============================================
+   Streamlined Checkout Customer Card & Fulfillment Styles
+   ============================================= */
+
+.checkout-modal-container {
+    max-width: 520px !important;
+    border-radius: 18px !important;
+}
+
+/* Verified Customer Display Card */
+.checkout-customer-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    transition: border-color 0.2s;
+}
+
+.checkout-customer-avatar {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent, #00d4aa) 0%, #009977 100%);
+    color: #0a0a0f;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px var(--accent-glow, rgba(0, 212, 170, 0.3));
+    text-transform: uppercase;
+}
+
+.checkout-customer-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.checkout-customer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 3px;
+}
+
+.checkout-customer-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary, #ffffff);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.checkout-verified-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0, 212, 170, 0.12);
+    border: 1px solid rgba(0, 212, 170, 0.3);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent, #00d4aa);
+    flex-shrink: 0;
+}
+
+.checkout-customer-meta {
+    font-size: 12.5px;
+    color: var(--text-secondary, #a0a0b0);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.checkout-customer-meta .meta-dot {
+    opacity: 0.5;
+}
+
+/* Order Type Segmented Choice (Pickup vs Delivery) */
+.checkout-fulfillment-group {
+    margin-bottom: 20px !important;
+}
+
+.checkout-fulfillment-group label {
+    display: block;
+    font-size: 12.5px !important;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.order-type-picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.order-type-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px solid var(--border, rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+    user-select: none;
+}
+
+.order-type-card:hover {
+    border-color: rgba(0, 212, 170, 0.4);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.order-type-card.active {
+    border-color: var(--accent, #00d4aa) !important;
+    background: rgba(0, 212, 170, 0.08) !important;
+    box-shadow: 0 0 16px rgba(0, 212, 170, 0.18);
+}
+
+.order-type-icon {
+    margin-top: 2px;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+
+.order-type-card.active .order-type-icon {
+    color: var(--accent, #00d4aa);
+}
+
+.order-type-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.order-type-text strong {
+    font-size: 13.5px;
+    color: var(--text-primary, #ffffff);
+}
+
+.order-type-text small {
+    font-size: 11px;
+    color: var(--text-secondary, #8b8b9e);
+    line-height: 1.3;
+}
+
+/* Modal form actions */
+#checkoutForm .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+#checkoutForm .form-actions .btn {
+    flex: 1;
+    height: 44px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#checkoutForm #createOrderBtn {
+    flex: 1.6;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 520px) {
+    .order-type-picker {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .checkout-customer-card {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .checkout-customer-avatar {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        font-size: 15px;
+    }
+
+    .checkout-customer-name {
+        font-size: 13.5px;
+    }
+
+    .checkout-customer-meta {
+        font-size: 11px;
+    }
+
+    .order-type-card {
+        padding: 10px 12px;
+    }
+}

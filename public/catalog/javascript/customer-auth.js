@@ -8,6 +8,7 @@ const CustomerAuth = {
   pendingSuccessAction: null,
   resendTimerInterval: null,
   activeEmail: '',
+  isEmailChangeVerification: false,
 
   /**
    * Initialize Customer Auth
@@ -56,6 +57,12 @@ const CustomerAuth = {
     const container = document.getElementById('customerNavContainer');
     if (!container) return;
 
+    const ordersBtn = document.getElementById('ordersBtn');
+    if (ordersBtn) {
+      ordersBtn.style.display = this.currentUser ? 'none' : '';
+    }
+    document.body.classList.toggle('customer-logged-in', Boolean(this.currentUser));
+
     if (this.currentUser) {
       const initials = (this.currentUser.full_name || this.currentUser.email || 'C')
         .trim()
@@ -82,6 +89,7 @@ const CustomerAuth = {
             <button type="button" class="customer-dropdown-item" id="navMyOrdersItem">
               <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
               <span>My Orders</span>
+              <span id="navOrdersBadge" style="display: none; margin-left: auto; background: var(--accent); color: #0a0a0f; border-radius: 10px; padding: 1px 7px; font-size: 11px; font-weight: 700;"></span>
             </button>
             <button type="button" class="customer-dropdown-item logout-item" id="navLogoutItem">
               <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
@@ -231,6 +239,14 @@ const CustomerAuth = {
     if (view === 'signin') {
       const emailInput = document.getElementById('customerSignInEmail');
       if (emailInput) setTimeout(() => emailInput.focus(), 50);
+      const passInput = document.getElementById('customerSignInPassword');
+      const toggleBtn = document.getElementById('toggleCustomerSignInPassword');
+      if (passInput) passInput.type = 'password';
+      if (toggleBtn) {
+        toggleBtn.classList.remove('is-visible');
+        toggleBtn.setAttribute('aria-pressed', 'false');
+        toggleBtn.setAttribute('aria-label', 'Show password');
+      }
     } else if (view === 'register') {
       const nameInput = document.getElementById('customerRegName');
       if (nameInput) setTimeout(() => nameInput.focus(), 50);
@@ -310,10 +326,27 @@ const CustomerAuth = {
     if (toRegisterBtn) toRegisterBtn.addEventListener('click', () => this.switchView('register'));
 
     const toSignInBtn = document.getElementById('switchToSignInBtn');
-    if (toSignInBtn) toSignInBtn.addEventListener('click', () => this.switchView('signin'));
+    if (toSignInBtn) {
+      toSignInBtn.addEventListener('click', () => {
+        const regEmail = document.getElementById('customerRegEmail');
+        const signInEmail = document.getElementById('customerSignInEmail');
+        if (regEmail && signInEmail && regEmail.value.trim() && !signInEmail.value) {
+          signInEmail.value = regEmail.value.trim();
+        }
+        this.switchView('signin');
+      });
+    }
 
     const backToRegBtn = document.getElementById('customerBackToRegBtn');
-    if (backToRegBtn) backToRegBtn.addEventListener('click', () => this.switchView('register'));
+    if (backToRegBtn) {
+      backToRegBtn.addEventListener('click', () => {
+        if (this.isEmailChangeVerification) {
+          this.switchView('profile');
+        } else {
+          this.switchView('register');
+        }
+      });
+    }
 
     // Privacy View Triggers
     const openPrivacyBtn = document.getElementById('openPrivacyModalBtn');
@@ -337,16 +370,65 @@ const CustomerAuth = {
       birthdayInput.max = maxDate.toISOString().split('T')[0];
     }
 
-    // 1. Sign In Form
+    // 1. Sign In Form & Password Visibility Toggle
+    const toggleSignInPassword = document.getElementById('toggleCustomerSignInPassword');
+    const signInPasswordInput = document.getElementById('customerSignInPassword');
+    if (toggleSignInPassword && signInPasswordInput) {
+      toggleSignInPassword.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isPassword = signInPasswordInput.type === 'password';
+        signInPasswordInput.type = isPassword ? 'text' : 'password';
+        toggleSignInPassword.classList.toggle('is-visible', isPassword);
+        toggleSignInPassword.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+        toggleSignInPassword.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      });
+    }
+
     const signInForm = document.getElementById('customerSignInForm');
     if (signInForm) {
       signInForm.addEventListener('submit', (e) => this.handleSignIn(e));
     }
 
-    // 2. Register Form
+    // 2. Register Form & Email Uniqueness Check
     const regForm = document.getElementById('customerRegisterForm');
     if (regForm) {
       regForm.addEventListener('submit', (e) => this.handleRegister(e));
+    }
+
+    const regEmailInput = document.getElementById('customerRegEmail');
+    if (regEmailInput) {
+      regEmailInput.addEventListener('blur', async () => {
+        const val = regEmailInput.value.trim().toLowerCase();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!val || !emailRegex.test(val)) return;
+
+        try {
+          const res = await fetch(`/api/customer/check-email?email=${encodeURIComponent(val)}`);
+          const data = await res.json();
+          if (data.success && data.exists) {
+            this.showError('customerRegisterError', 'This email already exists. Please sign in.');
+            regEmailInput.style.borderColor = 'var(--error, #ff4757)';
+            const signInEmail = document.getElementById('customerSignInEmail');
+            if (signInEmail) signInEmail.value = val;
+          } else {
+            const errEl = document.getElementById('customerRegisterError');
+            if (errEl && errEl.textContent.includes('already exists in our database')) {
+              errEl.style.display = 'none';
+              errEl.textContent = '';
+            }
+            regEmailInput.style.borderColor = '';
+          }
+        } catch (_) { }
+      });
+
+      regEmailInput.addEventListener('input', () => {
+        regEmailInput.style.borderColor = '';
+        const errEl = document.getElementById('customerRegisterError');
+        if (errEl && errEl.textContent.includes('already exists in our database')) {
+          errEl.style.display = 'none';
+          errEl.textContent = '';
+        }
+      });
     }
 
     // 3. Verify OTP Form
@@ -621,10 +703,21 @@ const CustomerAuth = {
       }
 
       this.activeEmail = result.email || email;
+      this.isEmailChangeVerification = false;
+      const verifyBtn = document.getElementById('customerVerifySubmitBtn');
+      if (verifyBtn) {
+        verifyBtn.textContent = this.pendingSuccessAction ? 'Verify & Place Order' : 'Verify Email';
+      }
       this.switchView('verify');
       this.startResendCountdown(60);
     } catch (err) {
       this.showError('customerRegisterError', err.message || 'Registration failed. Please check your information.');
+      if (err.message && err.message.toLowerCase().includes('already exists')) {
+        const regEmailInput = document.getElementById('customerRegEmail');
+        if (regEmailInput) regEmailInput.style.borderColor = 'var(--error, #ff4757)';
+        const signInEmail = document.getElementById('customerSignInEmail');
+        if (signInEmail && email) signInEmail.value = email;
+      }
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Continue & Send Code';
@@ -664,8 +757,9 @@ const CustomerAuth = {
       }
 
       this.currentUser = result.user;
+      this.isEmailChangeVerification = false;
       this.updateNavUI();
-      this.showSuccess('customerVerifySuccess', '✓ Email verified successfully! Loading checkout...');
+      this.showSuccess('customerVerifySuccess', '✓ Email verified successfully!');
 
       clearInterval(this.resendTimerInterval);
 
@@ -681,7 +775,7 @@ const CustomerAuth = {
       this.showError('customerVerifyError', err.message || 'Invalid code. Please try again.');
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Verify & Place Order';
+      submitBtn.textContent = this.pendingSuccessAction ? 'Verify & Place Order' : 'Verify Email';
     }
   },
 
@@ -745,10 +839,10 @@ const CustomerAuth = {
   async handleLogout() {
     try {
       await fetch('/api/customer/logout', { method: 'POST', credentials: 'include' });
-    } catch (e) {}
+    } catch (e) { }
     try {
       localStorage.removeItem('tita_recent_orders');
-    } catch (_) {}
+    } catch (_) { }
     this.currentUser = null;
     this.updateNavUI();
     // Refresh page to sync cart & modals
@@ -849,9 +943,30 @@ const CustomerAuth = {
         return;
       }
 
-      // Update current user state and navbar
+      // If email was changed, require 6-digit OTP verification for the new email address
+      if (data.email_changed) {
+        this.activeEmail = data.email;
+        this.isEmailChangeVerification = true;
+        this.currentUser = null;
+        this.updateNavUI();
+
+        // Switch to OTP verify view
+        this.switchView('verify');
+        this.startResendCountdown(60);
+
+        const emailTarget = document.getElementById('customerVerifyEmailTarget');
+        if (emailTarget) emailTarget.textContent = data.email;
+
+        const verifyBtn = document.getElementById('customerVerifySubmitBtn');
+        if (verifyBtn) verifyBtn.textContent = 'Verify Email';
+
+        this.showSuccess('customerVerifySuccess', data.message || 'Verification code sent to your new email. Please verify to continue.');
+        return;
+      }
+
+      // Normal profile update without changing email
       this.currentUser = data.user;
-      this.renderNav();
+      this.updateNavUI();
 
       // Update avatar badge in modal
       const avatarBadge = document.getElementById('profileModalAvatar');

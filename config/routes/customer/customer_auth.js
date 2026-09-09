@@ -112,6 +112,44 @@ async function sendMail(to, subject, html) {
 }
 
 /**
+ * GET /api/customer/check-email
+ * Check if email address is already registered in the database
+ */
+router.get('/api/customer/check-email', async (req, res) => {
+  try {
+    const client = dbClient();
+    if (!client) {
+      return res.status(500).json({ success: false, error: 'Database service unavailable' });
+    }
+
+    const cleanEmail = (req.query.email || '').trim().toLowerCase();
+    if (!cleanEmail) {
+      return res.status(400).json({ success: false, error: 'Email parameter is required.' });
+    }
+
+    const { data: existingUser, error: checkError } = await client
+      .from('users')
+      .select('id, email, is_verified')
+      .ilike('email', cleanEmail)
+      .maybeSingle();
+
+    if (checkError) {
+      console.error('[Customer Check Email] Error:', checkError);
+      return res.status(500).json({ success: false, error: 'Error checking email availability.' });
+    }
+
+    return res.json({
+      success: true,
+      exists: Boolean(existingUser),
+      is_verified: existingUser ? Boolean(existingUser.is_verified) : false
+    });
+  } catch (err) {
+    console.error('[Customer Check Email] Exception:', err);
+    return res.status(500).json({ success: false, error: 'Internal server error.' });
+  }
+});
+
+/**
  * POST /api/customer/register
  * Register a new customer and dispatch 6-digit OTP email
  */
@@ -140,14 +178,15 @@ router.post('/api/customer/register', async (req, res) => {
     }
 
     if (!birthday) {
-      return res.status(400).json({ success: false, error: 'Please provide your date of birth.' });
+      return res.status(400).json({ success: false, error: 'Date of birth is required.' });
     }
 
     const birthDate = new Date(birthday);
     if (isNaN(birthDate.getTime())) {
-      return res.status(400).json({ success: false, error: 'Please provide a valid date of birth.' });
+      return res.status(400).json({ success: false, error: 'Please enter a valid date of birth.' });
     }
 
+    // Age validation: Republic Act No. 11900 requires buyers to be at least 18 years old
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -156,17 +195,14 @@ router.post('/api/customer/register', async (req, res) => {
     }
 
     if (age < 18) {
-      return res.status(400).json({
+      return res.status(403).json({
         success: false,
-        error: 'You must be at least 18 years old to create an account and purchase vape products (Republic Act No. 11900).'
+        error: 'You must be at least 18 years of age to register and purchase vapor products under Republic Act No. 11900.'
       });
     }
 
     if (!password || password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        error: 'Password must be at least 8 characters long.'
-      });
+      return res.status(400).json({ success: false, error: 'Password must be at least 8 characters long.' });
     }
 
     const hasUpper = /[A-Z]/.test(password);
@@ -181,11 +217,11 @@ router.post('/api/customer/register', async (req, res) => {
       });
     }
 
-    // Check if email is already in users table
+    // Check if email already exists in users table (case-insensitive)
     const { data: existingUser, error: checkError } = await client
       .from('users')
       .select('id, email, is_verified, roles')
-      .eq('email', cleanEmail)
+      .ilike('email', cleanEmail)
       .maybeSingle();
 
     if (checkError) {
@@ -193,75 +229,47 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Failed to verify email availability.' });
     }
 
-    let userId = null;
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        error: 'This email already exists. Please sign in.'
+      });
+    }
+
     const hashedPassword = bcrypt.hashSync(password, 10);
     const birthDateFormatted = birthDate.toISOString().split('T')[0];
 
-    if (existingUser) {
-      if (existingUser.is_verified) {
-        return res.status(400).json({
-          success: false,
-          error: 'This email is already registered and verified. Please sign in.'
-        });
-      }
-      // Existing unverified user: update their record
-      userId = existingUser.id;
-      const updatePayload = {
-        full_name: full_name.trim(),
-        contact_number: digitsOnly,
-        birthday: birthDateFormatted,
-        password: hashedPassword,
-        roles: 'customer'
-      };
+    // Create new user record
+    const newUsername = `${cleanEmail.split('@')[0]}_${Date.now().toString().slice(-4)}`;
+    const insertPayload = {
+      username: newUsername,
+      email: cleanEmail,
+      password: hashedPassword,
+      full_name: full_name.trim(),
+      contact_number: digitsOnly,
+      birthday: birthDateFormatted,
+      roles: 'customer',
+      is_verified: false
+    };
 
-      let { error: updateError } = await client
-        .from('users')
-        .update(updatePayload)
-        .eq('id', userId);
+    let { data: newUser, error: insertError } = await client
+      .from('users')
+      .insert(insertPayload)
+      .select('id')
+      .single();
 
-      if (updateError && updateError.message && updateError.message.includes('birthday')) {
-        delete updatePayload.birthday;
-        const retry = await client.from('users').update(updatePayload).eq('id', userId);
-        updateError = retry.error;
-      }
-
-      if (updateError) {
-        console.error('[Customer Register] Update unverified error:', updateError);
-        return res.status(500).json({ success: false, error: 'Failed to update account information.' });
-      }
-    } else {
-      // Create new user record
-      const newUsername = `${cleanEmail.split('@')[0]}_${Date.now().toString().slice(-4)}`;
-      const insertPayload = {
-        username: newUsername,
-        email: cleanEmail,
-        password: hashedPassword,
-        full_name: full_name.trim(),
-        contact_number: digitsOnly,
-        birthday: birthDateFormatted,
-        roles: 'customer',
-        is_verified: false
-      };
-
-      let { data: newUser, error: insertError } = await client
-        .from('users')
-        .insert(insertPayload)
-        .select('id')
-        .single();
-
-      if (insertError && insertError.message && insertError.message.includes('birthday')) {
-        delete insertPayload.birthday;
-        const retry = await client.from('users').insert(insertPayload).select('id').single();
-        newUser = retry.data;
-        insertError = retry.error;
-      }
-
-      if (insertError) {
-        console.error('[Customer Register] Insert error:', insertError);
-        return res.status(500).json({ success: false, error: insertError.message || 'Failed to create account.' });
-      }
-      userId = newUser.id;
+    if (insertError && insertError.message && insertError.message.includes('birthday')) {
+      delete insertPayload.birthday;
+      const retry = await client.from('users').insert(insertPayload).select('id').single();
+      newUser = retry.data;
+      insertError = retry.error;
     }
+
+    if (insertError) {
+      console.error('[Customer Register] Insert error:', insertError);
+      return res.status(500).json({ success: false, error: insertError.message || 'Failed to create account.' });
+    }
+    const userId = newUser.id;
 
     // Generate 6-digit OTP code
     const otpCode = generateCode();
@@ -517,7 +525,7 @@ router.post('/api/customer/login', async (req, res) => {
           'Verify Your Email - Tita\'s Vape Shop',
           generateVerificationEmail(otpCode, user.full_name)
         );
-      } catch (e) {}
+      } catch (e) { }
 
       return res.status(403).json({
         success: false,
@@ -649,8 +657,10 @@ router.put('/api/customer/profile', async (req, res) => {
   const normalizedName = full_name.trim();
 
   try {
-    // Check if changing email and new email already belongs to someone else
-    if (normalizedEmail !== decoded.email.toLowerCase()) {
+    const isEmailChanging = normalizedEmail !== (decoded.email || '').toLowerCase();
+
+    if (isEmailChanging) {
+      // Check if changing email and new email already belongs to someone else
       const { data: existingUser, error: checkErr } = await client
         .from('users')
         .select('id')
@@ -663,15 +673,73 @@ router.put('/api/customer/profile', async (req, res) => {
       } else if (existingUser) {
         return res.status(400).json({ success: false, error: 'This email is already associated with another account.' });
       }
+
+      // Update user record: set new email, reset verification status
+      const { data: updatedUser, error: updateErr } = await client
+        .from('users')
+        .update({
+          full_name: normalizedName,
+          contact_number: normalizedPhone,
+          email: normalizedEmail,
+          is_verified: false,
+          email_verified_at: null
+        })
+        .eq('id', decoded.id)
+        .select('id, email, full_name, contact_number')
+        .single();
+
+      if (updateErr || !updatedUser) {
+        console.error('[Customer Update Profile] DB update error:', updateErr);
+        return res.status(500).json({ success: false, error: 'Failed to update profile details.' });
+      }
+
+      // Invalidate current customer session cookie since account requires verification
+      res.clearCookie('customer_token');
+
+      // Generate 6-digit OTP code
+      const otpCode = generateCode();
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+      // Store in customer_verification_codes
+      const { error: otpError } = await client
+        .from('customer_verification_codes')
+        .insert({
+          user_id: decoded.id,
+          email: normalizedEmail,
+          otp_code: otpCode,
+          expires_at: expiresAt,
+          verified: false
+        });
+
+      if (otpError) {
+        console.error('[Customer Update Profile] OTP insert error:', otpError);
+      }
+
+      // Dispatch verification email to the new email address
+      try {
+        await sendMail(
+          normalizedEmail,
+          "Verify Your New Email - Tita's Vape Shop",
+          generateVerificationEmail(otpCode, normalizedName)
+        );
+      } catch (mailErr) {
+        console.error('[Customer Update Profile] Email dispatch error:', mailErr);
+      }
+
+      return res.json({
+        success: true,
+        email_changed: true,
+        email: normalizedEmail,
+        message: 'Your email address was updated! A 6-digit verification code has been sent to your new email. Please verify to continue.'
+      });
     }
 
-    // Update user record
+    // Email unchanged: update name & contact number only
     const { data: updatedUser, error: updateErr } = await client
       .from('users')
       .update({
         full_name: normalizedName,
-        contact_number: normalizedPhone,
-        email: normalizedEmail
+        contact_number: normalizedPhone
       })
       .eq('id', decoded.id)
       .select('id, email, full_name, contact_number, birthday')
@@ -702,6 +770,7 @@ router.put('/api/customer/profile', async (req, res) => {
 
     return res.json({
       success: true,
+      email_changed: false,
       message: 'Profile updated successfully!',
       user: customerPayload
     });

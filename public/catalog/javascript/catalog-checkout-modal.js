@@ -76,17 +76,39 @@ const CatalogCheckoutModal = {
                 await this.handleSubmit();
             });
         }
+
+        // Fulfillment Type Selection (Pickup vs Delivery)
+        const pickupCard = document.getElementById('orderTypePickupCard');
+        const deliveryCard = document.getElementById('orderTypeDeliveryCard');
+        const orderTypeInput = document.getElementById('orderType');
+
+        if (pickupCard && deliveryCard && orderTypeInput) {
+            pickupCard.addEventListener('click', () => {
+                pickupCard.classList.add('active');
+                deliveryCard.classList.remove('active');
+                const radio = pickupCard.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+                orderTypeInput.value = 'pickup';
+            });
+            deliveryCard.addEventListener('click', () => {
+                deliveryCard.classList.add('active');
+                pickupCard.classList.remove('active');
+                const radio = deliveryCard.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+                orderTypeInput.value = 'delivery';
+            });
+        }
     },
 
     /**
      * Handle form submission
      */
     async handleSubmit() {
-        const orderType = document.getElementById('orderType').value;
-        const customerName = document.getElementById('customerName').value.trim();
-        const contactNumber = document.getElementById('contactNumber').value.trim();
-        const socialMedia = document.getElementById('socialMedia').value.trim();
-        const customerEmail = document.getElementById('customerEmail').value.trim();
+        const orderType = document.getElementById('orderType')?.value || 'pickup';
+        const user = window.CustomerAuth?.currentUser || {};
+        const customerName = document.getElementById('customerName')?.value?.trim() || user.full_name || '';
+        const contactNumber = document.getElementById('contactNumber')?.value?.trim() || user.contact_number || '';
+        const customerEmail = document.getElementById('customerEmail')?.value?.trim() || user.email || '';
 
         // Validate contact number (11 digits)
         const digitsOnly = contactNumber.replace(/\D/g, '');
@@ -140,7 +162,6 @@ const CatalogCheckoutModal = {
                 body: JSON.stringify({
                     customer_name: customerName,
                     contact_number: digitsOnly,
-                    social_media: socialMedia || null,
                     customer_email: customerEmail,
                     order_type: orderType,
                     items: items,
@@ -235,25 +256,39 @@ const CatalogCheckoutModal = {
             return;
         }
 
-        // Auto-fill verified customer info
+        // Display verified customer info (no typing needed)
         if (window.CustomerAuth && window.CustomerAuth.currentUser) {
             const user = window.CustomerAuth.currentUser;
             const nameInput = document.getElementById('customerName');
             const emailInput = document.getElementById('customerEmail');
             const phoneInput = document.getElementById('contactNumber');
 
-            if (nameInput && !nameInput.value && user.full_name) {
-                nameInput.value = user.full_name;
+            const displayName = document.getElementById('checkoutDisplayName');
+            const displayPhone = document.getElementById('checkoutDisplayPhone');
+            const displayEmail = document.getElementById('checkoutDisplayEmail');
+            const avatar = document.getElementById('checkoutAvatar');
+
+            if (displayName) displayName.textContent = user.full_name || 'Customer';
+            if (displayPhone) displayPhone.textContent = user.contact_number || 'No mobile set';
+            if (displayEmail) displayEmail.textContent = user.email || '';
+            if (avatar) {
+                const initial = (user.full_name || user.email || 'C').trim().charAt(0).toUpperCase();
+                avatar.textContent = initial;
             }
-            if (emailInput && user.email) {
-                emailInput.value = user.email;
-                emailInput.readOnly = true;
-                emailInput.style.opacity = '0.9';
-                emailInput.title = 'Verified customer email';
-            }
-            if (phoneInput && !phoneInput.value && user.contact_number) {
-                phoneInput.value = user.contact_number;
-            }
+
+            if (nameInput) nameInput.value = user.full_name || '';
+            if (emailInput) emailInput.value = user.email || '';
+            if (phoneInput) phoneInput.value = user.contact_number || '';
+        }
+
+        // Reset fulfillment selection to pickup by default
+        const pickupCard = document.getElementById('orderTypePickupCard');
+        const deliveryCard = document.getElementById('orderTypeDeliveryCard');
+        const orderTypeInput = document.getElementById('orderType');
+        if (pickupCard && deliveryCard && orderTypeInput) {
+            pickupCard.classList.add('active');
+            deliveryCard.classList.remove('active');
+            orderTypeInput.value = 'pickup';
         }
 
         // Update total

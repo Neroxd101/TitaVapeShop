@@ -104,15 +104,28 @@ const CatalogOrdersModal = {
     // Count active orders (pending or confirmed)
     const activeCount = orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
 
+    const navBadge = document.getElementById('navOrdersBadge');
+
     if (activeCount > 0) {
       this.badgeEl.textContent = activeCount;
       this.badgeEl.classList.add('has-items');
+      if (navBadge) {
+        navBadge.textContent = activeCount;
+        navBadge.style.display = 'inline-block';
+      }
     } else if (orders.length > 0) {
       this.badgeEl.textContent = orders.length;
       this.badgeEl.classList.add('has-items');
+      if (navBadge) {
+        navBadge.textContent = orders.length;
+        navBadge.style.display = 'inline-block';
+      }
     } else {
       this.badgeEl.textContent = '0';
       this.badgeEl.classList.remove('has-items');
+      if (navBadge) {
+        navBadge.style.display = 'none';
+      }
     }
   },
 

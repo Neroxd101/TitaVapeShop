@@ -1,9 +1,9 @@
 <!-- Checkout Modal -->
 <div class="modal-overlay" id="checkoutModal">
-    <div class="modal modal-medium">
+    <div class="modal modal-medium checkout-modal-container">
         <div class="modal-header">
             <h3>Checkout</h3>
-            <button class="modal-close" id="closeCheckoutModal">
+            <button class="modal-close" id="closeCheckoutModal" type="button" aria-label="Close checkout">
                 <svg viewBox="0 0 24 24">
                     <path
                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
@@ -12,42 +12,66 @@
         </div>
         <div class="modal-body">
             <form id="checkoutForm">
-                <div class="form-group">
-                    <label for="orderType">Order Type <span class="required">*</span></label>
-                    <select id="orderType" name="orderType" required>
-                        <option value="pickup">Pickup</option>
-                        <option value="delivery">Delivery (3rd Party)</option>
-                    </select>
-                    <small class="form-hint">Pickup orders will receive a QR code</small>
+                <!-- Verified Customer Display Card (Read-only, no typing needed) -->
+                <div class="checkout-customer-card" id="checkoutCustomerCard">
+                    <div class="checkout-customer-avatar" id="checkoutAvatar">C</div>
+                    <div class="checkout-customer-info">
+                        <div class="checkout-customer-header">
+                            <span class="checkout-customer-name" id="checkoutDisplayName">Customer</span>
+                            <span class="checkout-verified-pill">✓ Verified</span>
+                        </div>
+                        <div class="checkout-customer-meta">
+                            <span id="checkoutDisplayPhone">09XXXXXXXXX</span>
+                            <span class="meta-dot">•</span>
+                            <span id="checkoutDisplayEmail">customer@example.com</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="customerName">Name <span class="required">*</span></label>
-                    <input type="text" id="customerName" name="customerName" required>
+
+                <!-- Hidden inputs bound to authenticated customer for order creation -->
+                <input type="hidden" id="customerName" name="customerName">
+                <input type="hidden" id="contactNumber" name="contactNumber">
+                <input type="hidden" id="customerEmail" name="customerEmail">
+
+                <!-- Fulfillment Choice: Pickup or Delivery -->
+                <div class="form-group checkout-fulfillment-group">
+                    <label>Fulfillment Option <span class="required">*</span></label>
+                    <div class="order-type-picker">
+                        <label class="order-type-card active" id="orderTypePickupCard">
+                            <input type="radio" name="orderTypeRadio" value="pickup" checked style="display: none;">
+                            <div class="order-type-icon">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                                </svg>
+                            </div>
+                            <div class="order-type-text">
+                                <strong>Store Pickup</strong>
+                                <small>Claim with digital QR code</small>
+                            </div>
+                        </label>
+                        <label class="order-type-card" id="orderTypeDeliveryCard">
+                            <input type="radio" name="orderTypeRadio" value="delivery" style="display: none;">
+                            <div class="order-type-icon">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                                </svg>
+                            </div>
+                            <div class="order-type-text">
+                                <strong>Delivery (3rd Party)</strong>
+                                <small>Coordinated via mobile number</small>
+                            </div>
+                        </label>
+                    </div>
+                    <input type="hidden" id="orderType" name="orderType" value="pickup">
                 </div>
-                <div class="form-group">
-                    <label for="contactNumber">Contact Number <span class="required">*</span></label>
-                    <input type="tel" id="contactNumber" name="contactNumber" 
-                           placeholder="11 digits" maxlength="11" pattern="[0-9]{11}" required>
-                    <small class="form-hint">Must be exactly 11 digits</small>
-                </div>
-                <div class="form-group">
-                    <label for="socialMedia">Social Media</label>
-                    <input type="text" id="socialMedia" name="socialMedia" 
-                           placeholder="e.g., fb: juan">
-                    <small class="form-hint">Format: platform: username (e.g., fb: juan)</small>
-                </div>
-                <div class="form-group">
-                    <label for="customerEmail">Email <span class="required">*</span></label>
-                    <input type="email" id="customerEmail" name="customerEmail" 
-                           placeholder="customer@example.com" required>
-                    <small class="form-hint" id="customerEmailHint">Verified account email (receives live order updates)</small>
-                </div>
+
                 <div class="checkout-total">
                     <strong>Total Amount: <span id="checkoutTotal">₱0.00</span></strong>
                 </div>
+
                 <div class="form-actions">
                     <button type="button" id="cancelCheckoutBtn" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" id="createOrderBtn" class="btn btn-primary">Create Order</button>
+                    <button type="submit" id="createOrderBtn" class="btn btn-primary">Place Order</button>
                 </div>
             </form>
         </div>
