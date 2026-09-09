@@ -300,6 +300,35 @@ class OrdersController {
                 }
             });
         }
+
+        // Order Cancelled Success Modal
+        const orderCancelledSuccessModal = document.getElementById('orderCancelledSuccessModal');
+        const closeOrderCancelledSuccessModal = document.getElementById('closeOrderCancelledSuccessModal');
+        const closeOrderCancelledSuccessBtn = document.getElementById('closeOrderCancelledSuccessBtn');
+
+        if (closeOrderCancelledSuccessModal) {
+            closeOrderCancelledSuccessModal.addEventListener('click', () => {
+                if (orderCancelledSuccessModal) {
+                    orderCancelledSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (closeOrderCancelledSuccessBtn) {
+            closeOrderCancelledSuccessBtn.addEventListener('click', () => {
+                if (orderCancelledSuccessModal) {
+                    orderCancelledSuccessModal.classList.remove('show');
+                }
+            });
+        }
+
+        if (orderCancelledSuccessModal) {
+            orderCancelledSuccessModal.addEventListener('click', (e) => {
+                if (e.target === orderCancelledSuccessModal) {
+                    orderCancelledSuccessModal.classList.remove('show');
+                }
+            });
+        }
     }
 
     setupEventListeners() {
@@ -757,7 +786,10 @@ class OrdersController {
             const result = await response.json();
 
             if (result.success) {
-                alert('Order cancelled successfully!');
+                const successModal = document.getElementById('orderCancelledSuccessModal');
+                if (successModal) {
+                    successModal.classList.add('show');
+                }
                 this.loadOrders();
             } else {
                 alert('Failed to cancel order: ' + (result.error || 'Unknown error'));
