@@ -131,52 +131,52 @@ const CatalogOrdersModal = {
    * Render orders list
    */
   async render() {
-    const orders = this.getSavedOrders();
+    let orders = this.getSavedOrders();
 
-    if (orders.length === 0) {
-      this.ordersList.innerHTML = '';
-      this.ordersList.style.display = 'none';
-      this.emptyState.style.display = 'block';
-      return;
+    if (orders.length > 0) {
+      this.emptyState.style.display = 'none';
+      this.ordersList.style.display = 'flex';
+      this.renderCards(orders);
     }
 
-    this.emptyState.style.display = 'none';
-    this.ordersList.style.display = 'flex';
-
-    // Render immediate cache first
-    this.renderCards(orders);
-
-    // Sync latest status from server in background
+    // Sync from server (works for local cached orders and logged-in customer accounts)
     try {
       const payload = orders.map(o => ({ id: o.id, token: o.token }));
       const response = await fetch('/api/orders/track-batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ orders: payload })
       });
       const data = await response.json();
 
-      if (data.success && Array.isArray(data.orders)) {
-        // Merge updated statuses
-        const serverMap = new Map(data.orders.map(o => [o.id, o]));
-        let hasChanges = false;
-
-        orders.forEach(localOrder => {
-          const remote = serverMap.get(localOrder.id);
-          if (remote && remote.status !== localOrder.status) {
-            localOrder.status = remote.status;
-            hasChanges = true;
-          }
-        });
-
-        if (hasChanges) {
+      if (data.success && Array.isArray(data.orders) && data.orders.length > 0) {
+        orders = data.orders.map(remote => ({
+          id: remote.id,
+          token: remote.token,
+          order_type: remote.order_type,
+          total_amount: remote.total_amount,
+          status: remote.status,
+          created_at: remote.created_at,
+          customer_name: remote.customer_name
+        }));
+        try {
           localStorage.setItem('tita_recent_orders', JSON.stringify(orders));
-          this.renderCards(orders);
-          this.updateBadge();
-        }
+        } catch (_) {}
+        this.emptyState.style.display = 'none';
+        this.ordersList.style.display = 'flex';
+        this.renderCards(orders);
+        this.updateBadge();
+        return;
       }
     } catch (e) {
       console.warn('[Orders Modal] Sync failed:', e);
+    }
+
+    if (orders.length === 0) {
+      this.ordersList.innerHTML = '';
+      this.ordersList.style.display = 'none';
+      this.emptyState.style.display = 'block';
     }
   },
 

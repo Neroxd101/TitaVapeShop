@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="/catalog/catalog.css">
     <link rel="stylesheet" href="/catalog/catalog-checkout-styles.css">
     <link rel="stylesheet" href="/catalog/catalog-age-modal.css">
+    <link rel="stylesheet" href="/catalog/customer-auth.css">
     <script>
         try {
             if (localStorage.getItem('tita_age_verified') !== 'true') {
@@ -91,6 +92,7 @@
                     <span>Cart</span>
                     <span id="cartBadge" class="cart-badge">0</span>
                 </button>
+                <div id="customerNavContainer"></div>
             </div>
         </div>
     </nav>
@@ -157,6 +159,7 @@
     <div id="cart-modal-container"></div>
     <div id="privacy-modal-container"></div>
     <div id="checkout-modal-container"></div>
+    <div id="customer-auth-modal-container"></div>
     <div id="order-success-modal-container"></div>
     <div id="orders-modal-container"></div>
 
@@ -221,6 +224,7 @@
     <script src="/catalog/javascript/catalog-checkout-modal.js"></script>
     <script src="/catalog/javascript/catalog-order-success-modal.js"></script>
     <script src="/catalog/javascript/catalog-orders-modal.js"></script>
+    <script src="/catalog/javascript/customer-auth.js"></script>
     <!-- Main modules -->
     <script src="/catalog/javascript/catalog-cart.js"></script>
     <script src="/catalog/javascript/catalog.js"></script>

@@ -1,6 +1,6 @@
 /**
  * Catalog Checkout Modal
- * Handles checkout modal display and order creation
+ * Handles checkout modal display, verified customer autofill, and order creation
  */
 
 const CatalogCheckoutModal = {
@@ -91,7 +91,7 @@ const CatalogCheckoutModal = {
         // Validate contact number (11 digits)
         const digitsOnly = contactNumber.replace(/\D/g, '');
         if (digitsOnly.length !== 11) {
-            alert('Contact number must be exactly 11 digits');
+            alert('Contact number must be exactly 11 digits (e.g. 09123456789)');
             return;
         }
 
@@ -136,6 +136,7 @@ const CatalogCheckoutModal = {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     customer_name: customerName,
                     contact_number: digitsOnly,
@@ -148,6 +149,17 @@ const CatalogCheckoutModal = {
             });
 
             const result = await response.json();
+
+            // Authentication or verification required from server
+            if (response.status === 401 || response.status === 403) {
+                this.close();
+                if (window.CustomerAuth) {
+                    window.CustomerAuth.requireAuth(() => this.show(), result.error || 'Please sign in or verify your email to create an order.');
+                } else {
+                    alert(result.error || 'Please sign in with a verified account to place an order.');
+                }
+                return;
+            }
 
             if (result.success && result.order) {
                 isRedirecting = true;
@@ -216,6 +228,33 @@ const CatalogCheckoutModal = {
         if (!this.modal) {
             console.error('[Checkout Modal] Modal not initialized');
             return;
+        }
+
+        // Enforce verified customer account
+        if (window.CustomerAuth && !window.CustomerAuth.currentUser) {
+            window.CustomerAuth.requireAuth(() => this.show(), 'Please sign in or create a verified account to place your order.');
+            return;
+        }
+
+        // Auto-fill verified customer info
+        if (window.CustomerAuth && window.CustomerAuth.currentUser) {
+            const user = window.CustomerAuth.currentUser;
+            const nameInput = document.getElementById('customerName');
+            const emailInput = document.getElementById('customerEmail');
+            const phoneInput = document.getElementById('contactNumber');
+
+            if (nameInput && !nameInput.value && user.full_name) {
+                nameInput.value = user.full_name;
+            }
+            if (emailInput && user.email) {
+                emailInput.value = user.email;
+                emailInput.readOnly = true;
+                emailInput.style.opacity = '0.9';
+                emailInput.title = 'Verified customer email';
+            }
+            if (phoneInput && !phoneInput.value && user.contact_number) {
+                phoneInput.value = user.contact_number;
+            }
         }
 
         // Update total

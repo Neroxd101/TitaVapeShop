@@ -7,6 +7,7 @@ const setupMiddleware = require('./config/middleware/middlewareSetup');
 const loginRoutes = require('./config/routes/auth/login');
 const googleAuthRoutes = require('./config/routes/auth/google-auth');
 const passwordResetRoutes = require('./config/routes/auth/password-reset');
+const customerAuthRoutes = require('./config/routes/customer/customer_auth');
 
 // User routes
 const userProfileRoutes = require('./config/routes/users/user-profile');
@@ -66,6 +67,7 @@ setupMiddleware(app);
 // All routes now define their full paths explicitly within their respective files
 
 // Public routes (no authentication required) - register first
+app.use('/', customerAuthRoutes); // Customer registration, verification, auth
 app.use('/', catalogRoutes); // Public catalog for customers
 app.use('/', passwordResetRoutes); // Password reset (public)
 app.use('/keep-alive', keepAliveRoutes); // Public keep-alive endpoint (token-protected)

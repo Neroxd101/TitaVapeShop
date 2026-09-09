@@ -98,6 +98,18 @@ const CatalogCartModal = {
                     window.CatalogCart.renderCart();
                     return;
                 }
+
+                // Check customer authentication before checkout
+                if (window.CustomerAuth && !window.CustomerAuth.currentUser) {
+                    this.close();
+                    window.CustomerAuth.requireAuth(() => {
+                        if (window.CatalogPrivacyModal) {
+                            window.CatalogPrivacyModal.show();
+                        }
+                    }, 'Please sign in or create a verified account to place your order.');
+                    return;
+                }
+
                 this.close();
                 if (window.CatalogPrivacyModal) {
                     window.CatalogPrivacyModal.show();

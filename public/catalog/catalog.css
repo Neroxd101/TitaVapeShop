@@ -2781,9 +2781,32 @@ main {
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 767px) {
     .nav .nav-links {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .nav #ordersBtn,
+    .nav #cartBtn {
+        grid-column: auto !important;
+        width: 100% !important;
+    }
+
+    .nav #customerNavContainer {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        display: flex !important;
+    }
+
+    .nav #customerNavContainer .customer-nav-btn,
+    .nav #customerNavContainer .customer-profile-pill {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 30px;
+        padding: 8px 6px !important;
+        gap: 6px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
     }
 }
 

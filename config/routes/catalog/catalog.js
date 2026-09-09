@@ -58,6 +58,11 @@ router.get('/catalog/catalog-orders-modal.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../public/catalog/catalog-orders-modal.html'));
 });
 
+// Public customer auth modal HTML
+router.get('/catalog/customer-auth-modal.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../public/catalog/customer-auth-modal.html'));
+});
+
 // Public inventory list for catalog
 // GET /api/inventory/list
 router.get('/api/inventory/list', async (req, res) => {
@@ -70,8 +75,6 @@ router.get('/api/inventory/list', async (req, res) => {
 
     const { category, search } = req.query;
 
-    // Call database RPC function directly
-    // All filtering and sorting is done in the database
     const { data, error } = await supabase.rpc('inventory_get_all', {
       filter_category: category || null,
       filter_search: search || null
@@ -92,7 +95,7 @@ router.get('/api/inventory/list', async (req, res) => {
   }
 });
 
-// Public Google Drive image proxy for catalog (no authentication required)
+// Public Google Drive image proxy for catalog
 // GET /api/catalog/image/:fileId
 router.get('/api/catalog/image/:fileId', async (req, res) => {
   try {
@@ -113,7 +116,6 @@ router.get('/api/catalog/image/:fileId', async (req, res) => {
         const contentType = imageResponse.headers.get('content-type');
         
         if (contentType && contentType.includes('text/html')) {
-          // If HTML response, try thumbnail endpoint
           const thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
           const thumbResponse = await fetch(thumbnailUrl, {
             method: 'GET',
@@ -130,7 +132,6 @@ router.get('/api/catalog/image/:fileId', async (req, res) => {
             return;
           }
         } else {
-          // Direct image response
           const imageBuffer = await imageResponse.arrayBuffer();
           res.setHeader('Content-Type', contentType || 'image/jpeg');
           res.setHeader('Cache-Control', 'public, max-age=31536000');
@@ -150,7 +151,7 @@ router.get('/api/catalog/image/:fileId', async (req, res) => {
   }
 });
 
-// Create order from catalog
+// Create order from catalog (Requires verified customer account)
 // POST /api/orders/create
 router.post('/api/orders/create', async (req, res) => {
   try {
@@ -158,69 +159,105 @@ router.post('/api/orders/create', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
 
-        const { customer_name, contact_number, social_media, customer_email, order_type, items, total_amount } = req.body;
+    // Enforce customer account & email verification
+    const customerToken = req.cookies?.customer_token;
+    if (!customerToken) {
+      return res.status(401).json({
+        success: false,
+        error: 'Please sign in or create a verified customer account to place an order.'
+      });
+    }
 
-        // Stock check (prevents ordering more than available)
-        // Note: This is a backend validation for better UX. Stronger protection is to enforce this in SQL with row locks.
-        if (!Array.isArray(items) || items.length === 0) {
-          return res.status(400).json({ success: false, error: 'Order must contain at least one item' });
-        }
+    let customerPayload = null;
+    try {
+      customerPayload = jwt.verify(customerToken, JWT_SECRET);
+    } catch (tokenErr) {
+      return res.status(401).json({
+        success: false,
+        error: 'Your session has expired. Please sign in again.'
+      });
+    }
 
-        const requested = items
-          .map(i => ({
-            id: i?.id,
-            quantity: Number.isFinite(Number(i?.quantity)) ? Number(i.quantity) : NaN
-          }))
-          .filter(i => i.id);
+    const client = supabaseAdmin || supabase;
+    const { data: dbCustomer, error: customerErr } = await client
+      .from('users')
+      .select('id, is_verified, email, full_name, contact_number')
+      .eq('id', customerPayload.id)
+      .maybeSingle();
 
-        if (requested.length === 0 || requested.some(i => !Number.isInteger(i.quantity) || i.quantity <= 0)) {
-          return res.status(400).json({ success: false, error: 'Invalid items payload' });
-        }
+    if (customerErr || !dbCustomer || !dbCustomer.is_verified) {
+      return res.status(403).json({
+        success: false,
+        error: 'Your email address is not verified yet. Please verify your email before placing an order.'
+      });
+    }
 
-        const inventoryClient = supabaseAdmin || supabase;
-        const uniqueIds = [...new Set(requested.map(i => i.id))];
-        const { data: invRows, error: invError } = await inventoryClient
-          .from('inventory')
-          .select('id,name,quantity')
-          .in('id', uniqueIds);
+    const { customer_name, contact_number, social_media, customer_email, order_type, items, total_amount } = req.body;
 
-        if (invError) {
-          console.error('Inventory check error:', invError);
-          return res.status(400).json({ success: false, error: invError.message || 'Failed to validate stock' });
-        }
+    const finalEmail = dbCustomer.email || customer_email;
+    const finalName = customer_name || dbCustomer.full_name;
+    const finalContact = contact_number || dbCustomer.contact_number;
 
-        const invMap = new Map((invRows || []).map(r => [r.id, r]));
-        const insufficient = requested
-          .map(r => {
-            const row = invMap.get(r.id);
-            const available = row?.quantity ?? 0;
-            return {
-              id: r.id,
-              name: row?.name || null,
-              requested: r.quantity,
-              available
-            };
-          })
-          .filter(x => x.requested > x.available);
+    // Stock check (prevents ordering more than available)
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, error: 'Order must contain at least one item' });
+    }
 
-        if (insufficient.length > 0) {
-          return res.status(409).json({
-            success: false,
-            error: 'Insufficient stock',
-            items: insufficient
-          });
-        }
+    const requested = items
+      .map(i => ({
+        id: i?.id,
+        quantity: Number.isFinite(Number(i?.quantity)) ? Number(i.quantity) : NaN
+      }))
+      .filter(i => i.id);
 
-        // Call database RPC function
-        const { data, error } = await supabase.rpc('orders_create_order', {
-            p_customer_name: customer_name,
-            p_contact_number: contact_number,
-            p_social_media: social_media || null,
-            p_customer_email: customer_email || null,
-            p_order_type: order_type || 'pickup',
-            p_items: items,
-            p_total_amount: total_amount
-        });
+    if (requested.length === 0 || requested.some(i => !Number.isInteger(i.quantity) || i.quantity <= 0)) {
+      return res.status(400).json({ success: false, error: 'Invalid items payload' });
+    }
+
+    const inventoryClient = supabaseAdmin || supabase;
+    const uniqueIds = [...new Set(requested.map(i => i.id))];
+    const { data: invRows, error: invError } = await inventoryClient
+      .from('inventory')
+      .select('id,name,quantity')
+      .in('id', uniqueIds);
+
+    if (invError) {
+      console.error('Inventory check error:', invError);
+      return res.status(400).json({ success: false, error: invError.message || 'Failed to validate stock' });
+    }
+
+    const invMap = new Map((invRows || []).map(r => [r.id, r]));
+    const insufficient = requested
+      .map(r => {
+        const row = invMap.get(r.id);
+        const available = row?.quantity ?? 0;
+        return {
+          id: r.id,
+          name: row?.name || null,
+          requested: r.quantity,
+          available
+        };
+      })
+      .filter(x => x.requested > x.available);
+
+    if (insufficient.length > 0) {
+      return res.status(409).json({
+        success: false,
+        error: 'Insufficient stock',
+        items: insufficient
+      });
+    }
+
+    // Call database RPC function
+    const { data, error } = await supabase.rpc('orders_create_order', {
+        p_customer_name: finalName,
+        p_contact_number: finalContact,
+        p_social_media: social_media || null,
+        p_customer_email: finalEmail,
+        p_order_type: order_type || 'pickup',
+        p_items: items,
+        p_total_amount: total_amount
+    });
 
     if (error) {
       console.error('RPC Error:', error);
@@ -232,7 +269,19 @@ router.post('/api/orders/create', async (req, res) => {
 
     // RPC function returns an array, get the first element
     const order = Array.isArray(data) && data.length > 0 ? data[0] : data;
-    
+
+    // Link customer_id to order in database
+    if (order && order.id) {
+      try {
+        await client
+          .from('orders')
+          .update({ customer_id: dbCustomer.id })
+          .eq('id', order.id);
+      } catch (linkErr) {
+        console.error('Failed to link customer_id to order:', linkErr);
+      }
+    }
+
     // Generate secure Order JWT token (valid for 30 days)
     let orderToken = null;
     if (JWT_SECRET && order && order.id) {
@@ -240,8 +289,8 @@ router.post('/api/orders/create', async (req, res) => {
         orderToken = jwt.sign(
           {
             orderId: order.id,
-            customerName: customer_name,
-            contactNumber: contact_number
+            customerName: finalName,
+            contactNumber: finalContact
           },
           JWT_SECRET,
           { expiresIn: '30d' }
@@ -267,7 +316,6 @@ router.post('/api/orders/create', async (req, res) => {
         }
         if (!cookieTokens.includes(orderToken)) {
           cookieTokens.unshift(orderToken);
-          // Store up to 20 recent orders in cookie
           cookieTokens = cookieTokens.slice(0, 20);
           res.cookie('tita_customer_orders', JSON.stringify(cookieTokens), {
             httpOnly: true,
@@ -286,11 +334,11 @@ router.post('/api/orders/create', async (req, res) => {
       : `/order-status?id=${order.id}`;
 
     // Send order confirmation email
-    if (order && customer_email) {
+    if (order && finalEmail) {
         try {
             await sendOrderEmail(
-                customer_email,
-                customer_name,
+                finalEmail,
+                finalName,
                 order.id,
                 'pending',
                 {
@@ -303,7 +351,6 @@ router.post('/api/orders/create', async (req, res) => {
             );
         } catch (emailError) {
             console.error('[Order Creation] Error sending email:', emailError);
-            // Don't fail the order creation if email fails
         }
     }
     
@@ -359,7 +406,28 @@ router.get('/api/orders/track', async (req, res) => {
       } catch (e) {}
     }
 
-    // 3. Fallback to ID for phone verification
+    // 3. Fallback to logged-in customer matching
+    if (!isVerified && id && req.cookies && req.cookies.customer_token && JWT_SECRET) {
+      try {
+        const decCust = jwt.verify(req.cookies.customer_token, JWT_SECRET);
+        if (decCust && decCust.id) {
+          const client = supabaseAdmin || supabase;
+          const { data: ownedOrder } = await client
+            .from('orders')
+            .select('id')
+            .eq('id', id)
+            .eq('customer_id', decCust.id)
+            .maybeSingle();
+
+          if (ownedOrder) {
+            targetOrderId = id;
+            isVerified = true;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 4. Fallback to ID for phone verification
     if (!isVerified && id) {
       targetOrderId = id;
     }
@@ -386,7 +454,6 @@ router.get('/api/orders/track', async (req, res) => {
       return res.status(404).json({ success: false, error: 'Order not found' });
     }
 
-    // If not verified by token or cookie, verify using phone number
     if (!isVerified) {
       if (!phone) {
         return res.status(401).json({
@@ -410,7 +477,6 @@ router.get('/api/orders/track', async (req, res) => {
         });
       }
 
-      // Phone matched! Generate token so user won't need to re-verify on this device
       let newToken = null;
       if (JWT_SECRET) {
         newToken = jwt.sign(
@@ -456,6 +522,16 @@ router.post('/api/orders/cancel', async (req, res) => {
     const saved = JSON.parse(req.cookies?.tita_customer_orders || '[]');
     if (Array.isArray(saved)) tokens.push(...saved);
   } catch (_) {}
+
+  // Also check customer_token
+  let customerLoggedInId = null;
+  if (req.cookies?.customer_token) {
+    try {
+      const dec = jwt.verify(req.cookies.customer_token, JWT_SECRET);
+      customerLoggedInId = dec.id;
+    } catch (_) {}
+  }
+
   const verified = tokens.some(value => {
     try {
       return jwt.verify(value, JWT_SECRET, { algorithms: ['HS256'] }).orderId === id;
@@ -463,23 +539,30 @@ router.post('/api/orders/cancel', async (req, res) => {
       return false;
     }
   });
-  if (!verified) {
+
+  if (!verified && !customerLoggedInId) {
     return res.status(403).json({ success: false, error: 'Please reopen your order link and verify your order before cancelling.' });
   }
 
   try {
-    // Check eligibility in the UPDATE itself, including concurrent status changes.
-    const { data: order, error } = await supabaseAdmin.from('orders')
+    let query = supabaseAdmin.from('orders')
       .update({ status: 'cancelled', updated_at: new Date().toISOString() })
       .eq('id', id)
-      .eq('status', 'pending')
+      .eq('status', 'pending');
+
+    if (!verified && customerLoggedInId) {
+      query = query.eq('customer_id', customerLoggedInId);
+    }
+
+    const { data: order, error } = await query
       .select('id, customer_name, contact_number, social_media, customer_email, order_type, items, total_amount, status, created_at, updated_at')
       .maybeSingle();
+
     if (error) throw error;
     if (!order) {
       return res.status(409).json({ success: false, error: 'Only pending orders can be cancelled. This order may already have been updated.' });
     }
-    // Attribute this customer-token action independently of any staff session.
+
     const { error: logError } = await supabaseAdmin.rpc('transactions_log', {
       p_action_type: 'order_cancel',
       p_user_email: 'Customer',
@@ -509,49 +592,41 @@ router.post('/api/orders/cancel', async (req, res) => {
 // POST /api/orders/track-batch
 router.post('/api/orders/track-batch', async (req, res) => {
   try {
-    const { orders } = req.body; // Array of { id, token }
-    if (!Array.isArray(orders) || orders.length === 0) {
-      return res.json({ success: true, orders: [] });
-    }
-
+    const { orders } = req.body || {}; // Array of { id, token }
     const verifiedIds = [];
     const idToToken = {};
 
-    for (const item of orders) {
-      if (!item || !item.id) continue;
-      idToToken[item.id] = item.token || null;
+    if (Array.isArray(orders)) {
+      for (const item of orders) {
+        if (!item || !item.id) continue;
+        idToToken[item.id] = item.token || null;
 
-      // Verify token if provided
-      if (item.token && JWT_SECRET) {
-        try {
-          const dec = jwt.verify(item.token, JWT_SECRET);
-          if (dec && dec.orderId === item.id) {
-            verifiedIds.push(item.id);
-            continue;
-          }
-        } catch (e) {}
+        if (item.token && JWT_SECRET) {
+          try {
+            const dec = jwt.verify(item.token, JWT_SECRET);
+            if (dec && dec.orderId === item.id) {
+              verifiedIds.push(item.id);
+              continue;
+            }
+          } catch (e) {}
+        }
+
+        if (req.cookies && req.cookies.tita_customer_orders && JWT_SECRET) {
+          try {
+            const cookieTokens = JSON.parse(req.cookies.tita_customer_orders);
+            for (const ct of cookieTokens) {
+              try {
+                const dec = jwt.verify(ct, JWT_SECRET);
+                if (dec && dec.orderId === item.id) {
+                  verifiedIds.push(item.id);
+                  idToToken[item.id] = ct;
+                  break;
+                }
+              } catch (e) {}
+            }
+          } catch (e) {}
+        }
       }
-
-      // Check cookie
-      if (req.cookies && req.cookies.tita_customer_orders && JWT_SECRET) {
-        try {
-          const cookieTokens = JSON.parse(req.cookies.tita_customer_orders);
-          for (const ct of cookieTokens) {
-            try {
-              const dec = jwt.verify(ct, JWT_SECRET);
-              if (dec && dec.orderId === item.id) {
-                verifiedIds.push(item.id);
-                idToToken[item.id] = ct;
-                break;
-              }
-            } catch (e) {}
-          }
-        } catch (e) {}
-      }
-    }
-
-    if (verifiedIds.length === 0) {
-      return res.json({ success: true, orders: [] });
     }
 
     const client = supabaseAdmin || supabase;
@@ -559,11 +634,33 @@ router.post('/api/orders/track-batch', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
 
-    const { data: orderRows, error } = await client
+    // Check if customer is logged in
+    let loggedInCustomer = null;
+    if (req.cookies?.customer_token && JWT_SECRET) {
+      try {
+        loggedInCustomer = jwt.verify(req.cookies.customer_token, JWT_SECRET);
+      } catch (e) {}
+    }
+
+    let query = client
       .from('orders')
-      .select('id, customer_name, order_type, total_amount, status, created_at, items')
-      .in('id', verifiedIds)
-      .order('created_at', { ascending: false });
+      .select('id, customer_name, order_type, total_amount, status, created_at, items');
+
+    if (loggedInCustomer && loggedInCustomer.id) {
+      // Return orders placed by this customer OR verified by token
+      if (verifiedIds.length > 0) {
+        query = query.or(`customer_id.eq.${loggedInCustomer.id},customer_email.eq.${loggedInCustomer.email},id.in.(${verifiedIds.join(',')})`);
+      } else {
+        query = query.or(`customer_id.eq.${loggedInCustomer.id},customer_email.eq.${loggedInCustomer.email}`);
+      }
+    } else {
+      if (verifiedIds.length === 0) {
+        return res.json({ success: true, orders: [] });
+      }
+      query = query.in('id', verifiedIds);
+    }
+
+    const { data: orderRows, error } = await query.order('created_at', { ascending: false }).limit(25);
 
     if (error) {
       return res.status(400).json({ success: false, error: error.message });
