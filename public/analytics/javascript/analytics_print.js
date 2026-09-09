@@ -282,7 +282,7 @@ const AnalyticsPrint = {
             return '';
         }
 
-        let html = '<div class="section-header">Daily Revenue Summary</div><table><thead><tr><th>Date</th><th>Revenue</th></tr></thead><tbody>';
+        let html = '<div class="section-header">Daily Sales & Profit Summary</div><table><thead><tr><th>Date</th><th>Gross Sales</th><th>Total Profit</th></tr></thead><tbody>';
         
         dailyRevenue.forEach(day => {
             const date = new Date(day.date).toLocaleDateString('en-PH', {
@@ -290,10 +290,13 @@ const AnalyticsPrint = {
                 month: 'long',
                 day: 'numeric'
             });
+            const grossSales = day.grossSales !== undefined ? day.grossSales : (day.revenue || 0);
+            const profit = day.profit !== undefined ? day.profit : 0;
             html += `
             <tr>
                 <td>${date}</td>
-                <td>₱${this.formatNumber(day.revenue || 0)}</td>
+                <td>₱${this.formatNumber(grossSales)}</td>
+                <td>₱${this.formatNumber(profit)}</td>
             </tr>`;
         });
 
