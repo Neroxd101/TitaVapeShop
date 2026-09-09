@@ -129,8 +129,8 @@ const CatalogProductModal = {
         }
 
         return [
-            `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
             `/api/catalog/image/${fileId}`,
+            `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
             url
         ];
     },

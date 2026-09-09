@@ -203,6 +203,8 @@ const CatalogOrderSuccessModal = {
             if (saveQrCodeBtn) {
                 saveQrCodeBtn.style.display = 'none';
             }
+        }
+
         // Show the modal
         const viewDetailsBtn = document.getElementById('viewLiveOrderDetailsBtn');
         if (viewDetailsBtn) {

@@ -255,8 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="product-image-container">
                     <img src="${getImageUrl(product)}" alt="${product.name}" class="product-image" 
                          onerror="handleImageError(this, '${product.id}')"
-                         loading="lazy"
-                         crossorigin="anonymous">
+                         loading="lazy">
                     ${availableStock > 0
                 ? `<span class="product-badge badge-stock">In Stock</span>`
                 : `<span class="product-badge badge-out">Out of Stock</span>`}
@@ -376,8 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return [
-            `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
             `/api/catalog/image/${fileId}`,
+            `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
             url
         ];
     }
