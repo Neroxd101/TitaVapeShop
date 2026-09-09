@@ -96,9 +96,11 @@ class TransactionsUI {
     constructor() {
         this.elements = {
             filterAction: document.getElementById('filterAction'),
+            filterYear: document.getElementById('filterYear'),
             filterMonth: document.getElementById('filterMonth'),
             filterDay: document.getElementById('filterDay'),
-            filterYear: document.getElementById('filterYear'),
+            filterStartDate: document.getElementById('filterStartDate'),
+            filterEndDate: document.getElementById('filterEndDate'),
             resetFiltersBtn: document.getElementById('resetFiltersBtn'),
             printTransactionsBtn: document.getElementById('printTransactionsBtn'),
             transactionsList: document.getElementById('transactionsList'),
@@ -107,6 +109,8 @@ class TransactionsUI {
             pageInfo: document.getElementById('pageInfo')
         };
         this.setupDateFilter();
+        this.syncDateHints();
+
     }
 
     /**
@@ -120,30 +124,28 @@ class TransactionsUI {
         if (this.elements.filterAction) {
             this.elements.filterAction.addEventListener('change', () => {
                 const filters = this.getFiltersFromDOM();
-                if (onApplyFilters) onApplyFilters(filters);
+                if (filters && onApplyFilters) onApplyFilters(filters);
             });
         }
 
-        if (this.elements.filterMonth) {
-            this.elements.filterMonth.addEventListener('change', () => {
+        for (const input of [this.elements.filterYear, this.elements.filterMonth, this.elements.filterDay]) {
+            input.addEventListener('change', () => {
+                this.elements.filterStartDate.value = '';
+                this.elements.filterEndDate.value = '';
+                this.elements.filterEndDate.setCustomValidity('');
+                if (input !== this.elements.filterDay) this.updateDayDropdown();
+                const filters = this.getFiltersFromDOM();
+                if (filters && onApplyFilters) onApplyFilters(filters);
+            });
+        }
+        for (const input of [this.elements.filterStartDate, this.elements.filterEndDate]) {
+            input.addEventListener('input', () => this.syncDateHints());
+            input.addEventListener('change', () => {
+                this.elements.filterYear.value = '';
+                this.elements.filterMonth.value = '';
                 this.updateDayDropdown();
                 const filters = this.getFiltersFromDOM();
-                if (onApplyFilters) onApplyFilters(filters);
-            });
-        }
-
-        if (this.elements.filterYear) {
-            this.elements.filterYear.addEventListener('change', () => {
-                this.updateDayDropdown();
-                const filters = this.getFiltersFromDOM();
-                if (onApplyFilters) onApplyFilters(filters);
-            });
-        }
-
-        if (this.elements.filterDay) {
-            this.elements.filterDay.addEventListener('change', () => {
-                const filters = this.getFiltersFromDOM();
-                if (onApplyFilters) onApplyFilters(filters);
+                if (filters && onApplyFilters) onApplyFilters(filters);
             });
         }
 
@@ -168,7 +170,7 @@ class TransactionsUI {
     }
 
     /**
-     * Setup date filter dropdowns
+     * Get filter values from DOM inputs
      */
     setupDateFilter() {
         const yearSelect = this.elements.filterYear;
@@ -206,29 +208,38 @@ class TransactionsUI {
     /**
      * Get filter values from DOM inputs
      */
+    syncDateHints() {
+        for (const input of [this.elements.filterStartDate, this.elements.filterEndDate]) {
+            input.dataset.empty = String(!input.value);
+        }
+    }
+
     getFiltersFromDOM() {
-        const action = this.elements.filterAction.value;
+        this.syncDateHints();
+        const start = this.elements.filterStartDate;
+        const end = this.elements.filterEndDate;
+        end.setCustomValidity('');
+        if (start.value && end.value && start.value > end.value) {
+            end.setCustomValidity('End date must be on or after start date.');
+            end.reportValidity();
+            return null;
+        }
+        const year = this.elements.filterYear.value;
         const month = this.elements.filterMonth.value;
         const day = this.elements.filterDay.value;
-        const year = this.elements.filterYear.value;
-
-        const filters = {};
-
-        if (action) filters.action_type = action;
-
-        // Calculate date range based on selected date
-        if (month && day && year) {
-            const selectedDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-            const start = new Date(selectedDate);
-            start.setHours(0, 0, 0, 0);
-            const end = new Date(selectedDate);
-            end.setHours(23, 59, 59, 999);
-            
-            filters.start_date = start.toISOString();
-            filters.end_date = end.toISOString();
+        if (!start.value && !end.value && year) {
+            const first = new Date(Number(year), month ? Number(month) - 1 : 0, day ? Number(day) : 1);
+            const last = day && month
+                ? new Date(Number(year), Number(month) - 1, Number(day), 23, 59, 59, 999)
+                : new Date(Number(year), month ? Number(month) : 12, 0, 23, 59, 59, 999);
+            return { action_type: this.elements.filterAction.value, start_date: first.toISOString(), end_date: last.toISOString() };
         }
-
-        return filters;
+        // Explicit empty values clear previously applied filters.
+        return {
+            action_type: this.elements.filterAction.value,
+            start_date: start.value ? new Date(start.value + 'T00:00:00').toISOString() : '',
+            end_date: end.value ? new Date(end.value + 'T23:59:59.999').toISOString() : ''
+        };
     }
 
 
@@ -236,13 +247,14 @@ class TransactionsUI {
      * Reset DOM inputs
      */
     resetDOM() {
+        this.elements.filterYear.value = '';
+        this.elements.filterMonth.value = '';
+        this.updateDayDropdown();
         if (this.elements.filterAction) this.elements.filterAction.value = '';
-        if (this.elements.filterMonth) this.elements.filterMonth.value = '';
-        if (this.elements.filterDay) {
-            this.elements.filterDay.value = '';
-            this.elements.filterDay.innerHTML = '<option value="">Day</option>';
-        }
-        if (this.elements.filterYear) this.elements.filterYear.value = '';
+        this.elements.filterStartDate.value = '';
+        this.elements.filterEndDate.value = '';
+        this.elements.filterEndDate.setCustomValidity('');
+        this.syncDateHints();
     }
 
     /**

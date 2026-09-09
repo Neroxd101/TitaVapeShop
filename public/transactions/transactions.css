@@ -18,9 +18,66 @@
 .transactions-filter-group {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(220px, 1.6fr) repeat(3, minmax(120px, 0.8fr));
+  grid-template-columns: minmax(180px, 1.2fr) repeat(2, minmax(160px, 1fr));
   gap: 8px;
   min-width: 0;
+  flex-wrap: wrap;
+}
+
+.transactions-date-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.transactions-date-input {
+  position: relative;
+  display: block;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.date-format-hint {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .transactions-date-input input[data-empty="true"]:not(:focus) {
+    color: transparent;
+  }
+
+  .transactions-date-input input[data-empty="true"]:not(:focus)::-webkit-datetime-edit {
+    color: transparent;
+  }
+
+  .transactions-date-input input[data-empty="true"]:not(:focus) + .date-format-hint {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 12px;
+    pointer-events: none;
+  }
+}
+
+.transactions-date-field input {
+  text-align: center;
+  text-align-last: center;
+  width: 100%;
+  min-width: 0;
+  color-scheme: dark;
+}
+
+.transactions-date-field input::-webkit-date-and-time-value {
+  text-align: center;
 }
 
 .transactions-filter-select {
@@ -92,6 +149,68 @@
 }
 
 /* Transactions Table - Specific overrides for data-table */
+@media (min-width: 1025px) {
+  .transactions-filter-tabs .transactions-filter-group {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.2fr) 95px 125px 95px repeat(2, minmax(175px, 1fr));
+    flex: 1 0 855px;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .transactions-filter-tabs .transactions-date-field {
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .transactions-filter-tabs .transactions-date-field input {
+    padding: 6px 8px;
+    box-sizing: border-box;
+    height: 44px;
+  }
+
+  .transactions-filter-tabs .filter-tabs-actions {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 1024px) {
+  .transactions-filter-tabs .transactions-filter-group {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    width: 100%;
+    flex: 1 0 100%;
+  }
+
+  .transactions-filter-tabs .transactions-filter-group #filterAction {
+    grid-column: 1 / -1;
+  }
+
+  .transactions-filter-tabs .transactions-filter-group > select:not(#filterAction) {
+    grid-column: span 2;
+  }
+
+  .transactions-filter-tabs .transactions-date-field {
+    grid-column: span 3;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .transactions-filter-tabs .transactions-date-field input {
+    box-sizing: border-box;
+    padding: 6px;
+    display: block;
+    flex: none;
+    min-height: 30px;
+    height: 30px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+}
+
 .transactions-table {
   border-collapse: separate;
   border-spacing: 0;

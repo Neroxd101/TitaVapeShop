@@ -31,6 +31,7 @@ const TransactionsPrint = {
         try {
             // Fetch all transactions (no pagination)
             const filters = uiController.getFiltersFromDOM();
+            if (!filters) return;
             filters.limit = 10000; // Large limit to get all
             filters.offset = 0;
 
@@ -222,9 +223,8 @@ const TransactionsPrint = {
     getPrintFilters(uiController) {
         const filters = [];
         const action = uiController.elements.filterAction?.value;
-        const month = uiController.elements.filterMonth?.value;
-        const day = uiController.elements.filterDay?.value;
-        const year = uiController.elements.filterYear?.value;
+        const start = uiController.elements.filterStartDate?.value;
+        const end = uiController.elements.filterEndDate?.value;
 
         if (action) {
             const actionMap = {
@@ -237,10 +237,13 @@ const TransactionsPrint = {
             filters.push(`Action: ${actionMap[action] || action}`);
         }
 
-        if (month && day && year) {
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                              'July', 'August', 'September', 'October', 'November', 'December'];
-            filters.push(`Date: ${monthNames[parseInt(month) - 1]} ${day}, ${year}`);
+        if (start) filters.push('From: ' + start);
+        if (end) filters.push('To: ' + end);
+        if (!start && !end) {
+            const year = uiController.elements.filterYear?.value;
+            const month = uiController.elements.filterMonth?.value;
+            const day = uiController.elements.filterDay?.value;
+            if (year) filters.push('Date: ' + [year, month, day].filter(Boolean).join('-'));
         }
 
         return filters.length > 0 ? `Filters: ${filters.join(' | ')}` : 'All Transactions';
