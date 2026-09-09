@@ -661,20 +661,46 @@ class OrdersController {
         const form = document.getElementById('voidOrderForm');
         const button = document.getElementById('submitVoidOrder');
         const errorBox = document.getElementById('voidOrderError');
+        const reasonInput = document.getElementById('voidReason');
+        const charCount = document.getElementById('voidReasonCharCount');
+        const closeBtn = document.getElementById('closeVoidOrderModal');
+        const dismissBtn = document.getElementById('dismissVoidOrder');
+
         if (button.disabled) return;
         form.reset();
         errorBox.textContent = '';
+        if (charCount) charCount.textContent = '0 / 1000';
         modal.classList.add('show');
-        document.getElementById('voidReason').focus();
-        document.getElementById('dismissVoidOrder').onclick = () => {
+        if (reasonInput) reasonInput.focus();
+
+        const closeModal = () => {
             if (!button.disabled) modal.classList.remove('show');
         };
+
+        if (dismissBtn) dismissBtn.onclick = closeModal;
+        if (closeBtn) closeBtn.onclick = closeModal;
+        modal.onclick = (e) => {
+            if (e.target === modal) closeModal();
+        };
+
+        if (reasonInput) {
+            reasonInput.oninput = () => {
+                if (charCount) {
+                    charCount.textContent = `${reasonInput.value.length} / 1000`;
+                }
+                if (errorBox.textContent) {
+                    errorBox.textContent = '';
+                }
+            };
+        }
+
         form.onsubmit = async (event) => {
             event.preventDefault();
             if (button.disabled) return;
-            const reason = document.getElementById('voidReason').value.trim();
+            const reason = reasonInput ? reasonInput.value.trim() : '';
             if (!reason || reason.length > 1000) {
-                errorBox.textContent = 'Enter a reason of 1?1000 characters.';
+                errorBox.textContent = 'Please enter a reason for voiding (1–1000 characters).';
+                if (reasonInput) reasonInput.focus();
                 return;
             }
             button.disabled = true;
