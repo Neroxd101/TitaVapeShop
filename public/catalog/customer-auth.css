@@ -347,6 +347,21 @@ body.customer-logged-in #ordersBtn {
   padding-right: 0;
 }
 
+.success-icon-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 4px auto 16px !important;
+  text-align: center !important;
+}
+
+.success-icon-wrapper svg.success-icon {
+  display: block !important;
+  margin: 0 auto !important;
+  stroke: var(--accent) !important;
+}
+
 .customer-auth-error {
   background: rgba(255, 71, 87, 0.1);
   border: 1px solid rgba(255, 71, 87, 0.3);
