@@ -28,11 +28,38 @@ const CustomerUpdateProfile = {
   },
 
   /**
-   * Populate profile modal inputs from user object
+   * Reset all profile inline edit forms to collapsed state
+   */
+  resetEditState() {
+    ['Name', 'Phone', 'Email'].forEach(field => {
+      const form = document.getElementById(`formEditProfile${field}`);
+      const btn = document.getElementById(`btnToggleEdit${field}`);
+      if (form) form.style.display = 'none';
+      if (btn) {
+        btn.textContent = 'Edit';
+        btn.style.display = 'inline-flex';
+      }
+    });
+  },
+
+  /**
+   * Populate profile modal display values and inputs from user object
    * @param {object} user
    */
   populate(user) {
     if (!user) return;
+    this.resetEditState();
+
+    // Value display spans
+    const nameDisplay = document.getElementById('profileDisplayName');
+    const phoneDisplay = document.getElementById('profileDisplayPhone');
+    const emailDisplay = document.getElementById('profileDisplayEmail');
+
+    if (nameDisplay) nameDisplay.textContent = user.full_name || '—';
+    if (phoneDisplay) phoneDisplay.textContent = user.contact_number || '—';
+    if (emailDisplay) emailDisplay.textContent = user.email || '—';
+
+    // Form inputs
     const nameInput = document.getElementById('customerProfileName');
     const phoneInput = document.getElementById('customerProfilePhone');
     const emailInput = document.getElementById('customerProfileEmail');

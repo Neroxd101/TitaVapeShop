@@ -271,57 +271,175 @@
           <div class="profile-avatar-badge" id="profileModalAvatar">C</div>
           <div>
             <h3 style="font-size: 22px; margin: 0; color: #fff;">My Profile</h3>
-            <p class="customer-auth-subtext" style="margin: 3px 0 0 !important; font-size: 13px;">Manage your name, contact number, and email</p>
+            <p class="customer-auth-subtext" style="margin: 3px 0 0 !important; font-size: 13px;">Manage your account details and security</p>
           </div>
         </div>
       </div>
 
-      <form id="customerProfileForm">
-        <div class="profile-form-grid">
-          <div class="form-group">
-            <label for="customerProfileName">
-              <span>Full Name <span style="color: var(--error);">*</span></span>
-            </label>
-            <input type="text" id="customerProfileName" required placeholder="Juan Dela Cruz" autocomplete="name">
-          </div>
+      <!-- Notification Messages -->
+      <p id="customerProfileError" class="customer-auth-error" role="alert" style="display: none; margin-bottom: 12px;"></p>
+      <p id="customerProfileSuccess" class="customer-auth-success" role="status" style="display: none; margin-bottom: 12px;"></p>
 
-          <div class="form-group">
-            <label for="customerProfilePhone">
-              <span>Mobile Number <span style="color: var(--error);">*</span></span>
-              <span class="label-hint">11-digit (09...)</span>
-            </label>
-            <input type="tel" id="customerProfilePhone" required placeholder="09123456789" maxlength="11" pattern="^(09|\+639)\d{9}$" autocomplete="tel">
+      <div class="profile-settings-stack">
+        <!-- 1. Full Name Row -->
+        <div class="profile-setting-card" id="profileSettingCardName">
+          <div class="profile-setting-header">
+            <div class="profile-setting-info">
+              <span class="profile-setting-label">Full Name</span>
+              <span class="profile-setting-value" id="profileDisplayName">—</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="btnToggleEditName">
+              Edit
+            </button>
           </div>
-
-          <div class="form-group profile-full-col">
-            <label for="customerProfileEmail">
-              <span>Email Address <span style="color: var(--error);">*</span></span>
-              <span class="label-hint" style="color: var(--accent); font-size: 11px;">(Changing requires OTP verification)</span>
-            </label>
-            <input type="email" id="customerProfileEmail" required placeholder="name@example.com" autocomplete="email">
-          </div>
+          <!-- Collapsible Edit Input for Name -->
+          <form id="formEditProfileName" class="profile-setting-collapse" style="display: none;">
+            <div class="profile-inline-edit-group">
+              <input type="text" id="customerProfileName" required placeholder="Juan Dela Cruz" autocomplete="name">
+              <div class="profile-inline-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnCancelEditName">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm" id="btnSaveProfileName">Save</button>
+              </div>
+            </div>
+          </form>
         </div>
 
-        <!-- Compliance & Age Verification Status -->
-        <div class="profile-age-badge" id="profileAgeBadge">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent)">
-            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
-          </svg>
-          <span id="profileAgeBadgeText">Verified 18+ Customer (RA 11900 Compliant)</span>
+        <!-- 2. Mobile Number Row -->
+        <div class="profile-setting-card" id="profileSettingCardPhone">
+          <div class="profile-setting-header">
+            <div class="profile-setting-info">
+              <span class="profile-setting-label">Mobile Number</span>
+              <span class="profile-setting-value" id="profileDisplayPhone">—</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="btnToggleEditPhone">
+              Edit
+            </button>
+          </div>
+          <!-- Collapsible Edit Input for Mobile -->
+          <form id="formEditProfilePhone" class="profile-setting-collapse" style="display: none;">
+            <div class="profile-inline-edit-group">
+              <input type="tel" id="customerProfilePhone" required placeholder="09123456789" maxlength="11" pattern="^(09|\+639)\d{9}$" autocomplete="tel">
+              <div class="profile-inline-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnCancelEditPhone">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm" id="btnSaveProfilePhone">Save</button>
+              </div>
+            </div>
+          </form>
         </div>
 
-        <p id="customerProfileError" class="customer-auth-error" role="alert" style="display: none;"></p>
-        <p id="customerProfileSuccess" class="customer-auth-success" role="status" style="display: none;"></p>
-
-        <div class="modal-actions profile-actions">
-          <button type="button" class="btn btn-secondary" id="customerCancelProfileBtn">
-            Cancel
-          </button>
-          <button type="submit" id="customerProfileSubmitBtn" class="btn btn-primary">
-            Save Changes
-          </button>
+        <!-- 3. Email Address Row -->
+        <div class="profile-setting-card" id="profileSettingCardEmail">
+          <div class="profile-setting-header">
+            <div class="profile-setting-info">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="profile-setting-label">Email Address</span>
+                <span class="label-hint" style="color: var(--accent); font-size: 11px;">(Requires OTP)</span>
+              </div>
+              <span class="profile-setting-value" id="profileDisplayEmail">—</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="btnToggleEditEmail">
+              Edit
+            </button>
+          </div>
+          <!-- Collapsible Edit Input for Email -->
+          <form id="formEditProfileEmail" class="profile-setting-collapse" style="display: none;">
+            <div class="profile-inline-edit-group">
+              <input type="email" id="customerProfileEmail" required placeholder="name@example.com" autocomplete="email">
+              <div class="profile-inline-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnCancelEditEmail">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm" id="btnSaveProfileEmail">Save</button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
+
+        <!-- 4. Password Row -->
+        <div class="profile-setting-card" id="profileSettingCardPassword">
+          <div class="profile-setting-header">
+            <div class="profile-setting-info">
+              <span class="profile-setting-label">Password</span>
+              <span class="profile-setting-value">••••••••</span>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="customerOpenChangePwdBtn">
+              Change Password
+            </button>
+          </div>
+
+          <!-- Collapsible Change Password Form (Hidden until clicking Change Password button) -->
+          <form id="customerChangePwdForm" class="profile-setting-collapse" style="display: none;">
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="customerCurrentPassword">Current Password</label>
+              <div class="customer-password-wrap">
+                <input type="password" id="customerCurrentPassword" required placeholder="Enter current password" autocomplete="current-password">
+                <button type="button" class="customer-password-toggle" id="toggleCustomerCurrentPassword" aria-label="Show password" aria-pressed="false" tabindex="-1">
+                  <svg class="icon-eye" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                  </svg>
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="customerNewPassword">New Password</label>
+              <div class="customer-password-wrap">
+                <input type="password" id="customerNewPassword" required placeholder="••••••••" autocomplete="new-password">
+                <button type="button" class="customer-password-toggle" id="toggleCustomerNewPassword" aria-label="Show password" aria-pressed="false" tabindex="-1">
+                  <svg class="icon-eye" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                  </svg>
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="pwd-req-badges" style="margin-bottom: 14px;">
+              <span id="pwdChangeReqLength" class="pwd-req-badge">8+ chars</span>
+              <span id="pwdChangeReqUpper" class="pwd-req-badge">Uppercase</span>
+              <span id="pwdChangeReqLower" class="pwd-req-badge">Lowercase</span>
+              <span id="pwdChangeReqNumber" class="pwd-req-badge">Number</span>
+              <span id="pwdChangeReqSymbol" class="pwd-req-badge">Symbol</span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="customerConfirmNewPassword">Confirm New Password</label>
+              <div class="customer-password-wrap">
+                <input type="password" id="customerConfirmNewPassword" required placeholder="••••••••" autocomplete="new-password">
+              </div>
+            </div>
+
+            <p id="customerChangePwdError" class="customer-auth-error" role="alert" style="display: none;"></p>
+            <p id="customerChangePwdSuccess" class="customer-auth-success" role="status" style="display: none;"></p>
+
+            <div class="modal-actions" style="display: flex; gap: 10px; margin-top: 14px; padding: 0;">
+              <button type="button" class="btn btn-secondary" id="customerCancelChangePwdBtn" style="flex: 1;">
+                Cancel
+              </button>
+              <button type="submit" id="customerChangePwdSubmitBtn" class="btn btn-primary" style="flex: 1.5;">
+                Update Password
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Compliance & Age Verification Status -->
+      <div class="profile-age-badge" id="profileAgeBadge" style="margin-top: 16px; margin-bottom: 0;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent)">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+        </svg>
+        <span id="profileAgeBadgeText">Verified 18+ Customer (RA 11900 Compliant)</span>
+      </div>
+
+      <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <button type="button" class="btn btn-secondary btn-full" id="customerCloseProfileModalBtn">
+          Close Profile
+        </button>
+      </div>
     </div>
 
     <!-- 4. FORGOT PASSWORD VIEW (Step 1: Request Code) -->

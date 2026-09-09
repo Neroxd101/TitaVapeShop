@@ -14,7 +14,10 @@ const CustomerCheckPhone = {
     if (!cleanPhone || cleanPhone.length < 10) return { success: false, exists: false };
 
     try {
-      const excludeParam = excludeUserId ? `&exclude_user_id=${encodeURIComponent(excludeUserId)}` : '';
+      const resolvedExclude = typeof excludeUserId === 'function' ? excludeUserId() : excludeUserId;
+      const excludeParam = (resolvedExclude && typeof resolvedExclude === 'string') 
+        ? `&exclude_user_id=${encodeURIComponent(resolvedExclude.trim())}` 
+        : '';
       const res = await fetch(`/api/customer/check-phone?phone=${encodeURIComponent(cleanPhone)}${excludeParam}`);
       return await res.json();
     } catch (err) {

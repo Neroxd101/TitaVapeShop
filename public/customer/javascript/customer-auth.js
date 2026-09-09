@@ -192,8 +192,7 @@ const CustomerAuth = {
       const emailTarget = document.getElementById('customerVerifyEmailTarget');
       if (emailTarget) emailTarget.textContent = this.activeEmail;
     } else if (view === 'profile') {
-      const nameInput = document.getElementById('customerProfileName');
-      if (nameInput) setTimeout(() => nameInput.focus(), 50);
+      // Profile rows start collapsed
     } else if (view === 'forgot') {
       const forgotEmail = document.getElementById('customerForgotEmail');
       const signInEmail = document.getElementById('customerSignInEmail');
@@ -249,7 +248,9 @@ const CustomerAuth = {
       'customerResetOtpError',
       'customerResetOtpSuccess',
       'customerResetPwdError',
-      'customerResetPwdSuccess'
+      'customerResetPwdSuccess',
+      'customerChangePwdError',
+      'customerChangePwdSuccess'
     ];
     errors.forEach(id => {
       const el = document.getElementById(id);
@@ -420,21 +421,133 @@ const CustomerAuth = {
     const profileErrorEl = document.getElementById('customerProfileError');
 
     if (window.CustomerCheckPhone && profilePhoneInput) {
-      window.CustomerCheckPhone.attachLiveValidation(profilePhoneInput, profileErrorEl, null, this.currentUser?.id);
+      window.CustomerCheckPhone.attachLiveValidation(profilePhoneInput, profileErrorEl, null, () => this.currentUser?.id);
     }
     if (window.CustomerCheckEmail && profileEmailInput) {
-      window.CustomerCheckEmail.attachLiveValidation(profileEmailInput, profileErrorEl, null, this.currentUser?.id);
+      window.CustomerCheckEmail.attachLiveValidation(profileEmailInput, profileErrorEl, null, () => this.currentUser?.id);
     }
 
-    // Profile Form Submission
-    const profileForm = document.getElementById('customerProfileForm');
-    if (profileForm) {
-      profileForm.addEventListener('submit', (e) => this.handleUpdateProfile(e));
+    // Setup single-row collapsible edit toggles for Name, Phone, Email
+    ['Name', 'Phone', 'Email'].forEach(field => {
+      const toggleBtn = document.getElementById(`btnToggleEdit${field}`);
+      const cancelBtn = document.getElementById(`btnCancelEdit${field}`);
+      const form = document.getElementById(`formEditProfile${field}`);
+      const input = document.getElementById(`customerProfile${field}`);
+
+      if (toggleBtn && form) {
+        toggleBtn.addEventListener('click', () => {
+          form.style.display = 'block';
+          toggleBtn.style.display = 'none';
+          this.clearErrors();
+
+          if (input) {
+            if (field === 'Name') input.value = this.currentUser?.full_name || '';
+            if (field === 'Phone') input.value = this.currentUser?.contact_number || '';
+            if (field === 'Email') input.value = this.currentUser?.email || '';
+            setTimeout(() => input.focus(), 50);
+          }
+        });
+      }
+
+      if (cancelBtn && form && toggleBtn) {
+        cancelBtn.addEventListener('click', () => {
+          form.style.display = 'none';
+          toggleBtn.style.display = 'inline-flex';
+          this.clearErrors();
+
+          if (input) {
+            if (field === 'Name') input.value = this.currentUser?.full_name || '';
+            if (field === 'Phone') input.value = this.currentUser?.contact_number || '';
+            if (field === 'Email') input.value = this.currentUser?.email || '';
+          }
+        });
+      }
+
+      if (form) {
+        form.addEventListener('submit', (e) => this.handleSaveProfileField(field.toLowerCase(), e));
+      }
+    });
+
+    const closeProfileModalBtn = document.getElementById('customerCloseProfileModalBtn');
+    if (closeProfileModalBtn) {
+      closeProfileModalBtn.addEventListener('click', () => this.close());
     }
 
-    const cancelProfileBtn = document.getElementById('customerCancelProfileBtn');
-    if (cancelProfileBtn) {
-      cancelProfileBtn.addEventListener('click', () => this.close());
+    // Change Password Section Toggling
+    const openChangePwdBtn = document.getElementById('customerOpenChangePwdBtn');
+    const changePwdForm = document.getElementById('customerChangePwdForm');
+    const cancelChangePwdBtn = document.getElementById('customerCancelChangePwdBtn');
+
+    if (openChangePwdBtn && changePwdForm) {
+      openChangePwdBtn.addEventListener('click', () => {
+        changePwdForm.style.display = 'block';
+        openChangePwdBtn.style.display = 'none';
+        const currentInput = document.getElementById('customerCurrentPassword');
+        if (currentInput) setTimeout(() => currentInput.focus(), 50);
+      });
+    }
+
+    if (cancelChangePwdBtn && changePwdForm && openChangePwdBtn) {
+      cancelChangePwdBtn.addEventListener('click', () => {
+        changePwdForm.reset();
+        changePwdForm.style.display = 'none';
+        openChangePwdBtn.style.display = 'inline-flex';
+        this.clearErrors();
+        ['pwdChangeReqLength', 'pwdChangeReqUpper', 'pwdChangeReqLower', 'pwdChangeReqNumber', 'pwdChangeReqSymbol'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('met');
+        });
+      });
+    }
+
+    // Password Visibility Toggles for Change Password
+    const toggleCurrentPwd = document.getElementById('toggleCustomerCurrentPassword');
+    const currentPwdInput = document.getElementById('customerCurrentPassword');
+    if (toggleCurrentPwd && currentPwdInput) {
+      toggleCurrentPwd.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isPwd = currentPwdInput.type === 'password';
+        currentPwdInput.type = isPwd ? 'text' : 'password';
+        toggleCurrentPwd.classList.toggle('is-visible', isPwd);
+        toggleCurrentPwd.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
+        toggleCurrentPwd.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+      });
+    }
+
+    const toggleNewPwd = document.getElementById('toggleCustomerNewPassword');
+    const newPwdInput = document.getElementById('customerNewPassword');
+    if (toggleNewPwd && newPwdInput) {
+      toggleNewPwd.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isPwd = newPwdInput.type === 'password';
+        newPwdInput.type = isPwd ? 'text' : 'password';
+        toggleNewPwd.classList.toggle('is-visible', isPwd);
+        toggleNewPwd.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
+        toggleNewPwd.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+      });
+    }
+
+    // Live Password Criteria Badges on New Password
+    if (newPwdInput) {
+      newPwdInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        const bLen = document.getElementById('pwdChangeReqLength');
+        const bUp = document.getElementById('pwdChangeReqUpper');
+        const bLow = document.getElementById('pwdChangeReqLower');
+        const bNum = document.getElementById('pwdChangeReqNumber');
+        const bSym = document.getElementById('pwdChangeReqSymbol');
+
+        if (bLen) bLen.classList.toggle('met', val.length >= 8);
+        if (bUp) bUp.classList.toggle('met', /[A-Z]/.test(val));
+        if (bLow) bLow.classList.toggle('met', /[a-z]/.test(val));
+        if (bNum) bNum.classList.toggle('met', /[0-9]/.test(val));
+        if (bSym) bSym.classList.toggle('met', /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(val));
+      });
+    }
+
+    // Change Password Form Submission
+    if (changePwdForm) {
+      changePwdForm.addEventListener('submit', (e) => this.handleChangePassword(e));
     }
 
     // Forgot Password Form Submission (Step 1)
@@ -795,115 +908,142 @@ const CustomerAuth = {
     if (window.CustomerUpdateProfile) {
       window.CustomerUpdateProfile.populate(this.currentUser);
     }
+    const changePwdForm = document.getElementById('customerChangePwdForm');
+    const openChangePwdBtn = document.getElementById('customerOpenChangePwdBtn');
+    if (changePwdForm) {
+      changePwdForm.reset();
+      changePwdForm.style.display = 'none';
+    }
+    if (openChangePwdBtn) {
+      openChangePwdBtn.style.display = 'inline-flex';
+    }
     this.open('profile');
   },
 
   /**
-   * Handle Profile Update Submission using CustomerUpdateProfile module
+   * Handle Profile Field Update Submission using CustomerUpdateProfile module
    */
-  async handleUpdateProfile(e) {
+  async handleSaveProfileField(fieldKey, e) {
     if (e) e.preventDefault();
     this.clearErrors();
 
-    const nameInput = document.getElementById('customerProfileName');
-    const phoneInput = document.getElementById('customerProfilePhone');
-    const emailInput = document.getElementById('customerProfileEmail');
-    const submitBtn = document.getElementById('customerProfileSubmitBtn');
+    if (!this.currentUser) return;
 
-    const fullName = nameInput ? nameInput.value.trim() : '';
-    const phone = phoneInput ? phoneInput.value.trim() : '';
-    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+    let fullName = this.currentUser.full_name || '';
+    let phone = this.currentUser.contact_number || '';
+    let email = (this.currentUser.email || '').toLowerCase();
 
-    if (!fullName || fullName.length < 2) {
-      this.showError('customerProfileError', 'Please enter your full name (at least 2 characters).');
-      if (nameInput) nameInput.focus();
-      return;
-    }
+    let submitBtn = null;
+    let collapseForm = null;
+    let toggleBtn = null;
 
-    const phonePattern = /^(09|\+639)\d{9}$/;
-    if (!phone || !phonePattern.test(phone)) {
-      this.showError('customerProfileError', 'Please enter a valid 11-digit mobile number (e.g. 09123456789).');
-      if (phoneInput) phoneInput.focus();
-      return;
-    }
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailPattern.test(email)) {
-      this.showError('customerProfileError', 'Please enter a valid email address.');
-      if (emailInput) emailInput.focus();
-      return;
+    if (fieldKey === 'name') {
+      const input = document.getElementById('customerProfileName');
+      submitBtn = document.getElementById('btnSaveProfileName');
+      collapseForm = document.getElementById('formEditProfileName');
+      toggleBtn = document.getElementById('btnToggleEditName');
+      const val = input ? input.value.trim() : '';
+      if (!val || val.length < 2) {
+        this.showError('customerProfileError', 'Please enter your full name (at least 2 characters).');
+        if (input) input.focus();
+        return;
+      }
+      fullName = val;
+    } else if (fieldKey === 'phone') {
+      const input = document.getElementById('customerProfilePhone');
+      submitBtn = document.getElementById('btnSaveProfilePhone');
+      collapseForm = document.getElementById('formEditProfilePhone');
+      toggleBtn = document.getElementById('btnToggleEditPhone');
+      const val = input ? input.value.trim() : '';
+      const phonePattern = /^(09|\+639)\d{9}$/;
+      if (!val || !phonePattern.test(val)) {
+        this.showError('customerProfileError', 'Please enter a valid 11-digit mobile number (e.g. 09123456789).');
+        if (input) input.focus();
+        return;
+      }
+      phone = val;
+    } else if (fieldKey === 'email') {
+      const input = document.getElementById('customerProfileEmail');
+      submitBtn = document.getElementById('btnSaveProfileEmail');
+      collapseForm = document.getElementById('formEditProfileEmail');
+      toggleBtn = document.getElementById('btnToggleEditEmail');
+      const val = input ? input.value.trim().toLowerCase() : '';
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!val || !emailPattern.test(val)) {
+        this.showError('customerProfileError', 'Please enter a valid email address.');
+        if (input) input.focus();
+        return;
+      }
+      email = val;
     }
 
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Saving Changes...';
+      submitBtn.textContent = 'Saving...';
     }
 
-    const result = await window.CustomerUpdateProfile.update({
-      full_name: fullName,
-      contact_number: phone,
-      email: email
-    });
+    try {
+      const result = await window.CustomerUpdateProfile.update({
+        full_name: fullName,
+        contact_number: phone,
+        email: email
+      });
 
-    if (!result.success) {
-      this.showError('customerProfileError', result.error || 'Failed to update profile.');
+      if (!result.success) {
+        this.showError('customerProfileError', result.error || 'Failed to update profile.');
+        return;
+      }
+
+      // If email was changed, require OTP verification
+      if (result.email_changed) {
+        this.activeEmail = result.email;
+        this.isEmailChangeVerification = true;
+
+        this.switchView('verify');
+        this.startResendCountdown(60);
+
+        const emailTarget = document.getElementById('customerVerifyEmailTarget');
+        if (emailTarget) emailTarget.textContent = result.email;
+
+        const verifyBtn = document.getElementById('customerVerifySubmitBtn');
+        if (verifyBtn) verifyBtn.textContent = 'Verify & Update Email';
+
+        this.showSuccess('customerVerifySuccess', result.message || `Verification code sent to ${result.email}. Please verify to confirm.`);
+        return;
+      }
+
+      // Unchanged email update - save succeeded directly
+      this.currentUser = result.user;
+      this.updateNavUI();
+
+      if (window.CustomerUpdateProfile) {
+        window.CustomerUpdateProfile.populate(this.currentUser);
+      }
+
+      const checkoutName = document.getElementById('customerName');
+      const checkoutPhone = document.getElementById('customerPhone');
+      const checkoutEmail = document.getElementById('customerEmail');
+      if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
+      if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
+      if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
+
+      if (collapseForm) collapseForm.style.display = 'none';
+      if (toggleBtn) toggleBtn.style.display = 'inline-flex';
+
+      this.showSuccess('customerProfileSuccess', '✓ Profile updated successfully!');
+    } catch (err) {
+      console.error('[Customer Auth] Save profile field error:', err);
+      this.showError('customerProfileError', err.message || 'An unexpected error occurred.');
+    } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Save Changes';
+        submitBtn.textContent = 'Save';
       }
-      return;
     }
+  },
 
-    // If email was changed, require OTP verification
-    if (result.email_changed) {
-      this.activeEmail = result.email;
-      this.isEmailChangeVerification = true;
-
-      this.switchView('verify');
-      this.startResendCountdown(60);
-
-      const emailTarget = document.getElementById('customerVerifyEmailTarget');
-      if (emailTarget) emailTarget.textContent = result.email;
-
-      const verifyBtn = document.getElementById('customerVerifySubmitBtn');
-      if (verifyBtn) verifyBtn.textContent = 'Verify & Update Email';
-
-      this.showSuccess('customerVerifySuccess', result.message || `Verification code sent to ${result.email}. Please verify to confirm.`);
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Save Changes';
-      }
-      return;
-    }
-
-    // Unchanged email update
-    this.currentUser = result.user;
-    this.updateNavUI();
-
-    if (window.CustomerUpdateProfile) {
-      window.CustomerUpdateProfile.populate(this.currentUser);
-    }
-
-    const checkoutName = document.getElementById('customerName');
-    const checkoutPhone = document.getElementById('customerPhone');
-    const checkoutEmail = document.getElementById('customerEmail');
-    if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
-    if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
-    if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
-
-    this.showSuccess('customerProfileSuccess', '✓ Profile updated successfully!');
-
-    setTimeout(() => {
-      const profileView = document.getElementById('customerProfileView');
-      if (profileView && profileView.style.display !== 'none') {
-        this.close();
-      }
-    }, 1400);
-
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Save Changes';
-    }
+  handleUpdateProfile(e) {
+    return this.handleSaveProfileField('name', e);
   },
 
   async handleForgotPassword(e) {
@@ -1104,6 +1244,93 @@ const CustomerAuth = {
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Save New Password';
+      }
+    }
+  },
+
+  async handleChangePassword(e) {
+    e.preventDefault();
+    this.clearErrors();
+
+    const currentPwdInput = document.getElementById('customerCurrentPassword');
+    const newPwdInput = document.getElementById('customerNewPassword');
+    const confirmPwdInput = document.getElementById('customerConfirmNewPassword');
+    const submitBtn = document.getElementById('customerChangePwdSubmitBtn');
+    const form = document.getElementById('customerChangePwdForm');
+    const openBtn = document.getElementById('customerOpenChangePwdBtn');
+
+    const currentPassword = currentPwdInput ? currentPwdInput.value : '';
+    const newPassword = newPwdInput ? newPwdInput.value : '';
+    const confirmPassword = confirmPwdInput ? confirmPwdInput.value : '';
+
+    if (!currentPassword) {
+      this.showError('customerChangePwdError', 'Please enter your current password.');
+      if (currentPwdInput) currentPwdInput.focus();
+      return;
+    }
+
+    if (!newPassword) {
+      this.showError('customerChangePwdError', 'Please enter a new password.');
+      if (newPwdInput) newPwdInput.focus();
+      return;
+    }
+
+    const hasLen = newPassword.length >= 8;
+    const hasUp = /[A-Z]/.test(newPassword);
+    const hasLow = /[a-z]/.test(newPassword);
+    const hasNum = /[0-9]/.test(newPassword);
+    const hasSym = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(newPassword);
+
+    if (!hasLen || !hasUp || !hasLow || !hasNum || !hasSym) {
+      this.showError('customerChangePwdError', 'New password must be at least 8 characters and include uppercase, lowercase, number, and symbol.');
+      if (newPwdInput) newPwdInput.focus();
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      this.showError('customerChangePwdError', 'New passwords do not match.');
+      if (confirmPwdInput) confirmPwdInput.focus();
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      this.showError('customerChangePwdError', 'New password cannot be identical to current password.');
+      if (newPwdInput) newPwdInput.focus();
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Updating Password...';
+    }
+
+    try {
+      if (!window.CustomerChangePassword) {
+        throw new Error('Customer change password module is not loaded.');
+      }
+      const res = await window.CustomerChangePassword.changePassword(currentPassword, newPassword, confirmPassword);
+      if (res && res.success) {
+        this.showSuccess('customerChangePwdSuccess', '✓ Password updated successfully!');
+        if (form) form.reset();
+        ['pwdChangeReqLength', 'pwdChangeReqUpper', 'pwdChangeReqLower', 'pwdChangeReqNumber', 'pwdChangeReqSymbol'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('met');
+        });
+        setTimeout(() => {
+          if (form) form.style.display = 'none';
+          if (openBtn) openBtn.style.display = 'inline-flex';
+          this.clearErrors();
+        }, 1500);
+      } else {
+        this.showError('customerChangePwdError', res?.error || 'Failed to update password.');
+      }
+    } catch (err) {
+      console.error('[Customer Auth] Change password error:', err);
+      this.showError('customerChangePwdError', err.message || 'An unexpected error occurred.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Update Password';
       }
     }
   },

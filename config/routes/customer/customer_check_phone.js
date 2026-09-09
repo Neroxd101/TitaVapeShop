@@ -17,7 +17,9 @@ router.get('/api/customer/check-phone', async (req, res) => {
     }
 
     const cleanPhone = (req.query.phone || '').trim().replace(/\D/g, '');
-    const excludeUserId = req.query.exclude_user_id || null;
+    const rawExclude = (req.query.exclude_user_id || '').trim();
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const excludeUserId = uuidRegex.test(rawExclude) ? rawExclude : null;
 
     if (!cleanPhone || cleanPhone.length < 10) {
       return res.status(400).json({ success: false, error: 'Valid phone number is required.' });

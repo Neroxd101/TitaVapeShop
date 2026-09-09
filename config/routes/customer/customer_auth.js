@@ -10,6 +10,7 @@ const generateOtpRoutes = require('./customer_generate_otp');
 const loginRoutes = require('./customer_login');
 const updateProfileRoutes = require('./customer_update_profile');
 const resetPasswordRoutes = require('./customer_reset_password');
+const changePasswordRoutes = require('./customer_change_password');
 const createOrderRoutes = require('./customer_create_order');
 const getOrdersRoutes = require('./customer_get_orders');
 
@@ -22,6 +23,7 @@ router.use('/', generateOtpRoutes);
 router.use('/', loginRoutes);
 router.use('/', updateProfileRoutes);
 router.use('/', resetPasswordRoutes);
+router.use('/', changePasswordRoutes);
 router.use('/', createOrderRoutes);
 router.use('/', getOrdersRoutes);
 

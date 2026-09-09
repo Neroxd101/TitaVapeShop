@@ -17,7 +17,9 @@ router.get('/api/customer/check-email', async (req, res) => {
     }
 
     const cleanEmail = (req.query.email || '').trim().toLowerCase();
-    const excludeUserId = req.query.exclude_user_id || null;
+    const rawExclude = (req.query.exclude_user_id || '').trim();
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const excludeUserId = uuidRegex.test(rawExclude) ? rawExclude : null;
 
     if (!cleanEmail) {
       return res.status(400).json({ success: false, error: 'Email parameter is required.' });

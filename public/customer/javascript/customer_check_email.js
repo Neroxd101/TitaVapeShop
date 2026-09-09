@@ -14,7 +14,10 @@ const CustomerCheckEmail = {
     if (!cleanEmail) return { success: false, exists: false };
 
     try {
-      const excludeParam = excludeUserId ? `&exclude_user_id=${encodeURIComponent(excludeUserId)}` : '';
+      const resolvedExclude = typeof excludeUserId === 'function' ? excludeUserId() : excludeUserId;
+      const excludeParam = (resolvedExclude && typeof resolvedExclude === 'string') 
+        ? `&exclude_user_id=${encodeURIComponent(resolvedExclude.trim())}` 
+        : '';
       const res = await fetch(`/api/customer/check-email?email=${encodeURIComponent(cleanEmail)}${excludeParam}`);
       return await res.json();
     } catch (err) {
