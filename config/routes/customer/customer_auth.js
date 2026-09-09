@@ -336,7 +336,7 @@ router.post('/api/customer/verify-email', async (req, res) => {
     const nowIso = new Date().toISOString();
     const { data: codeRows, error: codeQueryError } = await client
       .from('customer_verification_codes')
-      .select('id, user_id, expires_at, verified')
+      .select('id, user_id, email, expires_at, verified')
       .eq('email', cleanEmail)
       .eq('otp_code', cleanCode)
       .eq('verified', false)
@@ -352,6 +352,7 @@ router.post('/api/customer/verify-email', async (req, res) => {
     }
 
     const matchedOtp = codeRows[0];
+    const targetEmail = matchedOtp.email || cleanEmail;
 
     // Mark OTP as verified
     await client
@@ -359,15 +360,16 @@ router.post('/api/customer/verify-email', async (req, res) => {
       .update({ verified: true })
       .eq('id', matchedOtp.id);
 
-    // Mark user as verified
+    // Mark user as verified and update email to the verified email
     const { data: updatedUser, error: userUpdateError } = await client
       .from('users')
       .update({
+        email: targetEmail,
         is_verified: true,
         email_verified_at: new Date().toISOString()
       })
       .eq('id', matchedOtp.user_id)
-      .select('id, email, full_name, contact_number, roles')
+      .select('id, email, full_name, contact_number, birthday, roles')
       .single();
 
     if (userUpdateError || !updatedUser) {
@@ -422,18 +424,56 @@ router.post('/api/customer/resend-otp', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Email address is required.' });
     }
 
-    const { data: user, error: userError } = await client
-      .from('users')
-      .select('id, email, full_name, is_verified')
-      .eq('email', cleanEmail)
-      .maybeSingle();
+    let targetUserId = null;
+    let targetName = 'Customer';
 
-    if (userError || !user) {
-      return res.status(404).json({ success: false, error: 'No account found with this email address.' });
+    // 1. If user is currently authenticated (e.g. changing email)
+    const token = req.cookies.customer_token;
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded && decoded.id) {
+          targetUserId = decoded.id;
+          targetName = decoded.full_name || 'Customer';
+        }
+      } catch (_) {}
     }
 
-    if (user.is_verified) {
-      return res.status(400).json({ success: false, error: 'This account is already verified. You can log in.' });
+    // 2. If not authenticated, lookup in users table or pending verification codes
+    if (!targetUserId) {
+      const { data: user } = await client
+        .from('users')
+        .select('id, email, full_name, is_verified')
+        .ilike('email', cleanEmail)
+        .maybeSingle();
+
+      if (user) {
+        if (user.is_verified) {
+          return res.status(400).json({ success: false, error: 'This account is already verified. You can log in.' });
+        }
+        targetUserId = user.id;
+        targetName = user.full_name || 'Customer';
+      } else {
+        // Check for pending email change OTP
+        const { data: pendingOtp } = await client
+          .from('customer_verification_codes')
+          .select('user_id, email')
+          .ilike('email', cleanEmail)
+          .eq('verified', false)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (pendingOtp) {
+          targetUserId = pendingOtp.user_id;
+          const { data: u } = await client.from('users').select('full_name').eq('id', pendingOtp.user_id).maybeSingle();
+          if (u) targetName = u.full_name || 'Customer';
+        }
+      }
+    }
+
+    if (!targetUserId) {
+      return res.status(404).json({ success: false, error: 'No account or pending verification found with this email address.' });
     }
 
     const otpCode = generateCode();
@@ -442,7 +482,7 @@ router.post('/api/customer/resend-otp', async (req, res) => {
     const { error: insertError } = await client
       .from('customer_verification_codes')
       .insert({
-        user_id: user.id,
+        user_id: targetUserId,
         email: cleanEmail,
         otp_code: otpCode,
         expires_at: expiresAt,
@@ -458,7 +498,7 @@ router.post('/api/customer/resend-otp', async (req, res) => {
       await sendMail(
         cleanEmail,
         'Your New Verification Code - Tita\'s Vape Shop',
-        generateVerificationEmail(otpCode, user.full_name)
+        generateVerificationEmail(otpCode, targetName)
       );
     } catch (mailErr) {
       console.error('[Customer Resend] Mail error:', mailErr);
@@ -674,33 +714,28 @@ router.put('/api/customer/profile', async (req, res) => {
         return res.status(400).json({ success: false, error: 'This email is already associated with another account.' });
       }
 
-      // Update user record: set new email, reset verification status
-      const { data: updatedUser, error: updateErr } = await client
+      // Update full_name and contact_number now, BUT DO NOT update users.email yet!
+      // New email is ONLY updated in users table AFTER the 6-digit OTP code is verified.
+      const { error: updateErr } = await client
         .from('users')
         .update({
           full_name: normalizedName,
-          contact_number: normalizedPhone,
-          email: normalizedEmail,
-          is_verified: false,
-          email_verified_at: null
+          contact_number: normalizedPhone
         })
-        .eq('id', decoded.id)
-        .select('id, email, full_name, contact_number')
-        .single();
+        .eq('id', decoded.id);
 
-      if (updateErr || !updatedUser) {
+      if (updateErr) {
         console.error('[Customer Update Profile] DB update error:', updateErr);
         return res.status(500).json({ success: false, error: 'Failed to update profile details.' });
       }
 
-      // Invalidate current customer session cookie since account requires verification
-      res.clearCookie('customer_token');
+      // Keep active customer session cookie so the account remains safely logged in!
 
-      // Generate 6-digit OTP code
+      // Generate 6-digit OTP code for the new email address
       const otpCode = generateCode();
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
-      // Store in customer_verification_codes
+      // Store in customer_verification_codes linked to decoded.id and normalizedEmail
       const { error: otpError } = await client
         .from('customer_verification_codes')
         .insert({
@@ -729,8 +764,9 @@ router.put('/api/customer/profile', async (req, res) => {
       return res.json({
         success: true,
         email_changed: true,
+        pending_verification: true,
         email: normalizedEmail,
-        message: 'Your email address was updated! A 6-digit verification code has been sent to your new email. Please verify to continue.'
+        message: `A 6-digit verification code has been sent to ${normalizedEmail}. Please enter the code to confirm changing your email.`
       });
     }
 

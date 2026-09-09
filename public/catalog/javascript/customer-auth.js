@@ -759,6 +759,23 @@ const CustomerAuth = {
       this.currentUser = result.user;
       this.isEmailChangeVerification = false;
       this.updateNavUI();
+
+      // Sync profile modal inputs with the verified user
+      const nameInput = document.getElementById('customerProfileName');
+      const phoneInput = document.getElementById('customerProfilePhone');
+      const emailInput = document.getElementById('customerProfileEmail');
+      if (nameInput) nameInput.value = this.currentUser.full_name || '';
+      if (phoneInput) phoneInput.value = this.currentUser.contact_number || '';
+      if (emailInput) emailInput.value = this.currentUser.email || '';
+
+      // Sync customer details to checkout form autofill if present
+      const checkoutName = document.getElementById('customerName');
+      const checkoutPhone = document.getElementById('customerPhone');
+      const checkoutEmail = document.getElementById('customerEmail');
+      if (checkoutName) checkoutName.value = this.currentUser.full_name || '';
+      if (checkoutPhone) checkoutPhone.value = this.currentUser.contact_number || '';
+      if (checkoutEmail) checkoutEmail.value = this.currentUser.email || '';
+
       this.showSuccess('customerVerifySuccess', '✓ Email verified successfully!');
 
       clearInterval(this.resendTimerInterval);
@@ -943,12 +960,11 @@ const CustomerAuth = {
         return;
       }
 
-      // If email was changed, require 6-digit OTP verification for the new email address
+      // If email was changed, require 6-digit OTP verification before applying the new email address
       if (data.email_changed) {
         this.activeEmail = data.email;
         this.isEmailChangeVerification = true;
-        this.currentUser = null;
-        this.updateNavUI();
+        // Keep current session active so user is not logged out during verification
 
         // Switch to OTP verify view
         this.switchView('verify');
@@ -958,9 +974,9 @@ const CustomerAuth = {
         if (emailTarget) emailTarget.textContent = data.email;
 
         const verifyBtn = document.getElementById('customerVerifySubmitBtn');
-        if (verifyBtn) verifyBtn.textContent = 'Verify Email';
+        if (verifyBtn) verifyBtn.textContent = 'Verify & Update Email';
 
-        this.showSuccess('customerVerifySuccess', data.message || 'Verification code sent to your new email. Please verify to continue.');
+        this.showSuccess('customerVerifySuccess', data.message || `Verification code sent to ${data.email}. Please verify to confirm.`);
         return;
       }
 
