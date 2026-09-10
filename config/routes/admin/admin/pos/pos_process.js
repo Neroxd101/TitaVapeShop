@@ -119,7 +119,7 @@ const handleSalesProcess = async (req, res) => {
 
         // Check for low stock items in background
         try {
-            const { checkAndSendLowStockAlerts } = require('../../../../utils/lowStockAlert');
+            const { checkAndSendLowStockAlerts } = require('../setting/lowStockAlert');
             const alertItems = results.map(item => ({
                 id: item.id,
                 name: item.name,
