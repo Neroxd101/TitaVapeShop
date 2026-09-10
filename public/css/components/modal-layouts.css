@@ -1575,7 +1575,8 @@
   }
 
   #viewModal .view-stat {
-    padding: 4px 6px !important;
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
   }
 
   #viewModal .stat-label {

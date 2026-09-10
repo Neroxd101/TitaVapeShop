@@ -1036,6 +1036,7 @@
 
   .view-stat {
     gap: 2px !important;
+    border-radius: 8px !important;
   }
 
   .view-stat .stat-label {

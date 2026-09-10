@@ -186,8 +186,14 @@
   gap: 4px;
   background: var(--bg-secondary);
   padding: 14px;
-  border-radius: 14px;
+  border-radius: 10px;
   border: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .view-stat {
+    border-radius: 8px;
+  }
 }
 
 .view-stat .stat-label {
