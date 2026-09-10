@@ -10,7 +10,13 @@ const OrdersGetAll = {
      */
     async get(filters = {}) {
         try {
-            const params = new URLSearchParams(filters);
+            const cleanFilters = {};
+            for (const [key, value] of Object.entries(filters)) {
+                if (value !== '' && value !== null && value !== undefined) {
+                    cleanFilters[key] = value;
+                }
+            }
+            const params = new URLSearchParams(cleanFilters);
             const response = await fetch(`/api/orders/get_all?${params}`, {
                 method: 'GET'
             });

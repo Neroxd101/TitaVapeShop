@@ -77,9 +77,12 @@
                         <option value="voided">Voided</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
-                </div>
-                <div class="filter-tabs-actions orders-filter-actions">
-                    <button id="resetFiltersBtn" class="btn btn-secondary">Reset</button>
+                    <label class="orders-date-field" for="filterStartDate">From
+                        <span class="orders-date-input"><input type="date" id="filterStartDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
+                    </label>
+                    <label class="orders-date-field" for="filterEndDate">To
+                        <span class="orders-date-input"><input type="date" id="filterEndDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
+                    </label>
                 </div>
             </div>
 

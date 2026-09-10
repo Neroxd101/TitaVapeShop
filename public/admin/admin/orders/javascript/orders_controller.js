@@ -8,6 +8,8 @@ class OrdersController {
             filters: {
                 status: '',
                 search: '',
+                start_date: '',
+                end_date: '',
                 limit: 20,
                 offset: 0
             },
@@ -19,7 +21,8 @@ class OrdersController {
         this.elements = {
             orderSearchInput: document.getElementById('orderSearchInput'),
             filterStatus: document.getElementById('filterStatus'),
-            resetFiltersBtn: document.getElementById('resetFiltersBtn'),
+            filterStartDate: document.getElementById('filterStartDate'),
+            filterEndDate: document.getElementById('filterEndDate'),
             ordersList: document.getElementById('ordersList'),
             prevPageBtn: document.getElementById('prevPageBtn'),
             nextPageBtn: document.getElementById('nextPageBtn'),
@@ -352,9 +355,26 @@ class OrdersController {
             });
         }
 
-        if (this.elements.resetFiltersBtn) {
-            this.elements.resetFiltersBtn.addEventListener('click', () => {
-                this.resetFilters();
+        this.syncDateHints();
+
+        const dateInputs = [this.elements.filterStartDate, this.elements.filterEndDate];
+        for (const input of dateInputs) {
+            if (!input) continue;
+            input.addEventListener('input', () => this.syncDateHints());
+            input.addEventListener('change', () => {
+                this.syncDateHints();
+                const start = this.elements.filterStartDate;
+                const end = this.elements.filterEndDate;
+                if (end) end.setCustomValidity('');
+                if (start && end && start.value && end.value && start.value > end.value) {
+                    end.setCustomValidity('End date must be on or after start date.');
+                    end.reportValidity();
+                    return;
+                }
+                this.state.filters.start_date = start && start.value ? new Date(start.value + 'T00:00:00').toISOString() : '';
+                this.state.filters.end_date = end && end.value ? new Date(end.value + 'T23:59:59.999').toISOString() : '';
+                this.state.filters.offset = 0;
+                this.loadOrders();
             });
         }
 
@@ -374,6 +394,15 @@ class OrdersController {
                     this.loadOrders();
                 }
             });
+        }
+    }
+
+    syncDateHints() {
+        if (this.elements.filterStartDate) {
+            this.elements.filterStartDate.dataset.empty = String(!this.elements.filterStartDate.value);
+        }
+        if (this.elements.filterEndDate) {
+            this.elements.filterEndDate.dataset.empty = String(!this.elements.filterEndDate.value);
         }
     }
 

@@ -13,7 +13,7 @@ router.get('/api/orders/get_all', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { status, limit, offset, search } = req.query;
+        const { status, limit, offset, search, start_date, end_date } = req.query;
         const parsedLimit = parseInt(limit) || 20;
         const parsedOffset = parseInt(offset) || 0;
         const client = supabaseAdmin || supabase;
@@ -26,6 +26,14 @@ router.get('/api/orders/get_all', async (req, res) => {
             let query = client.from('orders').select('*');
             if (status) {
                 query = query.eq('status', status);
+            }
+            if (start_date) {
+                const startIso = start_date.includes('T') ? start_date : new Date(start_date + 'T00:00:00').toISOString();
+                query = query.gte('created_at', startIso);
+            }
+            if (end_date) {
+                const endIso = end_date.includes('T') ? end_date : new Date(end_date + 'T23:59:59.999').toISOString();
+                query = query.lte('created_at', endIso);
             }
             query = query.order('created_at', { ascending: false });
 
@@ -80,7 +88,36 @@ router.get('/api/orders/get_all', async (req, res) => {
             });
         }
 
-        // Call database RPC function when no search query
+        // If date filters are provided without search, use direct query with exact count
+        if (start_date || end_date) {
+            let query = client.from('orders').select('*', { count: 'exact' });
+            if (status) query = query.eq('status', status);
+            if (start_date) {
+                const startIso = start_date.includes('T') ? start_date : new Date(start_date + 'T00:00:00').toISOString();
+                query = query.gte('created_at', startIso);
+            }
+            if (end_date) {
+                const endIso = end_date.includes('T') ? end_date : new Date(end_date + 'T23:59:59.999').toISOString();
+                query = query.lte('created_at', endIso);
+            }
+            query = query.order('created_at', { ascending: false })
+                         .range(parsedOffset, parsedOffset + parsedLimit - 1);
+
+            const { data: dateData, count, error: dateError } = await query;
+            if (dateError) {
+                console.error('Date filter query error:', dateError);
+                return res.status(400).json({ success: false, error: dateError.message });
+            }
+            return res.json({
+                success: true,
+                orders: dateData || [],
+                total: count || 0,
+                limit: parsedLimit,
+                offset: parsedOffset
+            });
+        }
+
+        // Call database RPC function when no search and no date query
         const { data, error } = await client.rpc('orders_get_all', {
             p_status: status || null,
             p_limit: parsedLimit,

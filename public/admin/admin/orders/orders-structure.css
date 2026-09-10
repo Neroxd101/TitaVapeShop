@@ -23,8 +23,11 @@
 }
 
 .orders-filter-group {
-  flex: 0 0 180px;
-  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
 }
 
 .orders-filter-select {
@@ -32,8 +35,8 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   display: block;
-  width: 100%;
-  min-width: 0;
+  width: 150px;
+  min-width: 130px;
   text-align: center;
   text-align-last: center;
   height: 44px;
@@ -51,21 +54,53 @@
   background-repeat: no-repeat;
 }
 
-.orders-filter-actions {
-  width: auto;
+.orders-date-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.orders-filter-actions .btn {
-  width: auto;
-  min-width: 120px;
-  background: linear-gradient(135deg, var(--accent), #00b894);
-  border-color: transparent;
-  color: var(--bg-primary);
+.orders-date-input {
+  position: relative;
+  display: block;
+  min-width: 145px;
 }
 
-.orders-filter-actions .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 212, 170, 0.28);
+.orders-date-input input[type="date"] {
+  height: 44px;
+  min-width: 0;
+  width: 100%;
+  text-align: center;
+  text-align-last: center;
+  color-scheme: dark;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.orders-date-input input[type="date"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.2);
+  outline: none;
+}
+
+.orders-date-input input[type="date"]::-webkit-date-and-time-value {
+  text-align: center;
+}
+
+.orders-date-input .date-format-hint {
+  display: none;
 }
 
 .orders-filter-tabs,
@@ -212,7 +247,7 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .orders-filter-select,
-  .orders-filter-actions .btn {
+  .orders-date-input input[type="date"] {
     height: 40px;
   }
 
@@ -239,21 +274,56 @@
   }
 
   .orders-filter-group {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
     width: 100% !important;
     flex: none !important;
   }
 
-  .orders-filter-actions {
-    width: 100% !important;
-  }
-
-  .orders-filter-actions .btn {
-    width: 100% !important;
-    height: 36px;
-  }
-
   .orders-filter-select {
+    grid-column: 1 / -1;
+    width: 100% !important;
     height: 36px;
+  }
+
+  .orders-date-field {
+    width: 100%;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .orders-date-input {
+    min-width: 0;
+    flex: 1;
+    width: 100%;
+  }
+
+  .orders-date-input input[type="date"] {
+    height: 36px;
+    font-size: 12px;
+    padding: 0 6px;
+  }
+
+  .orders-date-input input[data-empty="true"]:not(:focus) {
+    color: transparent;
+  }
+
+  .orders-date-input input[data-empty="true"]:not(:focus)::-webkit-datetime-edit {
+    color: transparent;
+  }
+
+  .orders-date-input input[data-empty="true"]:not(:focus) + .date-format-hint {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 11px;
+    pointer-events: none;
   }
 
   .orders-container .table-card,
@@ -490,12 +560,6 @@
     align-items: stretch;
   }
 
-  .orders-filter-group,
-  .orders-filter-actions,
-  .orders-filter-actions .btn {
-    width: 100%;
-  }
-
   .orders-filter-select {
     height: 32px;
     padding: 0 26px;
@@ -506,10 +570,9 @@
     background-size: 4px 4px, 4px 4px;
   }
 
-  .orders-filter-actions .btn {
+  .orders-date-input input[type="date"] {
     height: 32px;
     font-size: 11px;
-    padding: 6px 10px;
   }
 
   .orders-table {
@@ -587,10 +650,13 @@
     background-size: 3px 3px, 3px 3px;
   }
 
-  .orders-filter-actions .btn {
+  .orders-date-field {
+    font-size: 11px;
+  }
+
+  .orders-date-input input[type="date"] {
     height: 30px;
     font-size: 10px;
-    padding: 5px 9px;
   }
 
   .orders-table tbody tr {
