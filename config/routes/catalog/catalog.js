@@ -19,10 +19,6 @@ router.get('/order-status', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../public/order-status/order-status.html'));
 });
 
-router.get('/order-status/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../public/order-status/order-status.html'));
-});
-
 // Public product catalog modal HTML - accessible without login
 // GET /catalog/catalog-product-modal.html
 router.get('/catalog/catalog-product-modal.html', (req, res) => {
@@ -58,13 +54,5 @@ router.get('/catalog/catalog-orders-modal.html', (req, res) => {
 router.get(['/customer/customer-auth-modal.html', '/catalog/customer-auth-modal.html'], (req, res) => {
   res.sendFile(path.join(__dirname, '../../../public/customer/customer-auth-modal.html'));
 });
-
-// Public catalog products / inventory list route (1-to-1 modular router)
-const catalogGetProductsRoutes = require('./catalog_get_products');
-router.use('/', catalogGetProductsRoutes);
-
-// Public Google Drive image proxy for catalog (1-to-1 modular router)
-const catalogImageProxyRoutes = require('./catalog_image_proxy');
-router.use('/', catalogImageProxyRoutes);
 
 module.exports = router;

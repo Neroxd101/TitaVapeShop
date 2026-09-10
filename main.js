@@ -141,7 +141,6 @@ app.use('/', settingsRoutes);
 // Staff routes
 app.use('/', staffPosRoutes);
 app.use('/', staffOrdersRoutes);
-// app.use('/', salesApiRoutes); // Removed
 
 // For local development
 if (!process.env.VERCEL) {
