@@ -855,3 +855,8 @@ body {
     grid-template-columns: 1fr;
   }
 }
+#googleConnectModal .google-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
