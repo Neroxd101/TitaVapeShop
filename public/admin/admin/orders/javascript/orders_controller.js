@@ -23,6 +23,7 @@ class OrdersController {
             filterStatus: document.getElementById('filterStatus'),
             filterStartDate: document.getElementById('filterStartDate'),
             filterEndDate: document.getElementById('filterEndDate'),
+            resetFiltersBtn: document.getElementById('resetFiltersBtn'),
             ordersList: document.getElementById('ordersList'),
             prevPageBtn: document.getElementById('prevPageBtn'),
             nextPageBtn: document.getElementById('nextPageBtn'),
@@ -378,6 +379,12 @@ class OrdersController {
             });
         }
 
+        if (this.elements.resetFiltersBtn) {
+            this.elements.resetFiltersBtn.addEventListener('click', () => {
+                this.resetFilters();
+            });
+        }
+
         if (this.elements.prevPageBtn) {
             this.elements.prevPageBtn.addEventListener('click', () => {
                 if (this.state.filters.offset >= this.state.filters.limit) {
@@ -404,6 +411,28 @@ class OrdersController {
         if (this.elements.filterEndDate) {
             this.elements.filterEndDate.dataset.empty = String(!this.elements.filterEndDate.value);
         }
+    }
+
+    resetFilters() {
+        if (this.elements.orderSearchInput) this.elements.orderSearchInput.value = '';
+        if (this.elements.filterStatus) this.elements.filterStatus.value = '';
+        if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
+        if (this.elements.filterEndDate) {
+            this.elements.filterEndDate.value = '';
+            this.elements.filterEndDate.setCustomValidity('');
+        }
+        this.syncDateHints();
+
+        this.state.filters = {
+            status: '',
+            search: '',
+            start_date: '',
+            end_date: '',
+            limit: 20,
+            offset: 0
+        };
+
+        this.loadOrders();
     }
 
     async loadOrders() {
