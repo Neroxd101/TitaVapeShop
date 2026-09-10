@@ -9,7 +9,7 @@ const InventoryDelete = {
         if (!container) return;
 
         try {
-            const response = await fetch('/inventory/inventory-delete-modal.html');
+            const response = await fetch('/admin/admin/inventory/inventory-delete-modal.html');
             if (response.ok) {
                 container.innerHTML = await response.text();
                 InventoryDOM.deleteModal = document.getElementById('deleteModal');

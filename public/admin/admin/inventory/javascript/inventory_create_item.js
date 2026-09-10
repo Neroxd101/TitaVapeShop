@@ -9,7 +9,7 @@ const InventoryCreate = {
         if (!container) return;
 
         try {
-            const response = await fetch('/inventory/inventory-add-edit-modal.html');
+            const response = await fetch('/admin/admin/inventory/inventory-add-edit-modal.html');
             if (response.ok) {
                 container.innerHTML = await response.text();
                 InventoryDOM.itemModal = document.getElementById('itemModal');

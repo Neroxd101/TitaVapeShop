@@ -1,16 +1,18 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const { supabase } = require('../../database/supabase');
-const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
+const { supabase } = require('../../../../database/supabase');
+const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-// Protect all inventory routes
-router.use(isAuthenticated, hasRole(['admin', 'staff']));
+// Protect all inventory routes - Admin exclusive
+router.use(isAuthenticated, hasRole(['admin']));
 
-// GET /inventory - Serve inventory page
-router.get('/inventory', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../public/inventory/inventory.html'));
-});
+// GET /inventory and GET /admin/inventory - Serve inventory page
+const serveInventory = (req, res) => {
+    res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/inventory/inventory.html'));
+};
+router.get('/inventory', serveInventory);
+router.get('/admin/inventory', serveInventory);
 
 // GET /inventory/inventory_get_all - Get all inventory items
 router.get('/inventory/inventory_get_all', async (req, res) => {

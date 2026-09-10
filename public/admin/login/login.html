@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login | Tita's Vape Shop</title>
+  <title>Admin & Staff Login | Tita's Vape Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="/css/components/empty-state.css">
   <link rel="stylesheet" href="/css/components/loading-state.css">
   <link rel="stylesheet" href="/css/components/logo.css">
-  <link rel="stylesheet" href="/login/login.css">
+  <link rel="stylesheet" href="/admin/login/login.css">
 </head>
 
 <body>
@@ -37,7 +37,7 @@
     <div class="login-card">
       <div class="logo">
         <h1 class="logo-text">Tita's Vape Shop</h1>
-        <p>Inventory Management System</p>
+        <p>Admin & Staff Management Portal</p>
       </div>
 
       <div class="alert alert-error" id="errorMessage">
@@ -49,9 +49,9 @@
 
       <form id="loginForm" method="POST" action="/login">
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="username">Username or Email</label>
           <div class="input-wrapper">
-            <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username"
+            <input type="text" id="username" name="username" placeholder="Enter your username or email" autocomplete="username"
               required>
           </div>
         </div>
@@ -87,7 +87,7 @@
     </div>
   </div>
 
-  <script src="/login/login.js"></script>
+  <script src="/admin/login/javascript/login.js"></script>
 </body>
 
 </html>

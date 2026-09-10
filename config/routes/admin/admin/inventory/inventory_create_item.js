@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../database/supabase');
-const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
+const { supabase } = require('../../../../database/supabase');
+const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect all inventory routes
 // POST /inventory/inventory_create_item - Create new item

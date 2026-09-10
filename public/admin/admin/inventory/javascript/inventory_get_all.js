@@ -33,7 +33,7 @@ const InventoryLoad = {
         if (!container) return;
 
         try {
-            const response = await fetch('/inventory/inventory-view-modal.html');
+            const response = await fetch('/admin/admin/inventory/inventory-view-modal.html');
             if (response.ok) {
                 container.innerHTML = await response.text();
                 InventoryDOM.viewModal = document.getElementById('viewModal');

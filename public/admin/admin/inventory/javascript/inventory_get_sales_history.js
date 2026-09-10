@@ -9,7 +9,7 @@ const InventoryHistory = {
         if (!container) return;
 
         try {
-            const response = await fetch('/inventory/inventory-history-modal.html');
+            const response = await fetch('/admin/admin/inventory/inventory-history-modal.html');
             if (response.ok) {
                 container.innerHTML = await response.text();
                 InventoryDOM.historyModal = document.getElementById('historyModal');

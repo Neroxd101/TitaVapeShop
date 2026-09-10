@@ -4,9 +4,9 @@ require('dotenv').config();
 const setupMiddleware = require('./config/middleware/middlewareSetup');
 
 // Auth routes
-const loginRoutes = require('./config/routes/auth/login');
+const adminLoginRoutes = require('./config/routes/admin/login/login');
 const googleAuthRoutes = require('./config/routes/auth/google-auth');
-const passwordResetRoutes = require('./config/routes/auth/password-reset');
+const passwordResetRoutes = require('./config/routes/admin/login/password_reset');
 // Customer routes (1-to-1 matching Supabase RPC names)
 const customerCheckEmailRoutes = require('./config/routes/customer/customer_check_email');
 const customerCheckPhoneRoutes = require('./config/routes/customer/customer_check_phone');
@@ -32,18 +32,18 @@ const catalogImageProxyRoutes = require('./config/routes/catalog/catalog_image_p
 const catalogRoutes = require('./config/routes/catalog/catalog');
 
 // Dashboard routes
-const dashboardRoutes = require('./config/routes/dashboard/dashboard');
+const dashboardRoutes = require('./config/routes/admin/admin/dashboard/dashboard');
 
 // Upload routes
 const uploadRoutes = require('./config/routes/upload/upload');
 const keepAliveRoutes = require('./config/routes/KeepAlive');
 
 // Inventory routes
-const inventoryLoadRoutes = require('./config/routes/inventory/inventory_get_all');
-const inventoryCreateRoutes = require('./config/routes/inventory/inventory_create_item');
-const inventoryUpdateRoutes = require('./config/routes/inventory/inventory_update_item');
-const inventoryDeleteRoutes = require('./config/routes/inventory/inventory_delete_item');
-const inventoryHistoryRoutes = require('./config/routes/inventory/inventory_get_sales_history');
+const inventoryLoadRoutes = require('./config/routes/admin/admin/inventory/inventory_get_all');
+const inventoryCreateRoutes = require('./config/routes/admin/admin/inventory/inventory_create_item');
+const inventoryUpdateRoutes = require('./config/routes/admin/admin/inventory/inventory_update_item');
+const inventoryDeleteRoutes = require('./config/routes/admin/admin/inventory/inventory_delete_item');
+const inventoryHistoryRoutes = require('./config/routes/admin/admin/inventory/inventory_get_sales_history');
 
 // Sales routes
 const salesLoadRoutes = require('./config/routes/sales/serve_sales');
@@ -102,8 +102,8 @@ app.use('/', passwordResetRoutes); // Password reset (public)
 app.use('/keep-alive', keepAliveRoutes); // Public keep-alive endpoint (token-protected)
 app.use('/', userProfileRoutes); // User profile management (authenticated)
 
-// Protected routes (authentication required)
-app.use('/', loginRoutes);
+// Admin / Staff Auth routes
+app.use('/', adminLoginRoutes);
 // Register orders routes early to avoid conflicts with other routes
 app.use('/', ordersControllerRoutes);
 app.use('/', ordersGetAllRoutes);
