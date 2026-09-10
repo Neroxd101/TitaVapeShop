@@ -162,7 +162,6 @@ async function loadDashboardData() {
     const lowStockPill = document.getElementById('lowStockPill');
     const lowStockPillText = document.getElementById('lowStockPillText');
     const lowStockStatusMsg = document.getElementById('lowStockStatusMsg');
-    const lowStockCard = document.getElementById('lowStockCard');
     const lowStockWatchList = document.getElementById('lowStockWatchList');
 
     // Calculate total products & low stock items
