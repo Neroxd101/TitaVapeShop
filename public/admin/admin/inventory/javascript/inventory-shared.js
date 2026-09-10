@@ -13,6 +13,8 @@ const InventoryState = {
     viewingItemId: null,
     viewingHistoryItemId: null,
     historyFilterDate: null,
+    historyStartDate: null,
+    historyEndDate: null,
     historyPage: 1,
     historyPageSize: 6,
     historyTotal: 0,

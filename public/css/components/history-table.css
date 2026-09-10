@@ -3,137 +3,323 @@
    Reusable history/transaction table styles
    ============================================= */
 
-.history-stats-container {
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.history-stats {
-  display: flex;
-  gap: 24px;
-  flex-wrap: nowrap !important;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.history-date-filter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.history-date-filter .date-select {
-  padding: 8px 12px;
+/* History Modal Custom Dialog */
+#historyModal .modal-wide.history-modal-dialog {
+  max-width: 880px;
+  width: 95%;
+  max-height: 90vh;
+  border-radius: 18px;
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-  min-width: 100px;
-}
-
-#historyModal .modal-wide {
-  max-height: 700px !important; /* or any value you want */
-}
-
-#historyModal .modal-wide .modal-body {
-  
-}
-
-.history-date-filter .date-select:hover {
-  border-color: var(--accent);
-}
-
-.history-date-filter .date-select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 74, 144, 226), 0.1);
-}
-
-.modal-header {
-  flex-direction: column !important;
-  align-items: center !important;
-  text-align: center !important;
-  gap: 6px !important;
-  border-bottom: none !important;
-}
-
-/* Modal header date filter responsive */
-.modal-header .history-date-filter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: nowrap;
-}
-
-@media (max-width: 480px) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    width: 100%;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-}
-
-.history-stat {
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  justify-content: flex-end;
-  flex: 1;
+}
+
+/* History Modal Header */
+.history-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.history-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
   min-width: 0;
 }
 
-.history-stat .stat-label {
-  font-size: 12px;
-  color: var(--text-secondary);
+.history-badge {
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-align: center;
+  letter-spacing: 0.8px;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb, 74, 144, 226), 0.12);
+  border: 1px solid rgba(var(--accent-rgb, 74, 144, 226), 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  user-select: none;
+  flex-shrink: 0;
 }
 
-.history-stat .stat-value {
+.history-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.history-modal-title {
   font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.history-product-divider {
+  display: none;
+}
+
+.history-product-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+
+/* History Modal Body */
+.history-modal-body {
+  padding: 20px 24px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Toolbar & 2-Column Date Range Filter */
+.history-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.history-toolbar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.history-date-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.history-date-range-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.history-date-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 10px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.history-date-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 74, 144, 226), 0.15);
+}
+
+.history-field-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.history-date-field .date-input {
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  color-scheme: dark;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   text-align: center;
 }
 
-.history-stat .stat-value.highlight {
-  color: var(--accent);
+.history-date-field .date-input:focus {
+  outline: none;
+}
+
+.history-date-field .date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.75;
+  padding: 0;
+  margin: 0;
+  transition: opacity 0.2s ease;
+}
+
+.history-date-field .date-input:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+.btn-clear-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-clear-date:hover {
+  color: var(--error, #ef4444);
+  border-color: var(--error, #ef4444);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.btn-clear-date .clear-btn-text {
+  font-size: 11px;
+}
+
+/* 2-Column KPI Stat Cards Grid */
+.history-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.history-stat-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  transition: all 0.2s ease;
+}
+
+.history-stat-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  transform: translateY(-1px);
+}
+
+.history-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.history-stat-icon.blue {
+  background: rgba(0, 150, 255, 0.12);
+  color: #00b4d8;
+  border: 1px solid rgba(0, 150, 255, 0.25);
+}
+
+.history-stat-icon.green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.history-stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.history-stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-stat-value.highlight-green {
+  color: #10b981;
+}
+
+/* History Table Wrapper */
+.history-table-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .history-table-container {
-  max-height: 500px;
+  max-height: 380px;
   overflow-y: auto;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .history-table {
   width: 100%;
   border-collapse: collapse;
   background: var(--bg-primary);
+  min-width: 580px;
 }
 
 .history-table thead {
@@ -141,55 +327,139 @@
   top: 0;
   background: var(--bg-secondary);
   z-index: 10;
-  border-bottom: 2px solid var(--border);
-}
-
-.history-table th {
-  padding: 14px 16px;
-  text-align: left;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.history-table td {
-  padding: 14px 16px;
-  font-size: 14px;
-  color: var(--text-primary);
   border-bottom: 1px solid var(--border);
 }
 
+.history-table th {
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+.history-table th.col-date { text-align: left; }
+.history-table th.col-qty { text-align: center; }
+.history-table th.col-price { text-align: right; }
+.history-table th.col-subtotal { text-align: right; }
+.history-table th.col-customer { text-align: left; }
+.history-table th.col-staff { text-align: left; }
+
+.history-table td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.history-table td.col-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.history-table td.col-qty {
+  text-align: center;
+}
+
+.history-table td.col-price {
+  text-align: right;
+  color: var(--text-secondary);
+}
+
+.history-table td.col-subtotal {
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.history-table td.col-customer {
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-table td.col-staff {
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-secondary);
+}
+
+.history-qty-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Mobile labels hidden on desktop */
+.mobile-cell-label {
+  display: none;
+}
+
 .history-table tbody tr:hover {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.025);
 }
 
 .history-table tbody tr:last-child td {
   border-bottom: none;
 }
 
+/* Empty & Loading States */
 .history-empty,
 .history-loading {
-  padding: 40px 20px;
+  padding: 44px 20px;
   text-align: center;
   color: var(--text-secondary);
 }
 
-.history-empty p,
-.history-loading p {
+.history-empty-icon {
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.history-empty-text {
   font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.history-empty-subtext {
+  font-size: 12px;
+  color: var(--text-secondary);
   margin: 0;
+}
+
+.history-loading-spinner {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Pagination Controls */
 .history-pagination {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 20px;
+  justify-content: space-between;
+  padding: 12px 18px;
   border-top: 1px solid var(--border);
   background: var(--bg-secondary);
 }
@@ -198,12 +468,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 8px 16px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -212,7 +482,7 @@
 .pagination-btn:hover:not(:disabled) {
   border-color: var(--accent);
   background: var(--bg-primary);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .pagination-btn:disabled {
@@ -225,49 +495,380 @@
 }
 
 .pagination-info {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
-/* Responsive Pagination - Smaller screens */
+/* =============================================
+   Responsive Breakpoints
+   ============================================= */
+
+/* Tablet (max-width: 768px) */
 @media (max-width: 768px) {
-  .history-pagination {
+  #historyModal .modal-wide.history-modal-dialog {
+    max-width: 95%;
+    max-height: 92vh;
+  }
+
+  .history-modal-header {
+    padding: 14px 18px;
+  }
+
+  .history-product-name {
+    max-width: 380px;
+    font-size: 15px;
+  }
+
+  .history-modal-body {
+    padding: 14px 18px !important;
     gap: 12px;
-    padding: 16px;
   }
 
-  .pagination-btn {
-    padding: 8px 14px;
-    font-size: 12px;
-    gap: 6px;
+  .history-toolbar {
+    padding: 10px 14px;
+    gap: 8px;
   }
 
-  .pagination-btn svg {
-    width: 14px;
-    height: 14px;
+  /* 2 columns for date range */
+  .history-date-range-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
-  .pagination-info {
-    font-size: 12px;
+  /* 2 columns for stat cards */
+  .history-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .history-table-container {
+    max-height: 340px;
   }
 }
 
-@media (max-width: 480px) {
-  .history-pagination {
-    gap: 8px;
-    padding: 12px;
+/* Tablet & Mobile: Convert Table to Clean Responsive Cards (max-width: 680px) */
+@media (max-width: 680px) {
+  /* Prevent horizontal scroll entirely */
+  .history-table-container {
+    overflow-x: hidden !important;
+    max-height: 350px;
+    padding: 2px 2px 6px 2px;
   }
 
-  .pagination-btn {
-    padding: 6px 10px;
+  .history-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block;
+    background: transparent;
+    border: none;
+  }
+
+  .history-table thead {
+    display: none !important;
+  }
+
+  .history-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .history-table tbody tr.history-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 7px 10px;
+    padding: 13px 15px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .history-table tbody tr.history-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(var(--accent-rgb, 74, 144, 226), 0.3);
+  }
+
+  /* Reset default td styling inside card */
+  .history-table tbody tr.history-row td {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* Line 1: Date & Subtotal */
+  .history-table tbody tr.history-row td.col-date {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .history-table tbody tr.history-row td.col-subtotal {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .history-table tbody tr.history-row td.col-subtotal .mobile-cell-label {
+    display: none !important;
+  }
+
+  .history-table tbody tr.history-row td.col-subtotal .history-subtotal-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #10b981;
+    letter-spacing: 0.2px;
+  }
+
+  /* Line 2: Quantity & Unit Price */
+  .history-table tbody tr.history-row td.col-qty {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-align: left;
+  }
+
+  .history-table tbody tr.history-row td.col-qty .history-qty-pill {
+    padding: 2px 8px;
     font-size: 11px;
+    font-weight: 600;
+    background: rgba(var(--accent-rgb, 74, 144, 226), 0.12);
+    border-color: rgba(var(--accent-rgb, 74, 144, 226), 0.3);
+    color: var(--accent);
+  }
+
+  .history-table tbody tr.history-row td.col-price {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: right;
+  }
+
+  .history-table tbody tr.history-row td.col-price .history-price-text {
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  /* Divider line & metadata (Customer, Staff) */
+  .history-table tbody tr.history-row td.col-customer {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding-top: 8px !important;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow: visible !important;
+  }
+
+  .history-table tbody tr.history-row td.col-staff {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow: visible !important;
+  }
+
+  /* Mobile Labels & Values */
+  .mobile-cell-label {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .mobile-cell-label svg {
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .history-customer-text,
+  .history-staff-text {
+    font-size: 12px;
+    color: var(--text-primary);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 65%;
+  }
+
+  .history-staff-text {
+    color: var(--text-secondary);
+  }
+
+  /* Fallback for error or empty message row */
+  .history-table tbody tr:not(.history-row) {
+    display: block;
+    width: 100%;
+  }
+  .history-table tbody tr:not(.history-row) td {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 16px 12px;
+  }
+}
+
+/* Mobile Screens (max-width: 520px) */
+@media (max-width: 520px) {
+  #historyModal .modal-wide.history-modal-dialog {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    border-radius: 14px;
+    max-height: 94vh;
+  }
+
+  .history-modal-header {
+    padding: 12px 14px;
+  }
+
+  .history-header-left {
+    gap: 8px;
+    flex-wrap: nowrap;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .history-product-name {
+    font-size: 14px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .history-modal-body {
+    padding: 12px 14px !important;
+    gap: 10px;
+  }
+
+  .history-toolbar {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .history-date-label {
+    font-size: 11px;
+  }
+
+  .btn-clear-date {
+    padding: 3px 8px;
+  }
+
+  .btn-clear-date .clear-btn-text {
+    font-size: 10px;
+  }
+
+  /* Date Picker in 2 columns on small screens */
+  .history-date-range-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+
+  .history-date-field {
+    padding: 0 6px;
     gap: 4px;
   }
 
-  .pagination-btn svg {
-    width: 12px;
-    height: 12px;
+  .history-field-label {
+    font-size: 10px;
+  }
+
+  .history-date-field .date-input {
+    font-size: 11px;
+    padding: 6px 0;
+  }
+
+  /* Units Sold and Total Revenue in 2 columns on small screens */
+  .history-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+
+  .history-stat-card {
+    padding: 8px 10px;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .history-stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .history-stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .history-stat-label {
+    font-size: 10px;
+  }
+
+  .history-stat-value {
+    font-size: 15px;
+  }
+
+  .history-table-container {
+    max-height: 310px;
+  }
+
+  .history-table tbody tr.history-row {
+    padding: 10px 12px;
+    gap: 5px 8px;
+  }
+
+  .history-table tbody tr.history-row td.col-subtotal .history-subtotal-text {
+    font-size: 14px;
+  }
+
+  .history-customer-text,
+  .history-staff-text {
+    font-size: 11px;
+    max-width: 60%;
+  }
+
+  .history-pagination {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .pagination-btn {
+    padding: 6px 10px;
+    font-size: 11px;
   }
 
   .pagination-info {
@@ -275,2088 +876,15 @@
   }
 }
 
-/* Tablet Header Centering (600px - 1080px) */
-@media (min-width: 600px) and (max-width: 1080px) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    gap: 12px !important;
-    padding-bottom: 15px !important;
-  }
-
-  .modal-header h3 {
-    margin: 0 !important;
-    width: 100% !important;
-  }
-
-  .modal-header .history-date-filter {
-    justify-content: center !important;
-    width: 100% !important;
-  }
+/* Legacy Support (if referenced by shared components) */
+.history-stats-container {
+  margin-bottom: 16px;
 }
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .history-stats-container {
-    margin-bottom: 16px;
-  }
-
-  .history-stats {
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    gap: 16px;
-  }
-
-  .history-table-container {
-    overflow-x: auto;
-    max-height: 400px;
-  }
-
-  .history-table {
-    min-width: 600px;
-  }
-}
-
-@media (max-width: 768px) {
-  .history-stats-container {
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-  }
-
-  .history-stats {
-    gap: 12px;
-    flex-wrap: nowrap !important;
-  }
-
-  .history-stat .stat-label {
-    font-size: 11px;
-  }
-
-  .history-stat .stat-value {
-    font-size: 16px;
-  }
-
-  .history-date-filter {
-    gap: 6px;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 10px;
-    font-size: 12px;
-    min-width: 80px;
-  }
-
-  .history-table-container {
-    max-height: 350px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 10px 12px;
-    font-size: 12px;
-  }
-
-  .history-table th {
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    width: 100%;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-stats-container {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 13px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 280px) !important;
-    border-radius: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 600px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 8px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 6px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (360x740) - specific optimizations */
-@media (width: 360px) and (height: 740px) and (orientation: portrait) {
-  /* Center product name in inventory history modal header */
-  #historyModal .modal-header {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    gap: 6px !important;
-    border-bottom: none !important;
-  }
-
-  #historyModal .modal-header h3 {
-    width: 100%;
-    margin-bottom: 2px;
-  }
-
-  #historyModal .modal-header .history-date-filter {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-}
-
-/* Phone portrait (353x745) - specific optimizations */
-@media (width: 353px) and (height: 745px) and (orientation: portrait) {
-  /* Center product name in inventory history modal header */
-  #historyModal .modal-header {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    gap: 6px !important;
-    border-bottom: none !important;
-  }
-
-  #historyModal .modal-header h3 {
-    width: 100%;
-    margin-bottom: 2px;
-  }
-
-  #historyModal .modal-header .history-date-filter {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  .history-stats-container {
-    margin-bottom: 8px !important;
-    padding-bottom: 8px !important;
-  }
-
-  .history-stats {
-    gap: 5px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 8px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    justify-content: center !important;
-    font-size: 12px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 3px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 5px 6px !important;
-    font-size: 10px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 2px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 230px) !important;
-    border-radius: 6px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 500px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 6px 5px !important;
-    font-size: 9px !important;
-  }
-
-  .history-table th {
-    font-size: 7px !important;
-    padding: 5px 3px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 20px 10px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 10px !important;
-  }
-}
-
-/* Phone portrait (375x667) - specific optimizations */
-@media (width: 375px) and (height: 667px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 6px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 14px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 3px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 2px) !important;
-    min-width: 0 !important;
-    padding: 5px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-stats-container {
-    margin-bottom: 8px !important;
-    padding-bottom: 8px !important;
-  }
-
-  .history-stats {
-    gap: 5px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 8px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 12px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 3px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 5px 6px !important;
-    font-size: 10px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 2px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 240px) !important;
-    border-radius: 6px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 500px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 6px 5px !important;
-    font-size: 9px !important;
-  }
-
-  .history-table th {
-    font-size: 7px !important;
-    padding: 5px 3px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 20px 10px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 10px !important;
-  }
-}
-
-/* Phone portrait (375x812) - specific optimizations */
-@media (width: 375px) and (height: 812px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 15px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-stats-container {
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 13px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 280px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 7px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 6px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (380x706) - specific optimizations */
-@media (width: 380px) and (height: 706px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 6px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 14px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 3px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 2px) !important;
-    min-width: 0 !important;
-    padding: 5px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-stats-container {
-    gap: 6px !important;
-    margin-bottom: 8px !important;
-    padding-bottom: 8px !important;
-  }
-
-  .history-stats {
-    gap: 5px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 8px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 12px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 3px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 5px 6px !important;
-    font-size: 10px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 2px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 230px) !important;
-    border-radius: 6px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 500px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 6px 5px !important;
-    font-size: 9px !important;
-  }
-
-  .history-table th {
-    font-size: 7px !important;
-    padding: 5px 3px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 20px 10px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 10px !important;
-  }
-}
-
-/* Phone portrait (380x754) - specific optimizations */
-@media (width: 380px) and (height: 754px) and (orientation: portrait) {
-  .history-stats-container {
-    margin-bottom: 8px !important;
-    padding-bottom: 8px !important;
-  }
-
-  .history-stats {
-    gap: 5px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 8px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 12px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 3px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 5px 6px !important;
-    font-size: 10px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 2px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 240px) !important;
-    border-radius: 6px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 6px 5px !important;
-    font-size: 9px !important;
-  }
-
-  .history-table th {
-    font-size: 7px !important;
-    padding: 5px 3px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 20px 10px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 10px !important;
-  }
-}
-
-/* Phone portrait (380x810) - specific optimizations */
-@media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
-(width: 380px) and (height: 754px) and (orientation: portrait),
-(width: 380px) and (height: 810px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 15px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-stats-container {
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-  }
-}
-
 .history-stats {
-  gap: 6px !important;
-  flex-wrap: nowrap !important;
-  width: 100%;
-  justify-content: space-between;
+  display: flex;
+  gap: 16px;
 }
-
 .history-stat {
-  flex: 1 1 calc(33.333% - 4px) !important;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
-
-.history-stat .stat-label {
-  font-size: 9px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.history-stat .stat-value {
-  font-size: 13px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.history-date-filter {
-  flex-wrap: wrap;
-  gap: 4px !important;
-  width: 100%;
-}
-
-.history-date-filter .date-select {
-  padding: 6px 8px !important;
-  font-size: 11px !important;
-  min-width: 0 !important;
-  flex: 1 1 calc(33.333% - 3px);
-}
-
-.history-table-container {
-  max-height: calc(100vh - 260px) !important;
-  border-radius: 7px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.history-table {
-  min-width: 550px;
-}
-
-.history-table th,
-.history-table td {
-  padding: 7px 6px !important;
-  font-size: 10px !important;
-}
-
-.history-table th {
-  font-size: 8px !important;
-  padding: 6px 4px !important;
-  white-space: nowrap;
-}
-
-.history-table td {
-  white-space: nowrap;
-}
-
-.history-empty,
-.history-loading {
-  padding: 24px 12px !important;
-}
-
-.history-empty p,
-.history-loading p {
-  font-size: 11px !important;
-}
-
-/* Phone portrait (390x844) - specific optimizations */
-@media (width: 390px) and (height: 844px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 15px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-stats-container {
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 14px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 280px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 8px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 7px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (411x823) - specific optimizations */
-@media (width: 411px) and (height: 823px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 15px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-header {
-    gap: 8px !important;
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 15px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 14px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 280px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 8px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 7px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (412x892) - specific optimizations */
-@media (width: 412px) and (height: 892px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 15px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-header {
-    gap: 8px !important;
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 15px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 14px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 290px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 8px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 7px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (412x915) - specific optimizations */
-@media (width: 412px) and (height: 915px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 15px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-header {
-    gap: 8px !important;
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 15px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 14px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 300px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 8px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 7px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (414x736) - specific optimizations */
-@media (width: 414px) and (height: 736px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 15px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 4px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-header {
-    gap: 8px !important;
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 14px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 13px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 270px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 7px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 6px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (414x896) - specific optimizations */
-@media (width: 414px) and (height: 896px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 16px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 5px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 7px 9px !important;
-    font-size: 12px !important;
-  }
-
-  .history-header {
-    gap: 8px !important;
-    margin-bottom: 10px !important;
-    padding-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 15px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 14px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 4px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 6px 8px !important;
-    font-size: 11px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 290px) !important;
-    border-radius: 7px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 550px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 8px 6px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-    padding: 7px 4px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 24px 12px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 11px !important;
-  }
-}
-
-/* Phone portrait (430x932) - specific optimizations */
-@media (width: 430px) and (height: 932px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 10px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 17px !important;
-    margin-bottom: 4px;
-  }
-
-  .modal-header .history-date-filter {
-    width: 100% !important;
-    gap: 5px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 1 1 calc(33.333% - 3px) !important;
-    min-width: 0 !important;
-    padding: 7px 10px !important;
-    font-size: 12px !important;
-  }
-
-  .history-header {
-    gap: 10px !important;
-    margin-bottom: 12px !important;
-    padding-bottom: 12px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .history-header-left {
-    width: 100% !important;
-  }
-
-  .history-header h4 {
-    font-size: 16px !important;
-    margin-bottom: 6px;
-    line-height: 1.2;
-  }
-
-  .history-header-right {
-    width: 100% !important;
-  }
-
-  .history-stats {
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .history-stat {
-    flex: 1 1 calc(33.333% - 5px) !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 10px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-stat .stat-value {
-    font-size: 15px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .history-date-filter {
-    flex-wrap: wrap;
-    gap: 5px !important;
-    width: 100%;
-  }
-
-  .history-date-filter .date-select {
-    padding: 7px 9px !important;
-    font-size: 12px !important;
-    min-width: 0 !important;
-    flex: 1 1 calc(33.333% - 3px);
-  }
-
-  .history-table-container {
-    max-height: calc(100vh - 320px) !important;
-    border-radius: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .history-table {
-    min-width: 600px;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 9px 8px !important;
-    font-size: 11px !important;
-  }
-
-  .history-table th {
-    font-size: 9px !important;
-    padding: 8px 5px !important;
-    white-space: nowrap;
-  }
-
-  .history-table td {
-    white-space: nowrap;
-  }
-
-  .history-empty,
-  .history-loading {
-    padding: 28px 14px !important;
-  }
-
-  .history-empty p,
-  .history-loading p {
-    font-size: 12px !important;
-  }
-}
-
-/* 1080x2400 portrait - specific optimizations */
-@media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 16px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 22px !important;
-  }
-
-  .modal-header .history-date-filter {
-    width: auto !important;
-    gap: 10px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 0 0 auto !important;
-    min-width: 120px !important;
-    padding: 10px 14px !important;
-    font-size: 14px !important;
-  }
-
-  .history-header {
-    gap: 16px !important;
-    margin-bottom: 20px !important;
-    padding-bottom: 20px !important;
-    flex-direction: row !important;
-    align-items: flex-end !important;
-  }
-
-  .history-header-left {
-    width: auto !important;
-  }
-
-  .history-header h4 {
-    font-size: 22px !important;
-    margin-bottom: 0;
-  }
-
-  .history-header-right {
-    width: auto !important;
-  }
-
-  .history-stats {
-    gap: 20px !important;
-    flex-wrap: nowrap;
-    width: auto;
-    justify-content: flex-end;
-  }
-
-  .history-stat {
-    flex: 0 0 auto !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 12px !important;
-  }
-
-  .history-stat .stat-value {
-    font-size: 20px !important;
-  }
-
-  .history-date-filter {
-    flex-wrap: nowrap;
-    gap: 10px !important;
-    width: auto;
-  }
-
-  .history-date-filter .date-select {
-    padding: 10px 14px !important;
-    font-size: 14px !important;
-    min-width: 120px !important;
-    flex: 0 0 auto;
-  }
-
-  .history-table-container {
-    max-height: 600px !important;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 16px 20px !important;
-    font-size: 14px !important;
-  }
-
-  .history-table th {
-    font-size: 12px !important;
-  }
-}
-
-/* 1080p portrait (1080px width) - general optimizations */
-@media (width: 1080px) and (orientation: portrait) {
-  .modal-header {
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 16px !important;
-  }
-
-  .modal-header h3 {
-    font-size: 22px !important;
-  }
-
-  .modal-header .history-date-filter {
-    width: auto !important;
-    gap: 10px !important;
-  }
-
-  .modal-header .history-date-filter .date-select {
-    flex: 0 0 auto !important;
-    min-width: 120px !important;
-    padding: 10px 14px !important;
-    font-size: 14px !important;
-  }
-
-  .history-header {
-    gap: 16px !important;
-    margin-bottom: 20px !important;
-    padding-bottom: 20px !important;
-    flex-direction: row !important;
-    align-items: flex-end !important;
-  }
-
-  .history-header-left {
-    width: auto !important;
-  }
-
-  .history-header h4 {
-    font-size: 22px !important;
-    margin-bottom: 0;
-  }
-
-  .history-header-right {
-    width: auto !important;
-  }
-
-  .history-stats {
-    gap: 20px !important;
-    flex-wrap: nowrap;
-    width: auto;
-    justify-content: flex-end;
-  }
-
-  .history-stat {
-    flex: 0 0 auto !important;
-    min-width: 0;
-  }
-
-  .history-stat .stat-label {
-    font-size: 12px !important;
-  }
-
-  .history-stat .stat-value {
-    font-size: 20px !important;
-  }
-
-  .history-date-filter {
-    flex-wrap: nowrap;
-    gap: 10px !important;
-    width: auto;
-  }
-
-  .history-date-filter .date-select {
-    padding: 10px 14px !important;
-    font-size: 14px !important;
-    min-width: 120px !important;
-    flex: 0 0 auto;
-  }
-
-  .history-table-container {
-    max-height: 600px !important;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 16px 20px !important;
-    font-size: 14px !important;
-  }
-
-  .history-table th {
-    font-size: 12px !important;
-  }
-}
-
-/* Small phones landscape (short height) */
-@media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
-  .history-header {
-    gap: 8px !important;
-    margin-bottom: 8px !important;
-    padding-bottom: 8px !important;
-  }
-
-  .history-header h4 {
-    font-size: 14px !important;
-  }
-
-  .history-stats {
-    gap: 6px !important;
-  }
-
-  .history-stat .stat-label {
-    font-size: 9px !important;
-  }
-
-  .history-stat .stat-value {
-    font-size: 13px !important;
-  }
-
-  .history-date-filter {
-    gap: 4px !important;
-  }
-
-  .history-date-filter .date-select {
-    padding: 5px 8px !important;
-    font-size: 10px !important;
-    min-width: 60px !important;
-  }
-
-  .history-table-container {
-    max-height: 200px !important;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 6px 8px !important;
-    font-size: 10px !important;
-  }
-
-  .history-table th {
-    font-size: 8px !important;
-  }
-}
-
-@media (orientation: landscape) and (max-height: 320px) {
-  .history-header {
-    gap: 6px !important;
-    margin-bottom: 6px !important;
-    padding-bottom: 6px !important;
-  }
-
-  .history-header h4 {
-    font-size: 12px !important;
-  }
-
-  .history-stats {
-    gap: 4px !important;
-  }
-
-  .history-stat .stat-label {
-    font-size: 8px !important;
-  }
-
-  .history-stat .stat-value {
-    font-size: 11px !important;
-  }
-
-  .history-date-filter {
-    gap: 3px !important;
-  }
-
-  .history-date-filter .date-select {
-    padding: 4px 6px !important;
-    font-size: 9px !important;
-    min-width: 50px !important;
-  }
-
-  .history-table-container {
-    max-height: 150px !important;
-  }
-
-  .history-table th,
-  .history-table td {
-    padding: 5px 6px !important;
-    font-size: 9px !important;
-  }
-
-  .history-table th {
-    font-size: 7px !important;
-  }
-}
-
-/* Phone portrait (353x745) - specific optimizations */
-@media (width: 375px) and (height: 667px) and (orientation: portrait) {
-  /* Center product name in inventory history modal header */
-  #historyModal .modal-header {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    gap: 6px !important;
-    border-bottom: none !important;
-  }
-}
-
-@media (width: 414px) and (height: 896px){
-  #historyModal .modal-header{
-  flex-direction: column !important;
-  align-items: center !important;
-  text-align: center !important;
-  gap: 6px !important;
-  border-bottom: none !important;
-  }
-}
-
-@media (width: 390px) and (height: 844px){
-
-  #historyModal .modal-header{
-  flex-direction: column !important;
-  align-items: center !important;
-  text-align: center !important;
-  gap: 6px !important;
-  border-bottom: none !important;
-  }
-}
-
-@media (width: 430px) and (height: 932px){
-
-  #historyModal .modal-header{
-  flex-direction: column !important;
-  align-items: center !important;
-  text-align: center !important;
-  gap: 6px !important;
-  border-bottom: none !important;
-  }
-}
-
-/* Desktop/Laptop (1920x951) - larger history modal and table */
-@media (min-width: 500px) and (min-height: 500px)  {
-  /* Larger modal */
-  #historyModal .modal.modal-wide {
-    max-width: 1000px !important;
-    max-height: 85vh !important;
-  }
-
-  /* Larger header */
-  #historyModal .modal-header {
-    padding: 32px 32px 0 !important;
-  }
-
-  #historyModal .modal-header h3 {
-    font-size: 28px !important;
-  }
-
-  #historyModal .history-date-filter {
-    gap: 12px !important;
-  }
-
-  #historyModal .history-date-filter .date-select {
-    padding: 12px 16px !important;
-    font-size: 16px !important;
-    min-width: 140px !important;
-  }
-
-  /* Larger stats */
-  #historyModal .history-stats-container {
-    margin-bottom: 32px !important;
-    padding-bottom: 24px !important;
-  }
-
-  #historyModal .history-stats {
-    gap: 32px !important;
-  }
-
-  #historyModal .history-stat {
-    padding: 24px !important;
-    border-radius: 16px !important;
-  }
-
-  #historyModal .history-stat .stat-label {
-    font-size: 14px !important;
-  }
-
-  #historyModal .history-stat .stat-value {
-    font-size: 32px !important;
-  }
-
-  /* Larger table */
-  #historyModal .history-table-container {
-    max-height: 600px !important;
-    border-radius: 16px !important;
-  }
-
-  #historyModal .history-table th {
-    padding: 20px 24px !important;
-    font-size: 14px !important;
-  }
-
-  #historyModal .history-table td {
-    padding: 18px 24px !important;
-    font-size: 16px !important;
-  }
-
-  /* Larger modal body padding */
-  #historyModal .modal-body {
-    padding: 32px !important;
-  }
-
-  #historyMod}

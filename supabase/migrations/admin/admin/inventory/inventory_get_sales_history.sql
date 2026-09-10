@@ -7,7 +7,9 @@
 CREATE OR REPLACE FUNCTION inventory_get_sales_history(
     p_item_id UUID,
     p_limit INTEGER DEFAULT 50,
-    p_offset INTEGER DEFAULT 0
+    p_offset INTEGER DEFAULT 0,
+    p_start_date TIMESTAMPTZ DEFAULT NULL,
+    p_end_date TIMESTAMPTZ DEFAULT NULL
 )
 RETURNS JSONB AS $$
 DECLARE
@@ -33,7 +35,9 @@ BEGIN
                 AND void_tx.entity_id = t.entity_id
         )
         AND t.sale_items IS NOT NULL
-        AND (sale_item->>'id')::UUID = p_item_id;
+        AND (sale_item->>'id')::UUID = p_item_id
+        AND (p_start_date IS NULL OR t.created_at >= p_start_date)
+        AND (p_end_date IS NULL OR t.created_at <= p_end_date);
 
     -- Get paginated sales transactions
     SELECT COALESCE(jsonb_agg(
@@ -43,6 +47,7 @@ BEGIN
             'quantity_sold', (t.sale_item->>'qty')::INTEGER,
             'sale_price', (t.sale_item->>'price')::DECIMAL(10, 2),
             'cost_price', t.cost_price,
+            'profit', (((t.sale_item->>'price')::DECIMAL(10, 2) - t.cost_price) * (t.sale_item->>'qty')::INTEGER),
             'subtotal', ((t.sale_item->>'qty')::INTEGER * (t.sale_item->>'price')::DECIMAL(10, 2)),
             'sale_total', t.sale_total,
             'customer_name', t.customer_name,
@@ -59,7 +64,7 @@ BEGIN
             t.customer_email,
             t.user_email,
             sale_item,
-            COALESCE(inv.cost_price, 0) as cost_price
+            COALESCE((sale_item->>'cost_price')::DECIMAL(10, 2), inv.cost_price, 0) as cost_price
         FROM transactions t,
         LATERAL jsonb_array_elements(t.sale_items) as sale_item
         LEFT JOIN inventory inv ON inv.id = (sale_item->>'id')::UUID
@@ -72,6 +77,8 @@ BEGIN
             )
             AND t.sale_items IS NOT NULL
             AND (sale_item->>'id')::UUID = p_item_id
+            AND (p_start_date IS NULL OR t.created_at >= p_start_date)
+            AND (p_end_date IS NULL OR t.created_at <= p_end_date)
         ORDER BY t.created_at DESC
         LIMIT p_limit
         OFFSET p_offset
