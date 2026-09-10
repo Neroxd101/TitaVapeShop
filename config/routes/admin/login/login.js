@@ -118,25 +118,35 @@ async function handleLogin(req, res) {
     }
 
     const roles = user.roles || '';
-    const roleList = Array.isArray(roles) ? roles : String(roles).split(',').map(r => r.trim());
+    const roleList = Array.isArray(roles) ? roles : String(roles).split(',').map(r => r.trim()).filter(Boolean);
+    const rolesString = roleList.join(','); // normalized comma-separated string for JWT
+
+    // DEBUG — remove after diagnosing
+    console.log('[Login DEBUG] user.roles raw:', JSON.stringify(user.roles));
+    console.log('[Login DEBUG] roleList:', roleList);
+    console.log('[Login DEBUG] rolesString:', rolesString);
 
     // Generate JWT token (24h)
     const token = jwt.sign(
-      { id: user.id, username: user.username, roles },
+      { id: user.id, username: user.username, roles: rolesString },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
 
+    const isSecure = (process.env.APP_URL || '').startsWith('https');
+
     // Set HTTP-only cookie
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: isSecure,
+      sameSite: isSecure ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000
     });
 
     if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-      return roleList.includes('staff') ? res.redirect('/staff/pos') : res.redirect('/dashboard');
+      return roleList.includes('staff') && !roleList.includes('admin')
+        ? res.redirect('/staff/pos')
+        : res.redirect('/dashboard');
     }
 
     return res.json({

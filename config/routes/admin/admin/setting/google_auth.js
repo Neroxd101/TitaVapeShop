@@ -8,7 +8,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 // Protect all routes in this router - Admin only
-router.use(isAuthenticated, hasRole(['admin']));
+router.use('/auth/google', isAuthenticated, hasRole(['admin']));
 
 // Helper function to get the correct redirect URI
 // For web apps deployed on Vercel, construct from request headers

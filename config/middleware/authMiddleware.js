@@ -77,10 +77,12 @@ function hasRole(roles) {
         }
 
         // Step 3: Check if user has at least one of the required roles
-        // req.user.roles is a TEXT string (e.g., "admin,staff")
-        // roles.some() returns true if ANY role in the array is found in userRoles
-        // Example: roles=['admin'] and userRoles="admin,staff" → returns true
-        const hasRequiredRole = roles.some(role => (req.user.roles || '').includes(role));
+        // req.user.roles may be a string "admin,staff" or array — normalize to string
+        const rawRoles = req.user.roles;
+        const rolesStr = Array.isArray(rawRoles)
+            ? rawRoles.join(',')
+            : String(rawRoles || '');
+        const hasRequiredRole = roles.some(role => rolesStr.split(',').map(r => r.trim()).includes(role));
 
         // Step 4: If user has required role, allow request to proceed
         if (hasRequiredRole) {

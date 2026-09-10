@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const roleList = Array.isArray(roles) ? roles : String(roles).split(',').map(r => r.trim());
 
         if (roleList.includes('staff')) {
-          window.location.href = '/sales';
+          window.location.href = '/staff/pos';
         } else {
           window.location.href = '/dashboard';
         }

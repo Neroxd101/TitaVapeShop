@@ -4,18 +4,15 @@ const router = express.Router();
 const { supabase } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-// Protect all inventory routes - Admin exclusive
-router.use(isAuthenticated, hasRole(['admin']));
-
 // GET /inventory and GET /admin/inventory - Serve inventory page
 const serveInventory = (req, res) => {
     res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/inventory/inventory.html'));
 };
-router.get('/inventory', serveInventory);
-router.get('/admin/inventory', serveInventory);
+router.get('/inventory', isAuthenticated, hasRole(['admin']), serveInventory);
+router.get('/admin/inventory', isAuthenticated, hasRole(['admin']), serveInventory);
 
 // GET /inventory/inventory_get_all - Get all inventory items
-router.get('/inventory/inventory_get_all', async (req, res) => {
+router.get('/inventory/inventory_get_all', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
         if (!supabase) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
