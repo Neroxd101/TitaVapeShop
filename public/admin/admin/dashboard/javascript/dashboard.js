@@ -113,8 +113,6 @@ function initDashboard() {
   // Load dashboard data
   loadDashboardData();
   
-  // Load recent activity
-  loadRecentActivity();
 }
 
 // Load dashboard data
@@ -134,21 +132,12 @@ async function loadDashboardData() {
     const todayStartISO = today.toISOString();
     const todayEndISO = todayEnd.toISOString();
     const monthStartISO = monthStart.toISOString();
-    const monthEndISO = todayEnd.toISOString();
-
-    // Fetch all data in parallel
-    const [inventoryResponse, todayStatsResponse, monthStatsResponse, ordersResponse] = await Promise.all([
-      fetch('/inventory/inventory_get_all').catch(() => null),
-      fetch(`/transactions/transactions_get_stats?start_date=${encodeURIComponent(todayStartISO)}&end_date=${encodeURIComponent(todayEndISO)}`).catch(() => null),
-      fetch(`/transactions/transactions_get_stats?start_date=${encodeURIComponent(monthStartISO)}&end_date=${encodeURIComponent(monthEndISO)}`).catch(() => null),
-      fetch('/api/orders/get_all?status=pending&limit=1').catch(() => null)
-    ]);
-
-    // Parse responses safely
-    const inventoryData = inventoryResponse ? await inventoryResponse.json().catch(() => ({})) : {};
-    const todayStatsData = todayStatsResponse ? await todayStatsResponse.json().catch(() => ({})) : {};
-    const monthStatsData = monthStatsResponse ? await monthStatsResponse.json().catch(() => ({})) : {};
-    const ordersData = ordersResponse ? await ordersResponse.json().catch(() => ({})) : {};
+    const summary = await dashboard_summary(todayStartISO, todayEndISO, monthStartISO);
+    const inventoryData = { success: true, data: summary.inventory.low_stock_items };
+    const todayStatsData = { success: true, stats: summary.today };
+    const monthStatsData = { success: true, stats: summary.month };
+    const ordersData = { success: true, total: summary.pending_orders };
+    loadRecentActivity(summary);
 
     // Get DOM elements
     const totalProductsEl = document.getElementById('totalProducts');
@@ -165,12 +154,12 @@ async function loadDashboardData() {
     // Calculate total products & low stock items
     if (inventoryData.success && Array.isArray(inventoryData.data)) {
       const products = inventoryData.data;
-      const totalProducts = products.length;
+      const totalProducts = summary.inventory.total;
       if (totalProductsEl) totalProductsEl.textContent = totalProducts;
 
       // Low stock items (quantity <= 10)
-      const lowStockItems = products.filter(item => (Number(item.quantity) || 0) <= 10);
-      const lowStockCount = lowStockItems.length;
+      const lowStockItems = products;
+      const lowStockCount = summary.inventory.low_stock_count;
       if (lowStockEl) lowStockEl.textContent = lowStockCount;
 
       if (lowStockCount > 0) {
@@ -250,20 +239,17 @@ async function loadDashboardData() {
     const monthSales = document.getElementById('monthSales');
     const pendingOrders = document.getElementById('pendingOrders');
 
-    if (totalProducts) totalProducts.textContent = '0';
-    if (todaySales) todaySales.textContent = formatCurrency(0);
-    if (lowStock) lowStock.textContent = '0';
-    if (monthSales) monthSales.textContent = formatCurrency(0);
-    if (pendingOrders) pendingOrders.textContent = '0';
+    for (const element of [totalProducts, todaySales, lowStock, monthSales, pendingOrders]) {
+      if (element) element.textContent = 'Unavailable';
+    }
+    const activityList = document.getElementById('activityList');
+    if (activityList) activityList.textContent = 'Unable to load recent activity.';
   }
 }
 
 // Load recent activity (limited to 8 items)
-async function loadRecentActivity() {
+function loadRecentActivity(result) {
   try {
-    // Fetch recent transactions (limit to 8)
-    const response = await fetch('/transactions/transactions_get_all?limit=8&offset=0');
-    const result = await response.json();
 
     const activityList = document.getElementById('activityList');
     if (!activityList) return;
