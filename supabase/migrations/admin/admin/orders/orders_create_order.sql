@@ -3,7 +3,24 @@
 -- Creates a new order from the catalog
 -- =============================================
 
-CREATE OR REPLACE FUNCTION orders_create_order(
+-- 1. Drop any existing/overloaded versions of orders_create_order dynamically
+-- This prevents PGRST203 ('Could not choose the best candidate function')
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (
+        SELECT oid::regprocedure AS func_sig
+        FROM pg_proc
+        WHERE proname = 'orders_create_order'
+          AND pronamespace = 'public'::regnamespace
+    ) LOOP
+        EXECUTE 'DROP FUNCTION ' || r.func_sig || ' CASCADE;';
+    END LOOP;
+END $$;
+
+-- 2. Create clean orders_create_order function
+CREATE OR REPLACE FUNCTION public.orders_create_order(
     p_customer_name VARCHAR(255),
     p_contact_number VARCHAR(20),
     p_items JSONB,
@@ -53,7 +70,7 @@ BEGIN
     END IF;
 
     -- Insert order
-    INSERT INTO orders (
+    INSERT INTO public.orders (
         customer_name,
         contact_number,
         customer_email,
@@ -86,3 +103,6 @@ BEGIN
         new_order.created_at;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 3. Grant execute permissions
+GRANT EXECUTE ON FUNCTION public.orders_create_order TO anon, authenticated, service_role;

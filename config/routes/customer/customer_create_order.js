@@ -123,10 +123,14 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
         p_customer_email: finalEmail
       });
 
-      if (!rpcError && rpcData) {
+      if (rpcError) {
+        console.warn('[Customer Create Order] customer_create_order RPC returned error:', rpcError);
+      } else if (rpcData) {
         order = Array.isArray(rpcData) && rpcData.length > 0 ? rpcData[0] : rpcData;
       }
-    } catch (_) {}
+    } catch (rpcEx) {
+      console.warn('[Customer Create Order] customer_create_order RPC exception:', rpcEx);
+    }
 
     // 5. Fallback: legacy orders_create_order RPC + customer_id linking
     if (!order) {
