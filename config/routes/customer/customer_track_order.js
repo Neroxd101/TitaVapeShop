@@ -84,7 +84,7 @@ router.get(['/api/customer/orders/track', '/api/orders/track'], async (req, res)
     // 2. Direct table fallback
     const { data: order, error } = await client
       .from('orders')
-      .select('id, customer_name, contact_number, social_media, customer_email, customer_id, order_type, items, total_amount, status, created_at, updated_at')
+      .select('id, customer_name, contact_number, customer_email, customer_id, order_type, items, total_amount, status, created_at, updated_at')
       .eq('id', targetOrderId)
       .maybeSingle();
 

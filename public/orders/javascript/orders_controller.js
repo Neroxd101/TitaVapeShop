@@ -853,7 +853,6 @@ class OrdersController {
                         <p><strong>Order ID:</strong> <code>${order.id}</code></p>
                         <p><strong>Customer:</strong> ${this.escapeHtml(order.customer_name)}</p>
                         <p><strong>Contact:</strong> ${this.escapeHtml(order.contact_number)}</p>
-                        ${order.social_media ? `<p><strong>Social Media:</strong> ${this.escapeHtml(order.social_media)}</p>` : ''}
                         <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
                         <p><strong>Status:</strong> ${this.getStatusBadge(order.status)}</p>
                         <p><strong>Date:</strong> ${this.formatDate(order.created_at)}</p>

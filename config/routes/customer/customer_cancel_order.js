@@ -70,7 +70,7 @@ router.post(['/api/customer/orders/cancel', '/api/orders/cancel'], async (req, r
     // 2. Direct table query & update fallback
     const { data: existingOrder, error: fetchErr } = await client
       .from('orders')
-      .select('id, customer_id, customer_email, customer_name, contact_number, social_media, order_type, items, total_amount, status')
+      .select('id, customer_id, customer_email, customer_name, contact_number, order_type, items, total_amount, status')
       .eq('id', id)
       .eq('status', 'pending')
       .maybeSingle();
@@ -109,7 +109,7 @@ router.post(['/api/customer/orders/cancel', '/api/orders/cancel'], async (req, r
       .update({ status: 'cancelled', updated_at: new Date().toISOString() })
       .eq('id', id)
       .eq('status', 'pending')
-      .select('id, customer_id, customer_name, contact_number, social_media, customer_email, order_type, items, total_amount, status, created_at, updated_at')
+      .select('id, customer_id, customer_name, contact_number, customer_email, order_type, items, total_amount, status, created_at, updated_at')
       .maybeSingle();
 
     if (updateErr) throw updateErr;

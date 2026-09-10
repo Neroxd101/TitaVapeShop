@@ -35,9 +35,7 @@
 
   const custNameText = document.getElementById('custNameText');
   const custPhoneText = document.getElementById('custPhoneText');
-  const custSocialText = document.getElementById('custSocialText');
   const custEmailText = document.getElementById('custEmailText');
-  const socialMediaRow = document.getElementById('socialMediaRow');
   const customerEmailRow = document.getElementById('customerEmailRow');
 
   const itemsList = document.getElementById('itemsList');
@@ -327,12 +325,6 @@
     custNameText.textContent = order.customer_name || 'Guest';
     custPhoneText.textContent = order.contact_number || '-';
 
-    if (order.social_media) {
-      custSocialText.textContent = order.social_media;
-      socialMediaRow.style.display = 'flex';
-    } else {
-      socialMediaRow.style.display = 'none';
-    }
 
     if (order.customer_email) {
       custEmailText.textContent = order.customer_email;

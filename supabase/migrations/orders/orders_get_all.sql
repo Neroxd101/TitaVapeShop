@@ -13,7 +13,6 @@ RETURNS TABLE (
     id UUID,
     customer_name VARCHAR(255),
     contact_number VARCHAR(20),
-    social_media TEXT,
     customer_email VARCHAR(255),
     order_type VARCHAR(20),
     items JSONB,
@@ -30,7 +29,6 @@ BEGIN
             o.id,
             o.customer_name,
             o.contact_number,
-            o.social_media,
             o.customer_email,
             o.order_type,
             o.items,
@@ -47,7 +45,6 @@ BEGIN
               OR o.customer_name ILIKE '%' || p_search || '%'
               OR o.contact_number ILIKE '%' || p_search || '%'
               OR o.customer_email ILIKE '%' || p_search || '%'
-              OR o.social_media ILIKE '%' || p_search || '%'
               OR o.items::text ILIKE '%' || p_search || '%'
           )
         ORDER BY o.created_at DESC
@@ -58,7 +55,6 @@ BEGIN
         fo.id,
         fo.customer_name,
         fo.contact_number,
-        fo.social_media,
         fo.customer_email,
         COALESCE(fo.order_type, 'pickup') as order_type,
         fo.items,

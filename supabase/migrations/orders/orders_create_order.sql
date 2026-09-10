@@ -9,14 +9,12 @@ CREATE OR REPLACE FUNCTION orders_create_order(
     p_items JSONB,
     p_total_amount DECIMAL(10, 2),
     p_order_type VARCHAR(20) DEFAULT 'pickup',
-    p_social_media TEXT DEFAULT NULL,
     p_customer_email VARCHAR(255) DEFAULT NULL
 )
 RETURNS TABLE (
     id UUID,
     customer_name VARCHAR(255),
     contact_number VARCHAR(20),
-    social_media TEXT,
     customer_email VARCHAR(255),
     order_type VARCHAR(20),
     items JSONB,
@@ -58,7 +56,6 @@ BEGIN
     INSERT INTO orders (
         customer_name,
         contact_number,
-        social_media,
         customer_email,
         order_type,
         items,
@@ -67,7 +64,6 @@ BEGIN
     ) VALUES (
         TRIM(p_customer_name),
         TRIM(p_contact_number),
-        CASE WHEN p_social_media IS NOT NULL THEN TRIM(p_social_media) ELSE NULL END,
         CASE WHEN p_customer_email IS NOT NULL THEN TRIM(p_customer_email) ELSE NULL END,
         p_order_type,
         p_items,
@@ -82,7 +78,6 @@ BEGIN
         new_order.id,
         new_order.customer_name,
         new_order.contact_number,
-        new_order.social_media,
         new_order.customer_email,
         new_order.order_type,
         new_order.items,

@@ -53,7 +53,7 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       });
     }
 
-    const { customer_name, contact_number, social_media, customer_email, order_type, items, total_amount } = req.body;
+    const { customer_name, contact_number, customer_email, order_type, items, total_amount } = req.body;
 
     const finalEmail = dbCustomer.email || customer_email;
     const finalName = customer_name || dbCustomer.full_name;
@@ -120,7 +120,6 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
         p_items: items,
         p_total_amount: total_amount,
         p_order_type: order_type || 'pickup',
-        p_social_media: social_media || null,
         p_customer_email: finalEmail
       });
 
@@ -137,7 +136,6 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
         p_items: items,
         p_total_amount: total_amount,
         p_order_type: order_type || 'pickup',
-        p_social_media: social_media || null,
         p_customer_email: finalEmail
       });
 

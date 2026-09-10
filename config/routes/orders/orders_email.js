@@ -313,7 +313,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
     const orderTypeLabel = orderData.order_type === 'pickup' ? 'Pickup' : 'Delivery (3rd Party)';
     const nextStep = orderData.order_type === 'pickup' 
         ? '<p style="margin: 16px 0 0; color: #00d4aa; font-size: 15px; font-weight: 600; line-height: 1.6;">Your order is ready for pickup! Please bring your QR code when you come to collect your order.</p>'
-        : '<p style="margin: 16px 0 0; color: #ffffff; font-size: 15px; line-height: 1.6;">We will contact you soon through your provided contact number or social media to arrange delivery.</p>';
+        : '<p style="margin: 16px 0 0; color: #ffffff; font-size: 15px; line-height: 1.6;">We will contact you soon through your provided contact number to arrange delivery.</p>';
 
     return `
         <!DOCTYPE html>

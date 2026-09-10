@@ -55,11 +55,7 @@ router.get('/api/orders/get_all', async (req, res) => {
                 if (order.customer_email && order.customer_email.toLowerCase().includes(searchLower)) {
                     return true;
                 }
-                // 5. Social Media
-                if (order.social_media && order.social_media.toLowerCase().includes(searchLower)) {
-                    return true;
-                }
-                // 6. Items in order (item name or category)
+                // 5. Items in order (item name or category)
                 if (Array.isArray(order.items)) {
                     const itemMatch = order.items.some(item => {
                         if (!item) return false;

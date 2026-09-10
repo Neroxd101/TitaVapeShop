@@ -6,7 +6,7 @@
 const CustomerCreateOrder = {
   /**
    * Submit an order to the customer order creation endpoint
-   * @param {{customer_name: string, contact_number: string, customer_email: string, order_type: string, items: Array, total_amount: number, social_media?: string}} orderData
+   * @param {{customer_name: string, contact_number: string, customer_email: string, order_type: string, items: Array, total_amount: number}} orderData
    * @returns {Promise<{success: boolean, order?: object, trackingUrl?: string, error?: string, requiresAuth?: boolean}>}
    */
   async submit(orderData) {
