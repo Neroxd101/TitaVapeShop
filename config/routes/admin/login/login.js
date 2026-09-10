@@ -23,9 +23,9 @@ function serveLoginPage(req, res) {
       const roles = decoded.roles || [];
       const roleList = Array.isArray(roles) ? roles : String(roles).split(',').map(r => r.trim());
 
-      // Staff users go to sales POS; admin goes to dashboard
+      // Staff users go to staff POS; admin goes to dashboard
       if (roleList.includes('staff')) {
-        return res.redirect('/sales');
+        return res.redirect('/staff/pos');
       }
       return res.redirect('/dashboard');
     } catch (_) {
@@ -136,7 +136,7 @@ async function handleLogin(req, res) {
     });
 
     if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
-      return roleList.includes('staff') ? res.redirect('/sales') : res.redirect('/dashboard');
+      return roleList.includes('staff') ? res.redirect('/staff/pos') : res.redirect('/dashboard');
     }
 
     return res.json({

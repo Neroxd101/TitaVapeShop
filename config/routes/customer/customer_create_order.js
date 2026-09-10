@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { supabase, supabaseAdmin } = require('../../database/supabase');
-const { sendOrderEmail } = require('../orders/orders_email');
+const { sendOrderEmail } = require('../admin/admin/orders/orders_email');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 const dbClient = () => supabaseAdmin || supabase;

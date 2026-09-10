@@ -73,6 +73,10 @@ const ordersControllerRoutes = require('./config/routes/admin/admin/orders/order
 const ordersGetAllRoutes = require('./config/routes/admin/admin/orders/orders_get_all');
 const ordersUpdateStatusRoutes = require('./config/routes/admin/admin/orders/orders_update_status');
 
+// Staff routes
+const staffPosRoutes = require('./config/routes/admin/staff/pos/serve_pos');
+const staffOrdersRoutes = require('./config/routes/admin/staff/orders/serve_orders');
+
 const app = express();
 
 // Setup middleware (includes static file serving)
@@ -134,6 +138,9 @@ app.use('/', analyticsRevenueTrendRoutes);
 app.use('/', analyticsTopProductsRoutes);
 app.use('/', analyticsCategoryStatsRoutes);
 app.use('/', settingsRoutes);
+// Staff routes
+app.use('/', staffPosRoutes);
+app.use('/', staffOrdersRoutes);
 // app.use('/', salesApiRoutes); // Removed
 
 // For local development

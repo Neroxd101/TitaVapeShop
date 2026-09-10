@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales | Tita's Vape Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/components/variables.css">
+  <link rel="stylesheet" href="/css/components/resets.css">
+  <link rel="stylesheet" href="/css/components/background-effects.css">
+  <link rel="stylesheet" href="/css/components/animations.css">
+  <link rel="stylesheet" href="/css/components/cards.css">
+  <link rel="stylesheet" href="/css/components/forms.css">
+  <link rel="stylesheet" href="/css/components/buttons.css">
+  <link rel="stylesheet" href="/css/components/alerts.css">
+  <link rel="stylesheet" href="/css/components/modal.css">
+  <link rel="stylesheet" href="/css/components/modal-layouts.css">
+  <link rel="stylesheet" href="/css/components/empty-state.css">
+  <link rel="stylesheet" href="/css/components/loading-state.css">
+  <link rel="stylesheet" href="/css/components/logo.css">
+  <link rel="stylesheet" href="/css/components/footer.css">
+  <link rel="stylesheet" href="/navigation/navigation.css">
+  <link rel="stylesheet" href="/css/components/main-layout.css">
+  <link rel="stylesheet" href="/css/components/page-header.css">
+  <link rel="stylesheet" href="/css/components/page-content.css">
+  <link rel="stylesheet" href="/css/components/search-box.css">
+  <link rel="stylesheet" href="/css/components/filter-tabs.css">
+  <link rel="stylesheet" href="/css/components/pos-cards.css">
+  <link rel="stylesheet" href="/css/components/cart.css">
+  <link rel="stylesheet" href="/css/components/skeleton.css">
+  <link rel="stylesheet" href="/css/components/confirmation-modal.css">
+  <link rel="stylesheet" href="/css/components/qr-scanner.css">
+  <link rel="stylesheet" href="/admin/admin/pos/pos-structure.css">
+</head>
+
+<body>
+  <div class="bg-pattern"></div>
+
+  <!-- Sidebar - Loaded dynamically -->
+  <div id="navigation-container"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-content">
+      <div class="page-header">
+        <h1>Sales</h1>
+        <p class="subtitle">Process sales and manage transactions</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-tabs">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+          <input type="text" id="productSearch" placeholder="Search products...">
+        </div>
+        <div class="filter-tabs-group">
+          <button class="filter-tab active" data-category="all">All</button>
+          <button class="filter-tab" data-category="hardware">Hardware</button>
+          <button class="filter-tab" data-category="juices">Juices</button>
+        </div>
+        <div class="filter-tabs-actions">
+          <button type="button" class="btn btn-primary" id="openQrModalBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path
+                d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm10 0h-2v2h2v2h2v-4h-2zm4 0v2h2v-2h-2zm0 4v2h2v-2h-2z" />
+            </svg>
+            <span>Scan QR</span>
+          </button>
+          <button type="button" class="btn btn-primary" id="openCartModalBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            <span>Checkout</span>
+            <span id="cartBadge" class="checkout-badge">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div id="productList" class="product-list">
+              <!-- Initial Loading Skeletons -->
+              <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton-text skeleton"></div>
+                <div class="skeleton-text-sm skeleton"></div>
+                <div class="skeleton-button skeleton"></div>
+              </div>
+              <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton-text skeleton"></div>
+                <div class="skeleton-text-sm skeleton"></div>
+                <div class="skeleton-button skeleton"></div>
+              </div>
+              <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton-text skeleton"></div>
+                <div class="skeleton-text-sm skeleton"></div>
+                <div class="skeleton-button skeleton"></div>
+              </div>
+              <div class="skeleton-card">
+                <div class="skeleton skeleton-image"></div>
+                <div class="skeleton-text skeleton"></div>
+                <div class="skeleton-text-sm skeleton"></div>
+                <div class="skeleton-button skeleton"></div>
+              </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4zm10 16H4V9h16v11z" />
+        </svg>
+        <h3>No products found</h3>
+        <p>Add products to inventory to start selling</p>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner-large"></div>
+        <p>Loading products...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scan QR Modal -->
+  <div class="modal-overlay" id="qrModal">
+    <div class="modal modal-small">
+      <div class="modal-header">
+        <h3>Scan Product QR</h3>
+        <button class="modal-close" id="closeQrModalBtn">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="qrScanner" class="qr-scanner-area"></div>
+        <p class="qr-help-text">Point the camera at a product QR code to add it to the cart.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-container"></div>
+
+  <script src="/navigation/javascript/navigation.js"></script>
+  <script src="/admin/admin/activity-log/javascript/transactions_log.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+
+  <!-- Inventory logic reused (state, utils, image helper) -->
+  <script src="/admin/admin/inventory/javascript/inventory-shared.js"></script>
+  <script src="/admin/admin/inventory/javascript/image-handler.js"></script>
+
+  <!-- POS modules -->
+  <script src="/admin/admin/pos/javascript/pos-qr.js"></script>
+  <script src="/admin/admin/pos/javascript/pos_load_products.js"></script>
+  <script src="/admin/admin/pos/javascript/pos-cart.js"></script>
+  <script src="/admin/admin/pos/javascript/pos_process.js"></script>
+
+  <script src="/admin/admin/pos/javascript/pos-controller.js"></script>
+</body>
+
+</html>
