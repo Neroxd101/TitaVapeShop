@@ -101,8 +101,8 @@ const CatalogOrdersModal = {
     }
 
     const orders = this.getSavedOrders();
-    // Count active orders (pending or confirmed)
-    const activeCount = orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
+    // Count active orders (pending or confirmed) — voided is terminal, exclude it
+    const activeCount = orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled' && o.status !== 'voided').length;
 
     const navBadge = document.getElementById('navOrdersBadge');
 
@@ -286,6 +286,9 @@ const CatalogOrdersModal = {
       } else if (status === 'cancelled') {
         badgeClass = 'badge-danger';
         statusText = 'Cancelled';
+      } else if (status === 'voided') {
+        badgeClass = 'badge-danger';
+        statusText = 'Voided';
       }
 
       let dateStr = 'Recent';
