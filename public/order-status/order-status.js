@@ -354,6 +354,12 @@
     } else if (status === 'completed') {
       orderStatusBadge.classList.add('badge-success');
       orderStatusBadge.textContent = 'Completed';
+    } else if (status === 'cancelled') {
+      orderStatusBadge.classList.add('badge-danger');
+      orderStatusBadge.textContent = 'Cancelled';
+    } else if (status === 'voided') {
+      orderStatusBadge.classList.add('badge-danger');
+      orderStatusBadge.textContent = 'Voided';
     } else {
       orderStatusBadge.classList.add('badge-danger');
       orderStatusBadge.textContent = status.toUpperCase();
@@ -390,6 +396,7 @@
       line2.classList.add('active');
       stepCompleted.classList.add('completed');
     }
+    // cancelled and voided: all steps remain reset (no active/completed classes)
   }
 
   /**
@@ -524,7 +531,7 @@
       pollInterval = null;
     }
 
-    // Only poll if order is not completed or cancelled
+    // Only poll if order is not in a terminal state
     if (status === 'pending' || status === 'confirmed') {
       pollInterval = setInterval(() => {
         fetchOrder(null, true);
