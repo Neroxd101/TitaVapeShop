@@ -384,6 +384,8 @@
     text-align: right;
     justify-content: flex-end;
     display: flex !important;
+    margin-left: auto;
+    white-space: nowrap;
   }
 
   .orders-table td.col-contact .contact-number {
@@ -393,6 +395,10 @@
     padding: 3px 8px;
     border-radius: 6px;
     border: 1px solid rgba(0, 212, 170, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
   }
 
   /* 6. Items */
@@ -514,8 +520,7 @@
     grid-template-columns: auto 1fr auto;
     grid-template-areas:
       "id type status"
-      "customer customer customer"
-      "contact contact contact"
+      "customer customer contact"
       "items items items"
       "date date total"
       "actions actions actions";
@@ -526,12 +531,23 @@
 
   .orders-table td.col-customer {
     font-size: 14px !important;
+    min-width: 0 !important;
+  }
+
+  .orders-table td.col-customer .customer-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
   }
 
   .orders-table td.col-contact {
     font-size: 12px !important;
-    text-align: left;
-    justify-content: flex-start;
+    text-align: right;
+    justify-content: flex-end;
+    margin-left: auto;
+    display: flex !important;
+    white-space: nowrap;
   }
 
   .orders-table td.col-total .total-amount {
@@ -582,14 +598,33 @@
     grid-template-areas:
       "id status"
       "type type"
-      "customer customer"
-      "contact contact"
+      "customer contact"
       "items items"
       "date date"
       "total total"
       "actions actions";
     padding: 10px !important;
     gap: 5px 6px !important;
+  }
+
+  .orders-table td.col-customer {
+    font-size: 13px !important;
+    min-width: 0 !important;
+  }
+
+  .orders-table td.col-contact {
+    font-size: 11px !important;
+    text-align: right;
+    justify-content: flex-end;
+    margin-left: auto;
+    display: flex !important;
+    white-space: nowrap;
+  }
+
+  .orders-table td.col-contact .contact-number {
+    padding: 2px 6px;
+    font-size: 11px;
+    gap: 3px;
   }
 
   .orders-table td.col-total {
