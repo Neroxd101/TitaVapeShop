@@ -68,7 +68,6 @@ class OrdersController {
             const response = await fetch('/admin/admin/orders/order-details-modal.html');
             if (response.ok) {
                 container.innerHTML = await response.text();
-                this.setupModalEventListeners();
             }
         } catch (error) {
             console.error('Error loading order details modal:', error);
