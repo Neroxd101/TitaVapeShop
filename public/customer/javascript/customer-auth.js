@@ -1042,10 +1042,6 @@ const CustomerAuth = {
     }
   },
 
-  handleUpdateProfile(e) {
-    return this.handleSaveProfileField('name', e);
-  },
-
   async handleForgotPassword(e) {
     e.preventDefault();
     this.clearErrors();

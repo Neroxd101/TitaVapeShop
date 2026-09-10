@@ -132,7 +132,21 @@ async function loadDashboardData() {
     const todayStartISO = today.toISOString();
     const todayEndISO = todayEnd.toISOString();
     const monthStartISO = monthStart.toISOString();
-    const summary = await dashboard_summary(todayStartISO, todayEndISO, monthStartISO);
+    const [totalProducts, lowStock, todaySales, monthSales, pendingOrders, transactions] = await Promise.all([
+      dashboard_total_products(),
+      dashboard_low_stock(),
+      dashboard_sales_total(todayStartISO, todayEndISO),
+      dashboard_sales_total(monthStartISO, todayEndISO),
+      dashboard_pending_orders(),
+      dashboard_recent_activity()
+    ]);
+    const summary = {
+      inventory: { total: totalProducts, low_stock_count: lowStock.count, low_stock_items: lowStock.items },
+      today: { total_sales_amount: todaySales },
+      month: { total_sales_amount: monthSales },
+      pending_orders: pendingOrders,
+      transactions
+    };
     const inventoryData = { success: true, data: summary.inventory.low_stock_items };
     const todayStatsData = { success: true, stats: summary.today };
     const monthStatsData = { success: true, stats: summary.month };
@@ -328,39 +342,6 @@ function createActivityItem(transaction) {
   return item;
 }
 
-// Get icon SVG for activity type
-function getActivityIcon(actionType) {
-  const type = normalizeActionType(actionType);
-  const icons = {
-    'sale_complete': `
-      <svg viewBox="0 0 24 24">
-        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
-      </svg>
-    `,
-    'inventory_add': `
-      <svg viewBox="0 0 24 24">
-        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-      </svg>
-    `,
-    'inventory_edit': `
-      <svg viewBox="0 0 24 24">
-        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-      </svg>
-    `,
-    'inventory_delete': `
-      <svg viewBox="0 0 24 24">
-        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-      </svg>
-    `
-  };
-
-  return icons[type] || `
-    <svg viewBox="0 0 24 24">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-    </svg>
-  `;
-}
-
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
   if (!text) return '';
@@ -513,21 +494,6 @@ function formatActivityTime(dateString) {
     month: 'short',
     day: 'numeric',
     year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-  });
-}
-
-function formatExactDateTime(dateString) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return '';
-
-  return date.toLocaleString('en-PH', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
   });
 }
 

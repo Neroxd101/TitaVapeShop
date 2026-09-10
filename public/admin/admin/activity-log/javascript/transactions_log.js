@@ -92,39 +92,6 @@ const TransactionsLog = {
     },
 
     /**
-     * Log a sale completion
-     */
-    async logSaleComplete(saleData) {
-        return this.log({
-            action_type: 'sale_complete',
-            entity_type: 'sale',
-            sale_total: saleData.total,
-            sale_items: saleData.items,
-            customer_name: saleData.customerName,
-            customer_email: saleData.customerEmail,
-            details: {
-                cash: saleData.cash,
-                change: saleData.change,
-                items_count: saleData.items.length
-            }
-        });
-    },
-
-    /**
-     * Log a sale void action
-     */
-    async logSaleVoid(saleId, reason) {
-        return this.log({
-            action_type: 'sale_void',
-            entity_id: saleId,
-            entity_type: 'sale',
-            details: {
-                reason: reason
-            }
-        });
-    },
-
-    /**
      * Helper: Get changes between old and new data
      */
     getChanges(oldData, newData) {

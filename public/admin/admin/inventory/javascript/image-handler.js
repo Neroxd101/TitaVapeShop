@@ -40,37 +40,6 @@ const InventoryImage = {
     return null;
   },
 
-  // Get thumbnail URL for Google Drive image
-  getThumbnailUrl(url, size = 400) {
-    const fileId = this.getGoogleDriveFileId(url);
-    if (fileId) {
-      // Use export=view so <img> can render reliably
-      // (thumbnail endpoint often fails for private/not-fully-public files)
-      return `https://drive.google.com/uc?export=view&id=${fileId}`;
-    }
-    // Return original URL if not a Google Drive link
-    return url;
-  },
-
-  // Get direct viewable URL for Google Drive image  
-  getViewableUrl(url) {
-    const fileId = this.getGoogleDriveFileId(url);
-    if (fileId) {
-      // Use export=view so <img> can render reliably
-      return `https://drive.google.com/uc?export=view&id=${fileId}`;
-    }
-    return url;
-  },
-
-  // Get full size URL for Google Drive image
-  getFullImageUrl(url) {
-    const fileId = this.getGoogleDriveFileId(url);
-    if (fileId) {
-      return `https://drive.google.com/uc?id=${fileId}`;
-    }
-    return url;
-  },
-
   /**
    * Return a list of fallback URLs for a Drive (or other) image.
    * Strategy: authenticated proxy (most reliable) -> uc?export=view -> thumbnail -> preview -> original
@@ -185,20 +154,6 @@ const InventoryImage = {
     } else {
       mainImageEl.innerHTML = '';
       mainImageEl.classList.add('no-image');
-    }
-  },
-
-  // Update QR preview image in modal
-  updateQrPreview(imageUrl) {
-    const qrPreview = document.getElementById('qrPreview');
-    if (!qrPreview) return;
-
-    if (imageUrl) {
-      const fallbacks = this.getFallbackUrls(imageUrl, 200);
-      const escapedUrl = imageUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-      qrPreview.innerHTML = `<img src="${fallbacks[0]}" data-tried-index="0" data-original-url="${escapedUrl}" alt="QR Code" loading="lazy" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 200)">`;
-    } else {
-      qrPreview.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13 2h-2v2h2v2h-4v-4h2v-2h-2v-2h4v4zm2-4v2h2v4h-2v2h-2v-4h2v-2h-2v-2h2z"/></svg>`;
     }
   },
 

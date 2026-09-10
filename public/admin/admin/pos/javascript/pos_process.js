@@ -18,11 +18,6 @@ const SalesCreate = {
         const total = state.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
         const cashInput = document.getElementById('cashInput');
 
-        // Find form or button to get route
-        const form = document.getElementById('checkoutForm');
-        const checkoutUrl = form?.dataset.apiRouteCheckout || '/pos/pos_process';
-        const receiptUrl = form?.dataset.apiRouteReceipt || '/pos/email_send_receipt';
-
         const cash = parseFloat(cashInput?.value || '0') || 0;
 
         if (cash < total) {
@@ -31,7 +26,6 @@ const SalesCreate = {
         }
 
         const customerName = document.getElementById('customerName')?.value || 'Walk-in';
-        const customerEmail = document.getElementById('customerEmail')?.value?.trim();
         const change = cash - total;
 
         // Show confirmation modal instead of native confirm
@@ -144,7 +138,7 @@ const SalesCreate = {
                     })
                 });
 
-                const result = await emailResponse.json();
+                await emailResponse.json();
                 emailSent = emailResponse.ok;
                 emailError = !emailResponse.ok;
             } catch (error) {
@@ -219,43 +213,6 @@ const SalesCreate = {
         const cartModal = document.getElementById('cartModal');
         if (cartModal) {
             cartModal.classList.remove('show');
-        }
-    },
-
-    async sendReceipt(url, email, name, items, total, cash, change) {
-        try {
-            const response = await fetch(url, {
-                // Call email-send-receipt backend route
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    customerEmail: email,
-                    customerName: name,
-                    items: items,
-                    total,
-                    cash,
-                    change,
-                    saleDate: new Date().toLocaleString('en-PH', {
-                        timeZone: 'Asia/Manila',
-                        dateStyle: 'medium',
-                        timeStyle: 'short'
-                    })
-                })
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert(`Sale completed for ${name}.\nTotal: ${SalesCart.formatCurrencySafe(total)}\n\nReceipt sent to ${email}`);
-            } else {
-                console.error('Failed to send email:', result);
-                alert(`Sale completed for ${name}.\nTotal: ${SalesCart.formatCurrencySafe(total)}\n\nNote: Failed to send email receipt.`);
-            }
-        } catch (error) {
-            console.error('Error sending email:', error);
-            alert(`Sale completed for ${name}.\nTotal: ${SalesCart.formatCurrencySafe(total)}\n\nNote: Failed to send email receipt.`);
         }
     }
 };

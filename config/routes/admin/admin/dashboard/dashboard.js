@@ -7,7 +7,6 @@ router.use(require('./dashboard_low_stock'));
 router.use(require('./dashboard_sales_total'));
 router.use(require('./dashboard_pending_orders'));
 router.use(require('./dashboard_recent_activity'));
-router.use(require('./dashboard_summary'));
 
 // Protect dashboard route - Admin exclusive
 // GET /dashboard & GET /admin/dashboard - Serve dashboard page
