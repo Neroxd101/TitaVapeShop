@@ -161,7 +161,8 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       }
     }
 
-    const trackingUrl = `/order-status?id=${order.id}`;
+    const appBaseUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const trackingUrl = `${appBaseUrl}/order-status?id=${order.id}`;
 
     // 6. Send Order Confirmation Email
     if (order && finalEmail) {

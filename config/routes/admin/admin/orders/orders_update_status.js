@@ -69,7 +69,8 @@ router.post('/api/orders/update_status', async (req, res) => {
                     {
                         items: updatedOrder.items,
                         total_amount: updatedOrder.total_amount,
-                        order_type: updatedOrder.order_type
+                        order_type: updatedOrder.order_type,
+                        trackingUrl: `${(process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '')}/order-status?id=${updatedOrder.id}`
                     }
                 );
             } catch (emailError) {
