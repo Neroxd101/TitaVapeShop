@@ -21,9 +21,10 @@
 .stock-filter {
   text-align: center;
   text-align-last: center;
+  height: 44px;
   min-height: 44px;
   max-width: 100%;
-  padding: 10px 14px;
+  padding: 0 14px;
   background: var(--bg-card);
   color: var(--text-secondary);
   border: 1px solid var(--border);
@@ -33,6 +34,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .stock-filter:hover {
@@ -41,31 +43,73 @@
 }
 
 @media (max-width: 1024px) {
-  .stock-filter { font-size: 13px; }
+  .stock-filter {
+    font-size: 13px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+  }
 }
 
 @media (max-width: 768px) {
-  .stock-filter { font-size: 12px; }
+  .stock-filter {
+    font-size: 12px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+  }
 }
 
 @media (max-width: 480px) {
-  .stock-filter { font-size: 11px; }
+  .stock-filter {
+    font-size: 11px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: 6px;
+  }
 }
 
 @media (max-width: 360px) {
-  .stock-filter { font-size: 10px; }
+  .stock-filter {
+    font-size: 10px;
+    height: 30px;
+    min-height: 30px;
+    padding: 0 8px;
+    border-radius: 5px;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
-  .stock-filter { font-size: 11px; }
+  .stock-filter {
+    font-size: 11px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: 6px;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 320px) {
-  .stock-filter { font-size: 10px; }
+  .stock-filter {
+    font-size: 10px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0 8px;
+    border-radius: 5px;
+  }
 }
 
 @media (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
-  .stock-filter { font-size: 11px; }
+  .stock-filter {
+    font-size: 11px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 10px;
+    border-radius: 6px;
+  }
 }
 
 .stock-filter:focus-visible {
