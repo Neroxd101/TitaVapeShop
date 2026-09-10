@@ -20,8 +20,8 @@ const SalesCreate = {
 
         // Find form or button to get route
         const form = document.getElementById('checkoutForm');
-        const checkoutUrl = form?.dataset.apiRouteCheckout || '/sales/sales_process';
-        const receiptUrl = form?.dataset.apiRouteReceipt || '/api/email/send-receipt';
+        const checkoutUrl = form?.dataset.apiRouteCheckout || '/pos/pos_process';
+        const receiptUrl = form?.dataset.apiRouteReceipt || '/pos/email_send_receipt';
 
         const cash = parseFloat(cashInput?.value || '0') || 0;
 
@@ -64,8 +64,8 @@ const SalesCreate = {
 
         const { customerName, total, cash, change, state } = pending;
         const form = document.getElementById('checkoutForm');
-        const checkoutUrl = form?.dataset.apiRouteCheckout || '/sales/sales_process';
-        const receiptUrl = form?.dataset.apiRouteReceipt || '/sales/email_send_receipt';
+        const checkoutUrl = form?.dataset.apiRouteCheckout || '/pos/pos_process';
+        const receiptUrl = form?.dataset.apiRouteReceipt || '/pos/email_send_receipt';
         const customerEmail = document.getElementById('customerEmail')?.value?.trim();
 
         const proceedBtn = document.getElementById('proceedSaleBtn');

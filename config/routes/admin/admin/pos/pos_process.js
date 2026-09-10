@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const { supabase, supabaseAdmin } = require('../../../../database/supabase');
+const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
-
-        // Handle sale checkout: deduct inventory via RPC function
-router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
+// Handle sale checkout: deduct inventory via RPC function
+const handleSalesProcess = async (req, res) => {
     try {
         const { items, customer_name, customer_email } = req.body;
 
@@ -120,7 +119,7 @@ router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff'])
 
         // Check for low stock items in background
         try {
-            const { checkAndSendLowStockAlerts } = require('../../utils/lowStockAlert');
+            const { checkAndSendLowStockAlerts } = require('../../../../utils/lowStockAlert');
             const alertItems = results.map(item => ({
                 id: item.id,
                 name: item.name,
@@ -143,6 +142,10 @@ router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff'])
         console.error('Checkout error:', error);
         res.status(500).json({ error: 'Internal server error', details: error.message });
     }
-});
+};
+
+router.post('/pos/pos_process', isAuthenticated, hasRole(['admin', 'staff']), handleSalesProcess);
+router.post('/admin/pos/pos_process', isAuthenticated, hasRole(['admin']), handleSalesProcess);
+router.post('/sales/sales_process', isAuthenticated, hasRole(['admin', 'staff']), handleSalesProcess);
 
 module.exports = router;

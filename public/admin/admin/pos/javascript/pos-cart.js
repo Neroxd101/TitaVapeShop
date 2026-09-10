@@ -5,7 +5,7 @@ const SalesCart = {
             const existing = document.getElementById('cartModal');
             if (existing) return;
 
-            const response = await fetch('/sales/sales-cart-modal.html');
+            const response = await fetch('/admin/admin/pos/pos-cart-modal.html');
             if (!response.ok) throw new Error(`Failed to load cart modal: ${response.statusText}`);
             const html = await response.text();
 
@@ -24,7 +24,7 @@ const SalesCart = {
             const existing = document.getElementById('confirmModal');
             if (existing) return;
 
-            const response = await fetch('/sales/sales-confirm-modal.html');
+            const response = await fetch('/admin/admin/pos/pos-confirm-modal.html');
             if (!response.ok) throw new Error(`Failed to load confirm modal: ${response.statusText}`);
             const html = await response.text();
 
@@ -43,7 +43,7 @@ const SalesCart = {
             const existing = document.getElementById('successModal');
             if (existing) return;
 
-            const response = await fetch('/sales/sales-success-modal.html');
+            const response = await fetch('/admin/admin/pos/pos-success-modal.html');
             if (!response.ok) throw new Error(`Failed to load success modal: ${response.statusText}`);
             const html = await response.text();
 

@@ -1,17 +1,12 @@
 const express = require('express');
 const router = express.Router();
-
-// We'll use nodemailer for sending emails via Gmail SMTP
-// You'll need to install: npm install nodemailer
 const nodemailer = require('nodemailer');
-const { isAuthenticated, hasRole } = require('../../middleware/authMiddleware');
+const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-// Protect email routes
 /**
- * POST /sales/email_send_receipt
- * Send a sales receipt via email using Gmail SMTP
+ * Handler for sending sales receipt via email using Gmail SMTP
  */
-router.post('/sales/email_send_receipt', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
+const handleSendReceipt = async (req, res) => {
   try {
     const { customerEmail, customerName, items, total, cash, change, saleDate } = req.body;
 
@@ -47,7 +42,7 @@ router.post('/sales/email_send_receipt', isAuthenticated, hasRole(['admin', 'sta
 
     // Send email
     const mailOptions = {
-      from: `"Tita\'s Vape Shop" <${process.env.SMTP_USER}>`,
+      from: `"Tita's Vape Shop" <${process.env.SMTP_USER}>`,
       to: customerEmail,
       subject: 'Your Receipt from Tita\'s Vape Shop',
       html: receiptHtml
@@ -60,7 +55,11 @@ router.post('/sales/email_send_receipt', isAuthenticated, hasRole(['admin', 'sta
     console.error('Error in sendReceipt:', error);
     res.status(500).json({ error: 'Failed to send receipt email', details: error.message });
   }
-});
+};
+
+router.post('/pos/email_send_receipt', isAuthenticated, hasRole(['admin', 'staff']), handleSendReceipt);
+router.post('/admin/pos/email_send_receipt', isAuthenticated, hasRole(['admin']), handleSendReceipt);
+router.post('/sales/email_send_receipt', isAuthenticated, hasRole(['admin', 'staff']), handleSendReceipt);
 
 /**
  * Generate HTML for the receipt email
@@ -81,7 +80,7 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Receipt - Tita\'s Vape Shop</title>
+      <title>Receipt - Tita's Vape Shop</title>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
@@ -92,7 +91,7 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
               <!-- Header -->
               <tr>
                 <td style="background: linear-gradient(135deg, #00d4aa, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
-                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA\'S VAPE SHOP</h1>
+                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA'S VAPE SHOP</h1>
                   <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Sales Receipt</p>
                 </td>
               </tr>
@@ -149,7 +148,7 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
               <tr>
                 <td style="background-color: #1a1a24; padding: 24px 30px; text-align: center; border-top: 1px solid #2a2a3a;">
                   <p style="margin: 0; color: #00d4aa; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">Thank you for your purchase!</p>
-                  <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 12px;">This is an automated receipt from Tita\'s Vape Shop</p>
+                  <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 12px;">This is an automated receipt from Tita's Vape Shop</p>
                 </td>
               </tr>
             </table>

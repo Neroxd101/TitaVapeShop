@@ -45,10 +45,10 @@ const inventoryUpdateRoutes = require('./config/routes/admin/admin/inventory/inv
 const inventoryDeleteRoutes = require('./config/routes/admin/admin/inventory/inventory_delete_item');
 const inventoryHistoryRoutes = require('./config/routes/admin/admin/inventory/inventory_get_sales_history');
 
-// Sales routes
-const salesLoadRoutes = require('./config/routes/sales/serve_sales');
-const salesCreateRoutes = require('./config/routes/sales/sales_process');
-const salesEmailRoutes = require('./config/routes/sales/email_send_receipt');
+// POS (Sales) routes
+const salesLoadRoutes = require('./config/routes/admin/admin/pos/serve_pos');
+const salesCreateRoutes = require('./config/routes/admin/admin/pos/pos_process');
+const salesEmailRoutes = require('./config/routes/admin/admin/pos/email_send_receipt');
 
 // Transactions routes
 const transactionsServeRoutes = require('./config/routes/transactions/transactions_controller');
