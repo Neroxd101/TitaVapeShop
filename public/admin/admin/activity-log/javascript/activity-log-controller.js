@@ -272,7 +272,7 @@ class TransactionsUI {
      * Show internal error message
      */
     showError(message) {
-        this.elements.transactionsList.innerHTML = `<tr><td colspan="5" style="text-align:center; color: red;">${message || 'Error loading logs'}</td></tr>`;
+        this.elements.transactionsList.innerHTML = `<tr class="empty-row"><td colspan="5" style="text-align:center; color: red;">${message || 'Error loading logs'}</td></tr>`;
     }
 
     /**
