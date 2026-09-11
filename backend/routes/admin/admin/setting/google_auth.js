@@ -66,7 +66,7 @@ router.get('/auth/google', async (req, res) => {
 
 // GET /auth/google/callback - Handle OAuth callback page
 router.get('/auth/google/callback', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/setting/oauth-callback.html'));
+  res.sendFile(path.join(__dirname, '../../../../../frontend/admin/admin/setting/oauth-callback.html'));
 });
 
 // POST /auth/google/exchange - Exchange code for tokens

@@ -13,15 +13,10 @@ A modern inventory management system built with Express.js, HTML, and Supabase.
 ## Project Structure
 
 ```
-TV/
-├── api/
-│   └── index.js          # Express.js API
-├── public/
-│   └── login.html        # Login page
-├── supabase/
-│   ├── functions/
-│   │   └── login/        # Login edge function
-│   └── migrations/
+TitaVapeShop/
+├── backend/              # Routes, Middleware & Supabase Client
+├── frontend/             # HTML, CSS, client-side JS & static assets
+├── supabase/             # Migrations & Database RPC functions
 │       └── 001_initial_schema.sql
 ├── package.json
 ├── vercel.json

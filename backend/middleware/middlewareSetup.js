@@ -16,8 +16,8 @@ function setupMiddleware(app) {
   // Cookie parser for JWT
   app.use(cookieParser());
 
-  // Serve static files from public folder
-  app.use(express.static(path.join(__dirname, '../../public')));
+  // Serve static files from frontend folder
+  app.use(express.static(path.join(__dirname, '../../frontend')));
 }
 
 module.exports = setupMiddleware;

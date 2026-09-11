@@ -6,7 +6,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 
 // GET /inventory and GET /admin/inventory - Serve inventory page
 const serveInventory = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/inventory/inventory.html'));
+    res.sendFile(path.join(__dirname, '../../../../../frontend/admin/admin/inventory/inventory.html'));
 };
 router.get('/inventory', isAuthenticated, hasRole(['admin']), serveInventory);
 router.get('/admin/inventory', isAuthenticated, hasRole(['admin']), serveInventory);

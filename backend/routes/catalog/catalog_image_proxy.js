@@ -47,7 +47,7 @@ router.get('/api/catalog/image/:fileId', async (req, res) => {
     }
 
     // If both endpoints fail, serve default placeholder image
-    const placeholderPath = path.join(__dirname, '../../../public/img/placeholder-product.png');
+    const placeholderPath = path.join(__dirname, '../../../frontend/img/placeholder-product.png');
     return res.sendFile(placeholderPath);
   } catch (err) {
     console.error('[Catalog Image Proxy] Server error:', err);

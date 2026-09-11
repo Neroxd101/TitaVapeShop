@@ -33,7 +33,7 @@ function serveLoginPage(req, res) {
     }
   }
 
-  res.sendFile(path.join(__dirname, '../../../../public/admin/login/login.html'));
+  res.sendFile(path.join(__dirname, '../../../../frontend/admin/login/login.html'));
 }
 
 // GET /login and GET /admin/login - Serve login page

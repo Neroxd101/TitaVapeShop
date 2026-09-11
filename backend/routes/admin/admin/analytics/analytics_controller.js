@@ -5,7 +5,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 
 // Protect analytics route - Admin only
 const serveAnalytics = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/analytics/analytics.html'));
+    res.sendFile(path.join(__dirname, '../../../../../frontend/admin/admin/analytics/analytics.html'));
 };
 
 router.get('/analytics', isAuthenticated, hasRole(['admin']), serveAnalytics);

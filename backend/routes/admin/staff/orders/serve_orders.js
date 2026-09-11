@@ -5,7 +5,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 
 // Serve Staff Orders page - Staff and Admin
 const serveStaffOrders = (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../../../public/admin/staff/orders/orders.html'));
+  res.sendFile(path.join(__dirname, '../../../../../frontend/admin/staff/orders/orders.html'));
 };
 
 router.get('/staff/orders', isAuthenticated, hasRole(['staff', 'admin']), serveStaffOrders);

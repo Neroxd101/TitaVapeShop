@@ -11,7 +11,7 @@ router.use(require('./dashboard_recent_activity'));
 // Protect dashboard route - Admin exclusive
 // GET /dashboard & GET /admin/dashboard - Serve dashboard page
 const serveDashboard = (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/dashboard/dashboard.html'));
+  res.sendFile(path.join(__dirname, '../../../../../frontend/admin/admin/dashboard/dashboard.html'));
 };
 
 router.get('/dashboard', isAuthenticated, hasRole(['admin']), serveDashboard);

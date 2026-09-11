@@ -5,7 +5,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 
 // Protect activity log route - Admin only
 const serveActivityLog = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/activity-log/activity-log.html'));
+    res.sendFile(path.join(__dirname, '../../../../../frontend/admin/admin/activity-log/activity-log.html'));
 };
 
 router.get('/activity-log', isAuthenticated, hasRole(['admin']), serveActivityLog);

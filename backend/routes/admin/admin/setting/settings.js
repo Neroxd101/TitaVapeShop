@@ -5,7 +5,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 
 // Serve settings page - Admin only
 const serveSettings = (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../../../public/admin/admin/setting/settings.html'));
+    res.sendFile(path.join(__dirname, '../../../../../frontend/admin/admin/setting/settings.html'));
 };
 
 router.get('/settings', isAuthenticated, hasRole(['admin']), serveSettings);

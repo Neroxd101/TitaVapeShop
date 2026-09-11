@@ -9,7 +9,7 @@ const { supabase } = require('../../../database/supabase');
  * GET /forgot-password - Serve admin/staff forgot password page
  */
 const serveForgotPassword = (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../../public/admin/login/forgot-password.html'));
+  res.sendFile(path.join(__dirname, '../../../../frontend/admin/login/forgot-password.html'));
 };
 
 router.get('/forgot-password', serveForgotPassword);
