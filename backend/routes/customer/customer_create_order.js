@@ -10,9 +10,7 @@ const dbClient = () => supabaseAdmin || supabase;
 /**
  * POST /api/customer/orders/create
  * POST /api/orders/create (alias)
- * Customer Order Creation Endpoint
- * Calls RPC customer_create_order, verifies customer authentication & inventory stock,
- * and sends confirmation receipt email.
+ * Customer Order Creation Endpoint via customer_create_order RPC
  */
 router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, res) => {
   try {
@@ -109,62 +107,31 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       });
     }
 
-    let order = null;
+    // 4. Execute customer_create_order RPC
+    const { data: rpcData, error: rpcError } = await client.rpc('customer_create_order', {
+      p_customer_id: dbCustomer.id,
+      p_customer_name: finalName,
+      p_contact_number: finalContact,
+      p_items: items,
+      p_total_amount: total_amount,
+      p_order_type: order_type || 'pickup',
+      p_customer_email: finalEmail
+    });
 
-    // 4. Attempt customer_create_order RPC first
-    try {
-      const { data: rpcData, error: rpcError } = await client.rpc('customer_create_order', {
-        p_customer_id: dbCustomer.id,
-        p_customer_name: finalName,
-        p_contact_number: finalContact,
-        p_items: items,
-        p_total_amount: total_amount,
-        p_order_type: order_type || 'pickup',
-        p_customer_email: finalEmail
-      });
-
-      if (rpcError) {
-        console.warn('[Customer Create Order] customer_create_order RPC returned error:', rpcError);
-      } else if (rpcData) {
-        order = Array.isArray(rpcData) && rpcData.length > 0 ? rpcData[0] : rpcData;
-      }
-    } catch (rpcEx) {
-      console.warn('[Customer Create Order] customer_create_order RPC exception:', rpcEx);
+    if (rpcError) {
+      console.error('[Customer Create Order] RPC Error:', rpcError);
+      return res.status(400).json({ success: false, error: rpcError.message || 'Failed to create order' });
     }
 
-    // 5. Fallback: legacy orders_create_order RPC + customer_id linking
+    const order = Array.isArray(rpcData) && rpcData.length > 0 ? rpcData[0] : rpcData;
     if (!order) {
-      const { data: legacyData, error: legacyError } = await client.rpc('orders_create_order', {
-        p_customer_name: finalName,
-        p_contact_number: finalContact,
-        p_items: items,
-        p_total_amount: total_amount,
-        p_order_type: order_type || 'pickup',
-        p_customer_email: finalEmail
-      });
-
-      if (legacyError) {
-        console.error('[Customer Create Order] Legacy RPC Error:', legacyError);
-        return res.status(400).json({
-          success: false,
-          error: legacyError.message || 'Failed to create order'
-        });
-      }
-
-      order = Array.isArray(legacyData) && legacyData.length > 0 ? legacyData[0] : legacyData;
-
-      if (order && order.id) {
-        await client
-          .from('orders')
-          .update({ customer_id: dbCustomer.id })
-          .eq('id', order.id);
-      }
+      return res.status(400).json({ success: false, error: 'Failed to create order' });
     }
 
     const appBaseUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
     const trackingUrl = `${appBaseUrl}/order-status?id=${order.id}`;
 
-    // 6. Send Order Confirmation Email
+    // 5. Send Order Confirmation Email
     if (order && finalEmail) {
       try {
         await sendOrderEmail(

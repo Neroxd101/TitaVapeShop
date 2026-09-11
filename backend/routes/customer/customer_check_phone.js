@@ -6,8 +6,7 @@ const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * GET /api/customer/check-phone
- * Check if contact number is already registered in the customers table
- * Calls RPC customer_check_phone with direct database fallback
+ * Check if contact number is already registered via customer_check_phone RPC
  */
 router.get('/api/customer/check-phone', async (req, res) => {
   try {
@@ -25,40 +24,19 @@ router.get('/api/customer/check-phone', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Valid phone number is required.' });
     }
 
-    // 1. Attempt customer_check_phone RPC
-    try {
-      const { data: rpcData, error: rpcError } = await client.rpc('customer_check_phone', {
-        p_phone: cleanPhone,
-        p_exclude_id: excludeUserId
-      });
-      if (!rpcError && rpcData && typeof rpcData.exists === 'boolean') {
-        return res.json({
-          success: true,
-          exists: rpcData.exists
-        });
-      }
-    } catch (_) {}
+    const { data, error } = await client.rpc('customer_check_phone', {
+      p_phone: cleanPhone,
+      p_exclude_id: excludeUserId
+    });
 
-    // 2. Direct table query fallback
-    let query = client
-      .from('customers')
-      .select('id, contact_number')
-      .or(`contact_number.eq.${cleanPhone},contact_number.eq.0${cleanPhone.slice(-10)},contact_number.eq.+63${cleanPhone.slice(-10)}`);
-
-    if (excludeUserId) {
-      query = query.neq('id', excludeUserId);
-    }
-
-    const { data: existingUser, error: checkError } = await query.maybeSingle();
-
-    if (checkError) {
-      console.error('[Customer Check Phone] Error:', checkError);
+    if (error) {
+      console.error('[Customer Check Phone] RPC Error:', error);
       return res.status(500).json({ success: false, error: 'Error checking phone availability.' });
     }
 
     return res.json({
       success: true,
-      exists: Boolean(existingUser)
+      exists: Boolean(data?.exists)
     });
   } catch (err) {
     console.error('[Customer Check Phone] Exception:', err);

@@ -6,8 +6,7 @@ const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * GET /api/customer/check-email
- * Check if email is already registered in the customers table
- * Calls RPC customer_check_email with direct database fallback
+ * Check if email is already registered via customer_check_email RPC
  */
 router.get('/api/customer/check-email', async (req, res) => {
   try {
@@ -25,42 +24,20 @@ router.get('/api/customer/check-email', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Email parameter is required.' });
     }
 
-    // 1. Attempt customer_check_email RPC
-    try {
-      const { data: rpcData, error: rpcError } = await client.rpc('customer_check_email', {
-        p_email: cleanEmail,
-        p_exclude_id: excludeUserId
-      });
-      if (!rpcError && rpcData && typeof rpcData.exists === 'boolean') {
-        return res.json({
-          success: true,
-          exists: rpcData.exists,
-          is_verified: rpcData.is_verified || false
-        });
-      }
-    } catch (_) {}
+    const { data, error } = await client.rpc('customer_check_email', {
+      p_email: cleanEmail,
+      p_exclude_id: excludeUserId
+    });
 
-    // 2. Direct table query fallback
-    let query = client
-      .from('customers')
-      .select('id, email, is_verified')
-      .ilike('email', cleanEmail);
-
-    if (excludeUserId) {
-      query = query.neq('id', excludeUserId);
-    }
-
-    const { data: existingUser, error: checkError } = await query.maybeSingle();
-
-    if (checkError) {
-      console.error('[Customer Check Email] Error:', checkError);
+    if (error) {
+      console.error('[Customer Check Email] RPC Error:', error);
       return res.status(500).json({ success: false, error: 'Error checking email availability.' });
     }
 
     return res.json({
       success: true,
-      exists: Boolean(existingUser),
-      is_verified: existingUser ? Boolean(existingUser.is_verified) : false
+      exists: Boolean(data?.exists),
+      is_verified: Boolean(data?.is_verified)
     });
   } catch (err) {
     console.error('[Customer Check Email] Exception:', err);

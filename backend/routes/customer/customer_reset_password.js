@@ -35,7 +35,7 @@ function validatePasswordStrength(password) {
 
 /**
  * POST /api/customer/forgot-password
- * Step 1: Request password reset code
+ * Step 1: Request password reset code via customer_reset_password_request RPC
  */
 router.post('/api/customer/forgot-password', async (req, res) => {
   try {
@@ -52,83 +52,49 @@ router.post('/api/customer/forgot-password', async (req, res) => {
     }
 
     const otpCode = generateCode();
-    let targetName = 'Customer';
-    let customerFound = false;
 
-    // 1. Attempt RPC customer_reset_password_request
-    try {
-      const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_request', {
-        p_email: cleanEmail,
-        p_otp_code: otpCode
-      });
+    const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_request', {
+      p_email: cleanEmail,
+      p_otp_code: otpCode
+    });
 
-      if (!rpcError && rpcData) {
-        const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
-        if (row && row.success) {
-          customerFound = true;
-          targetName = row.full_name || 'Customer';
-        }
-      }
-    } catch (_) {
-      // Fallback to direct query
+    if (rpcError) {
+      console.error('[Customer Reset Password] Request RPC error:', rpcError);
+      return res.status(500).json({ success: false, error: 'Unable to process password reset request. Please try again.' });
     }
 
-    // 2. Direct table fallback if RPC wasn't applied or returned null
-    if (!customerFound) {
-      const { data: customer, error: findError } = await client
-        .from('customers')
-        .select('id, full_name, email')
-        .ilike('email', cleanEmail)
-        .maybeSingle();
+    const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+    const customerFound = row && row.success;
+    const targetName = row?.full_name || 'Customer';
 
-      if (!findError && customer) {
-        customerFound = true;
-        targetName = customer.full_name || 'Customer';
-
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-        const { error: insertErr } = await client
-          .from('customer_verification_codes')
-          .insert({
-            customer_id: customer.id,
-            email: cleanEmail,
-            otp_code: otpCode,
-            expires_at: expiresAt,
-            verified: false
-          });
-
-        if (insertErr) {
-          console.error('[Customer Reset Password] Code insert error:', insertErr);
-        }
-      }
-    }
-
-    // Send reset email if customer exists
+    // Dispatch email if customer was found
     if (customerFound) {
       try {
-        await sendMail(
-          cleanEmail,
-          'Password Reset Code - Tita\'s Vape Shop',
-          generatePasswordResetEmail(otpCode, targetName)
-        );
+        const emailHtml = generatePasswordResetEmail(otpCode, targetName);
+        await sendMail(cleanEmail, 'Reset Your Password - Tita\'s Vape Shop', emailHtml);
       } catch (mailErr) {
-        console.error('[Customer Reset Password] Email sending error:', mailErr);
+        console.error('[Customer Reset Password] Email send error:', mailErr);
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to send password reset email. Please try again later.'
+        });
       }
     }
 
-    // Always return success message for security (prevents account enumeration)
+    // Generic safe response to prevent email enumeration
     return res.json({
       success: true,
-      message: 'If an account is associated with this email, a 6-digit verification code has been sent.'
+      message: 'If an account exists with this email, a 6-digit password reset code has been sent.'
     });
   } catch (err) {
-    console.error('[Customer Forgot Password] Unexpected error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to process request. Please try again.' });
+    console.error('[Customer Reset Password] Error:', err);
+    return res.status(500).json({ success: false, error: 'An unexpected error occurred. Please try again.' });
   }
 });
 
 /**
  * POST /api/customer/verify-reset-code
- * Step 2: Validate 6-digit OTP code before displaying new password fields
+ * Step 2: Verify 6-digit OTP code before displaying new password fields via customer_reset_password_verify_code RPC
  */
 router.post('/api/customer/verify-reset-code', async (req, res) => {
   try {
@@ -149,66 +115,34 @@ router.post('/api/customer/verify-reset-code', async (req, res) => {
       return res.status(400).json({ success: false, error: 'A valid 6-digit verification code is required.' });
     }
 
-    // 1. Attempt RPC customer_reset_password_verify_code
-    try {
-      const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_verify_code', {
-        p_email: cleanEmail,
-        p_otp_code: cleanCode
-      });
+    const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_verify_code', {
+      p_email: cleanEmail,
+      p_otp_code: cleanCode
+    });
 
-      if (!rpcError && rpcData) {
-        const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
-        if (row && row.success) {
-          return res.json({
-            success: true,
-            message: row.message || 'Code verified successfully.'
-          });
-        }
-        if (row && row.error) {
-          return res.status(400).json({ success: false, error: row.error });
-        }
-      }
-    } catch (_) {
-      // Fall through to direct table fallback
+    if (rpcError) {
+      console.error('[Customer Reset Password] Verify code RPC error:', rpcError);
+      return res.status(400).json({ success: false, error: rpcError.message || 'Invalid or expired verification code.' });
     }
 
-    // 2. Direct table fallback
-    const nowIso = new Date().toISOString();
-    const { data: codeRows, error: codeErr } = await client
-      .from('customer_verification_codes')
-      .select('id, customer_id, email, expires_at, verified')
-      .eq('email', cleanEmail)
-      .eq('otp_code', cleanCode)
-      .gt('expires_at', nowIso)
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (codeErr || !codeRows || codeRows.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid or expired verification code. Please request a new code.'
-      });
+    const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+    if (row && !row.success) {
+      return res.status(400).json({ success: false, error: row.error || 'Invalid or expired verification code.' });
     }
-
-    // Mark code as verified
-    await client
-      .from('customer_verification_codes')
-      .update({ verified: true })
-      .eq('id', codeRows[0].id);
 
     return res.json({
       success: true,
-      message: 'Code verified successfully.'
+      message: row?.message || 'Code verified successfully.'
     });
   } catch (err) {
-    console.error('[Customer Verify Reset Code] Error:', err);
+    console.error('[Customer Reset Password] Error:', err);
     return res.status(500).json({ success: false, error: 'Failed to verify code. Please try again.' });
   }
 });
 
 /**
  * POST /api/customer/reset-password
- * Step 3: Save new password after OTP is confirmed
+ * Step 3: Consume verified OTP and apply new password via customer_reset_password_confirm RPC
  */
 router.post('/api/customer/reset-password', async (req, res) => {
   try {
@@ -229,87 +163,36 @@ router.post('/api/customer/reset-password', async (req, res) => {
       return res.status(400).json({ success: false, error: 'A valid 6-digit verification code is required.' });
     }
 
-    // Validate password complexity
+    if (!new_password) {
+      return res.status(400).json({ success: false, error: 'New password is required.' });
+    }
+
     const passwordError = validatePasswordStrength(new_password);
     if (passwordError) {
       return res.status(400).json({ success: false, error: passwordError });
     }
 
-    // Hash password with bcrypt
     const hashedPassword = bcrypt.hashSync(new_password, 10);
 
-    // 1. Attempt RPC customer_reset_password_confirm
-    try {
-      const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_confirm', {
-        p_email: cleanEmail,
-        p_otp_code: cleanCode,
-        p_new_password_hash: hashedPassword
-      });
+    const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_confirm', {
+      p_email: cleanEmail,
+      p_otp_code: cleanCode,
+      p_new_password_hash: hashedPassword
+    });
 
-      if (!rpcError && rpcData) {
-        const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
-        if (row && row.success) {
-          return res.json({
-            success: true,
-            message: row.message || 'Password has been reset successfully. You can now sign in.'
-          });
-        }
-        if (row && row.error) {
-          return res.status(400).json({ success: false, error: row.error });
-        }
-      }
-    } catch (_) {
-      // Fall through to direct table fallback
+    if (rpcError) {
+      console.error('[Customer Reset Password] Confirm RPC error:', rpcError);
+      return res.status(400).json({ success: false, error: rpcError.message || 'Failed to reset password.' });
     }
 
-    // 2. Direct table fallback
-    const nowIso = new Date().toISOString();
-    const { data: codeRows, error: codeErr } = await client
-      .from('customer_verification_codes')
-      .select('id, customer_id, email, expires_at, verified')
-      .eq('email', cleanEmail)
-      .eq('otp_code', cleanCode)
-      .gt('expires_at', nowIso)
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (codeErr || !codeRows || codeRows.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid or expired verification code. Please request a new code.'
-      });
-    }
-
-    const matchedCode = codeRows[0];
-
-    // Invalidate code so it cannot be reused
-    await client
-      .from('customer_verification_codes')
-      .update({ verified: true, expires_at: nowIso })
-      .eq('id', matchedCode.id);
-
-    // Update customer password
-    const { data: updatedCustomer, error: updateErr } = await client
-      .from('customers')
-      .update({
-        password: hashedPassword,
-        is_verified: true,
-        updated_at: new Date().toISOString()
-      })
-      .ilike('email', cleanEmail)
-      .select('id, full_name, email')
-      .maybeSingle();
-
-    if (updateErr || !updatedCustomer) {
-      return res.status(400).json({
-        success: false,
-        error: 'Customer account not found.'
-      });
+    const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+    if (row && !row.success) {
+      return res.status(400).json({ success: false, error: row.error || 'Failed to reset password.' });
     }
 
     return res.json({
       success: true,
-      message: 'Password has been reset successfully. You can now sign in with your new password.'
+      message: row?.message || 'Password has been reset successfully. You can now sign in with your new password.'
     });
   } catch (err) {
     console.error('[Customer Reset Password] Error:', err);

@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { supabase, supabaseAdmin } = require('../../database/supabase');
-const { generateCode, generateVerificationEmail, sendMail } = require('./customer_mailer');
+const { generateVerificationEmail, sendMail } = require('./customer_mailer');
 
 const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * POST /api/customer/register
- * Register a new customer and dispatch 6-digit OTP email
- * Matches RPC: customer_register
+ * Register a new customer and dispatch 6-digit OTP email via customer_register RPC
  */
 router.post('/api/customer/register', async (req, res) => {
   try {
@@ -78,97 +77,34 @@ router.post('/api/customer/register', async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, 10);
     const birthDateFormatted = birthDate.toISOString().split('T')[0];
 
-    let otpCode = null;
+    // Call customer_register RPC
+    const { data: rpcResult, error: rpcError } = await client.rpc('customer_register', {
+      p_full_name: full_name.trim(),
+      p_email: cleanEmail,
+      p_contact_number: digitsOnly,
+      p_password_hash: hashedPassword,
+      p_birthday: birthDateFormatted
+    });
 
-    // 1. Attempt customer_register RPC
-    try {
-      const { data: rpcResult, error: rpcError } = await client.rpc('customer_register', {
-        p_full_name: full_name.trim(),
-        p_email: cleanEmail,
-        p_contact_number: digitsOnly,
-        p_password_hash: hashedPassword,
-        p_birthday: birthDateFormatted
-      });
-
-      if (!rpcError && rpcResult && rpcResult.success) {
-        otpCode = rpcResult.otp_code;
-      } else if (rpcResult && rpcResult.error) {
-        return res.status(400).json({ success: false, error: rpcResult.error });
-      }
-    } catch (_) {}
-
-    // 2. Direct fallback if RPC is not yet applied
-    if (!otpCode) {
-      // Check if email already exists in customers table
-      const { data: existingUser } = await client
-        .from('customers')
-        .select('id, email, is_verified')
-        .ilike('email', cleanEmail)
-        .maybeSingle();
-
-      if (existingUser) {
-        return res.status(400).json({ success: false, error: 'This email already exists. Please sign in.' });
-      }
-
-      // Check if contact number already exists in customers table
-      const { data: existingPhoneUser } = await client
-        .from('customers')
-        .select('id, contact_number')
-        .or(`contact_number.eq.${digitsOnly},contact_number.eq.0${digitsOnly.slice(-10)},contact_number.eq.+63${digitsOnly.slice(-10)}`)
-        .maybeSingle();
-
-      if (existingPhoneUser) {
-        return res.status(400).json({
-          success: false,
-          error: 'This mobile number already exists. Please use a different number or sign in.'
-        });
-      }
-
-      const insertPayload = {
-        email: cleanEmail,
-        password: hashedPassword,
-        full_name: full_name.trim(),
-        contact_number: digitsOnly,
-        birthday: birthDateFormatted,
-        is_verified: false
-      };
-
-      let { data: newCustomer, error: insertError } = await client
-        .from('customers')
-        .insert(insertPayload)
-        .select('id')
-        .single();
-
-      if (insertError) {
-        console.error('[Customer Register] Insert error:', insertError);
-        return res.status(500).json({ success: false, error: insertError.message || 'Failed to create account.' });
-      }
-      const customerId = newCustomer.id;
-
-      otpCode = generateCode();
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-
-      const { error: otpError } = await client
-        .from('customer_verification_codes')
-        .insert({
-          customer_id: customerId,
-          email: cleanEmail,
-          otp_code: otpCode,
-          expires_at: expiresAt,
-          verified: false
-        });
-
-      if (otpError) {
-        console.error('[Customer Register] OTP insert error:', otpError);
-        return res.status(500).json({ success: false, error: 'Failed to generate verification code.' });
-      }
+    if (rpcError) {
+      console.error('[Customer Register] RPC Error:', rpcError);
+      return res.status(400).json({ success: false, error: rpcError.message || 'Registration failed.' });
     }
+
+    if (!rpcResult || !rpcResult.success || !rpcResult.otp_code) {
+      return res.status(400).json({
+        success: false,
+        error: rpcResult?.error || 'Failed to register account.'
+      });
+    }
+
+    const otpCode = rpcResult.otp_code;
 
     // Send verification email
     try {
       await sendMail(
         cleanEmail,
-        'Verify Your Email - Tita\'s Vape Shop',
+        "Verify Your Email - Tita's Vape Shop",
         generateVerificationEmail(otpCode, full_name.trim())
       );
     } catch (mailErr) {

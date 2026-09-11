@@ -27,32 +27,14 @@ router.post('/api/customer/login', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Email and password are required.' });
     }
 
-    let customer = null;
+    // 1. Call customer_login RPC
+    const { data: rpcData, error: rpcError } = await client.rpc('customer_login', { p_email: cleanEmail });
 
-    // 1. Attempt customer_login RPC (or customer_get_by_email)
-    try {
-      let rpcRes = await client.rpc('customer_login', { p_email: cleanEmail });
-      if (rpcRes.error) {
-        rpcRes = await client.rpc('customer_get_by_email', { p_email: cleanEmail });
-      }
-      if (!rpcRes.error && Array.isArray(rpcRes.data) && rpcRes.data.length > 0) {
-        customer = rpcRes.data[0];
-      }
-    } catch (_) {}
-
-    // 2. Direct fallback if RPC is not yet applied
-    if (!customer) {
-      const { data: directCustomer, error: customerError } = await client
-        .from('customers')
-        .select('id, email, password, full_name, contact_number, birthday, is_verified')
-        .ilike('email', cleanEmail)
-        .maybeSingle();
-
-      if (customerError || !directCustomer) {
-        return res.status(401).json({ success: false, error: 'Invalid email or password.' });
-      }
-      customer = directCustomer;
+    if (rpcError || !Array.isArray(rpcData) || rpcData.length === 0) {
+      return res.status(401).json({ success: false, error: 'Invalid email or password.' });
     }
+
+    const customer = rpcData[0];
 
     if (!customer.password || !bcrypt.compareSync(password, customer.password)) {
       return res.status(401).json({ success: false, error: 'Invalid email or password.' });
