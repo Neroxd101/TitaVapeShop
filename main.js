@@ -1,81 +1,81 @@
 const express = require('express');
 require('dotenv').config();
 
-const setupMiddleware = require('./config/middleware/middlewareSetup');
+const setupMiddleware = require('./backend/middleware/middlewareSetup');
 
 // Auth routes
-const adminLoginRoutes = require('./config/routes/admin/login/login');
-const googleAuthRoutes = require('./config/routes/admin/admin/setting/google_auth');
-const passwordResetRoutes = require('./config/routes/admin/login/password_reset');
+const adminLoginRoutes = require('./backend/routes/admin/login/login');
+const googleAuthRoutes = require('./backend/routes/admin/admin/setting/google_auth');
+const passwordResetRoutes = require('./backend/routes/admin/login/password_reset');
 // Customer routes (1-to-1 matching Supabase RPC names)
-const customerCheckEmailRoutes = require('./config/routes/customer/customer_check_email');
-const customerCheckPhoneRoutes = require('./config/routes/customer/customer_check_phone');
-const customerRegisterRoutes = require('./config/routes/customer/customer_register');
-const customerVerifyOtpRoutes = require('./config/routes/customer/customer_verify_otp');
-const customerGenerateOtpRoutes = require('./config/routes/customer/customer_generate_otp');
-const customerLoginRoutes = require('./config/routes/customer/customer_login');
-const customerUpdateProfileRoutes = require('./config/routes/customer/customer_update_profile');
-const customerCreateOrderRoutes = require('./config/routes/customer/customer_create_order');
-const customerGetOrdersRoutes = require('./config/routes/customer/customer_get_orders');
-const customerCancelOrderRoutes = require('./config/routes/customer/customer_cancel_order');
-const customerTrackOrderRoutes = require('./config/routes/customer/customer_track_order');
-const customerResetPasswordRoutes = require('./config/routes/customer/customer_reset_password');
-const customerChangePasswordRoutes = require('./config/routes/customer/customer_change_password');
+const customerCheckEmailRoutes = require('./backend/routes/customer/customer_check_email');
+const customerCheckPhoneRoutes = require('./backend/routes/customer/customer_check_phone');
+const customerRegisterRoutes = require('./backend/routes/customer/customer_register');
+const customerVerifyOtpRoutes = require('./backend/routes/customer/customer_verify_otp');
+const customerGenerateOtpRoutes = require('./backend/routes/customer/customer_generate_otp');
+const customerLoginRoutes = require('./backend/routes/customer/customer_login');
+const customerUpdateProfileRoutes = require('./backend/routes/customer/customer_update_profile');
+const customerCreateOrderRoutes = require('./backend/routes/customer/customer_create_order');
+const customerGetOrdersRoutes = require('./backend/routes/customer/customer_get_orders');
+const customerCancelOrderRoutes = require('./backend/routes/customer/customer_cancel_order');
+const customerTrackOrderRoutes = require('./backend/routes/customer/customer_track_order');
+const customerResetPasswordRoutes = require('./backend/routes/customer/customer_reset_password');
+const customerChangePasswordRoutes = require('./backend/routes/customer/customer_change_password');
 
 // Setting routes
-const userProfileRoutes = require('./config/routes/admin/admin/setting/user_profile');
-const settingsRoutes = require('./config/routes/admin/admin/setting/settings');
+const userProfileRoutes = require('./backend/routes/admin/admin/setting/user_profile');
+const settingsRoutes = require('./backend/routes/admin/admin/setting/settings');
 
 // Catalog routes
-const catalogGetProductsRoutes = require('./config/routes/catalog/catalog_get_products');
-const catalogImageProxyRoutes = require('./config/routes/catalog/catalog_image_proxy');
-const catalogRoutes = require('./config/routes/catalog/catalog');
+const catalogGetProductsRoutes = require('./backend/routes/catalog/catalog_get_products');
+const catalogImageProxyRoutes = require('./backend/routes/catalog/catalog_image_proxy');
+const catalogRoutes = require('./backend/routes/catalog/catalog');
 
 // Dashboard routes
-const dashboardRoutes = require('./config/routes/admin/admin/dashboard/dashboard');
+const dashboardRoutes = require('./backend/routes/admin/admin/dashboard/dashboard');
 
 // Upload routes
-const uploadRoutes = require('./config/routes/upload/upload');
-const keepAliveRoutes = require('./config/routes/KeepAlive');
+const uploadRoutes = require('./backend/routes/upload/upload');
+const keepAliveRoutes = require('./backend/routes/KeepAlive');
 
 // Inventory routes
-const inventoryLoadRoutes = require('./config/routes/admin/admin/inventory/inventory_get_all');
-const inventoryCreateRoutes = require('./config/routes/admin/admin/inventory/inventory_create_item');
-const inventoryUpdateRoutes = require('./config/routes/admin/admin/inventory/inventory_update_item');
-const inventoryDeleteRoutes = require('./config/routes/admin/admin/inventory/inventory_delete_item');
-const inventoryHistoryRoutes = require('./config/routes/admin/admin/inventory/inventory_get_sales_history');
+const inventoryLoadRoutes = require('./backend/routes/admin/admin/inventory/inventory_get_all');
+const inventoryCreateRoutes = require('./backend/routes/admin/admin/inventory/inventory_create_item');
+const inventoryUpdateRoutes = require('./backend/routes/admin/admin/inventory/inventory_update_item');
+const inventoryDeleteRoutes = require('./backend/routes/admin/admin/inventory/inventory_delete_item');
+const inventoryHistoryRoutes = require('./backend/routes/admin/admin/inventory/inventory_get_sales_history');
 
 // POS (Sales) routes
-const posControllerRoutes = require('./config/routes/admin/admin/pos/pos_controller');
-const salesCreateRoutes = require('./config/routes/admin/admin/pos/pos_process');
-const salesEmailRoutes = require('./config/routes/admin/admin/pos/email_send_receipt');
+const posControllerRoutes = require('./backend/routes/admin/admin/pos/pos_controller');
+const salesCreateRoutes = require('./backend/routes/admin/admin/pos/pos_process');
+const salesEmailRoutes = require('./backend/routes/admin/admin/pos/email_send_receipt');
 
 // Activity Log (Transactions) routes
-const transactionsServeRoutes = require('./config/routes/admin/admin/activity-log/activity_log_controller');
-const transactionsLogRoutes = require('./config/routes/admin/admin/activity-log/transactions_log');
-const transactionsListRoutes = require('./config/routes/admin/admin/activity-log/transactions_get_all');
-const transactionsStatsRoutes = require('./config/routes/admin/admin/activity-log/transactions_get_stats');
-const transactionsReportRoutes = require('./config/routes/admin/admin/activity-log/transactions_get_report');
+const transactionsServeRoutes = require('./backend/routes/admin/admin/activity-log/activity_log_controller');
+const transactionsLogRoutes = require('./backend/routes/admin/admin/activity-log/transactions_log');
+const transactionsListRoutes = require('./backend/routes/admin/admin/activity-log/transactions_get_all');
+const transactionsStatsRoutes = require('./backend/routes/admin/admin/activity-log/transactions_get_stats');
+const transactionsReportRoutes = require('./backend/routes/admin/admin/activity-log/transactions_get_report');
 
 // Analytics routes
-const analyticsServeRoutes = require('./config/routes/admin/admin/analytics/analytics_controller');
-const analyticsDashboardRoutes = require('./config/routes/admin/admin/analytics/analytics_dashboard');
-const analyticsTotalProfitRoutes = require('./config/routes/admin/admin/analytics/analytics_total_profit');
-const analyticsTotalOrdersRoutes = require('./config/routes/admin/admin/analytics/analytics_total_orders');
-const analyticsItemsSoldRoutes = require('./config/routes/admin/admin/analytics/analytics_items_sold');
-const analyticsGrossSalesRoutes = require('./config/routes/admin/admin/analytics/analytics_gross_sales');
-const analyticsRevenueTrendRoutes = require('./config/routes/admin/admin/analytics/analytics_revenue_trend');
-const analyticsTopProductsRoutes = require('./config/routes/admin/admin/analytics/analytics_top_products');
-const analyticsCategoryStatsRoutes = require('./config/routes/admin/admin/analytics/analytics_category_stats');
+const analyticsServeRoutes = require('./backend/routes/admin/admin/analytics/analytics_controller');
+const analyticsDashboardRoutes = require('./backend/routes/admin/admin/analytics/analytics_dashboard');
+const analyticsTotalProfitRoutes = require('./backend/routes/admin/admin/analytics/analytics_total_profit');
+const analyticsTotalOrdersRoutes = require('./backend/routes/admin/admin/analytics/analytics_total_orders');
+const analyticsItemsSoldRoutes = require('./backend/routes/admin/admin/analytics/analytics_items_sold');
+const analyticsGrossSalesRoutes = require('./backend/routes/admin/admin/analytics/analytics_gross_sales');
+const analyticsRevenueTrendRoutes = require('./backend/routes/admin/admin/analytics/analytics_revenue_trend');
+const analyticsTopProductsRoutes = require('./backend/routes/admin/admin/analytics/analytics_top_products');
+const analyticsCategoryStatsRoutes = require('./backend/routes/admin/admin/analytics/analytics_category_stats');
 
 // Orders routes
-const ordersControllerRoutes = require('./config/routes/admin/admin/orders/orders_controller');
-const ordersGetAllRoutes = require('./config/routes/admin/admin/orders/orders_get_all');
-const ordersUpdateStatusRoutes = require('./config/routes/admin/admin/orders/orders_update_status');
+const ordersControllerRoutes = require('./backend/routes/admin/admin/orders/orders_controller');
+const ordersGetAllRoutes = require('./backend/routes/admin/admin/orders/orders_get_all');
+const ordersUpdateStatusRoutes = require('./backend/routes/admin/admin/orders/orders_update_status');
 
 // Staff routes
-const staffPosRoutes = require('./config/routes/admin/staff/pos/serve_pos');
-const staffOrdersRoutes = require('./config/routes/admin/staff/orders/serve_orders');
+const staffPosRoutes = require('./backend/routes/admin/staff/pos/serve_pos');
+const staffOrdersRoutes = require('./backend/routes/admin/staff/orders/serve_orders');
 
 const app = express();
 
