@@ -34,8 +34,8 @@ const catalogRoutes = require('./backend/routes/catalog/catalog');
 // Dashboard routes
 const dashboardRoutes = require('./backend/routes/admin/admin/dashboard/dashboard');
 
-// Upload routes
-const uploadRoutes = require('./backend/routes/upload/upload');
+// Inventory & Upload routes
+const uploadRoutes = require('./backend/routes/admin/admin/inventory/upload');
 const keepAliveRoutes = require('./backend/routes/KeepAlive');
 
 // Inventory routes
