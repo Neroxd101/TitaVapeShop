@@ -36,7 +36,7 @@ function validatePasswordStrength(password) {
 
 /**
  * POST /api/customer/change-password
- * Change password for authenticated customer
+ * Change password for authenticated customer via customer_change_password RPC
  */
 router.post('/api/customer/change-password', async (req, res) => {
   const token = req.cookies?.customer_token;
@@ -73,7 +73,7 @@ router.post('/api/customer/change-password', async (req, res) => {
   }
 
   try {
-    // 1. Fetch current password hash
+    // 1. Fetch current password hash to verify
     const { data: customer, error: fetchErr } = await client
       .from('customers')
       .select('id, password')
@@ -100,45 +100,24 @@ router.post('/api/customer/change-password', async (req, res) => {
     const newHash = bcrypt.hashSync(new_password, 10);
 
     // 5. Update via RPC customer_change_password
-    try {
-      const { data: rpcData, error: rpcError } = await client.rpc('customer_change_password', {
-        p_customer_id: decoded.id,
-        p_new_password_hash: newHash
-      });
+    const { data: rpcData, error: rpcError } = await client.rpc('customer_change_password', {
+      p_customer_id: decoded.id,
+      p_new_password_hash: newHash
+    });
 
-      if (!rpcError && rpcData) {
-        const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
-        if (row && row.success) {
-          return res.json({
-            success: true,
-            message: row.message || 'Password updated successfully!'
-          });
-        }
-        if (row && row.error) {
-          return res.status(400).json({ success: false, error: row.error });
-        }
-      }
-    } catch (_) {
-      // Fall through to direct table fallback
+    if (rpcError) {
+      console.error('[Customer Change Password] RPC error:', rpcError);
+      return res.status(400).json({ success: false, error: rpcError.message || 'Failed to update password.' });
     }
 
-    // 6. Direct table fallback
-    const { error: updateErr } = await client
-      .from('customers')
-      .update({
-        password: newHash,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', decoded.id);
-
-    if (updateErr) {
-      console.error('[Customer Change Password] Update error:', updateErr);
-      return res.status(500).json({ success: false, error: 'Failed to update password. Please try again.' });
+    const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+    if (row && !row.success) {
+      return res.status(400).json({ success: false, error: row.error || 'Failed to update password.' });
     }
 
     return res.json({
       success: true,
-      message: 'Password updated successfully!'
+      message: row?.message || 'Password updated successfully!'
     });
   } catch (err) {
     console.error('[Customer Change Password] Unexpected error:', err);
