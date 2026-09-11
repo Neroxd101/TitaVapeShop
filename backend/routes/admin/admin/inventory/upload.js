@@ -3,8 +3,8 @@ const router = express.Router();
 const QRCode = require('qrcode');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-// Protect all upload routes - Admin only
-router.use(isAuthenticated, hasRole(['admin']));
+// Protect only upload routes so unrelated staff pages can reach their handlers.
+router.use('/api/upload', isAuthenticated, hasRole(['admin']));
 
 // Find or create folder in Google Drive
 async function findOrCreateFolder(googleToken, folderName, parentId = null) {
