@@ -1,10 +1,11 @@
 -- =============================================
--- Complete Sale Function
+-- Complete Sale Function: pos_process
 -- Updates inventory after completing a sale
 -- Adds sale revenue to total_profit
+-- 1-to-1 matching RPC name, backend route, and frontend module
 -- =============================================
 
-CREATE OR REPLACE FUNCTION inventory_complete_sale(
+CREATE OR REPLACE FUNCTION pos_process(
     p_id UUID,
     p_qty_sold INTEGER,
     p_sale_price DECIMAL(10,2) DEFAULT NULL
@@ -79,5 +80,31 @@ BEGIN
     SELECT *
     FROM inventory AS inv
     WHERE inv.id = p_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Backward compatibility alias for existing references (e.g. orders_update_status)
+CREATE OR REPLACE FUNCTION inventory_complete_sale(
+    p_id UUID,
+    p_qty_sold INTEGER,
+    p_sale_price DECIMAL(10,2) DEFAULT NULL
+)
+RETURNS TABLE (
+    id UUID,
+    category VARCHAR(20),
+    name VARCHAR(100),
+    description TEXT,
+    quantity INTEGER,
+    cost_price DECIMAL(10,2),
+    sale_price DECIMAL(10,2),
+    qr_image_url TEXT,
+    images JSONB,
+    total_profit DECIMAL(10,2),
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT * FROM pos_process(p_id, p_qty_sold, p_sale_price);
 END;
 $$ LANGUAGE plpgsql;

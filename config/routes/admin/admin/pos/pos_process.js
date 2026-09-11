@@ -33,13 +33,24 @@ const handleSalesProcess = async (req, res) => {
                     continue;
                 }
 
-                // Call inventory_complete_sale RPC function for each item
+                // Call pos_process RPC function for each item
                 // Use price from cart item (may differ from inventory sale_price)
-                const { data, error } = await supabase.rpc('inventory_complete_sale', {
+                let { data, error } = await supabase.rpc('pos_process', {
                     p_id: id,
                     p_qty_sold: qty,
                     p_sale_price: price || null
                 });
+
+                // Fallback to legacy RPC name if pos_process not yet applied in DB
+                if (error && error.message && error.message.includes('function pos_process') && error.message.includes('does not exist')) {
+                    const fallback = await supabase.rpc('inventory_complete_sale', {
+                        p_id: id,
+                        p_qty_sold: qty,
+                        p_sale_price: price || null
+                    });
+                    data = fallback.data;
+                    error = fallback.error;
+                }
 
                 if (error) {
                     errors.push({
