@@ -4,6 +4,9 @@
 -- 1-to-1 matching RPC for GET /api/orders/get_all
 -- =============================================
 
+-- Drop obsolete 4-parameter overload if it exists to avoid PostgREST ambiguity error
+DROP FUNCTION IF EXISTS orders_get_all(VARCHAR(50), INTEGER, INTEGER, VARCHAR(255));
+
 CREATE OR REPLACE FUNCTION orders_get_all(
     p_status VARCHAR(50) DEFAULT NULL,
     p_limit INTEGER DEFAULT 50,
@@ -69,31 +72,5 @@ BEGIN
         fo.updated_at,
         fo.total_count
     FROM filtered_orders fo;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- 4-parameter backward-compatibility wrapper for existing callers
-CREATE OR REPLACE FUNCTION orders_get_all(
-    p_status VARCHAR(50),
-    p_limit INTEGER,
-    p_offset INTEGER,
-    p_search VARCHAR(255)
-)
-RETURNS TABLE (
-    id UUID,
-    customer_name VARCHAR(255),
-    contact_number VARCHAR(20),
-    customer_email VARCHAR(255),
-    order_type VARCHAR(20),
-    items JSONB,
-    total_amount DECIMAL(10, 2),
-    status VARCHAR(50),
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ,
-    total_count BIGINT
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT * FROM orders_get_all(p_status, p_limit, p_offset, p_search, NULL, NULL);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
