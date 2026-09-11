@@ -32,37 +32,7 @@ router.get('/inventory/inventory_get_sales_history/:id', async (req, res) => {
         if (endDate) rpcParams.p_end_date = endDate;
 
         // Call database RPC function
-        let { data, error } = await supabase.rpc('inventory_get_sales_history', rpcParams);
-
-        // Fallback if RPC signature in database hasn't been updated with date parameters yet
-        if (error && (startDate || endDate)) {
-            console.warn('RPC with date params failed, falling back to 3-param RPC:', error.message);
-            const fallbackResult = await supabase.rpc('inventory_get_sales_history', {
-                p_item_id: id,
-                p_limit: 1000,
-                p_offset: 0
-            });
-            if (!fallbackResult.error && fallbackResult.data && fallbackResult.data.sales) {
-                let sales = fallbackResult.data.sales;
-                if (startDate) {
-                    const s = new Date(startDate);
-                    sales = sales.filter(item => new Date(item.sale_date) >= s);
-                }
-                if (endDate) {
-                    const e = new Date(endDate);
-                    sales = sales.filter(item => new Date(item.sale_date) <= e);
-                }
-                const total = sales.length;
-                const paginatedSales = sales.slice(offset, offset + limit);
-                return res.json({
-                    success: true,
-                    sales: paginatedSales,
-                    total: total,
-                    limit: limit,
-                    offset: offset
-                });
-            }
-        }
+        const { data, error } = await supabase.rpc('inventory_get_sales_history', rpcParams);
 
         if (error) {
             console.error('RPC Error:', error);
