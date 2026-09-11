@@ -143,7 +143,7 @@ app.use('/', staffPosRoutes);
 app.use('/', staffOrdersRoutes);
 
 // For local development
-if (!process.env.VERCEL) {
+if (require.main === module) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
@@ -155,5 +155,5 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
-// Export for Vercel
+// Shared Express app for local development and Netlify Functions.
 module.exports = app;

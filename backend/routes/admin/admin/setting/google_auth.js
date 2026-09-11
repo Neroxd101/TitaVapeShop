@@ -11,7 +11,7 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 router.use('/auth/google', isAuthenticated, hasRole(['admin']));
 
 // Helper function to get the correct redirect URI
-// For web apps deployed on Vercel, construct from request headers
+// For web apps deployed on Netlify, construct from request headers
 // Desktop OAuth type doesn't support HTTPS redirects, so use Web Application type instead
 function getRedirectUri(req) {
   // If explicit redirect URI is set (useful for production)
@@ -24,9 +24,9 @@ function getRedirectUri(req) {
   if (process.env.GOOGLE_REDIRECT_URI_BASE) {
     baseUrl = process.env.GOOGLE_REDIRECT_URI_BASE;
   } else {
-    // Check for forwarded protocol (Vercel sets X-Forwarded-Proto to 'https')
+    // Check for forwarded protocol (hosting proxies forward the original protocol)
     const protocol = req.get('x-forwarded-proto') || req.protocol;
-    // Use X-Forwarded-Host if available (Vercel sets this), otherwise fall back to Host header
+    // Use X-Forwarded-Host if available (when provided by the hosting proxy), otherwise fall back to Host header
     const host = req.get('x-forwarded-host') || req.get('host');
     baseUrl = `${protocol}://${host}`;
   }

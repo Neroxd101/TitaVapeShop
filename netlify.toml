@@ -1,0 +1,18 @@
+[build]
+  publish = "frontend"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  # Preserve module paths used by Express sendFile and static middleware.
+  node_bundler = "zisi"
+  included_files = ["frontend/**"]
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/app/:splat"
+  status = 200
+  # Keep page routing and authentication in Express, including directory URLs.
+  force = true
