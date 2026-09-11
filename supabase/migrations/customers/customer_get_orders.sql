@@ -17,7 +17,7 @@ RETURNS TABLE (
     status VARCHAR(50),
     created_at TIMESTAMPTZ,
     items JSONB,
-    items_count BIGINT
+    items_count NUMERIC
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -32,9 +32,9 @@ BEGIN
         o.created_at,
         o.items,
         COALESCE((
-            SELECT SUM((i->>'quantity')::BIGINT)
+            SELECT SUM((i->>'quantity')::NUMERIC)
             FROM jsonb_array_elements(o.items) AS i
-        ), 0::BIGINT) AS items_count
+        ), 0::NUMERIC) AS items_count
     FROM public.orders o
     WHERE o.customer_id = p_customer_id
     ORDER BY o.created_at DESC
