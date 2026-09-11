@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const { supabase } = require('../../../../database/supabase');
+const { supabase, supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
+
+const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * GET /api/user/profile/info
@@ -105,7 +107,6 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
     // Verify current password if provided (for UX validation before sending OTP)
     const { current_password } = req.body || {};
     if (current_password) {
-      const { supabaseAdmin } = require('../../../../database/supabase');
       if (!supabaseAdmin) {
         return res.status(500).json({ success: false, error: 'Database admin connection not configured' });
       }
@@ -115,7 +116,7 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
         .from('users')
         .select('password')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (userError || !userData) {
         console.error('Error fetching user password for verification:', userError);
@@ -295,7 +296,6 @@ router.post('/api/user/profile/update-password', isAuthenticated, hasRole(['admi
         return res.status(400).json({ success: false, error: 'Current password is required to verify identity' });
       }
 
-      const { supabaseAdmin } = require('../../../../database/supabase');
       if (!supabaseAdmin) {
         return res.status(500).json({ success: false, error: 'Database admin connection not configured' });
       }
@@ -305,7 +305,7 @@ router.post('/api/user/profile/update-password', isAuthenticated, hasRole(['admi
         .from('users')
         .select('password')
         .eq('id', adminUserId)
-        .single();
+        .maybeSingle();
 
       if (userError || !userData) {
         console.error('Error fetching user password for verification:', userError);

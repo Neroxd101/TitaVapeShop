@@ -40,25 +40,24 @@ router.post('/api/customer/login', async (req, res) => {
       return res.status(401).json({ success: false, error: 'Invalid email or password.' });
     }
 
-    // If account is not verified, require verification
+    // If account is not verified, generate OTP via RPC and prompt verification
     if (!customer.is_verified) {
-      const otpCode = generateCode();
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-      await client.from('customer_verification_codes').insert({
-        customer_id: customer.id,
-        email: cleanEmail,
-        otp_code: otpCode,
-        expires_at: expiresAt,
-        verified: false
-      });
-
       try {
-        await sendMail(
-          cleanEmail,
-          'Verify Your Email - Tita\'s Vape Shop',
-          generateVerificationEmail(otpCode, customer.full_name)
-        );
-      } catch (e) {}
+        const { data: otpResult } = await client.rpc('customer_generate_otp', {
+          p_email: cleanEmail,
+          p_customer_id: customer.id
+        });
+
+        if (otpResult && otpResult.success && otpResult.otp_code) {
+          await sendMail(
+            cleanEmail,
+            'Verify Your Email - Tita\'s Vape Shop',
+            generateVerificationEmail(otpResult.otp_code, customer.full_name || 'Customer')
+          );
+        }
+      } catch (e) {
+        console.error('[Customer Login] OTP dispatch error:', e);
+      }
 
       return res.status(403).json({
         success: false,
@@ -116,7 +115,7 @@ router.get('/api/customer/me', async (req, res) => {
       .from('customers')
       .select('id, email, full_name, contact_number, birthday')
       .eq('id', decoded.id)
-      .single();
+      .maybeSingle();
 
     if (error || !customer) {
       return res.json({

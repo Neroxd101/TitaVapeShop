@@ -39,7 +39,7 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
         // Fetch product images from database to display in the email
         const client = supabaseAdmin || supabase;
         try {
-            const productIds = orderData.items.map(item => item.id).filter(id => id);
+            const productIds = (orderData.items || []).map(item => item.id).filter(Boolean);
             if (productIds.length > 0 && client) {
                 const { data: dbItems } = await client
                     .from('inventory')
@@ -55,10 +55,8 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
                         } else if (typeof dbItem.images === 'string') {
                             try {
                                 const parsed = JSON.parse(dbItem.images);
-                                if (Array.isArray(parsed) && parsed.length > 0) {
-                                    firstImg = parsed[0];
-                                }
-                            } catch (e) {}
+                                if (Array.isArray(parsed) && parsed.length > 0) firstImg = parsed[0];
+                            } catch (_) {}
                         }
                         imageMap[dbItem.id] = firstImg;
                     });

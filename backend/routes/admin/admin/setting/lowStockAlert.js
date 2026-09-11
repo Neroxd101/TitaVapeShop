@@ -24,25 +24,19 @@ async function checkAndSendLowStockAlerts(itemsToCheck) {
     let recipientEmail = process.env.SMTP_USER;
 
     try {
-      const { data: settings, error: settingsError } = await supabaseAdmin
+      const { data: settings } = await supabaseAdmin
         .from('settings')
         .select('key, value');
 
-      if (settingsError) {
-        console.warn('[Low Stock Alert] Could not read settings table (migration may not be run yet). Using default settings.');
-      } else if (settings) {
-        const thresholdSetting = settings.find(s => s.key === 'low_stock_threshold');
-        const enabledSetting = settings.find(s => s.key === 'low_stock_notifications_enabled');
-        const emailSetting = settings.find(s => s.key === 'low_stock_notification_email');
-
-        if (thresholdSetting && thresholdSetting.value !== null) {
-          threshold = parseInt(thresholdSetting.value, 10);
-        }
-        if (enabledSetting && enabledSetting.value !== null) {
-          notificationsEnabled = enabledSetting.value === true || enabledSetting.value === 'true';
-        }
-        if (emailSetting && emailSetting.value !== null && emailSetting.value !== '') {
-          recipientEmail = String(emailSetting.value);
+      if (settings) {
+        for (const s of settings) {
+          if (s.key === 'low_stock_threshold' && s.value !== null) {
+            threshold = parseInt(s.value, 10) || 10;
+          } else if (s.key === 'low_stock_notifications_enabled' && s.value !== null) {
+            notificationsEnabled = s.value === true || s.value === 'true';
+          } else if (s.key === 'low_stock_notification_email' && s.value) {
+            recipientEmail = String(s.value).trim();
+          }
         }
       }
     } catch (dbErr) {
@@ -60,18 +54,14 @@ async function checkAndSendLowStockAlerts(itemsToCheck) {
     }
 
     // Step 2: Query the current stock level for the items (including images)
-    const ids = itemsToCheck.map(item => item.id);
+    const ids = itemsToCheck.map(item => item.id).filter(Boolean);
     const { data: dbItems, error: dbError } = await supabaseAdmin
       .from('inventory')
       .select('id, name, category, quantity, images')
       .in('id', ids);
 
-    if (dbError) {
-      console.error('[Low Stock Alert] Error querying inventory for alert check:', dbError);
-      return;
-    }
-
-    if (!dbItems || dbItems.length === 0) {
+    if (dbError || !dbItems || dbItems.length === 0) {
+      if (dbError) console.error('[Low Stock Alert] Error querying inventory for alert check:', dbError);
       return;
     }
 
@@ -85,26 +75,17 @@ async function checkAndSendLowStockAlerts(itemsToCheck) {
       const newQty = dbItem.quantity;
       const oldQty = newQty + deducted;
 
-      // Alert triggers when:
-      // 1. If deducted is specified: it just crossed the threshold (oldQty > threshold && newQty <= threshold)
-      // 2. If deducted is not specified (e.g. manual reset): current quantity is below threshold (newQty <= threshold)
       const crossedThreshold = deducted > 0 ? (oldQty > threshold && newQty <= threshold) : (newQty <= threshold);
 
       if (crossedThreshold) {
-        // Parse and extract the first product image URL
         let firstImageUrl = null;
-        const images = dbItem.images;
-        if (Array.isArray(images) && images.length > 0) {
-          firstImageUrl = images[0];
-        } else if (typeof images === 'string') {
+        if (Array.isArray(dbItem.images) && dbItem.images.length > 0) {
+          firstImageUrl = dbItem.images[0];
+        } else if (typeof dbItem.images === 'string') {
           try {
-            const parsed = JSON.parse(images);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              firstImageUrl = parsed[0];
-            }
-          } catch (e) {
-            // ignore JSON parse errors
-          }
+            const parsed = JSON.parse(dbItem.images);
+            if (Array.isArray(parsed) && parsed.length > 0) firstImageUrl = parsed[0];
+          } catch (_) {}
         }
 
         lowStockAlerts.push({

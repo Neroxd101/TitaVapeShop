@@ -107,13 +107,13 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       });
     }
 
-    // 4. Execute customer_create_order RPC
+    // 4. Execute customer_create_order RPC (1-to-1)
     const { data: rpcData, error: rpcError } = await client.rpc('customer_create_order', {
       p_customer_id: dbCustomer.id,
       p_customer_name: finalName,
       p_contact_number: finalContact,
       p_items: items,
-      p_total_amount: total_amount,
+      p_total_amount: Number(total_amount),
       p_order_type: order_type || 'pickup',
       p_customer_email: finalEmail
     });
@@ -123,9 +123,9 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       return res.status(400).json({ success: false, error: rpcError.message || 'Failed to create order' });
     }
 
-    const order = Array.isArray(rpcData) && rpcData.length > 0 ? rpcData[0] : rpcData;
-    if (!order) {
-      return res.status(400).json({ success: false, error: 'Failed to create order' });
+    const order = Array.isArray(rpcData) ? (rpcData[0] || null) : rpcData;
+    if (!order || !order.id) {
+      return res.status(400).json({ success: false, error: 'Failed to create order. Please try again.' });
     }
 
     const appBaseUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');
