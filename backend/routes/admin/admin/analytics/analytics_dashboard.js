@@ -4,8 +4,7 @@
  * ============================================
  * 
  * GET /api/analytics/dashboard
- * Gets all analytics data by calling separate RPC functions and combining results
- * This endpoint combines all individual metrics into one response
+ * Gets all analytics data by calling separate RPC functions in parallel and combining results
  */
 
 const express = require('express');
@@ -29,33 +28,18 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
         // STEP 1: Call all separate RPC functions in parallel
         // ========================================
         const [
-            totalRevenueResult,
+            totalProfitResult,
             totalOrdersResult,
             itemsSoldResult,
-            avgBasketResult,
+            grossSalesResult,
             revenueTrendResult,
             topProductsResult,
             categoryStatsResult
         ] = await Promise.all([
-            supabase.rpc('analytics_total_profit', rpcParams).then(res => {
-                if (res.error && res.error.message && res.error.message.includes('analytics_total_profit')) {
-                    return supabase.rpc('analytics_total_revenue', rpcParams);
-                }
-                return res;
-            }),
-            supabase.rpc('analytics_total_orders', rpcParams).then(res => {
-                if (res.error && res.error.message && res.error.message.includes('analytics_total_orders')) {
-                    return supabase.rpc('analytics_total_sales', rpcParams);
-                }
-                return res;
-            }),
+            supabase.rpc('analytics_total_profit', rpcParams),
+            supabase.rpc('analytics_total_orders', rpcParams),
             supabase.rpc('analytics_items_sold', rpcParams),
-            supabase.rpc('analytics_gross_sales', rpcParams).then(res => {
-                if (res.error && res.error.message && res.error.message.includes('analytics_gross_sales')) {
-                    return supabase.rpc('analytics_avg_basket', rpcParams);
-                }
-                return res;
-            }),
+            supabase.rpc('analytics_gross_sales', rpcParams),
             supabase.rpc('analytics_revenue_trend', rpcParams),
             supabase.rpc('analytics_top_products', rpcParams),
             supabase.rpc('analytics_category_stats', rpcParams)
@@ -65,10 +49,10 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
         // STEP 2: Check for errors in any of the RPC calls
         // ========================================
         const rpcResults = [
-            { name: 'analytics_total_profit', result: totalRevenueResult },
+            { name: 'analytics_total_profit', result: totalProfitResult },
             { name: 'analytics_total_orders', result: totalOrdersResult },
             { name: 'analytics_items_sold', result: itemsSoldResult },
-            { name: 'analytics_gross_sales', result: avgBasketResult },
+            { name: 'analytics_gross_sales', result: grossSalesResult },
             { name: 'analytics_revenue_trend', result: revenueTrendResult },
             { name: 'analytics_top_products', result: topProductsResult },
             { name: 'analytics_category_stats', result: categoryStatsResult }
@@ -89,18 +73,17 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
             return res.status(400).json({
                 success: false,
                 error: 'Failed to fetch analytics data',
-                details: errorMessages,
-                message: `The following RPC functions failed: ${failedRPCs.map(rpc => rpc.name).join(', ')}. Please ensure all migration files have been run in Supabase.`
+                details: errorMessages
             });
         }
 
         // ========================================
         // STEP 3: Extract data from each result
         // ========================================
-        const totalRevenue = totalRevenueResult.data ?? 0;
+        const totalProfit = totalProfitResult.data ?? 0;
         const ordersCount = totalOrdersResult.data ?? 0;
         const itemsSold = itemsSoldResult.data ?? 0;
-        const grossSales = avgBasketResult.data ?? 0;
+        const grossSales = grossSalesResult.data ?? 0;
         const dailyRevenue = revenueTrendResult.data ?? [];
         const topProducts = topProductsResult.data ?? [];
         const categoryStats = categoryStatsResult.data ?? {};
@@ -111,8 +94,8 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
         const response = {
             success: true,
             report: {
-                totalRevenue: totalRevenue,
-                totalProfit: totalRevenue,
+                totalRevenue: totalProfit,
+                totalProfit: totalProfit,
                 totalOrders: ordersCount,
                 ordersCount: ordersCount,
                 salesCount: ordersCount,
@@ -134,7 +117,7 @@ router.get('/api/analytics/dashboard', isAuthenticated, hasRole(['admin']), asyn
     } catch (error) {
         console.error('Error in analytics dashboard API:', error);
         res.status(500).json({ 
-            success: false,
+            success: false, 
             error: 'Internal server error', 
             details: error.message 
         });

@@ -4,7 +4,7 @@
  * ============================================
  * 
  * GET /api/analytics/total-orders
- * Gets total number of completed order/sale transactions
+ * Gets total number of completed order/sale transactions via analytics_total_orders RPC
  */
 
 const express = require('express');
@@ -24,21 +24,18 @@ const getTotalOrdersHandler = async (req, res) => {
             p_end_date: req.query.end_date || null
         };
 
-        // Call RPC function with fallback if analytics_total_orders isn't created yet in DB
-        let result = await supabase.rpc('analytics_total_orders', rpcParams);
-        if (result.error && result.error.message && result.error.message.includes('analytics_total_orders')) {
-            result = await supabase.rpc('analytics_total_sales', rpcParams);
-        }
+        // Call RPC function
+        const { data, error } = await supabase.rpc('analytics_total_orders', rpcParams);
 
-        if (result.error) {
-            console.error('RPC Error in total orders API:', result.error);
+        if (error) {
+            console.error('RPC Error in total orders API:', error);
             return res.status(400).json({
                 success: false,
-                error: result.error.message || 'Failed to fetch total orders'
+                error: error.message || 'Failed to fetch total orders'
             });
         }
 
-        const count = result.data ?? 0;
+        const count = data ?? 0;
 
         res.json({
             success: true,

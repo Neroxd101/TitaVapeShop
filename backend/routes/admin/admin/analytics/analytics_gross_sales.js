@@ -5,7 +5,7 @@
  * 
  * GET /api/analytics/gross-sales
  * GET /api/analytics/avg-basket (alias)
- * Gets total gross sales from all completed sales
+ * Gets total gross sales from all completed sales via analytics_gross_sales RPC
  */
 
 const express = require('express');
@@ -25,21 +25,18 @@ const getGrossSalesHandler = async (req, res) => {
             p_end_date: req.query.end_date || null
         };
 
-        // Call RPC function with fallback if analytics_gross_sales isn't created yet in DB
-        let result = await supabase.rpc('analytics_gross_sales', rpcParams);
-        if (result.error && result.error.message && result.error.message.includes('analytics_gross_sales')) {
-            result = await supabase.rpc('analytics_avg_basket', rpcParams);
-        }
+        // Call RPC function
+        const { data, error } = await supabase.rpc('analytics_gross_sales', rpcParams);
 
-        if (result.error) {
-            console.error('RPC Error in gross sales API:', result.error);
+        if (error) {
+            console.error('RPC Error in gross sales API:', error);
             return res.status(400).json({
                 success: false,
-                error: result.error.message || 'Failed to fetch gross sales'
+                error: error.message || 'Failed to fetch gross sales'
             });
         }
 
-        const grossSales = result.data ?? 0;
+        const grossSales = data ?? 0;
 
         res.json({
             success: true,
