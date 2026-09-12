@@ -55,7 +55,7 @@ BEGIN
         FALSE
     );
 
-    RETURN QUERY SELECT TRUE, v_customer.id, v_customer.full_name, NULL::TEXT;
+    RETURN QUERY SELECT TRUE, v_customer.id, v_customer.full_name::VARCHAR(255), NULL::TEXT;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
