@@ -3,8 +3,6 @@
  * Sends email notifications for order status updates
  */
 
-const express = require('express');
-const router = express.Router();
 const nodemailer = require('nodemailer');
 const { supabase, supabaseAdmin } = require('../../../../database/supabase');
 
@@ -521,4 +519,4 @@ function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
-module.exports = { sendOrderEmail, router };
+module.exports = { sendOrderEmail };

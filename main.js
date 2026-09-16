@@ -73,6 +73,7 @@ const analyticsCategoryStatsRoutes = require('./backend/routes/admin/admin/analy
 const ordersControllerRoutes = require('./backend/routes/admin/admin/orders/orders_controller');
 const ordersGetAllRoutes = require('./backend/routes/admin/admin/orders/orders_get_all');
 const ordersUpdateStatusRoutes = require('./backend/routes/admin/admin/orders/orders_update_status');
+const ordersVoidRoutes = require('./backend/routes/admin/admin/orders/orders_void');
 
 // Staff routes
 const staffPosRoutes = require('./backend/routes/admin/staff/pos/serve_pos');
@@ -114,6 +115,7 @@ app.use('/', adminLoginRoutes);
 app.use('/', ordersControllerRoutes);
 app.use('/', ordersGetAllRoutes);
 app.use('/', ordersUpdateStatusRoutes);
+app.use('/', ordersVoidRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', inventoryLoadRoutes);
 app.use('/', inventoryCreateRoutes);
