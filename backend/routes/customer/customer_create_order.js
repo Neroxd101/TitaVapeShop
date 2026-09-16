@@ -51,7 +51,7 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       });
     }
 
-    const { customer_name, contact_number, customer_email, order_type, items, total_amount, delivery_address } = req.body;
+    const { customer_name, contact_number, customer_email, order_type, items, total_amount } = req.body;
 
     const finalEmail = dbCustomer.email || customer_email;
     const finalName = customer_name || dbCustomer.full_name;

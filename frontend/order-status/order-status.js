@@ -495,15 +495,6 @@
       customerEmailRow.style.display = 'none';
     }
 
-    const deliveryAddressRow = document.getElementById('deliveryAddressRow');
-    const custAddressText = document.getElementById('custAddressText');
-    if (!isPickup && order.delivery_address) {
-      if (custAddressText) custAddressText.textContent = order.delivery_address;
-      if (deliveryAddressRow) deliveryAddressRow.style.display = 'flex';
-    } else if (deliveryAddressRow) {
-      deliveryAddressRow.style.display = 'none';
-    }
-
     // Items List
     renderItems(order.items, order.total_amount);
   }

@@ -180,7 +180,6 @@ const CatalogCheckoutModal = {
                         contact_number: digitsOnly,
                         customer_email: customerEmail,
                         order_type: orderType,
-                        delivery_address: orderType === 'delivery' ? deliveryAddress : null,
                         items: items,
                         total_amount: totalAmount
                     })
