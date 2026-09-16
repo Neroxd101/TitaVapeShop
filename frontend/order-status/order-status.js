@@ -191,31 +191,6 @@
   let isSubmittingPayment = false;
 
   /**
-   * Upload image to Cloudinary (direct unsigned upload)
-   */
-  async function uploadToCloudinary(file) {
-    const cloudName = 'titavapeshop';
-    const uploadPreset = 'tita_receipt';
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', uploadPreset);
-
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData
-    });
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => null);
-      throw new Error(err?.error?.message || 'Failed to upload receipt image to Cloudinary.');
-    }
-
-    const data = await response.json();
-    return data.secure_url;
-  }
-
-  /**
    * Submit payment proof handler
    */
   async function handlePaymentProofSubmit(e) {
@@ -245,8 +220,11 @@
     submitBtn.textContent = 'Uploading Receipt...';
 
     try {
-      // 1. Upload to Cloudinary
-      const receiptUrl = await uploadToCloudinary(selectedReceiptFile);
+      // 1. Upload to Cloudinary using dedicated CloudinaryService
+      if (!window.CloudinaryService || typeof window.CloudinaryService.uploadReceipt !== 'function') {
+        throw new Error('Cloudinary upload service is unavailable. Please reload the page.');
+      }
+      const receiptUrl = await window.CloudinaryService.uploadReceipt(selectedReceiptFile);
 
       // 2. Submit payment reference & URL to backend
       submitBtn.textContent = 'Submitting Payment Proof...';
