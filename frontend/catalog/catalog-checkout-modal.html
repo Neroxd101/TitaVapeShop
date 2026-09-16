@@ -65,6 +65,16 @@
                     <input type="hidden" id="orderType" name="orderType" value="pickup">
                 </div>
 
+                <!-- Delivery Info Notice (Shown only when Delivery is selected) -->
+                <div class="form-group" id="deliveryAddressGroup" style="display: none;">
+                    <div style="padding: 12px 14px; background: rgba(0, 212, 170, 0.08); border: 1px solid rgba(0, 212, 170, 0.25); border-radius: 8px;">
+                        <strong style="color: var(--accent); display: block; font-size: 13px; margin-bottom: 4px;">🛵 3rd Party Delivery (Grab, Lalamove, etc.)</strong>
+                        <p style="margin: 0; font-size: 12px; color: var(--text-secondary); line-height: 1.4;">
+                            You will book and coordinate the 3rd party courier rider directly. On the next screen, you can pay via <strong>GCash QR code</strong> and submit your payment proof.
+                        </p>
+                    </div>
+                </div>
+
                 <div class="checkout-total">
                     <strong>Total Amount: <span id="checkoutTotal">₱0.00</span></strong>
                 </div>

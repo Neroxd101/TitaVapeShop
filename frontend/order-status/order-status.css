@@ -379,28 +379,196 @@ body {
   color: var(--text-primary);
 }
 
-/* Delivery Card */
-.delivery-card {
-  text-align: center;
-  padding: 32px 24px;
+/* Delivery & GCash Payment Card */
+.delivery-payment-card {
+  padding: 24px 20px;
   margin-bottom: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.delivery-payment-header {
+  text-align: center;
+}
+
+.delivery-badge-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #007dfe;
+  background: rgba(0, 125, 254, 0.12);
+  border: 1px solid rgba(0, 125, 254, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.delivery-payment-card h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.gcash-qr-box {
+  margin: 12px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  max-width: 240px;
+}
+
+.gcash-qr-image {
+  width: 100%;
+  height: auto;
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+
+.gcash-account-info {
+  background: var(--bg-surface, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.account-field-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.account-field-val {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.copy-num-btn {
+  background: rgba(0, 212, 170, 0.12);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  color: var(--accent);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.copy-num-btn:hover {
+  background: var(--accent);
+  color: #0a0a0f;
+}
+
+.total-field {
+  border-top: 1px dashed var(--border);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.payment-divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 16px 0 12px;
+}
+
+.payment-submission-section h4 {
+  font-size: 15px;
+  margin: 0 0 4px;
+}
+
+.receipt-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--bg-surface, rgba(255, 255, 255, 0.02));
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.receipt-dropzone:hover {
+  border-color: var(--accent);
+  background: rgba(0, 212, 170, 0.04);
+}
+
+#dropzoneEmpty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+#dropzoneEmpty small {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+#dropzonePreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+#receiptPreviewImg {
+  max-width: 100%;
+  max-height: 180px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  object-fit: contain;
+}
+
+.payment-success-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 212, 170, 0.1);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.payment-success-badge .success-icon {
+  color: var(--accent);
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.delivery-icon-box {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
+.payment-success-badge strong {
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.view-receipt-link {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
+.view-receipt-link:hover {
+  color: #7dd3fc;
 }
 
 /* Info Card */

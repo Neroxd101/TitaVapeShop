@@ -26,6 +26,10 @@ RETURNS TABLE (
     status VARCHAR(50),
     created_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ,
+    payment_method VARCHAR(50),
+    payment_reference VARCHAR(100),
+    payment_receipt_url TEXT,
+    payment_status VARCHAR(50),
     total_count BIGINT
 ) AS $$
 BEGIN
@@ -42,6 +46,10 @@ BEGIN
             o.status,
             o.created_at,
             o.updated_at,
+            o.payment_method,
+            o.payment_reference,
+            o.payment_receipt_url,
+            COALESCE(o.payment_status, 'unpaid') AS payment_status,
             COUNT(*) OVER() as total_count
         FROM orders o
         WHERE (p_status IS NULL OR o.status = p_status)
@@ -70,6 +78,10 @@ BEGIN
         fo.status,
         fo.created_at,
         fo.updated_at,
+        fo.payment_method,
+        fo.payment_reference,
+        fo.payment_receipt_url,
+        fo.payment_status,
         fo.total_count
     FROM filtered_orders fo;
 END;

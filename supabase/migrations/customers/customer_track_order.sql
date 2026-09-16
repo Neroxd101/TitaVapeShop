@@ -20,7 +20,11 @@ RETURNS TABLE (
     total_amount DECIMAL(10, 2),
     status VARCHAR(50),
     created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ
+    updated_at TIMESTAMPTZ,
+    payment_method VARCHAR(50),
+    payment_reference VARCHAR(100),
+    payment_receipt_url TEXT,
+    payment_status VARCHAR(50)
 ) AS $$
 DECLARE
     v_order RECORD;
@@ -85,7 +89,11 @@ BEGIN
         v_order.total_amount,
         v_order.status,
         v_order.created_at,
-        v_order.updated_at;
+        v_order.updated_at,
+        v_order.payment_method,
+        v_order.payment_reference,
+        v_order.payment_receipt_url,
+        COALESCE(v_order.payment_status, 'unpaid') AS payment_status;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

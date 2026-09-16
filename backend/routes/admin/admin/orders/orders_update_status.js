@@ -14,7 +14,7 @@ router.post('/api/orders/update_status', async (req, res) => {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { order_id, status, reason } = req.body;
+        const { order_id, status, reason, payment_status } = req.body;
         if (status === 'voided' && (typeof reason !== 'string' || !reason.trim() || reason.trim().length > 1000)) {
             return res.status(400).json({ success: false, error: 'A void reason of 1–1000 characters is required.' });
         }
@@ -22,10 +22,42 @@ router.post('/api/orders/update_status', async (req, res) => {
             return res.status(503).json({ success: false, error: 'Order voiding requires the server database service key.' });
         }
 
-        if (!order_id || !status) {
+        if (!order_id) {
             return res.status(400).json({
                 success: false,
-                error: 'order_id and status are required'
+                error: 'order_id is required'
+            });
+        }
+
+        // If only updating payment_status without altering the order status
+        if (!status && payment_status) {
+            const validPaymentStatuses = ['unpaid', 'pending_verification', 'paid', 'rejected'];
+            if (!validPaymentStatuses.includes(payment_status)) {
+                return res.status(400).json({ success: false, error: 'Invalid payment status' });
+            }
+            const db = supabaseAdmin || supabase;
+            const updatePayload = {
+                payment_status,
+                updated_at: new Date().toISOString()
+            };
+
+            const { data: updatedPay, error: payError } = await db
+                .from('orders')
+                .update(updatePayload)
+                .eq('id', order_id)
+                .select()
+                .single();
+
+            if (payError) {
+                return res.status(400).json({ success: false, error: payError.message });
+            }
+            return res.json({ success: true, order: updatedPay });
+        }
+
+        if (!status) {
+            return res.status(400).json({
+                success: false,
+                error: 'status is required'
             });
         }
 
@@ -55,8 +87,20 @@ router.post('/api/orders/update_status', async (req, res) => {
             });
         }
 
+        // If payment_status is also provided, update it as well
+        if (payment_status) {
+            const db = supabaseAdmin || supabase;
+            await db
+                .from('orders')
+                .update({ payment_status, updated_at: new Date().toISOString() })
+                .eq('id', order_id);
+        }
+
         // Get the updated order (RPC returns array)
-        const updatedOrder = Array.isArray(data) && data.length > 0 ? data[0] : data;
+        let updatedOrder = Array.isArray(data) && data.length > 0 ? data[0] : data;
+        if (payment_status && updatedOrder) {
+            updatedOrder = { ...updatedOrder, payment_status };
+        }
 
         // Send email notification if status is confirmed or completed
         if (updatedOrder && (status === 'confirmed' || status === 'completed')) {

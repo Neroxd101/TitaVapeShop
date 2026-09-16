@@ -496,6 +496,10 @@ class OrdersController {
                 orderTypeBadge = '<span class="badge badge-info">Pickup</span>';
             }
 
+            const paymentBadge = orderType === 'delivery' 
+                ? `<div class="payment-badge-wrap" style="margin-top: 4px;">${this.getPaymentBadge(order.payment_status)}</div>`
+                : '';
+
             const contactHtml = order.contact_number 
                 ? `<a href="tel:${this.escapeHtml(order.contact_number)}" class="contact-number"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="contact-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><span>${this.escapeHtml(order.contact_number)}</span></a>`
                 : `<span class="contact-number text-muted">-</span>`;
@@ -512,7 +516,7 @@ class OrdersController {
                         </div>
                     </td>
                     <td class="col-total" data-label="Total"><strong class="total-amount">₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong></td>
-                    <td class="col-type" data-label="Type">${orderTypeBadge}</td>
+                    <td class="col-type" data-label="Type">${orderTypeBadge}${paymentBadge}</td>
                     <td class="col-status" data-label="Status">${statusBadge}</td>
                     <td class="col-date" data-label="Date"><span class="order-date-val">${orderDate}</span></td>
                     <td class="col-actions" data-label="Actions">
@@ -539,6 +543,19 @@ class OrdersController {
                 </tr>
             `;
         }).join('');
+    }
+
+    getPaymentBadge(status) {
+        const normalized = String(status || 'unpaid').toLowerCase();
+        if (normalized === 'paid') {
+            return '<span class="badge badge-success" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px;">💳 Paid</span>';
+        } else if (normalized === 'pending_verification') {
+            return '<span class="badge badge-warning" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Verify GCash</span>';
+        } else if (normalized === 'rejected') {
+            return '<span class="badge badge-danger" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px;">✕ Proof Rejected</span>';
+        } else {
+            return '<span class="badge badge-secondary" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; opacity: 0.85;">Unpaid</span>';
+        }
     }
 
     getItemsSummary(items) {
@@ -902,6 +919,46 @@ class OrdersController {
             showQrCode = true;
         }
 
+        const isDelivery = orderType === 'delivery';
+        const paymentStatus = order.payment_status || 'unpaid';
+
+        let deliveryHtml = '';
+        if (isDelivery) {
+            deliveryHtml = `
+                <div class="order-delivery-payment-section" style="margin-top: 18px; padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0; font-size: 14px; color: var(--accent);">📦 Delivery & GCash Payment Details</h4>
+                        <div>${this.getPaymentBadge(paymentStatus)}</div>
+                    </div>
+                    <div style="font-size: 13px; line-height: 1.6;">
+                        <p style="margin: 4px 0; color: var(--text-secondary);">Customer coordinates 3rd party booking directly with store.</p>
+                        <p style="margin: 4px 0;"><strong>GCash Reference No:</strong> ${order.payment_reference ? `<code style="background: rgba(0,212,170,0.1); color: var(--accent); padding: 2px 6px; border-radius: 4px; font-weight: 600;">${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
+                        ${order.payment_receipt_url ? `
+                            <div style="margin-top: 10px;">
+                                <strong style="display: block; margin-bottom: 6px;">Payment Receipt:</strong>
+                                <a href="${this.escapeHtml(order.payment_receipt_url)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
+                                    <img src="${this.escapeHtml(order.payment_receipt_url)}" alt="Payment Receipt" style="max-width: 140px; max-height: 140px; object-fit: cover; display: block;" />
+                                </a>
+                                <small style="display: block; color: var(--text-secondary); margin-top: 4px;">Click receipt image to view full size</small>
+                            </div>
+                        ` : ''}
+                    </div>
+                    ${paymentStatus === 'pending_verification' || paymentStatus === 'unpaid' || paymentStatus === 'rejected' ? `
+                        <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            <button class="btn btn-small btn-success" onclick="OrdersController.verifyPayment('${order.id}', 'paid')">
+                                ✓ Mark Payment as Paid
+                            </button>
+                            ${paymentStatus === 'pending_verification' ? `
+                                <button class="btn btn-small btn-danger" onclick="OrdersController.verifyPayment('${order.id}', 'rejected')">
+                                    ✕ Reject Payment Proof
+                                </button>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
         content.innerHTML = `
             <div class="order-details">
                 <div class="order-details-header">
@@ -922,7 +979,8 @@ class OrdersController {
                     </div>
                     ` : ''}
                 </div>
-                <div class="order-items-section">
+                ${deliveryHtml}
+                <div class="order-items-section" style="margin-top: 18px;">
                     <h4>Order Items</h4>
                     <div class="order-items-list">
                         ${itemsHtml}
@@ -983,6 +1041,42 @@ class OrdersController {
         }
     }
 
+    async verifyPayment(orderId, paymentStatus) {
+        try {
+            const confirmed = confirm(paymentStatus === 'paid' 
+                ? 'Confirm that payment has been received for this order?' 
+                : 'Mark this order payment as unpaid?');
+            if (!confirmed) return;
+
+            const response = await fetch('/api/orders/update_status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    order_id: orderId,
+                    payment_status: paymentStatus
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                // Update local order data
+                const existing = this.state.orders.find(o => o.id === orderId);
+                if (existing) {
+                    existing.payment_status = paymentStatus;
+                }
+                this.renderOrders();
+                // Refresh modal details
+                this.viewOrder(orderId);
+            } else {
+                alert('Failed to update payment status: ' + (result.error || 'Unknown error'));
+            }
+        } catch (err) {
+            console.error('Error updating payment status:', err);
+            alert('Error updating payment status. Please try again.');
+        }
+    }
+
     setLoading(loading) {
         this.state.loading = loading;
         // You can add loading indicator here if needed
@@ -1010,6 +1104,12 @@ class OrdersController {
 OrdersController.viewOrder = function(orderId) {
     if (window.ordersController) {
         window.ordersController.viewOrder(orderId);
+    }
+};
+
+OrdersController.verifyPayment = function(orderId, status) {
+    if (window.ordersController) {
+        window.ordersController.verifyPayment(orderId, status);
     }
 };
 

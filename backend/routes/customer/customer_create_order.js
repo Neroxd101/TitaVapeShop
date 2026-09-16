@@ -51,7 +51,7 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       });
     }
 
-    const { customer_name, contact_number, customer_email, order_type, items, total_amount } = req.body;
+    const { customer_name, contact_number, customer_email, order_type, items, total_amount, delivery_address } = req.body;
 
     const finalEmail = dbCustomer.email || customer_email;
     const finalName = customer_name || dbCustomer.full_name;
@@ -126,6 +126,20 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
     const order = Array.isArray(rpcData) ? (rpcData[0] || null) : rpcData;
     if (!order || !order.id) {
       return res.status(400).json({ success: false, error: 'Failed to create order. Please try again.' });
+    }
+
+    // If delivery order, initialize GCash payment info
+    if (order_type === 'delivery') {
+      try {
+        await client.from('orders').update({
+          payment_method: 'gcash',
+          payment_status: 'unpaid'
+        }).eq('id', order.id);
+        order.payment_method = 'gcash';
+        order.payment_status = 'unpaid';
+      } catch (payErr) {
+        console.warn('[Customer Create Order] Payment init warning:', payErr);
+      }
     }
 
     const appBaseUrl = (process.env.APP_URL || 'http://localhost:3000').replace(/\/$/, '');

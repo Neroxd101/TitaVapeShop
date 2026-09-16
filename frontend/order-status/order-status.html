@@ -200,19 +200,123 @@
             </div>
           </div>
 
-          <!-- Delivery Notice Card -->
-          <div class="status-card delivery-card" id="deliveryNoticeCard" style="display: none;">
-            <div class="delivery-icon-box">
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
-                <path
-                  d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-2 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-              </svg>
+          <!-- Delivery Notice & GCash Payment Card -->
+          <div class="status-card delivery-payment-card" id="deliveryNoticeCard" style="display: none;">
+            <div class="delivery-payment-header">
+              <span class="delivery-badge-tag">DELIVERY PAYMENT (GCASH / INSTAPAY)</span>
+              <h3>Scan & Pay via GCash</h3>
+              <p class="text-secondary" style="margin: 4px 0 16px; font-size: 13px;">
+                Scan the QR code with GCash or any InstaPay-supported banking app to complete your payment.
+              </p>
             </div>
-            <h3>Third-Party Delivery</h3>
-            <p class="text-secondary" style="margin-top: 8px; line-height: 1.6;">
-              Our team will contact you via your contact number to finalize rider dispatch and shipping
-              fee arrangements.
-            </p>
+
+            <!-- GCash QR Display -->
+            <div class="gcash-qr-box">
+              <img src="/qr/qr_gcash.jpg" alt="GCash QR Code" class="gcash-qr-image" id="gcashQrImg">
+            </div>
+
+            <!-- GCash Account Details with 1-Click Copy -->
+            <div class="gcash-account-info">
+              <div class="account-field">
+                <span class="account-field-label">Account Name</span>
+                <div class="account-field-val">
+                  <strong id="gcashAccountName">RY*N CH********R S.</strong>
+                </div>
+              </div>
+              <div class="account-field">
+                <span class="account-field-label">Account Number (InstaPay)</span>
+                <div class="account-field-val">
+                  <strong id="gcashAccountNum">0938 066 9484</strong>
+                  <button type="button" class="copy-num-btn" id="copyGcashNumBtn" title="Copy Number">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                      <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+              </div>
+              <div class="account-field total-field">
+                <span class="account-field-label">Amount to Pay</span>
+                <div class="account-field-val">
+                  <strong class="text-accent" id="deliveryPayAmount">₱0.00</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Proof Submission Form -->
+            <div class="payment-submission-section" id="paymentSubmissionSection">
+              <hr class="payment-divider">
+              <h4>Submit Proof of Payment</h4>
+              <p class="text-secondary" style="font-size: 12px; margin-bottom: 12px;">
+                After sending your payment, enter your Reference Number and upload a screenshot of your receipt.
+              </p>
+
+              <!-- State: Rejected Payment Alert -->
+              <div id="paymentRejectedNotice" class="alert alert-error" style="display: none; margin-bottom: 16px; border-radius: 10px; padding: 14px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="flex-shrink: 0; margin-top: 1px;">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                  </svg>
+                  <div>
+                    <strong style="display: block; font-size: 14px; margin-bottom: 3px; color: #ef4444;">Payment Proof Rejected</strong>
+                    <p style="margin: 0; font-size: 12.5px; line-height: 1.4; color: #fca5a5;">
+                      Your previous payment proof could not be verified by the store staff. Please verify that the amount is correct, then enter your new Reference Number and upload a valid receipt screenshot below.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- State: Already submitted / Verified -->
+              <div id="paymentSubmittedNotice" class="payment-success-badge" style="display: none;">
+                <div class="success-icon" id="paymentStatusIcon">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                </div>
+                <div>
+                  <strong id="paymentStatusHeading">Payment Proof Submitted</strong>
+                  <p style="margin: 2px 0 0; font-size: 12px;" id="paymentStatusSub">Reference: <code id="submittedRefNumber">-</code></p>
+                  <a href="#" target="_blank" id="viewSubmittedReceiptLink" class="view-receipt-link" style="display: inline-block; margin-top: 6px; font-size: 12px;">View Uploaded Receipt ↗</a>
+                </div>
+              </div>
+
+              <!-- State: Upload Form -->
+              <form id="paymentProofForm" class="payment-form">
+                <div class="form-group">
+                  <label for="gcashRefInput">GCash / Bank Reference Number <span class="required" style="color: #f87171;">*</span></label>
+                  <input type="text" id="gcashRefInput" placeholder="e.g. 1002 9384 1029" required maxlength="50" class="form-control" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                  <label for="receiptFileInput">Upload Screenshot of Receipt <span class="required" style="color: #f87171;">*</span></label>
+                  <input type="file" id="receiptFileInput" accept="image/*" required class="form-control-file" style="display: none;">
+                  
+                  <div class="receipt-dropzone" id="receiptDropzone">
+                    <div id="dropzoneEmpty">
+                      <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 8px;">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                      <p><strong>Click to Choose Receipt Image</strong></p>
+                      <small>PNG, JPG, or WebP</small>
+                    </div>
+                    <div id="dropzonePreview" style="display: none;">
+                      <img id="receiptPreviewImg" src="" alt="Receipt preview">
+                      <button type="button" id="changeReceiptBtn" class="btn btn-secondary btn-small">Change</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="alert alert-error" id="paymentProofError" style="display: none;">
+                  <span id="paymentProofErrorText">Failed to upload receipt</span>
+                </div>
+
+                <button type="submit" id="submitPaymentProofBtn" class="btn btn-primary btn-full">
+                  Submit Payment Proof
+                </button>
+              </form>
+            </div>
           </div>
 
         </div>
@@ -234,6 +338,10 @@
               <div class="info-item" id="customerEmailRow">
                 <span class="info-label">Email</span>
                 <span class="info-val" id="custEmailText">-</span>
+              </div>
+              <div class="info-item" id="deliveryAddressRow" style="display: none;">
+                <span class="info-label">Delivery Address</span>
+                <span class="info-val" id="custAddressText" style="text-align: right; max-width: 60%; word-break: break-word;">-</span>
               </div>
             </div>
           </div>

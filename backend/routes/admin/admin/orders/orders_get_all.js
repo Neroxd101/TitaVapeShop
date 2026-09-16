@@ -48,6 +48,30 @@ router.get('/api/orders/get_all', async (req, res) => {
         const orders = data || [];
         const total = orders.length > 0 ? parseInt(orders[0].total_count) || 0 : 0;
 
+        // Enrich orders with payment fields if not present in legacy RPC output
+        if (orders.length > 0 && orders[0].payment_status === undefined) {
+            const orderIds = orders.map(o => o.id);
+            const { data: payDetails } = await client
+                .from('orders')
+                .select('id, payment_method, payment_reference, payment_receipt_url, payment_status')
+                .in('id', orderIds);
+
+            if (payDetails && payDetails.length > 0) {
+                const payMap = new Map(payDetails.map(p => [p.id, p]));
+                orders.forEach(o => {
+                    const extra = payMap.get(o.id);
+                    if (extra) {
+                        o.payment_method = extra.payment_method;
+                        o.payment_reference = extra.payment_reference;
+                        o.payment_receipt_url = extra.payment_receipt_url;
+                        o.payment_status = extra.payment_status || 'unpaid';
+                    } else {
+                        o.payment_status = 'unpaid';
+                    }
+                });
+            }
+        }
+
         res.json({
             success: true,
             orders: orders,

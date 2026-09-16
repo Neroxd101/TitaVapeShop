@@ -81,6 +81,7 @@ const CatalogCheckoutModal = {
         const pickupCard = document.getElementById('orderTypePickupCard');
         const deliveryCard = document.getElementById('orderTypeDeliveryCard');
         const orderTypeInput = document.getElementById('orderType');
+        const deliveryAddressGroup = document.getElementById('deliveryAddressGroup');
 
         if (pickupCard && deliveryCard && orderTypeInput) {
             pickupCard.addEventListener('click', () => {
@@ -89,6 +90,7 @@ const CatalogCheckoutModal = {
                 const radio = pickupCard.querySelector('input[type="radio"]');
                 if (radio) radio.checked = true;
                 orderTypeInput.value = 'pickup';
+                if (deliveryAddressGroup) deliveryAddressGroup.style.display = 'none';
             });
             deliveryCard.addEventListener('click', () => {
                 deliveryCard.classList.add('active');
@@ -96,6 +98,9 @@ const CatalogCheckoutModal = {
                 const radio = deliveryCard.querySelector('input[type="radio"]');
                 if (radio) radio.checked = true;
                 orderTypeInput.value = 'delivery';
+                if (deliveryAddressGroup) {
+                    deliveryAddressGroup.style.display = 'block';
+                }
             });
         }
     },
@@ -175,6 +180,7 @@ const CatalogCheckoutModal = {
                         contact_number: digitsOnly,
                         customer_email: customerEmail,
                         order_type: orderType,
+                        delivery_address: orderType === 'delivery' ? deliveryAddress : null,
                         items: items,
                         total_amount: totalAmount
                     })

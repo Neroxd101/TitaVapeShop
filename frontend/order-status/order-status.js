@@ -102,6 +102,72 @@
       });
     }
 
+    // GCash Account Number 1-Click Copy
+    const copyGcashNumBtn = document.getElementById('copyGcashNumBtn');
+    if (copyGcashNumBtn) {
+      copyGcashNumBtn.addEventListener('click', () => {
+        const num = '09380669484';
+        navigator.clipboard.writeText(num).then(() => {
+          const originalHTML = copyGcashNumBtn.innerHTML;
+          copyGcashNumBtn.innerHTML = '<span>Copied!</span>';
+          copyGcashNumBtn.style.background = 'var(--accent)';
+          copyGcashNumBtn.style.color = '#0a0a0f';
+          setTimeout(() => {
+            copyGcashNumBtn.innerHTML = originalHTML;
+            copyGcashNumBtn.style.background = '';
+            copyGcashNumBtn.style.color = '';
+          }, 2000);
+        });
+      });
+    }
+
+    // Receipt File Pick & Preview
+    const receiptFileInput = document.getElementById('receiptFileInput');
+    const receiptDropzone = document.getElementById('receiptDropzone');
+    const dropzoneEmpty = document.getElementById('dropzoneEmpty');
+    const dropzonePreview = document.getElementById('dropzonePreview');
+    const receiptPreviewImg = document.getElementById('receiptPreviewImg');
+    const changeReceiptBtn = document.getElementById('changeReceiptBtn');
+
+    if (receiptDropzone && receiptFileInput) {
+      receiptDropzone.addEventListener('click', () => {
+        if (!selectedReceiptFile) {
+          receiptFileInput.click();
+        }
+      });
+
+      if (changeReceiptBtn) {
+        changeReceiptBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          receiptFileInput.click();
+        });
+      }
+
+      receiptFileInput.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          if (!file.type.startsWith('image/')) {
+            alert('Please select an image file (PNG, JPG, or WebP).');
+            return;
+          }
+          selectedReceiptFile = file;
+          const reader = new FileReader();
+          reader.onload = (re) => {
+            receiptPreviewImg.src = re.target.result;
+            dropzoneEmpty.style.display = 'none';
+            dropzonePreview.style.display = 'flex';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Submit Payment Proof Form
+    const paymentProofForm = document.getElementById('paymentProofForm');
+    if (paymentProofForm) {
+      paymentProofForm.addEventListener('submit', handlePaymentProofSubmit);
+    }
+
     if (verifyPhoneForm) {
       verifyPhoneForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -119,6 +185,102 @@
       });
     }
 
+  }
+
+  let selectedReceiptFile = null;
+  let isSubmittingPayment = false;
+
+  /**
+   * Upload image to Cloudinary (direct unsigned upload)
+   */
+  async function uploadToCloudinary(file) {
+    const cloudName = 'titavapeshop';
+    const uploadPreset = 'tita_receipt';
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.error?.message || 'Failed to upload receipt image to Cloudinary.');
+    }
+
+    const data = await response.json();
+    return data.secure_url;
+  }
+
+  /**
+   * Submit payment proof handler
+   */
+  async function handlePaymentProofSubmit(e) {
+    e.preventDefault();
+    if (isSubmittingPayment || !currentOrder?.id) return;
+
+    const refInput = document.getElementById('gcashRefInput');
+    const errorBox = document.getElementById('paymentProofError');
+    const errorText = document.getElementById('paymentProofErrorText');
+    const submitBtn = document.getElementById('submitPaymentProofBtn');
+
+    const reference = refInput?.value?.trim();
+    if (!reference) {
+      alert('Please enter your GCash / Bank reference number.');
+      refInput?.focus();
+      return;
+    }
+
+    if (!selectedReceiptFile) {
+      alert('Please upload a screenshot of your receipt.');
+      return;
+    }
+
+    isSubmittingPayment = true;
+    errorBox.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Uploading Receipt...';
+
+    try {
+      // 1. Upload to Cloudinary
+      const receiptUrl = await uploadToCloudinary(selectedReceiptFile);
+
+      // 2. Submit payment reference & URL to backend
+      submitBtn.textContent = 'Submitting Payment Proof...';
+      const response = await fetch('/api/customer/orders/submit-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: currentOrder.id,
+          reference: reference,
+          receipt_url: receiptUrl,
+          phone: currentOrder.contact_number
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to record payment proof. Please try again.');
+      }
+
+      // 3. Update currentOrder state & re-render
+      currentOrder.payment_reference = reference;
+      currentOrder.payment_receipt_url = receiptUrl;
+      currentOrder.payment_status = 'pending_verification';
+
+      renderPaymentSection(currentOrder);
+    } catch (err) {
+      console.error('Payment proof error:', err);
+      errorText.textContent = err.message || 'Unable to submit payment proof. Please try again.';
+      errorBox.style.display = 'block';
+    } finally {
+      isSubmittingPayment = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Payment Proof';
+    }
   }
 
   /**
@@ -319,12 +481,12 @@
     } else {
       pickupQrCard.style.display = 'none';
       deliveryNoticeCard.style.display = 'flex';
+      renderPaymentSection(order);
     }
 
     // Customer details
     custNameText.textContent = order.customer_name || 'Guest';
     custPhoneText.textContent = order.contact_number || '-';
-
 
     if (order.customer_email) {
       custEmailText.textContent = order.customer_email;
@@ -333,8 +495,89 @@
       customerEmailRow.style.display = 'none';
     }
 
+    const deliveryAddressRow = document.getElementById('deliveryAddressRow');
+    const custAddressText = document.getElementById('custAddressText');
+    if (!isPickup && order.delivery_address) {
+      if (custAddressText) custAddressText.textContent = order.delivery_address;
+      if (deliveryAddressRow) deliveryAddressRow.style.display = 'flex';
+    } else if (deliveryAddressRow) {
+      deliveryAddressRow.style.display = 'none';
+    }
+
     // Items List
     renderItems(order.items, order.total_amount);
+  }
+
+  /**
+   * Render GCash Delivery Payment Section
+   */
+  function renderPaymentSection(order) {
+    const deliveryPayAmount = document.getElementById('deliveryPayAmount');
+    if (deliveryPayAmount) {
+      deliveryPayAmount.textContent = '₱' + parseFloat(order.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
+    }
+
+    const rejectedNotice = document.getElementById('paymentRejectedNotice');
+    const submittedNotice = document.getElementById('paymentSubmittedNotice');
+    const paymentForm = document.getElementById('paymentProofForm');
+    const submittedRefNumber = document.getElementById('submittedRefNumber');
+    const viewReceiptLink = document.getElementById('viewSubmittedReceiptLink');
+    const paymentStatusHeading = document.getElementById('paymentStatusHeading');
+    const paymentStatusSub = document.getElementById('paymentStatusSub');
+
+    const status = (order.payment_status || 'unpaid').toLowerCase();
+
+    if (status === 'rejected') {
+      // Payment proof was rejected: Show rejection message & show form so customer can re-upload
+      if (rejectedNotice) rejectedNotice.style.display = 'block';
+      if (submittedNotice) submittedNotice.style.display = 'none';
+      if (paymentForm) {
+        paymentForm.style.display = 'block';
+        // Clear previous input values so customer enters new details
+        const refInput = document.getElementById('gcashRefInput');
+        if (refInput) refInput.value = '';
+        const receiptInput = document.getElementById('receiptFileInput');
+        if (receiptInput) receiptInput.value = '';
+        const dropzoneEmpty = document.getElementById('dropzoneEmpty');
+        const dropzonePreview = document.getElementById('dropzonePreview');
+        if (dropzoneEmpty && dropzonePreview) {
+          dropzoneEmpty.style.display = 'block';
+          dropzonePreview.style.display = 'none';
+        }
+      }
+    } else if (status === 'paid' || status === 'pending_verification') {
+      if (rejectedNotice) rejectedNotice.style.display = 'none';
+      if (submittedNotice) submittedNotice.style.display = 'flex';
+      if (paymentForm) paymentForm.style.display = 'none';
+
+      if (status === 'paid') {
+        if (paymentStatusHeading) {
+          paymentStatusHeading.textContent = 'Payment Verified & Confirmed';
+          paymentStatusHeading.style.color = 'var(--accent)';
+        }
+        if (paymentStatusSub) paymentStatusSub.innerHTML = `Reference: <code>${order.payment_reference || 'Confirmed'}</code>`;
+      } else {
+        if (paymentStatusHeading) {
+          paymentStatusHeading.textContent = 'Payment Proof Submitted';
+          paymentStatusHeading.style.color = '#38bdf8';
+        }
+        if (paymentStatusSub) paymentStatusSub.innerHTML = `Reference: <code>${order.payment_reference || 'Under Verification'}</code><br><span style="color: #9ca3af; font-size: 11px;">Store staff is verifying your payment.</span>`;
+      }
+
+      if (viewReceiptLink) {
+        if (order.payment_receipt_url) {
+          viewReceiptLink.href = order.payment_receipt_url;
+          viewReceiptLink.style.display = 'inline-block';
+        } else {
+          viewReceiptLink.style.display = 'none';
+        }
+      }
+    } else {
+      // Unpaid or initial state
+      if (rejectedNotice) rejectedNotice.style.display = 'none';
+      if (submittedNotice) submittedNotice.style.display = 'none';
+      if (paymentForm) paymentForm.style.display = 'block';
+    }
   }
 
   /**

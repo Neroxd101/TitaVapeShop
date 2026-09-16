@@ -18,6 +18,8 @@ function setupMiddleware(app) {
 
   // Serve static files from frontend folder
   app.use(express.static(path.join(__dirname, '../../frontend')));
+  // Serve static QR code assets
+  app.use('/qr', express.static(path.join(__dirname, '../../qr')));
 }
 
 module.exports = setupMiddleware;
