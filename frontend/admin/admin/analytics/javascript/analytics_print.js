@@ -40,13 +40,8 @@ const AnalyticsPrint = {
             day: 'numeric'
         });
 
-        // Get time range label
-        const timeRangeLabels = {
-            '7days': 'Last 7 Days',
-            '30days': 'Last 30 Days',
-            '90days': 'Last 90 Days'
-        };
-        const timeRangeLabel = timeRangeLabels[controller.state.timeRange] || 'Last 7 Days';
+        const range = controller.state.reportRange;
+        const timeRangeLabel = range ? `${range.from} to ${range.to}` : '';
 
         // Build print HTML
         let printHTML = `

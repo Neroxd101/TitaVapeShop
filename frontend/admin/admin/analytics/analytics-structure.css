@@ -3,6 +3,90 @@
    Only truly analytics-specific styles
    ============================================= */
 
+.analytics-date-range {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.analytics-date-field {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+
+.analytics-date-display {
+  display: none;
+}
+
+.analytics-date-range input {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 44px;
+  min-height: 0;
+  color-scheme: dark;
+  overflow: hidden;
+}
+
+.analytics-date-range input::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .analytics-date-range {
+    width: 100%;
+  }
+
+  /* Render the visible value independently of Safari's native date text. */
+  .analytics-date-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 1px;
+    border-radius: 9px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 10px;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .analytics-date-range input.chart-select {
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .analytics-date-range input::-webkit-date-and-time-value {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+  }
+
+  .analytics-date-range input::-webkit-datetime-edit {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .analytics-date-range input::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+}
+
 /* Analytics container - extends page-content */
 .analytics-container {
   max-width: 1400px;
@@ -10,7 +94,7 @@
   animation: fadeUp 0.5s ease-out;
 }
 
-/* Analytics header: print action on its own full row */
+/* Analytics header: date range and print action share one row. */
 .analytics-container .page-header {
   display: flex;
   flex-wrap: wrap;
@@ -19,12 +103,17 @@
 }
 
 .analytics-container .page-header .header-right {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
   flex: 1 1 100%;
   margin-left: 0;
 }
 
 .analytics-container .page-header .header-right .btn {
-  width: 100%;
+  width: auto;
   height: 44px;
   background: linear-gradient(135deg, var(--accent), #00b894);
   border-color: transparent;
@@ -37,12 +126,14 @@
 }
 
 @media (max-width: 1024px) {
+  .analytics-date-range input.chart-select,
   .analytics-container .page-header .header-right .btn {
     height: 40px;
   }
 }
 
 @media (max-width: 768px) {
+  .analytics-date-range input.chart-select,
   .analytics-container .page-header .header-right .btn {
     height: 36px;
   }
@@ -332,6 +423,21 @@
 
 /* Compact analytics header action button on small screens */
 @media (max-width: 480px) {
+  .analytics-container .page-header .header-right {
+    gap: 6px;
+  }
+
+  .analytics-date-range {
+    gap: 4px;
+    font-size: 10px;
+  }
+
+  .analytics-date-range input.chart-select {
+    padding: 4px 2px;
+    font-size: 10px;
+    height: 32px;
+  }
+
   .analytics-container .page-header .header-right .btn {
     height: 32px;
     padding: 6px 10px !important;
@@ -368,6 +474,10 @@
 }
 
 @media (max-width: 360px) {
+  .analytics-date-range input.chart-select {
+    height: 30px;
+  }
+
   .analytics-container .page-header .header-right .btn {
     height: 30px;
     padding: 5px 8px !important;

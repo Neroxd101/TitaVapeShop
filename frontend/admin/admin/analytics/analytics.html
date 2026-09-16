@@ -51,6 +51,18 @@
                 <h1>Analytics</h1>
                 <p class="subtitle">Shop's performance and growth</p>
                 <div class="header-right">
+                    <div class="analytics-date-range">
+                        <label for="analyticsDateFrom">From</label>
+                        <span class="analytics-date-field">
+                            <input type="date" id="analyticsDateFrom" class="chart-select" required>
+                            <span class="analytics-date-display" aria-hidden="true">mm/dd/yyyy</span>
+                        </span>
+                        <label for="analyticsDateTo">To</label>
+                        <span class="analytics-date-field">
+                            <input type="date" id="analyticsDateTo" class="chart-select" required>
+                            <span class="analytics-date-display" aria-hidden="true">mm/dd/yyyy</span>
+                        </span>
+                    </div>
                     <button id="printAnalyticsBtn" class="btn btn-secondary">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                             <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
@@ -124,13 +136,6 @@
                 <div class="card-wrapper chart-card main-chart">
                     <div class="chart-header">
                         <h3>Sales Trend</h3>
-                        <div class="chart-controls">
-                            <select id="timeRange" class="chart-select">
-                                <option value="7days">Last 7 Days</option>
-                                <option value="30days">Last 30 Days</option>
-                                <option value="90days">Last 90 Days</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="chart-body">
                         <canvas id="revenueChart"></canvas>

@@ -5,8 +5,14 @@
 
 class AnalyticsController {
     constructor() {
+        const end = new Date();
+        const start = new Date(end);
+        start.setDate(start.getDate() - 6);
+        const dateValue = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         this.state = {
-            timeRange: '7days',
+            dateFrom: dateValue(start),
+            dateTo: dateValue(end),
+            reportRange: null,
             stats: null,
             report: null
         };
@@ -33,26 +39,48 @@ class AnalyticsController {
     }
 
     setupEventListeners() {
-        const timeRangeSelect = document.getElementById('timeRange');
-        if (timeRangeSelect) {
-            timeRangeSelect.addEventListener('change', (e) => {
-                this.state.timeRange = e.target.value;
-                this.loadDashboardData();
+        const from = document.getElementById('analyticsDateFrom');
+        const to = document.getElementById('analyticsDateTo');
+        from.value = this.state.dateFrom;
+        to.value = this.state.dateTo;
+        const syncDateDisplays = () => {
+            [from, to].forEach(input => {
+                const [year, month, day] = input.value.split('-');
+                input.nextElementSibling.textContent = input.value ? `${month}/${day}/${year}` : 'mm/dd/yyyy';
             });
-        }
+        };
+        syncDateDisplays();
+        from.addEventListener('input', syncDateDisplays);
+        to.addEventListener('input', syncDateDisplays);
+        from.max = to.value;
+        to.min = from.value;
+        const updateDates = () => {
+            syncDateDisplays();
+            from.max = to.value;
+            to.min = from.value;
+            if (!from.reportValidity() || !to.reportValidity()) return;
+            this.state.dateFrom = from.value;
+            this.state.dateTo = to.value;
+            this.loadDashboardData();
+        };
+        from.addEventListener('change', updateDates);
+        to.addEventListener('change', updateDates);
     }
 
     async loadDashboardData() {
+        const requestId = this.requestId = (this.requestId || 0) + 1;
         try {
-            // Calculate date range based on selection
-            const dateRange = this.getDateRange(this.state.timeRange);
+            const reportRange = { from: this.state.dateFrom, to: this.state.dateTo };
+            const dateRange = this.getDateRange();
 
             // Fetch all analytics data from the unified Edge Function
             const response = await AnalyticsFetcher.getDashboard(dateRange);
+            if (requestId !== this.requestId) return;
 
             if (response.success) {
                 const data = response.report;
                 this.state.report = data;
+                this.state.reportRange = reportRange;
 
                 // Render everything using separate modules
                 if (window.AnalyticsStats) {
@@ -84,20 +112,11 @@ class AnalyticsController {
         }
     }
 
-    getDateRange(range) {
-        const end = new Date();
-        const start = new Date();
-
-        switch (range) {
-            case '7days': start.setDate(end.getDate() - 7); break;
-            case '30days': start.setDate(end.getDate() - 30); break;
-            case '90days': start.setDate(end.getDate() - 90); break;
-            default: start.setDate(end.getDate() - 7);
-        }
-
+    getDateRange() {
+        // RPCs add one day to the end boundary, so send local midnight for both dates.
         return {
-            start_date: start.toISOString(),
-            end_date: end.toISOString()
+            start_date: new Date(`${this.state.dateFrom}T00:00:00`).toISOString(),
+            end_date: new Date(`${this.state.dateTo}T00:00:00`).toISOString()
         };
     }
 
