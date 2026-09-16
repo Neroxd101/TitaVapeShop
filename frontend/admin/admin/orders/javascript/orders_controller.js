@@ -548,13 +548,13 @@ class OrdersController {
     getPaymentBadge(status) {
         const normalized = String(status || 'unpaid').toLowerCase();
         if (normalized === 'paid') {
-            return '<span class="badge badge-success" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px;">💳 Paid</span>';
+            return '<span class="badge badge-success" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; border: none;">💳 Paid</span>';
         } else if (normalized === 'pending_verification') {
-            return '<span class="badge badge-warning" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">⏳ Verify GCash</span>';
+            return '<span class="badge badge-warning" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: none;">⏳ Verify GCash</span>';
         } else if (normalized === 'rejected') {
-            return '<span class="badge badge-danger" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px;">✕ Proof Rejected</span>';
+            return '<span class="badge badge-danger" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; border: none;">✕ Proof Rejected</span>';
         } else {
-            return '<span class="badge badge-secondary" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; opacity: 0.85;">Unpaid</span>';
+            return '<span class="badge badge-secondary" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; opacity: 0.85; border: none;">Unpaid</span>';
         }
     }
 
@@ -922,75 +922,92 @@ class OrdersController {
         const isDelivery = orderType === 'delivery';
         const paymentStatus = order.payment_status || 'unpaid';
 
-        let deliveryHtml = '';
         if (isDelivery) {
-            deliveryHtml = `
-                <div class="order-delivery-payment-section" style="margin-top: 18px; padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="margin: 0; font-size: 14px; color: var(--accent);">📦 Delivery & GCash Payment Details</h4>
-                        <div>${this.getPaymentBadge(paymentStatus)}</div>
-                    </div>
-                    <div style="font-size: 13px; line-height: 1.6;">
-                        <p style="margin: 4px 0; color: var(--text-secondary);">Customer coordinates 3rd party booking directly with store.</p>
-                        <p style="margin: 4px 0;"><strong>GCash Reference No:</strong> ${order.payment_reference ? `<code style="background: rgba(0,212,170,0.1); color: var(--accent); padding: 2px 6px; border-radius: 4px; font-weight: 600;">${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
-                        ${order.payment_receipt_url ? `
-                            <div style="margin-top: 10px;">
-                                <strong style="display: block; margin-bottom: 6px;">Payment Receipt:</strong>
-                                <a href="${this.escapeHtml(order.payment_receipt_url)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; border-radius: 8px; overflow: hidden; border: 1px solid var(--border);">
-                                    <img src="${this.escapeHtml(order.payment_receipt_url)}" alt="Payment Receipt" style="max-width: 140px; max-height: 140px; object-fit: cover; display: block;" />
-                                </a>
-                                <small style="display: block; color: var(--text-secondary); margin-top: 4px;">Click receipt image to view full size</small>
+            const hasReceipt = Boolean(order.payment_receipt_url);
+            content.innerHTML = `
+                <div class="order-details">
+                    <div class="order-details-delivery-header ${hasReceipt ? '' : 'no-receipt'}">
+                        <div class="order-details-info-combined">
+                            <div class="order-details-info order-details-info-col">
+                                <h4>Order Information</h4>
+                                <p><strong>Order ID:</strong> <code>${order.id}</code></p>
+                                <p><strong>Customer:</strong> ${this.escapeHtml(order.customer_name)}</p>
+                                <p><strong>Contact:</strong> ${this.escapeHtml(order.contact_number)}</p>
+                                <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
+                                <p><strong>Status:</strong> ${this.getStatusBadge(order.status)}</p>
+                                <p><strong>Date:</strong> ${this.formatDate(order.created_at)}</p>
                             </div>
+                            <div class="order-details-info order-details-info-col">
+                                <h4>Payment Information</h4>
+                                <p><strong>Payment Method:</strong> GCash / InstaPay</p>
+                                <p><strong>Payment Status:</strong> ${this.getPaymentBadge(paymentStatus)}</p>
+                                <p><strong>Reference No:</strong> ${order.payment_reference ? `<code>${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
+                                ${paymentStatus === 'pending_verification' || paymentStatus === 'unpaid' || paymentStatus === 'rejected' ? `
+                                    <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <button class="btn btn-small btn-success" onclick="OrdersController.verifyPayment('${order.id}', 'paid')">
+                                            ✓ Mark Paid
+                                        </button>
+                                        ${paymentStatus === 'pending_verification' ? `
+                                            <button class="btn btn-small btn-danger" onclick="OrdersController.verifyPayment('${order.id}', 'rejected')">
+                                                ✕ Reject Proof
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        ${hasReceipt ? `
+                        <div class="order-details-receipt-col">
+                            <h4 style="margin: 0 0 16px 0; font-size: 18px; color: var(--text-primary);">Receipt Proof</h4>
+                            <a href="${this.escapeHtml(order.payment_receipt_url)}" target="_blank" rel="noopener noreferrer" class="receipt-proof-link">
+                                <img src="${this.escapeHtml(order.payment_receipt_url)}" alt="Payment Receipt" class="receipt-proof-img" />
+                            </a>
+                            <small class="receipt-proof-hint">Click to view full receipt ↗</small>
+                        </div>
                         ` : ''}
                     </div>
-                    ${paymentStatus === 'pending_verification' || paymentStatus === 'unpaid' || paymentStatus === 'rejected' ? `
-                        <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                            <button class="btn btn-small btn-success" onclick="OrdersController.verifyPayment('${order.id}', 'paid')">
-                                ✓ Mark Payment as Paid
-                            </button>
-                            ${paymentStatus === 'pending_verification' ? `
-                                <button class="btn btn-small btn-danger" onclick="OrdersController.verifyPayment('${order.id}', 'rejected')">
-                                    ✕ Reject Payment Proof
-                                </button>
-                            ` : ''}
+                    <div class="order-items-section" style="margin-top: 24px;">
+                        <h4>Order Items</h4>
+                        <div class="order-items-list">
+                            ${itemsHtml}
                         </div>
-                    ` : ''}
+                        <div class="order-total-section">
+                            <strong>Total: ₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            content.innerHTML = `
+                <div class="order-details">
+                    <div class="order-details-header">
+                        <div class="order-details-info">
+                            <h4>Order Information</h4>
+                            <p><strong>Order ID:</strong> <code>${order.id}</code></p>
+                            <p><strong>Customer:</strong> ${this.escapeHtml(order.customer_name)}</p>
+                            <p><strong>Contact:</strong> ${this.escapeHtml(order.contact_number)}</p>
+                            <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
+                            <p><strong>Status:</strong> ${this.getStatusBadge(order.status)}</p>
+                            <p><strong>Date:</strong> ${this.formatDate(order.created_at)}</p>
+                        </div>
+                        <div class="order-qr-section">
+                            <h4>Order QR Code</h4>
+                            <div id="orderQrCodeDisplay" class="qr-code-display"></div>
+                            <p class="qr-hint">Customer can show this QR code</p>
+                        </div>
+                    </div>
+                    <div class="order-items-section">
+                        <h4>Order Items</h4>
+                        <div class="order-items-list">
+                            ${itemsHtml}
+                        </div>
+                        <div class="order-total-section">
+                            <strong>Total: ₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                        </div>
+                    </div>
                 </div>
             `;
         }
-
-        content.innerHTML = `
-            <div class="order-details">
-                <div class="order-details-header">
-                    <div class="order-details-info">
-                        <h4>Order Information</h4>
-                        <p><strong>Order ID:</strong> <code>${order.id}</code></p>
-                        <p><strong>Customer:</strong> ${this.escapeHtml(order.customer_name)}</p>
-                        <p><strong>Contact:</strong> ${this.escapeHtml(order.contact_number)}</p>
-                        <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
-                        <p><strong>Status:</strong> ${this.getStatusBadge(order.status)}</p>
-                        <p><strong>Date:</strong> ${this.formatDate(order.created_at)}</p>
-                    </div>
-                    ${showQrCode ? `
-                    <div class="order-qr-section">
-                        <h4>Order QR Code</h4>
-                        <div id="orderQrCodeDisplay" class="qr-code-display"></div>
-                        <p class="qr-hint">Customer can show this QR code</p>
-                    </div>
-                    ` : ''}
-                </div>
-                ${deliveryHtml}
-                <div class="order-items-section" style="margin-top: 18px;">
-                    <h4>Order Items</h4>
-                    <div class="order-items-list">
-                        ${itemsHtml}
-                    </div>
-                    <div class="order-total-section">
-                        <strong>Total: ₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                    </div>
-                </div>
-            </div>
-        `;
 
         // Generate QR code only for pickup orders
         if (showQrCode) {

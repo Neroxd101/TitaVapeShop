@@ -942,3 +942,196 @@
   display: block;
 }
 
+/* Order Details Modal Responsive Grid (Desktop 3 cols, Tablet 2 cols, Mobile 1 col) */
+.order-details-delivery-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 260px;
+  gap: 28px;
+  align-items: start;
+}
+
+.order-details-delivery-header.no-receipt {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* On desktop, allow order-details-info-combined to expose its children as direct grid items (3 columns) */
+.order-details-delivery-header .order-details-info-combined {
+  display: contents;
+}
+
+.order-details-info-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-details-receipt-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.receipt-proof-link {
+  display: inline-block;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.receipt-proof-link:hover {
+  transform: translateY(-2px);
+}
+
+.receipt-proof-img {
+  width: 100%;
+  max-width: 230px;
+  max-height: 250px;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: block;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  cursor: zoom-in;
+}
+
+.receipt-proof-hint {
+  color: var(--text-secondary);
+  display: block;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/* Tablet (max-width: 1024px) - 2 Columns:
+   Col 1: Order Info & Payment Info in same column (stacked)
+   Col 2: Receipt Proof with generous size
+*/
+@media (max-width: 1024px) {
+  .order-details-delivery-header {
+    grid-template-columns: 1fr 340px !important;
+    gap: 28px !important;
+    align-items: start;
+  }
+
+  .order-details-delivery-header.no-receipt {
+    grid-template-columns: 1fr !important;
+  }
+
+  .order-details-delivery-header .order-details-info-combined {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+
+  .receipt-proof-img {
+    max-width: 320px !important;
+    max-height: 380px !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .order-details-receipt-col h4 {
+    font-size: 19px !important;
+    margin-bottom: 14px !important;
+  }
+}
+
+/* Mobile (max-width: 640px) - 1 Column stacked */
+@media (max-width: 640px) {
+  .order-details-delivery-header {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .receipt-proof-img {
+    max-width: 240px !important;
+    max-height: 300px !important;
+  }
+}
+
+/* Order Item Row: Keep Item Info, Qty, Price, and Subtotal in 1 row on tablet & smaller screens */
+.order-item-row {
+  display: grid !important;
+  grid-template-columns: minmax(130px, 2fr) auto auto auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+
+.order-item-qty,
+.order-item-price,
+.order-item-subtotal {
+  white-space: nowrap !important;
+  text-align: right !important;
+}
+
+@media (max-width: 768px) {
+  .order-item-row {
+    grid-template-columns: minmax(110px, 1.8fr) auto auto auto !important;
+    gap: 10px !important;
+    padding: 10px 8px !important;
+  }
+
+  .order-item-info strong {
+    font-size: 13px !important;
+  }
+
+  .order-item-category {
+    font-size: 11px !important;
+  }
+
+  .order-item-qty,
+  .order-item-price,
+  .order-item-subtotal {
+    font-size: 12.5px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-item-row {
+    grid-template-columns: minmax(90px, 1.5fr) auto auto auto !important;
+    gap: 8px !important;
+    padding: 8px 6px !important;
+  }
+
+  .order-item-info strong {
+    font-size: 12px !important;
+  }
+
+  .order-item-category {
+    font-size: 10px !important;
+  }
+
+  .order-item-qty,
+  .order-item-price,
+  .order-item-subtotal {
+    font-size: 11.5px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .order-item-row {
+    grid-template-columns: minmax(75px, 1.2fr) auto auto auto !important;
+    gap: 6px !important;
+    padding: 6px 4px !important;
+  }
+
+  .order-item-info strong {
+    font-size: 11px !important;
+  }
+
+  .order-item-category {
+    display: none !important;
+  }
+
+  .order-item-qty,
+  .order-item-price,
+  .order-item-subtotal {
+    font-size: 11px !important;
+  }
+}
+
+
+

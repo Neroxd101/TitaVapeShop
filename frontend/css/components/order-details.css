@@ -240,16 +240,18 @@
   }
 
   .order-item-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 10px;
+    grid-template-columns: 1fr auto auto auto !important;
+    gap: 12px !important;
+    padding: 10px !important;
+    align-items: center !important;
   }
 
   .order-item-qty,
   .order-item-price,
   .order-item-subtotal {
-    text-align: left;
-    font-size: 13px;
+    text-align: right !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
   }
 
   .order-total-section {
