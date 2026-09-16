@@ -167,10 +167,14 @@ const AnalyticsDetails = {
 
     renderRows() {
         this.body.replaceChildren();
+        const headers = this.currentView ? this.currentView.headers : [];
         for (const values of this.rows.slice(this.page * 25, (this.page + 1) * 25)) {
             const row = document.createElement('tr');
-            values.forEach(value => {
+            values.forEach((value, idx) => {
                 const cell = document.createElement('td');
+                if (headers[idx]) {
+                    cell.setAttribute('data-label', headers[idx]);
+                }
                 cell.textContent = value;
                 row.appendChild(cell);
             });

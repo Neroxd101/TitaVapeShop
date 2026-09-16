@@ -68,7 +68,6 @@
 #analyticsDetailsModal table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 620px;
 }
 
 #analyticsDetailsModal th,
@@ -105,13 +104,116 @@
   display: none !important;
 }
 
-@media (max-width: 480px) {
+/* Mobile & Tablet Responsive View for Stat Card Modals */
+@media (max-width: 680px) {
   #analyticsDetailsModal {
-    padding: 14px;
+    width: calc(100% - 16px);
+    max-height: calc(100dvh - 20px);
+    padding: 16px 12px;
+    border-radius: 12px;
   }
 
   .analytics-details-header h2 {
-    font-size: 17px;
+    font-size: 18px;
+  }
+
+  .analytics-details-actions {
+    gap: 6px;
+  }
+
+  .analytics-details-actions .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  #analyticsDetailsTotal {
+    font-size: 19px;
+  }
+
+  /* Transform table rows into stacked cards on mobile so no horizontal scroll is needed */
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) thead {
+    display: none;
+  }
+
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) table,
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) tbody,
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) tr,
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) td {
+    display: block;
+    width: 100%;
+  }
+
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) tr {
+    background: var(--bg-surface, rgba(255, 255, 255, 0.03));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+    text-align: right;
+    font-size: 12.5px;
+  }
+
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) td:last-child {
+    border-bottom: none;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  #analyticsDetailsModal:not(:has(.analytics-details-products)) td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+  }
+
+  /* Two-column product breakdown tables (Profit / Units Sold) */
+  #analyticsDetailsModal .analytics-details-products table {
+    table-layout: auto;
+    width: 100%;
+  }
+
+  #analyticsDetailsModal .analytics-details-products th,
+  #analyticsDetailsModal .analytics-details-products td {
+    padding: 9px 6px;
+    font-size: 12px;
+  }
+
+  #analyticsDetailsModal .analytics-details-products th:first-child,
+  #analyticsDetailsModal .analytics-details-products td:first-child {
+    max-width: 60%;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  #analyticsDetailsModal {
+    padding: 14px 10px;
+  }
+
+  .analytics-details-header h2 {
+    font-size: 16px;
+  }
+
+  #analyticsDetailsPager {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #analyticsDetailsPager button {
+    width: 100%;
   }
 }
 
