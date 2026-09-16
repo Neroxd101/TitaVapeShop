@@ -53,6 +53,17 @@ BEGIN
         END IF;
     END IF;
 
+    -- Check if reference number has already been used by another active order
+    IF EXISTS (
+        SELECT 1 FROM public.orders 
+        WHERE LOWER(TRIM(payment_reference)) = LOWER(TRIM(p_reference))
+          AND id != p_order_id
+          AND status NOT IN ('cancelled', 'voided')
+          AND payment_status NOT IN ('rejected')
+    ) THEN
+        RAISE EXCEPTION 'This reference number has already been used for another order. Please enter a valid reference number.';
+    END IF;
+
     UPDATE public.orders
     SET
         payment_reference = TRIM(p_reference),

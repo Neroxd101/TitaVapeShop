@@ -33,7 +33,7 @@ router.get(['/api/customer/orders/track', '/api/orders/track'], async (req, res)
     if (req.cookies?.customer_token && JWT_SECRET) {
       try {
         customerPayload = jwt.verify(req.cookies.customer_token, JWT_SECRET);
-      } catch (_) {}
+      } catch (_) { }
     }
 
     const customerId = customerPayload?.id || null;
@@ -106,10 +106,30 @@ router.post(['/api/customer/orders/submit-payment', '/api/orders/submit-payment'
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
+    const cleanRef = reference.trim();
+
+    // Check if this reference number was already used for another active order
+    const { data: existingRefOrder, error: checkRefError } = await client
+      .from('orders')
+      .select('id, payment_status, status')
+      .ilike('payment_reference', cleanRef)
+      .neq('id', order_id)
+      .not('status', 'in', '("cancelled","voided")')
+      .not('payment_status', 'eq', 'rejected')
+      .limit(1)
+      .maybeSingle();
+
+    if (!checkRefError && existingRefOrder) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please enter a valid reference number.'
+      });
+    }
+
     // Try RPC first
     const { data: rpcData, error: rpcError } = await client.rpc('customer_submit_payment_proof', {
       p_order_id: order_id,
-      p_reference: reference.trim(),
+      p_reference: cleanRef,
       p_receipt_url: receipt_url.trim(),
       p_phone: phone ? phone.trim() : null
     });
@@ -118,11 +138,20 @@ router.post(['/api/customer/orders/submit-payment', '/api/orders/submit-payment'
       return res.json({ success: true, ...rpcData });
     }
 
+    // If RPC threw a friendly exception (e.g. duplicate reference or phone mismatch), return it directly
+    if (rpcError && rpcError.message && (
+      rpcError.message.includes('reference number') ||
+      rpcError.message.includes('Contact number') ||
+      rpcError.message.includes('not match')
+    )) {
+      return res.status(400).json({ success: false, error: rpcError.message });
+    }
+
     // Fallback direct update (in case RPC is not yet executed in remote DB)
     const { data: updated, error: updateError } = await client
       .from('orders')
       .update({
-        payment_reference: reference.trim(),
+        payment_reference: cleanRef,
         payment_receipt_url: receipt_url.trim(),
         payment_status: 'pending_verification',
         payment_method: 'gcash',

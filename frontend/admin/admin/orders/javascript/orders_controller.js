@@ -469,7 +469,7 @@ class OrdersController {
         }
 
         listEl.innerHTML = this.state.orders.map(order => {
-            const orderDate = this.formatDate(order.created_at);
+            const dateParts = this.formatDateParts(order.created_at);
             const statusBadge = this.getStatusBadge(order.status);
             const itemsCount = Array.isArray(order.items) ? order.items.length : 0;
             const itemsSummary = this.getItemsSummary(order.items);
@@ -477,14 +477,6 @@ class OrdersController {
             // Display order type based on customer's selection
             // Normalize order_type to lowercase for comparison
             const orderType = order.order_type ? String(order.order_type).toLowerCase().trim() : 'pickup';
-            
-            if (!order.order_type || order.order_type !== 'pickup' && order.order_type !== 'delivery') {
-                console.warn('Order type issue:', {
-                    orderId: order.id,
-                    order_type: order.order_type,
-                    normalized: orderType
-                });
-            }
             
             let orderTypeBadge;
             if (orderType === 'pickup') {
@@ -518,7 +510,13 @@ class OrdersController {
                     <td class="col-total" data-label="Total"><strong class="total-amount">₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong></td>
                     <td class="col-type" data-label="Type">${orderTypeBadge}${paymentBadge}</td>
                     <td class="col-status" data-label="Status">${statusBadge}</td>
-                    <td class="col-date" data-label="Date"><span class="order-date-val">${orderDate}</span></td>
+                    <td class="col-date" data-label="Date">
+                        <div class="order-date-cell">
+                            <span class="order-date-main">${dateParts.date}</span>
+                            ${dateParts.time ? `<span class="order-time-sub">${dateParts.time}</span>` : ''}
+                        </div>
+                        ${paymentBadge ? `<span class="payment-badge-mobile">${this.getPaymentBadge(order.payment_status)}</span>` : ''}
+                    </td>
                     <td class="col-actions" data-label="Actions">
                         <div class="order-actions">
                             ${order.status === 'completed' ? `<button class="btn btn-small btn-danger" onclick="window.ordersController.voidOrder('${order.id}')">Void</button>` : ''}
@@ -550,7 +548,7 @@ class OrdersController {
         if (normalized === 'paid') {
             return '<span class="badge badge-success" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; border: none;">💳 Paid</span>';
         } else if (normalized === 'pending_verification') {
-            return '<span class="badge badge-warning" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: none;">⏳ Verify GCash</span>';
+            return '<span class="badge badge-warning" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: none;">⏳ Verify Payment</span>';
         } else if (normalized === 'rejected') {
             return '<span class="badge badge-danger" style="font-size: 10px; padding: 2px 6px; letter-spacing: 0.3px; border: none;">✕ Proof Rejected</span>';
         } else {
@@ -586,6 +584,15 @@ class OrdersController {
             dateStyle: 'medium',
             timeStyle: 'short'
         });
+    }
+
+    formatDateParts(dateString) {
+        if (!dateString) return { date: '-', time: '' };
+        const d = new Date(dateString);
+        return {
+            date: d.toLocaleDateString('en-PH', { dateStyle: 'medium' }),
+            time: d.toLocaleTimeString('en-PH', { timeStyle: 'short' })
+        };
     }
 
     confirmOrder(orderId) {
