@@ -10,8 +10,33 @@
 
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabase, supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
+const { getSaleDetails } = require('./analytics_sale_details');
+
+router.get('/api/analytics/sale-details', isAuthenticated, hasRole(['admin']), async (req, res) => {
+    const start = new Date(req.query.start_date);
+    const end = new Date(req.query.end_date);
+    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start > end) {
+        return res.status(400).json({ success: false, error: 'Choose a valid date range.' });
+    }
+    // Direct table reads require the server-only service role; the public client
+    // silently returns no rows under RLS. Admin authentication is enforced above.
+    if (!supabaseAdmin) return res.status(503).json({
+        success: false,
+        error: 'Sale details are unavailable: the server administrator must configure SUPABASE_SERVICE_ROLE_KEY.'
+    });
+    // The dashboard RPCs include the entire end day.
+    end.setTime(end.getTime() + 86400000);
+    try {
+        const report = await getSaleDetails(supabaseAdmin, start.toISOString(), end.toISOString());
+        res.set('Cache-Control', 'private, no-store');
+        res.json({ success: true, report });
+    } catch (error) {
+        console.error('Analytics sale details failed:', error);
+        res.status(500).json({ success: false, error: 'Unable to load sale details. Please try again.' });
+    }
+});
 
 const getTotalProfitHandler = async (req, res) => {
     try {

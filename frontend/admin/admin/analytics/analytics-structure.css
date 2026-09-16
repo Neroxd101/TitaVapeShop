@@ -3,6 +3,112 @@
    Only truly analytics-specific styles
    ============================================= */
 
+.analytics-stat-action {
+  cursor: pointer;
+}
+
+.analytics-stat-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+#analyticsDetailsModal {
+  width: min(920px, calc(100% - 24px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  overflow: auto;
+}
+
+#analyticsDetailsModal::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.analytics-details-header,
+#analyticsDetailsPager:not([hidden]) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.analytics-details-header h2 {
+  font-size: 20px;
+}
+
+#analyticsDetailsPeriod,
+.analytics-details-note {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+#analyticsDetailsTotal {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.analytics-details-scroll {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+#analyticsDetailsModal table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+
+#analyticsDetailsModal th,
+#analyticsDetailsModal td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  font-size: 13px;
+}
+
+#analyticsDetailsModal th:nth-child(-n+2),
+#analyticsDetailsModal td:nth-child(-n+2) {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+#analyticsDetailsPager {
+  margin-top: 16px;
+  font-size: 12px;
+}
+
+#analyticsDetailsModal .analytics-details-products table {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+#analyticsDetailsModal .analytics-details-products th:last-child,
+#analyticsDetailsModal .analytics-details-products td:last-child {
+  text-align: right;
+  width: 38%;
+}
+
+#analyticsDetailsModal [hidden] {
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  #analyticsDetailsModal {
+    padding: 14px;
+  }
+
+  .analytics-details-header h2 {
+    font-size: 17px;
+  }
+}
+
 .analytics-date-range {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);

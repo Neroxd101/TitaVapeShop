@@ -32,6 +32,7 @@ class AnalyticsController {
         }
 
         this.setupEventListeners();
+        if (window.AnalyticsDetails) AnalyticsDetails.init(this);
         await this.loadDashboardData();
     }
 
