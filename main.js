@@ -19,6 +19,7 @@ const customerCreateOrderRoutes = require('./backend/routes/customer/customer_cr
 const customerGetOrdersRoutes = require('./backend/routes/customer/customer_get_orders');
 const customerCancelOrderRoutes = require('./backend/routes/customer/customer_cancel_order');
 const customerTrackOrderRoutes = require('./backend/routes/customer/customer_track_order');
+const customerSubmitPaymentProofRoutes = require('./backend/routes/customer/customer_submit_payment_proof');
 const customerResetPasswordRoutes = require('./backend/routes/customer/customer_reset_password');
 const customerChangePasswordRoutes = require('./backend/routes/customer/customer_change_password');
 
@@ -97,6 +98,7 @@ app.use('/', customerCreateOrderRoutes);
 app.use('/', customerGetOrdersRoutes);
 app.use('/', customerCancelOrderRoutes);
 app.use('/', customerTrackOrderRoutes);
+app.use('/', customerSubmitPaymentProofRoutes);
 app.use('/', customerResetPasswordRoutes);
 app.use('/', customerChangePasswordRoutes);
 app.use('/', catalogGetProductsRoutes); // Public product listing

@@ -250,20 +250,28 @@
 
       // 2. Submit payment reference & URL to backend
       submitBtn.textContent = 'Submitting Payment Proof...';
-      const response = await fetch('/api/customer/orders/submit-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          order_id: currentOrder.id,
-          reference: reference,
-          receipt_url: receiptUrl,
-          phone: currentOrder.contact_number
-        })
-      });
+      const paymentPayload = {
+        order_id: currentOrder.id,
+        reference: reference,
+        receipt_url: receiptUrl,
+        phone: currentOrder.contact_number
+      };
 
-      const result = await response.json();
-      if (!response.ok || !result.success) {
-        throw new Error(result.error || 'Failed to record payment proof. Please try again.');
+      let result;
+      if (window.CustomerSubmitPaymentProof) {
+        result = await window.CustomerSubmitPaymentProof.submit(paymentPayload);
+      } else {
+        const response = await fetch('/api/customer/orders/submit-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(paymentPayload)
+        });
+        result = await response.json();
+      }
+
+      if (!result || !result.success) {
+        throw new Error(result?.error || 'Failed to record payment proof. Please try again.');
       }
 
       // 3. Update currentOrder state & re-render
