@@ -339,7 +339,7 @@
     grid-area: filters !important;
     order: 0 !important;
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 8px !important;
     width: 100% !important;
     flex: none !important;
@@ -359,14 +359,26 @@
 
   .orders-date-input {
     min-width: 0;
+    max-width: 100%;
     flex: 1;
     width: 100%;
   }
 
   .orders-date-input input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     height: 36px;
     font-size: 12px;
     padding: 0 6px;
+  }
+
+  .orders-date-input input[type="date"]::-webkit-date-and-time-value {
+    min-width: 0;
   }
 
   .orders-date-input input[data-empty="true"]:not(:focus) {
@@ -387,6 +399,7 @@
     transform: translateY(-50%);
     color: var(--text-secondary);
     font-size: 11px;
+    white-space: nowrap;
     pointer-events: none;
   }
 

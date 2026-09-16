@@ -46,7 +46,7 @@
 }
 
 @media (max-width: 1024px) {
-  .transactions-date-input input[data-empty="true"]:not(:focus) {
+  .transactions-filter-tabs .transactions-date-input input[data-empty="true"]:not(:focus) {
     color: transparent;
   }
 
@@ -64,6 +64,7 @@
     transform: translateY(-50%);
     color: var(--text-secondary);
     font-size: 12px;
+    white-space: nowrap;
     pointer-events: none;
   }
 }
@@ -203,11 +204,25 @@
     box-sizing: border-box;
     padding: 6px;
     display: block;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     flex: none;
     min-height: 30px;
     height: 30px;
     font-size: 14px;
     color: var(--text-secondary);
+  }
+
+  .transactions-date-input {
+    max-width: 100%;
+  }
+
+  .transactions-date-field input::-webkit-date-and-time-value {
+    min-width: 0;
   }
 }
 
