@@ -1,0 +1,594 @@
+/* Mobile Landscape (823x309) - compact catalog */
+@media (width: 823px) and (height: 309px) and (orientation: landscape),
+(min-width: 820px) and (max-width: 826px) and (min-height: 305px) and (max-height: 313px) and (orientation: landscape) {
+
+    /* Navigation - very compact */
+    .nav-container {
+        padding: 4px 6px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 4px !important;
+    }
+
+    .nav-container .logo {
+        position: relative !important;
+        left: auto !important;
+        transform: none !important;
+        margin-right: 0 !important;
+        flex-shrink: 0 !important;
+    }
+
+    .logo-text {
+        font-size: 11px !important;
+    }
+
+    .nav-links {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 3px !important;
+        margin-left: auto !important;
+    }
+
+    .header-hours {
+        padding: 2px 4px !important;
+        font-size: 7px !important;
+        gap: 3px !important;
+    }
+
+    .header-hours span {
+        display: inline !important;
+        font-size: 7px !important;
+    }
+
+    .header-hours svg {
+        width: 8px !important;
+        height: 8px !important;
+    }
+
+    .social-link {
+        padding: 3px 6px !important;
+        font-size: 8px !important;
+        gap: 3px !important;
+    }
+
+    .social-link svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .cart-button {
+        padding: 3px 6px !important;
+        font-size: 8px !important;
+        gap: 3px !important;
+    }
+
+    .cart-button svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .cart-badge {
+        width: 12px !important;
+        height: 12px !important;
+        font-size: 7px !important;
+        top: -2px !important;
+        right: -2px !important;
+    }
+
+    /* Page Header - compact */
+    .page-header {
+        margin-bottom: 8px !important;
+    }
+
+    .page-header h1 {
+        font-size: 16px !important;
+        margin-bottom: 2px !important;
+    }
+
+    .page-header .subtitle {
+        font-size: 9px !important;
+    }
+
+    /* Filter Tabs - compact */
+    .filter-tabs {
+        margin-bottom: 8px !important;
+        gap: 6px !important;
+    }
+
+    .search-box {
+        height: 28px !important;
+    }
+
+    .search-box input {
+        padding: 4px 8px 4px 28px !important;
+        font-size: 10px !important;
+        border-radius: 6px !important;
+    }
+
+    .search-box svg {
+        width: 12px !important;
+        height: 12px !important;
+        left: 8px !important;
+    }
+
+    .filter-tabs-group {
+        gap: 4px !important;
+    }
+
+    .filter-tab {
+        padding: 4px 8px !important;
+        font-size: 9px !important;
+        border-radius: 6px !important;
+        height: 24px !important;
+    }
+
+    /* Product Grid - compact */
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+        padding-bottom: 20px !important;
+    }
+
+    .product-grid .loading-state {
+        min-height: 200px !important;
+        padding: 20px !important;
+    }
+
+    .spinner-large {
+        width: 32px !important;
+        height: 32px !important;
+        border-width: 2px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .loading-state p {
+        font-size: 10px !important;
+    }
+
+    /* Product Cards - compact */
+    .product-card {
+        padding: 6px !important;
+        border-radius: 10px !important;
+    }
+
+    .product-image-container {
+        height: 80px !important;
+        margin-bottom: 4px !important;
+        border-radius: 4px !important;
+    }
+
+    .product-badge {
+        padding: 2px 4px !important;
+        font-size: 7px !important;
+        border-radius: 3px !important;
+        top: 4px !important;
+        right: 4px !important;
+    }
+
+    .card-header {
+        margin-bottom: 2px !important;
+    }
+
+    .card-category {
+        padding: 2px 4px !important;
+        font-size: 7px !important;
+        border-radius: 3px !important;
+    }
+
+    .card-name {
+        font-size: 10px !important;
+        margin-bottom: 4px !important;
+        line-height: 1.3 !important;
+    }
+
+    .card-details {
+        gap: 4px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .detail-label {
+        font-size: 7px !important;
+    }
+
+    .detail-value {
+        font-size: 9px !important;
+    }
+
+    .product-info {
+        padding: 6px !important;
+        gap: 6px !important;
+    }
+
+    .card-name {
+        font-size: 10px !important;
+        margin-bottom: 2px !important;
+    }
+
+    .card-details {
+        gap: 4px !important;
+        margin-bottom: 4px !important;
+        flex-direction: row !important;
+    }
+
+    .detail-label {
+        font-size: 7px !important;
+    }
+
+    .detail-value {
+        font-size: 9px !important;
+    }
+
+    .card-actions {
+        gap: 4px !important;
+        flex-direction: row !important;
+        margin-top: 2px !important;
+    }
+
+    .btn-card {
+        padding: 4px 6px !important;
+        font-size: 8px !important;
+        border-radius: 4px !important;
+        gap: 3px !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+
+    .btn-card svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    /* Modals - compact */
+    .modal-overlay {
+        padding: 4px !important;
+    }
+
+    .modal {
+        max-height: 95vh !important;
+        border-radius: 8px !important;
+    }
+
+    .modal-header {
+        padding: 8px 10px !important;
+    }
+
+    .modal-header h3 {
+        font-size: 14px !important;
+    }
+
+    .modal-close {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .modal-close svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .modal-body {
+        padding: 10px !important;
+    }
+
+    /* Cart Modal - compact */
+    .cart-container {
+        gap: 8px !important;
+    }
+
+    .cart-items {
+        max-height: 40vh !important;
+        gap: 6px !important;
+        padding: 6px !important;
+    }
+
+    .cart-row {
+        padding: 6px !important;
+        gap: 6px !important;
+        border-radius: 6px !important;
+    }
+
+    .cart-name {
+        font-size: 9px !important;
+    }
+
+    .cart-price {
+        font-size: 9px !important;
+    }
+
+    .cart-qty-input {
+        width: 40px !important;
+        height: 24px !important;
+        padding: 2px 4px !important;
+        font-size: 9px !important;
+    }
+
+    .cart-subtotal {
+        font-size: 9px !important;
+    }
+
+    .cart-remove-btn {
+        padding: 2px !important;
+    }
+
+    .cart-remove-btn svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .cart-summary {
+        padding: 8px !important;
+        gap: 6px !important;
+    }
+
+    .cart-total-amount {
+        font-size: 12px !important;
+    }
+
+    .cart-actions {
+        gap: 6px !important;
+        margin-top: 8px !important;
+    }
+
+    .cart-actions .btn {
+        padding: 6px 12px !important;
+        font-size: 10px !important;
+    }
+
+    /* Checkout Form - compact */
+    .form-group {
+        margin-bottom: 8px !important;
+    }
+
+    .form-group label {
+        font-size: 9px !important;
+        margin-bottom: 3px !important;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 5px 8px !important;
+        font-size: 10px !important;
+        border-radius: 6px !important;
+        min-height: 28px !important;
+    }
+
+    .form-actions {
+        gap: 6px !important;
+        margin-top: 8px !important;
+    }
+
+    #checkoutForm .form-actions .btn {
+        padding: 6px 12px !important;
+        font-size: 10px !important;
+    }
+
+    .checkout-total {
+        padding: 8px !important;
+        font-size: 11px !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Privacy Consent Modal - compact */
+    #privacyConsentModal .modal {
+        max-width: calc(100vw - 8px) !important;
+        width: calc(100vw - 8px) !important;
+        max-height: 95vh !important;
+    }
+
+    #privacyConsentModal .modal-body {
+        padding: 10px !important;
+    }
+
+    #privacyConsentModal .modal-header {
+        padding: 8px 10px 0 !important;
+    }
+
+    #privacyConsentModal .modal-header h3 {
+        font-size: 13px !important;
+    }
+
+    .privacy-consent-content {
+        max-height: 70vh !important;
+        padding-right: 4px !important;
+    }
+
+    .privacy-notice {
+        font-size: 11px !important;
+        margin-bottom: 8px !important;
+        line-height: 1.4 !important;
+    }
+
+    .privacy-details {
+        margin-bottom: 8px !important;
+    }
+
+    .privacy-details p {
+        margin-bottom: 4px !important;
+        font-size: 10px !important;
+    }
+
+    .privacy-details ul {
+        margin-left: 14px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .privacy-details li {
+        margin-bottom: 3px !important;
+        font-size: 9px !important;
+        line-height: 1.4 !important;
+    }
+
+    .privacy-assurance {
+        padding: 6px 8px !important;
+        margin-top: 6px !important;
+        font-size: 9px !important;
+        line-height: 1.4 !important;
+        border-radius: 5px !important;
+    }
+
+    .privacy-consent-checkbox {
+        margin-bottom: 8px !important;
+    }
+
+    .privacy-consent-checkbox label {
+        gap: 6px !important;
+        font-size: 10px !important;
+        line-height: 1.4 !important;
+    }
+
+    .privacy-consent-checkbox input[type="checkbox"] {
+        width: 14px !important;
+        height: 14px !important;
+        margin-top: 2px !important;
+    }
+
+    .privacy-actions {
+        gap: 4px !important;
+    }
+
+    .privacy-actions .btn {
+        padding: 6px 10px !important;
+        font-size: 10px !important;
+    }
+}
+
+/* Large Desktop (1920x951 and similar) - show everything without scrolling */
+@media (min-width: 1920px) and (min-height: 900px) and (orientation: landscape),
+(min-width: 1900px) and (min-height: 900px) {
+
+    /* Large Desktop - Better space utilization */
+    .nav-container {
+        max-width: 1800px;
+        padding: 16px 48px;
+    }
+
+    main {
+        max-width: 1800px;
+        padding: 0 48px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 320px));
+        gap: 32px;
+        max-width: 100%;
+    }
+
+    /* Show more items per row on very large screens */
+    @media (min-width: 2000px) {
+        .nav-container {
+            max-width: 1920px;
+            padding: 16px 64px;
+        }
+
+        main {
+            max-width: 1920px;
+            padding: 0 64px;
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(320px, 340px));
+            gap: 36px;
+        }
+    }
+
+    #privacyConsentModal .modal {
+        max-height: 95vh !important;
+        max-width: 900px !important;
+        width: 900px !important;
+    }
+
+    #privacyConsentModal .modal-body {
+        padding: 24px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        max-height: calc(95vh - 80px) !important;
+        overflow: visible !important;
+    }
+
+    #privacyConsentModal .privacy-consent-content {
+        max-height: none !important;
+        overflow-y: visible !important;
+        overflow-x: visible !important;
+        flex: 1 1 auto;
+        padding-right: 12px !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    #privacyConsentModal .privacy-actions {
+        flex-shrink: 0 !important;
+        margin-top: 24px !important;
+        width: 100% !important;
+    }
+
+    /* Navigation - align logo to left on large screens */
+    .nav-container {
+        max-width: 1800px !important;
+        padding: 16px 48px !important;
+        justify-content: flex-start !important;
+        position: relative;
+    }
+
+    .nav-container .logo {
+        position: relative !important;
+        left: auto !important;
+        transform: none !important;
+        margin-right: auto;
+        flex-shrink: 0;
+    }
+
+    .nav-links {
+        margin-left: auto !important;
+        margin-right: 0;
+        gap: 16px !important;
+    }
+
+    /* Increase size of navigation elements on large screens - slightly larger */
+    .nav-container .header-hours {
+        padding: 10px 20px !important;
+        font-size: 14px !important;
+        gap: 10px !important;
+    }
+
+    .nav-container .header-hours span {
+        font-size: 14px !important;
+    }
+
+    .nav-container .header-hours svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .nav-container .social-link {
+        padding: 10px 20px !important;
+        font-size: 15px !important;
+        gap: 10px !important;
+    }
+
+    .nav-container .social-link svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .nav-container .cart-button {
+        padding: 10px 20px !important;
+        font-size: 15px !important;
+        gap: 10px !important;
+    }
+
+    .nav-container .cart-button svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .nav-container .cart-badge {
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 12px !important;
+        top: -7px !important;
+        right: -7px !important;
+    }
+}
+

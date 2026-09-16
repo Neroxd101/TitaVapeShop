@@ -1,0 +1,229 @@
+/* Unified nav chip sizing: hours, social links, and cart button */
+.header-hours,
+.social-link,
+.cart-button {
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+    gap: 8px !important;
+    border-radius: 10px !important;
+}
+
+.header-hours svg,
+.social-link svg,
+.cart-button svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+@media (max-width: 1024px) {
+    .header-hours,
+    .social-link,
+    .cart-button {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+        gap: 6px !important;
+        border-radius: 8px !important;
+    }
+
+    .header-hours svg,
+    .social-link svg,
+    .cart-button svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-hours,
+    .social-link,
+    .cart-button {
+        padding: 5px 10px !important;
+        font-size: 11px !important;
+        gap: 6px !important;
+        border-radius: 8px !important;
+    }
+
+    .header-hours svg,
+    .social-link svg,
+    .cart-button svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-hours,
+    .social-link,
+    .cart-button {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        gap: 4px !important;
+        border-radius: 6px !important;
+    }
+
+    .header-hours svg,
+    .social-link svg,
+    .cart-button svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .header-hours,
+    .social-link,
+    .cart-button {
+        border-radius: 5px !important;
+    }
+}
+/* Keep compact navigation readable across phone and tablet sizes.
+   Scoped overrides also cover the older device-specific rules above. */
+@media (max-width: 1366px) {
+    .nav .nav-container {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 14px 16px !important;
+    }
+
+    .nav .nav-container .logo {
+        position: static !important;
+        transform: none !important;
+        margin: 0 !important;
+    }
+
+    .nav .logo-text {
+        font-size: 22px !important;
+    }
+
+    .nav .nav-links {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        width: 100% !important;
+        max-width: 640px;
+        margin: 0 !important;
+        gap: 10px !important;
+    }
+
+    .nav .header-hours {
+        grid-column: 1 / -1;
+        justify-content: center;
+        padding: 0 !important;
+        background: transparent;
+        border: 0;
+    }
+
+    .nav .header-hours span {
+        display: inline !important;
+        font-size: 12px !important;
+    }
+
+    .nav .social-link,
+    .nav .cart-button {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        min-height: 30px;
+        padding: 8px 6px !important;
+        gap: 6px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    .nav .social-link svg,
+    .nav .cart-button svg,
+    .nav .header-hours svg {
+        flex-shrink: 0;
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .nav .cart-badge {
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 10px !important;
+        top: -6px !important;
+        right: -4px !important;
+    }
+
+    .nav .social-link:focus-visible,
+    .nav .cart-button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+    }
+}
+
+@media (max-width: 767px) {
+    .nav .nav-links {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .nav #ordersBtn,
+    .nav #cartBtn {
+        grid-column: auto !important;
+        width: 100% !important;
+    }
+
+    .nav #customerNavContainer {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        display: flex !important;
+    }
+
+    /* When customer is logged in on smaller screens, pair Cart and Profile Pill side-by-side in 2-column grid */
+    body.customer-logged-in .nav #customerNavContainer {
+        grid-column: auto !important;
+    }
+
+    .nav #customerNavContainer .customer-nav-btn,
+    .nav #customerNavContainer .customer-profile-pill {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 30px;
+        padding: 8px 6px !important;
+        gap: 6px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* Tablets and desktops share a left logo and right navigation layout. */
+@media (min-width: 768px) {
+    .nav .nav-container {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        gap: 20px !important;
+    }
+
+    .nav .nav-container .logo {
+        position: static !important;
+        transform: none !important;
+        flex-shrink: 0;
+        margin: 0 !important;
+    }
+
+    .nav .logo-text {
+        white-space: nowrap;
+    }
+
+    .nav .nav-links {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-end !important;
+        width: auto !important;
+        min-width: 0;
+        max-width: none;
+        margin-left: auto !important;
+    }
+
+    .nav .header-hours {
+        padding: 8px 10px !important;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        white-space: nowrap;
+    }
+}
+

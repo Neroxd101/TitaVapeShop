@@ -50,6 +50,8 @@ const CatalogProductModal = {
         }
     },
 
+    currentProduct: null,
+
     /**
      * Setup event listeners
      */
@@ -65,6 +67,13 @@ const CatalogProductModal = {
                 }
             });
         }
+
+        document.addEventListener('cartUpdated', (e) => {
+            if (this.modal && this.modal.classList.contains('show') && this.currentProduct) {
+                const updatedProduct = this.allProducts.find(p => p.id === this.currentProduct.id) || this.currentProduct;
+                this.show(updatedProduct);
+            }
+        });
     },
 
     /**
@@ -249,6 +258,8 @@ const CatalogProductModal = {
             return;
         }
 
+        this.currentProduct = product;
+
         const images = this.parseImages(product);
         const mainImageUrl = images.length > 0 ? images[0] : null;
         const mainImageFallbacks = mainImageUrl ? this.getFallbackUrls(mainImageUrl, 800) : ['/img/placeholder-product.png'];
@@ -280,6 +291,9 @@ const CatalogProductModal = {
             `;
         }
 
+        const availableStock = window.CatalogProducts?.getAvailableStock(product) ?? product.quantity;
+        const isOutOfStock = availableStock <= 0;
+
         this.modalContent.innerHTML = `
             <div class="modal-product-view">
                 <div class="modal-image-container ${hasMultipleImages ? 'with-thumbnails' : ''}">
@@ -293,19 +307,96 @@ const CatalogProductModal = {
                 <div class="modal-details">
                     <span class="product-category">${product.category}</span>
                     <h2>${product.name}</h2>
-                    <span class="product-price" style="font-size: 28px;">₱${product.sale_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    <span class="product-price">₱${product.sale_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     
                     <p class="description">${product.description || 'No description available for this product.'}</p>
                     
                     <div class="stock-info">
                         <strong>Availability:</strong>
-                        <span class="status-badge ${product.quantity > 0 ? 'connected' : 'disconnected'}">
-                            ${product.quantity > 0 ? `In Stock (${product.quantity})` : 'Out of Stock'}
+                        <span id="modalStockBadge" class="status-badge ${availableStock > 0 ? 'connected' : 'disconnected'}">
+                            ${availableStock > 0 ? `In Stock (${availableStock})` : 'Out of Stock'}
                         </span>
+                    </div>
+
+                    <div class="modal-product-actions">
+                        ${!isOutOfStock ? `
+                            <div class="modal-qty-selector">
+                                <span style="font-weight: 500; font-size: 14px; color: var(--text-secondary);">Quantity:</span>
+                                <div class="modal-qty-controls">
+                                    <button type="button" id="modalQtyMinus" class="modal-qty-btn" title="Decrease quantity">-</button>
+                                    <input type="number" id="modalQtyInput" class="modal-qty-input" value="1" min="1" max="${availableStock}">
+                                    <button type="button" id="modalQtyPlus" class="modal-qty-btn" title="Increase quantity">+</button>
+                                </div>
+                                <span style="font-size: 12px; color: var(--text-muted);">(Max ${availableStock})</span>
+                            </div>
+                            <button type="button" id="modalAddToCartBtn" class="modal-add-cart-btn">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                </svg>
+                                <span>Add to Cart</span>
+                            </button>
+                        ` : `
+                            <button type="button" class="btn-card" disabled style="width: 100%; padding: 12px 20px; font-size: 15px; opacity: 0.6; cursor: not-allowed; text-align: center;">
+                                Out of Stock
+                            </button>
+                        `}
                     </div>
                 </div>
             </div>
         `;
+
+        // Wire up quantity controls and Add to Cart inside modal
+        if (!isOutOfStock) {
+            const qtyInput = document.getElementById('modalQtyInput');
+            const qtyMinus = document.getElementById('modalQtyMinus');
+            const qtyPlus = document.getElementById('modalQtyPlus');
+            const addBtn = document.getElementById('modalAddToCartBtn');
+
+            const parseQty = () => {
+                let val = parseInt(qtyInput.value, 10);
+                if (isNaN(val) || val < 1) val = 1;
+                if (val > availableStock) val = availableStock;
+                return val;
+            };
+
+            qtyMinus?.addEventListener('click', () => {
+                let val = parseQty();
+                if (val > 1) {
+                    qtyInput.value = val - 1;
+                }
+            });
+
+            qtyPlus?.addEventListener('click', () => {
+                let val = parseQty();
+                if (val < availableStock) {
+                    qtyInput.value = val + 1;
+                }
+            });
+
+            qtyInput?.addEventListener('change', () => {
+                qtyInput.value = parseQty();
+            });
+
+            addBtn?.addEventListener('click', () => {
+                const qtyToAdd = parseQty();
+                if (window.CatalogCart) {
+                    window.CatalogCart.addToCart(product, qtyToAdd);
+                    window.CatalogCart.updateCartBadge();
+                    // Provide feedback button animation / text change
+                    addBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                        <span>Added to Cart!</span>
+                    `;
+                    addBtn.style.background = '#22c55e';
+                    addBtn.style.color = '#fff';
+                    setTimeout(() => {
+                        this.show(product);
+                    }, 800);
+                }
+            });
+        }
 
         this.modal.classList.add('show');
     },

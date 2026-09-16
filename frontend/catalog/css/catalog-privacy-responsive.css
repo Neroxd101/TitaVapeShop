@@ -1,0 +1,443 @@
+/* Responsive styles for Privacy Consent Modal */
+@media (max-width: 768px) {
+    #privacyConsentModal.modal-overlay {
+        padding: 4px !important;
+    }
+
+    #privacyConsentModal .modal {
+        max-width: calc(100vw - 8px) !important;
+        width: calc(100vw - 8px) !important;
+        margin: 0 !important;
+        max-height: 98vh !important;
+    }
+
+    #privacyConsentModal .modal-body {
+        padding: 20px !important;
+    }
+
+    #privacyConsentModal .modal-header {
+        padding: 20px 20px 0 !important;
+    }
+
+    #privacyConsentModal .modal-header h3 {
+        font-size: 22px !important;
+    }
+
+    .privacy-consent-content {
+        max-height: 75vh;
+        padding-right: 6px;
+    }
+
+    .privacy-notice {
+        font-size: 16px !important;
+        margin-bottom: 16px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-details {
+        margin-bottom: 18px !important;
+    }
+
+    .privacy-details p {
+        margin-bottom: 9px !important;
+        font-size: 15px !important;
+    }
+
+    .privacy-details ul {
+        margin-left: 20px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .privacy-details li {
+        margin-bottom: 7px !important;
+        line-height: 1.6 !important;
+        font-size: 14px !important;
+    }
+
+    .privacy-assurance {
+        padding: 12px 14px !important;
+        margin-top: 14px !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        border-radius: 7px !important;
+    }
+
+    .privacy-consent-checkbox {
+        margin-bottom: 18px !important;
+    }
+
+    .privacy-consent-checkbox label {
+        gap: 10px !important;
+        font-size: 15px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-consent-checkbox input[type="checkbox"] {
+        width: 18px !important;
+        height: 18px !important;
+        margin-top: 3px !important;
+    }
+
+    .privacy-actions {
+        gap: 6px;
+        justify-content: flex-start !important;
+    }
+
+    .privacy-actions .btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #privacyConsentModal.modal-overlay {
+        padding: 2px !important;
+    }
+
+    #privacyConsentModal .modal {
+        max-width: calc(100vw - 4px) !important;
+        width: calc(100vw - 4px) !important;
+        margin: 0 !important;
+        max-height: 98vh !important;
+    }
+
+    #privacyConsentModal .modal-body {
+        padding: 18px !important;
+    }
+
+    #privacyConsentModal .modal-header {
+        padding: 18px 18px 0 !important;
+    }
+
+    #privacyConsentModal .modal-header h3 {
+        font-size: 20px !important;
+    }
+
+    .privacy-consent-content {
+        max-height: 80vh;
+        padding-right: 4px;
+    }
+
+    .privacy-notice {
+        font-size: 13px !important;
+        margin-bottom: 12px !important;
+        line-height: 1.5 !important;
+    }
+
+    .privacy-details {
+        margin-bottom: 14px !important;
+    }
+
+    .privacy-details p {
+        margin-bottom: 6px !important;
+        font-size: 12px !important;
+    }
+
+    .privacy-details ul {
+        margin-left: 16px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .privacy-details li {
+        margin-bottom: 4px !important;
+        line-height: 1.5 !important;
+        font-size: 11px !important;
+    }
+
+    .privacy-assurance {
+        padding: 8px 10px !important;
+        margin-top: 10px !important;
+        font-size: 11px !important;
+        line-height: 1.5 !important;
+        border-radius: 6px !important;
+    }
+
+    .privacy-consent-checkbox {
+        margin-bottom: 14px !important;
+    }
+
+    .privacy-consent-checkbox label {
+        gap: 7px !important;
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+    }
+
+    .privacy-consent-checkbox input[type="checkbox"] {
+        width: 15px !important;
+        height: 15px !important;
+        margin-top: 2px !important;
+    }
+
+    .privacy-actions {
+        gap: 5px;
+        justify-content: flex-start !important;
+    }
+
+    .privacy-actions .btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+}
+
+/* Tablet landscape (1024x505) - compact privacy modal */
+@media (width: 1024px) and (height: 505px) and (orientation: landscape),
+(min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+    #privacyConsentModal.modal-overlay {
+        padding: 4px !important;
+    }
+
+    #privacyConsentModal .modal {
+        max-width: calc(100vw - 8px) !important;
+        width: calc(100vw - 8px) !important;
+        margin: 0 !important;
+        max-height: 95vh !important;
+    }
+
+    #privacyConsentModal .modal-body {
+        padding: 16px !important;
+    }
+
+    #privacyConsentModal .modal-header {
+        padding: 16px 16px 0 !important;
+    }
+
+    #privacyConsentModal .modal-header h3 {
+        font-size: 19px !important;
+    }
+
+    .privacy-consent-content {
+        max-height: 70vh !important;
+        padding-right: 6px !important;
+    }
+
+    .privacy-notice {
+        font-size: 15px !important;
+        margin-bottom: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-details {
+        margin-bottom: 16px !important;
+    }
+
+    .privacy-details p {
+        margin-bottom: 8px !important;
+        font-size: 14px !important;
+    }
+
+    .privacy-details ul {
+        margin-left: 18px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .privacy-details li {
+        margin-bottom: 6px !important;
+        line-height: 1.6 !important;
+        font-size: 13px !important;
+    }
+
+    .privacy-assurance {
+        padding: 10px 12px !important;
+        margin-top: 12px !important;
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        border-radius: 7px !important;
+    }
+
+    .privacy-consent-checkbox {
+        margin-bottom: 16px !important;
+    }
+
+    .privacy-consent-checkbox label {
+        gap: 9px !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-consent-checkbox input[type="checkbox"] {
+        width: 17px !important;
+        height: 17px !important;
+        margin-top: 3px !important;
+    }
+
+    .privacy-actions {
+        gap: 5px !important;
+    }
+}
+
+/* Phone portrait (640x889) - compact privacy modal */
+@media (width: 640px) and (height: 889px) and (orientation: portrait) {
+    #privacyConsentModal.modal-overlay {
+        padding: 2px !important;
+    }
+
+    #privacyConsentModal .modal {
+        max-width: calc(100vw - 4px) !important;
+        width: calc(100vw - 4px) !important;
+        margin: 0 !important;
+        max-height: 98vh !important;
+    }
+
+    #privacyConsentModal .modal-body {
+        padding: 18px !important;
+    }
+
+    #privacyConsentModal .modal-header {
+        padding: 18px 18px 0 !important;
+    }
+
+    #privacyConsentModal .modal-header h3 {
+        font-size: 20px !important;
+    }
+
+    .privacy-consent-content {
+        max-height: 80vh !important;
+        padding-right: 4px !important;
+    }
+
+    .privacy-notice {
+        font-size: 15px !important;
+        margin-bottom: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-details {
+        margin-bottom: 16px !important;
+    }
+
+    .privacy-details p {
+        margin-bottom: 8px !important;
+        font-size: 14px !important;
+    }
+
+    .privacy-details ul {
+        margin-left: 18px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .privacy-details li {
+        margin-bottom: 6px !important;
+        line-height: 1.6 !important;
+        font-size: 13px !important;
+    }
+
+    .privacy-assurance {
+        padding: 10px 12px !important;
+        margin-top: 12px !important;
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        border-radius: 7px !important;
+    }
+
+    .privacy-consent-checkbox {
+        margin-bottom: 16px !important;
+    }
+
+    .privacy-consent-checkbox label {
+        gap: 9px !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-consent-checkbox input[type="checkbox"] {
+        width: 17px !important;
+        height: 17px !important;
+        margin-top: 3px !important;
+    }
+
+    .privacy-actions {
+        gap: 5px !important;
+    }
+}
+
+/* Phone portrait (380x754) - compact privacy modal */
+@media (width: 380px) and (height: 754px) and (orientation: portrait) {
+    #privacyConsentModal.modal-overlay {
+        padding: 1px !important;
+    }
+
+    #privacyConsentModal .modal {
+        max-width: calc(100vw - 2px) !important;
+        width: calc(100vw - 2px) !important;
+        margin: 0 !important;
+        max-height: 99vh !important;
+    }
+
+    #privacyConsentModal .modal-body {
+        padding: 16px !important;
+    }
+
+    #privacyConsentModal .modal-header {
+        padding: 16px 16px 0 !important;
+    }
+
+    #privacyConsentModal .modal-header h3 {
+        font-size: 19px !important;
+    }
+
+    .privacy-consent-content {
+        max-height: 85vh !important;
+        padding-right: 4px !important;
+    }
+
+    .privacy-notice {
+        font-size: 15px !important;
+        margin-bottom: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-details {
+        margin-bottom: 16px !important;
+    }
+
+    .privacy-details p {
+        margin-bottom: 8px !important;
+        font-size: 14px !important;
+    }
+
+    .privacy-details ul {
+        margin-left: 18px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .privacy-details li {
+        margin-bottom: 6px !important;
+        line-height: 1.6 !important;
+        font-size: 13px !important;
+    }
+
+    .privacy-assurance {
+        padding: 10px 12px !important;
+        margin-top: 12px !important;
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        border-radius: 7px !important;
+    }
+
+    .privacy-consent-checkbox {
+        margin-bottom: 16px !important;
+    }
+
+    .privacy-consent-checkbox label {
+        gap: 9px !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .privacy-consent-checkbox input[type="checkbox"] {
+        width: 17px !important;
+        height: 17px !important;
+        margin-top: 3px !important;
+    }
+
+    .privacy-actions {
+        gap: 4px !important;
+        justify-content: flex-start !important;
+    }
+
+    .privacy-actions .btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+}
+

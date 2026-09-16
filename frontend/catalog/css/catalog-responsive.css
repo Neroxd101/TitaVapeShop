@@ -1,0 +1,748 @@
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .nav-container {
+        padding: 12px 12px;
+    }
+
+    .logo-text {
+        font-size: 20px;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .social-link {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+
+    .social-link svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .cart-button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .cart-button svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .cart-badge {
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+        top: -4px;
+        right: -4px;
+    }
+
+    .header-hours {
+        padding: 6px 10px;
+        font-size: 11px;
+        border-radius: 8px;
+    }
+
+    .header-hours span {
+        display: inline;
+    }
+
+    .header-hours svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* Tablet Portrait (800x1145) - align logo to left */
+@media (width: 800px) and (height: 1145px) and (orientation: portrait),
+(min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
+    .nav-container {
+        justify-content: flex-start !important;
+        position: relative;
+    }
+
+    .nav-container .logo {
+        position: relative !important;
+        left: auto !important;
+        transform: none !important;
+        margin-right: auto;
+        flex-shrink: 0;
+    }
+
+    .nav-links {
+        margin-left: auto !important;
+        margin-right: 0;
+    }
+}
+
+/* Tablet portrait (including 820x1180): keep logo left and avoid overlap */
+@media (orientation: portrait) and (min-width: 769px) and (max-width: 1100px) {
+    .nav-container {
+        justify-content: flex-start !important;
+        position: relative;
+    }
+
+    .nav-container .logo {
+        position: relative !important;
+        left: auto !important;
+        transform: none !important;
+        margin-right: auto;
+        flex-shrink: 0;
+    }
+
+    .nav-links {
+        margin-left: auto !important;
+        margin-right: 0;
+        flex-wrap: nowrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+    }
+
+    .nav-container .logo {
+        position: relative;
+        left: auto;
+        transform: none;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        row-gap: 6px;
+        gap: 8px;
+        margin-left: 0;
+    }
+
+    .logo-text {
+        font-size: 18px;
+    }
+
+    .social-link {
+        padding: 5px 10px;
+        font-size: 11px;
+        gap: 6px;
+        border-radius: 8px;
+    }
+
+    .social-link svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .cart-button {
+        padding: 5px 10px;
+        font-size: 11px;
+        gap: 6px;
+    }
+
+    .cart-button svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .cart-badge {
+        width: 16px;
+        height: 16px;
+        font-size: 9px;
+    }
+
+    .header-hours {
+        padding: 5px 8px;
+        font-size: 10px;
+        gap: 6px;
+        border-radius: 8px;
+    }
+
+    .header-hours span {
+        display: inline;
+        font-size: 10px;
+    }
+
+    .header-hours svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .modal-product-view {
+        grid-template-columns: 1fr;
+    }
+
+    main {
+        padding: 0 16px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    /* Product Card - responsive */
+    .product-info {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .card-name {
+        font-size: 16px;
+    }
+
+    .card-details {
+        gap: 12px;
+    }
+
+    .detail-value {
+        font-size: 14px;
+    }
+
+    .card-actions {
+        gap: 8px;
+        flex-direction: column;
+    }
+
+    .btn-card {
+        padding: 8px 12px;
+        font-size: 12px;
+        gap: 6px;
+    }
+
+    .btn-card svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .form-actions {
+        gap: 10px;
+        margin-top: 12px;
+        justify-content: flex-start !important;
+    }
+
+    #checkoutForm .form-actions {
+        justify-content: flex-start !important;
+    }
+
+    #checkoutForm .form-actions .btn {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+
+    .checkout-total {
+        padding: 10px;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-container {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+
+    .logo-text {
+        font-size: 16px;
+    }
+
+    .nav-links {
+        gap: 6px;
+    }
+
+    /* Product Card - mobile */
+    .product-info {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .card-name {
+        font-size: 14px;
+    }
+
+    .card-details {
+        gap: 8px;
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+
+    .detail-item {
+        width: auto;
+        flex: 1;
+    }
+
+    /* Stock right-align on mobile */
+    .detail-item:last-child {
+        text-align: right;
+    }
+
+    .detail-label {
+        font-size: 10px;
+    }
+
+    .detail-value {
+        font-size: 13px;
+    }
+
+    .card-actions {
+        gap: 6px;
+        flex-direction: column;
+        margin-top: 2px;
+    }
+
+    .btn-card {
+        padding: 8px 10px;
+        font-size: 11px;
+        gap: 5px;
+        width: 100%;
+    }
+
+    .btn-card svg {
+        width: 12px;
+        height: 12px;
+    }
+
+
+    .social-link {
+        padding: 4px 8px;
+        font-size: 10px;
+        gap: 4px;
+        border-radius: 6px;
+    }
+
+    .social-link svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .cart-button {
+        padding: 4px 8px;
+        font-size: 10px;
+        gap: 4px;
+        border-radius: 8px;
+    }
+
+    .cart-button svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .cart-badge {
+        width: 14px;
+        height: 14px;
+        font-size: 8px;
+        top: -3px;
+        right: -3px;
+    }
+
+    .header-hours {
+        padding: 4px 6px;
+        font-size: 9px;
+        gap: 4px;
+        border-radius: 6px;
+    }
+
+    .header-hours span {
+        display: inline;
+        font-size: 9px;
+    }
+
+    .header-hours svg {
+        width: 10px;
+        height: 10px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .product-image-container {
+        height: 150px;
+    }
+
+    .form-actions {
+        gap: 8px;
+        margin-top: 10px;
+        justify-content: flex-start !important;
+    }
+
+    #checkoutForm .form-actions {
+        justify-content: flex-start !important;
+    }
+
+    #checkoutForm .form-actions .btn {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+
+    .checkout-total {
+        padding: 8px;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    .social-link,
+    .header-hours {
+        border-radius: 5px;
+    }
+}
+
+/* Tablet landscape (1024x505) - compact nav */
+@media (width: 1024px) and (height: 505px) and (orientation: landscape),
+(min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
+    .nav-container {
+        padding: 6px 10px !important;
+    }
+
+    .logo-text {
+        font-size: 16px !important;
+    }
+
+    .nav-links {
+        gap: 6px !important;
+    }
+
+    .social-link {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        gap: 4px !important;
+        border-radius: 6px !important;
+    }
+
+    .social-link svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .cart-button {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        gap: 4px !important;
+        border-radius: 6px !important;
+    }
+
+    .cart-button svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .cart-badge {
+        width: 14px !important;
+        height: 14px !important;
+        font-size: 8px !important;
+        top: -3px !important;
+        right: -3px !important;
+    }
+
+    .header-hours {
+        padding: 4px 6px !important;
+        font-size: 9px !important;
+        gap: 4px !important;
+        border-radius: 6px !important;
+    }
+
+    .header-hours span {
+        display: inline !important;
+        font-size: 9px !important;
+    }
+
+    .header-hours svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    #checkoutForm .form-actions .btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        padding: 10px 14px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* Phone portrait (640x889) - compact nav */
+@media (width: 640px) and (height: 889px) and (orientation: portrait) {
+    .nav-container {
+        padding: 6px 10px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+        position: relative !important;
+    }
+
+    /* Product Card - 640x889 */
+    .product-info {
+        padding: 10px !important;
+        gap: 8px !important;
+    }
+
+    .card-name {
+        font-size: 13px !important;
+    }
+
+    .card-details {
+        gap: 10px !important;
+    }
+
+    .detail-value {
+        font-size: 12px !important;
+    }
+
+    .card-actions {
+        gap: 6px !important;
+        flex-direction: row !important;
+    }
+
+    .btn-card {
+        padding: 6px 10px !important;
+        font-size: 10px !important;
+        gap: 4px !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+
+    .btn-card svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .nav-container .logo {
+        margin-bottom: 0 !important;
+        flex-shrink: 0 !important;
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 1 !important;
+    }
+
+    .nav-links {
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        width: auto !important;
+        justify-content: flex-end !important;
+        gap: 4px !important;
+        margin-left: auto !important;
+    }
+
+    .logo-text {
+        font-size: 14px !important;
+    }
+
+    .header-hours {
+        padding: 4px 6px !important;
+        font-size: 9px !important;
+        gap: 4px !important;
+    }
+
+    .header-hours span {
+        display: inline !important;
+        font-size: 9px !important;
+    }
+
+    .header-hours svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .social-link {
+        padding: 4px 6px !important;
+        font-size: 9px !important;
+        border-radius: 6px !important;
+        gap: 3px !important;
+    }
+
+    .social-link svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .cart-button {
+        padding: 4px 6px !important;
+        font-size: 9px !important;
+        border-radius: 6px !important;
+        gap: 3px !important;
+    }
+
+    .cart-button svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .cart-badge {
+        width: 12px !important;
+        height: 12px !important;
+        font-size: 7px !important;
+        top: -2px !important;
+        right: -2px !important;
+    }
+
+    #checkoutForm .form-actions .btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        padding: 10px 12px !important;
+        font-size: 11px !important;
+    }
+}
+
+/* Phone portrait (380x754) - compact nav */
+@media (width: 380px) and (height: 754px) and (orientation: portrait) {
+    .nav-container {
+        padding: 4px 6px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 4px !important;
+        position: relative !important;
+    }
+
+    /* Product Card - 380x754 */
+    .product-info {
+        padding: 8px !important;
+        gap: 6px !important;
+    }
+
+    .card-name {
+        font-size: 11px !important;
+    }
+
+    .card-details {
+        gap: 8px !important;
+        flex-direction: row !important;
+    }
+
+    .detail-label {
+        font-size: 8px !important;
+    }
+
+    .detail-value {
+        font-size: 10px !important;
+    }
+
+    .card-actions {
+        gap: 4px !important;
+        flex-direction: row !important;
+    }
+
+    .btn-card {
+        padding: 5px 8px !important;
+        font-size: 9px !important;
+        gap: 3px !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+
+    .btn-card svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .nav-container .logo {
+        margin-bottom: 0 !important;
+        flex-shrink: 0 !important;
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 1 !important;
+    }
+
+    .nav-links {
+        flex-direction: row !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        width: auto !important;
+        justify-content: flex-end !important;
+        gap: 3px !important;
+        margin-left: auto !important;
+    }
+
+    .logo-text {
+        font-size: 12px !important;
+    }
+
+    .header-hours {
+        padding: 3px 5px !important;
+        font-size: 8px !important;
+        gap: 4px !important;
+    }
+
+    .header-hours span {
+        display: inline !important;
+        font-size: 8px !important;
+    }
+
+    .header-hours svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .social-link {
+        padding: 3px 5px !important;
+        font-size: 8px !important;
+        border-radius: 5px !important;
+        gap: 3px !important;
+    }
+
+    .social-link svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .cart-button {
+        padding: 3px 5px !important;
+        font-size: 8px !important;
+        border-radius: 5px !important;
+        gap: 2px !important;
+    }
+
+    .cart-button svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+    .cart-badge {
+        width: 10px !important;
+        height: 10px !important;
+        font-size: 6px !important;
+        top: -1px !important;
+        right: -1px !important;
+    }
+
+    #checkoutForm .form-actions .btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        padding: 8px 10px !important;
+        font-size: 10px !important;
+    }
+}
+
+/* Scrollbar hiding for catalog-specific elements */
+.category-filters,
+.privacy-consent-content {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+}
+
+.category-filters::-webkit-scrollbar,
+.privacy-consent-content::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+}
+

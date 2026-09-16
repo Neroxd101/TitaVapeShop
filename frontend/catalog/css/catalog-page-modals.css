@@ -1,0 +1,178 @@
+/* Footer */
+.footer {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+}
+
+/* Privacy Consent Modal Styles */
+#privacyConsentModal .modal {
+    max-width: 820px !important;
+    width: 100%;
+    border-radius: 20px;
+}
+
+.privacy-consent-content {
+    max-height: 75vh;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.privacy-notice {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.privacy-details {
+    margin-bottom: 16px;
+}
+
+.privacy-details p {
+    margin-bottom: 6px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.privacy-details ul {
+    margin-left: 20px;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.privacy-details li {
+    margin-bottom: 4px;
+    line-height: 1.4;
+    font-size: 15px;
+}
+
+.privacy-assurance {
+    background: rgba(0, 212, 170, 0.1);
+    border: 1px solid rgba(0, 212, 170, 0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.privacy-consent-checkbox {
+    margin-bottom: 12px;
+}
+
+.privacy-consent-checkbox label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.privacy-consent-checkbox input[type="checkbox"] {
+    margin-top: 4px;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.privacy-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.privacy-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+/* Checkout Form Actions */
+.form-actions {
+    display: flex !important;
+    gap: 12px;
+    justify-content: flex-start !important;
+    align-items: center;
+    margin-top: 12px;
+    width: 100%;
+}
+
+#checkoutForm .form-actions {
+    justify-content: flex-start !important;
+}
+
+#checkoutForm .form-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 12px 20px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.checkout-total {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    text-align: left;
+}
+
+.checkout-total strong {
+    color: var(--accent);
+}
+
+/* Order Success Modal */
+.order-success-content {
+    text-align: center;
+}
+
+.success-message {
+    font-size: 18px;
+    color: var(--accent);
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+
+.qr-instruction {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.qr-code-container {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.order-info {
+    text-align: left;
+    margin-top: 24px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.order-info p {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.order-info strong {
+    color: var(--accent);
+}
+
