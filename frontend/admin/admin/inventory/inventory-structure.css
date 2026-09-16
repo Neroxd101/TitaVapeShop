@@ -9,6 +9,112 @@
   display: contents;
 }
 
+.filter-tabs-actions {
+  flex-wrap: wrap;
+}
+
+.inventory-date-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.inventory-date-filter input {
+  color-scheme: dark;
+  min-width: 0;
+}
+
+.inventory-date-filter button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.inventory-date-field {
+  position: relative;
+  min-width: 0;
+}
+
+.inventory-date-field .date-placeholder {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .filter-tabs .filter-tabs-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 10px;
+  }
+
+  .inventory-date-filter {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas: "from-label from-input to-label to-input";
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .inventory-date-filter label[for="addedDateFrom"] {
+    grid-area: from-label;
+  }
+
+  .inventory-date-filter label[for="addedDateTo"] {
+    grid-area: to-label;
+  }
+
+  .inventory-date-filter .inventory-date-from {
+    grid-area: from-input;
+  }
+
+  .inventory-date-filter .inventory-date-to {
+    grid-area: to-input;
+  }
+
+  .inventory-date-filter input {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-inline: 4px;
+    overflow: hidden;
+  }
+
+  .inventory-date-filter input::-webkit-date-and-time-value {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .inventory-date-field.is-empty:not(:focus-within) input {
+    color: transparent;
+  }
+
+  .inventory-date-field.is-empty:not(:focus-within) .date-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .inventory-date-filter #clearAddedDateBtn {
+    display: none;
+  }
+}
+
 @media (min-width: 1025px) {
   .inventory-category-stock {
     display: flex;

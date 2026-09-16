@@ -79,6 +79,19 @@
         </select>
         </div>
         <div class="filter-tabs-actions">
+          <div class="inventory-date-filter">
+            <label for="addedDateFrom">From</label>
+            <div class="inventory-date-field inventory-date-from is-empty">
+              <input type="date" id="addedDateFrom" class="stock-filter">
+              <span class="date-placeholder" aria-hidden="true">mm/dd/yyyy</span>
+            </div>
+            <label for="addedDateTo">To</label>
+            <div class="inventory-date-field inventory-date-to is-empty">
+              <input type="date" id="addedDateTo" class="stock-filter">
+              <span class="date-placeholder" aria-hidden="true">mm/dd/yyyy</span>
+            </div>
+            <button type="button" id="clearAddedDateBtn" class="stock-filter" aria-label="Clear date added filter" disabled>Clear</button>
+          </div>
           <button type="button" class="btn btn-primary" id="printStocksBtn"><span>Print Stocks</span></button>
           <button class="btn btn-primary" id="addItemBtn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">

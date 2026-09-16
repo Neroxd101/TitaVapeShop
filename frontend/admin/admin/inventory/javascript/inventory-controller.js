@@ -52,6 +52,37 @@ const Inventory = {
       InventoryLoad.renderInventory();
     });
 
+    // Date added filter
+    const addedDateFrom = document.getElementById('addedDateFrom');
+    const addedDateTo = document.getElementById('addedDateTo');
+    const clearAddedDateBtn = document.getElementById('clearAddedDateBtn');
+    const syncDatePlaceholders = () => {
+      [addedDateFrom, addedDateTo].forEach(input => {
+        input?.parentElement.classList.toggle('is-empty', !input.value);
+      });
+    };
+    syncDatePlaceholders();
+    addedDateFrom?.addEventListener('input', syncDatePlaceholders);
+    addedDateTo?.addEventListener('input', syncDatePlaceholders);
+    const updateAddedDates = () => {
+      syncDatePlaceholders();
+      addedDateFrom.max = addedDateTo.value;
+      addedDateTo.min = addedDateFrom.value;
+      clearAddedDateBtn.disabled = !addedDateFrom.value && !addedDateTo.value;
+      if (!addedDateFrom.reportValidity() || !addedDateTo.reportValidity()) return;
+      InventoryState.addedDateFrom = addedDateFrom.value;
+      InventoryState.addedDateTo = addedDateTo.value;
+      InventoryLoad.renderInventory();
+    };
+    addedDateFrom?.addEventListener('change', updateAddedDates);
+    addedDateTo?.addEventListener('change', updateAddedDates);
+    clearAddedDateBtn?.addEventListener('click', () => {
+      addedDateFrom.value = '';
+      addedDateTo.value = '';
+      updateAddedDates();
+      addedDateFrom.focus();
+    });
+
     // Filter tabs
     InventoryDOM.filterTabs.forEach(tab => {
       tab.addEventListener('click', () => {

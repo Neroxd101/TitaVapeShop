@@ -14,6 +14,8 @@ const InventoryPrint = {
             `Stock: ${stockLabels[InventoryState.stockFilter] || 'All Stock'}`
         ];
         if (InventoryState.searchQuery) filters.push(`Search: ${InventoryState.searchQuery}`);
+        if (InventoryState.addedDateFrom) filters.push(`Date added from: ${InventoryState.addedDateFrom}`);
+        if (InventoryState.addedDateTo) filters.push(`Date added to: ${InventoryState.addedDateTo}`);
         const totalUnits = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
         const rows = items.map((item, index) => {
             const quantity = Number(item.quantity || 0);

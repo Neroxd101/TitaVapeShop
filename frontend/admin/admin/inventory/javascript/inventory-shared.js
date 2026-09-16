@@ -6,6 +6,8 @@ const InventoryState = {
     inventoryItems: [],
     currentFilter: 'all',
     stockFilter: 'all',
+    addedDateFrom: '',
+    addedDateTo: '',
     searchQuery: '',
     editingItemId: null,
     deletingItemId: null,

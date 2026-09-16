@@ -65,7 +65,16 @@ const InventoryLoad = {
             const matchesStock = InventoryState.stockFilter === 'all'
                 || (InventoryState.stockFilter === 'low' && quantity > 0 && quantity <= 5)
                 || (InventoryState.stockFilter === 'none' && quantity === 0);
-            return matchesCategory && matchesSearch && matchesStock;
+            // Use the same local calendar date shown in the item details.
+            let matchesDate = true;
+            if (InventoryState.addedDateFrom || InventoryState.addedDateTo) {
+                const created = new Date(item.created_at);
+                const localDate = `${created.getFullYear()}-${String(created.getMonth() + 1).padStart(2, '0')}-${String(created.getDate()).padStart(2, '0')}`;
+                matchesDate = Boolean(item.created_at) && !Number.isNaN(created.getTime())
+                    && (!InventoryState.addedDateFrom || localDate >= InventoryState.addedDateFrom)
+                    && (!InventoryState.addedDateTo || localDate <= InventoryState.addedDateTo);
+            }
+            return matchesCategory && matchesSearch && matchesStock && matchesDate;
         });
     },
 
