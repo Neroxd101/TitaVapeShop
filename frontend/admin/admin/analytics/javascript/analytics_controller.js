@@ -5,13 +5,10 @@
 
 class AnalyticsController {
     constructor() {
-        const end = new Date();
-        const start = new Date(end);
-        start.setDate(start.getDate() - 6);
-        const dateValue = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        const range = this.getPresetRange(7);
         this.state = {
-            dateFrom: dateValue(start),
-            dateTo: dateValue(end),
+            dateFrom: range.from,
+            dateTo: range.to,
             reportRange: null,
             stats: null,
             report: null
@@ -38,15 +35,27 @@ class AnalyticsController {
         await this.loadDashboardData();
     }
 
+    getPresetRange(days, today = new Date()) {
+        const start = new Date(today);
+        start.setDate(start.getDate() - (days - 1));
+        const dateValue = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        return { from: dateValue(start), to: dateValue(today) };
+    }
+
     setupEventListeners() {
         const from = document.getElementById('analyticsDateFrom');
         const to = document.getElementById('analyticsDateTo');
+        const shortcuts = document.querySelectorAll('.analytics-date-shortcuts button');
         from.value = this.state.dateFrom;
         to.value = this.state.dateTo;
         const syncDateDisplays = () => {
             [from, to].forEach(input => {
                 const [year, month, day] = input.value.split('-');
                 input.nextElementSibling.textContent = input.value ? `${month}/${day}/${year}` : 'mm/dd/yyyy';
+            });
+            shortcuts.forEach(button => {
+                const range = this.getPresetRange(Number(button.dataset.rangeDays));
+                button.setAttribute('aria-pressed', String(from.value === range.from && to.value === range.to));
             });
         };
         syncDateDisplays();
@@ -65,6 +74,14 @@ class AnalyticsController {
         };
         from.addEventListener('change', updateDates);
         to.addEventListener('change', updateDates);
+        shortcuts.forEach(button => {
+            button.addEventListener('click', () => {
+                const range = this.getPresetRange(Number(button.dataset.rangeDays));
+                from.value = range.from;
+                to.value = range.to;
+                updateDates();
+            });
+        });
     }
 
     async loadDashboardData() {
