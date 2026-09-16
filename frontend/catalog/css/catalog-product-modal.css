@@ -1,4 +1,8 @@
 /* Modal Product Details (Desktop & General) */
+#productModal {
+    --product-gallery-height: 380px;
+}
+
 .modal-product-details {
     max-height: 88vh;
     display: flex;
@@ -30,7 +34,7 @@
     border-radius: 12px;
     overflow: hidden;
     background: #000;
-    height: 380px;
+    height: var(--product-gallery-height);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -400,6 +404,58 @@
         padding: 9px 14px !important;
         font-size: 13px !important;
         border-radius: 8px !important;
+    }
+}
+
+/* Give tablet layouts more room for the gallery and product details. */
+@media (min-width: 481px) and (max-width: 1024px) {
+    #productModal {
+        --product-gallery-height: 420px;
+    }
+
+    #productModal .modal-details .description {
+        display: block !important;
+        -webkit-line-clamp: unset !important;
+        overflow-y: auto !important;
+    }
+
+    #productModal .modal-product-details {
+        max-width: 860px !important;
+        max-height: 94vh !important;
+    }
+
+    #productModal .modal-image-container {
+        height: var(--product-gallery-height) !important;
+        max-height: var(--product-gallery-height) !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    #productModal {
+        --product-gallery-height: 310px;
+    }
+
+    #productModal .modal-product-details {
+        max-width: 600px !important;
+    }
+}
+
+/* Keep actions aligned with the gallery while longer descriptions scroll. */
+@media (min-width: 481px) and (min-height: 521px) {
+    #productModal .modal-details {
+        height: var(--product-gallery-height);
+        justify-content: flex-start !important;
+        overflow-y: auto;
+    }
+
+    #productModal .modal-details > * {
+        flex-shrink: 0;
+    }
+
+    #productModal .modal-details .description {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
     }
 }
 
