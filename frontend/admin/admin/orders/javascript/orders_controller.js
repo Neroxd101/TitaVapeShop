@@ -217,6 +217,78 @@ class OrdersController {
             });
         }
 
+        // Confirm Verify Payment Modal (Mark Paid)
+        const confirmVerifyPaymentModal = document.getElementById('confirmVerifyPaymentModal');
+        const closeVerifyPaymentModal = document.getElementById('closeVerifyPaymentModal');
+        const cancelVerifyPaymentBtn = document.getElementById('cancelVerifyPaymentBtn');
+        const confirmVerifyPaymentBtn = document.getElementById('confirmVerifyPaymentBtn');
+
+        if (closeVerifyPaymentModal) {
+            closeVerifyPaymentModal.addEventListener('click', () => {
+                if (confirmVerifyPaymentModal) confirmVerifyPaymentModal.classList.remove('show');
+                this.pendingPaymentAction = null;
+            });
+        }
+        if (cancelVerifyPaymentBtn) {
+            cancelVerifyPaymentBtn.addEventListener('click', () => {
+                if (confirmVerifyPaymentModal) confirmVerifyPaymentModal.classList.remove('show');
+                this.pendingPaymentAction = null;
+            });
+        }
+        if (confirmVerifyPaymentBtn) {
+            confirmVerifyPaymentBtn.addEventListener('click', () => {
+                if (this.pendingPaymentAction) {
+                    const { orderId, paymentStatus } = this.pendingPaymentAction;
+                    if (confirmVerifyPaymentModal) confirmVerifyPaymentModal.classList.remove('show');
+                    this.executeVerifyPayment(orderId, paymentStatus);
+                }
+            });
+        }
+        if (confirmVerifyPaymentModal) {
+            confirmVerifyPaymentModal.addEventListener('click', (e) => {
+                if (e.target === confirmVerifyPaymentModal) {
+                    confirmVerifyPaymentModal.classList.remove('show');
+                    this.pendingPaymentAction = null;
+                }
+            });
+        }
+
+        // Confirm Mark Unpaid / Reject Proof Modal
+        const confirmMarkUnpaidModal = document.getElementById('confirmMarkUnpaidModal');
+        const closeMarkUnpaidModal = document.getElementById('closeMarkUnpaidModal');
+        const cancelMarkUnpaidBtn = document.getElementById('cancelMarkUnpaidBtn');
+        const confirmMarkUnpaidBtn = document.getElementById('confirmMarkUnpaidBtn');
+
+        if (closeMarkUnpaidModal) {
+            closeMarkUnpaidModal.addEventListener('click', () => {
+                if (confirmMarkUnpaidModal) confirmMarkUnpaidModal.classList.remove('show');
+                this.pendingPaymentAction = null;
+            });
+        }
+        if (cancelMarkUnpaidBtn) {
+            cancelMarkUnpaidBtn.addEventListener('click', () => {
+                if (confirmMarkUnpaidModal) confirmMarkUnpaidModal.classList.remove('show');
+                this.pendingPaymentAction = null;
+            });
+        }
+        if (confirmMarkUnpaidBtn) {
+            confirmMarkUnpaidBtn.addEventListener('click', () => {
+                if (this.pendingPaymentAction) {
+                    const { orderId, paymentStatus } = this.pendingPaymentAction;
+                    if (confirmMarkUnpaidModal) confirmMarkUnpaidModal.classList.remove('show');
+                    this.executeVerifyPayment(orderId, paymentStatus);
+                }
+            });
+        }
+        if (confirmMarkUnpaidModal) {
+            confirmMarkUnpaidModal.addEventListener('click', (e) => {
+                if (e.target === confirmMarkUnpaidModal) {
+                    confirmMarkUnpaidModal.classList.remove('show');
+                    this.pendingPaymentAction = null;
+                }
+            });
+        }
+
         // Order Confirmed Success Modal
         const orderConfirmedSuccessModal = document.getElementById('orderConfirmedSuccessModal');
         const closeOrderConfirmedSuccessModal = document.getElementById('closeOrderConfirmedSuccessModal');
@@ -956,16 +1028,18 @@ class OrdersController {
                                 <p><strong>Payment Method:</strong> GCash / InstaPay</p>
                                 <p><strong>Payment Status:</strong> ${this.getPaymentBadge(paymentStatus)}</p>
                                 <p><strong>Reference No:</strong> ${order.payment_reference ? `<code>${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
-                                ${paymentStatus === 'pending_verification' || paymentStatus === 'unpaid' || paymentStatus === 'rejected' ? `
+                                ${paymentStatus === 'pending_verification' && Boolean(order.payment_reference || order.payment_receipt_url) ? `
                                     <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                                         <button class="btn btn-small btn-success" onclick="OrdersController.verifyPayment('${order.id}', 'paid')">
                                             ✓ Mark Paid
                                         </button>
-                                        ${paymentStatus === 'pending_verification' ? `
-                                            <button class="btn btn-small btn-danger" onclick="OrdersController.verifyPayment('${order.id}', 'rejected')">
-                                                ✕ Reject Proof
-                                            </button>
-                                        ` : ''}
+                                        <button class="btn btn-small btn-danger" onclick="OrdersController.verifyPayment('${order.id}', 'rejected')">
+                                            ✕ Reject Proof
+                                        </button>
+                                    </div>
+                                ` : paymentStatus === 'rejected' ? `
+                                    <div style="margin-top: 12px;">
+                                        <small class="text-muted" style="display: block; font-size: 11px; color: var(--error);">Proof rejected. Waiting for customer to re-upload new payment proof.</small>
                                     </div>
                                 ` : ''}
                             </div>
@@ -1072,13 +1146,50 @@ class OrdersController {
         }
     }
 
-    async verifyPayment(orderId, paymentStatus) {
-        try {
-            const confirmed = confirm(paymentStatus === 'paid' 
-                ? 'Confirm that payment has been received for this order?' 
-                : 'Mark this order payment as unpaid?');
-            if (!confirmed) return;
+    verifyPayment(orderId, paymentStatus) {
+        this.pendingPaymentAction = { orderId, paymentStatus };
 
+        if (paymentStatus === 'paid') {
+            const modal = document.getElementById('confirmVerifyPaymentModal');
+            if (modal) {
+                modal.classList.add('show');
+            } else {
+                // Fallback if modal DOM element is missing
+                if (confirm('Confirm that payment has been received for this order?')) {
+                    this.executeVerifyPayment(orderId, paymentStatus);
+                }
+            }
+        } else {
+            const modal = document.getElementById('confirmMarkUnpaidModal');
+            const titleEl = document.getElementById('markUnpaidModalTitle');
+            const msgEl = document.getElementById('markUnpaidModalMessage');
+            const subtextEl = document.getElementById('markUnpaidModalSubtext');
+
+            if (titleEl && msgEl && subtextEl) {
+                if (paymentStatus === 'rejected') {
+                    titleEl.textContent = 'Reject Payment Proof';
+                    msgEl.textContent = 'Are you sure you want to reject this payment receipt?';
+                    subtextEl.textContent = 'The customer will need to re-upload a valid proof of payment.';
+                } else {
+                    titleEl.textContent = 'Mark Payment as Unpaid';
+                    msgEl.textContent = 'Mark this order payment as unpaid?';
+                    subtextEl.textContent = 'The order payment status will be updated to unpaid.';
+                }
+            }
+
+            if (modal) {
+                modal.classList.add('show');
+            } else {
+                // Fallback if modal DOM element is missing
+                if (confirm(paymentStatus === 'rejected' ? 'Reject this payment proof?' : 'Mark this order payment as unpaid?')) {
+                    this.executeVerifyPayment(orderId, paymentStatus);
+                }
+            }
+        }
+    }
+
+    async executeVerifyPayment(orderId, paymentStatus) {
+        try {
             const response = await fetch('/api/orders/update_status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1105,6 +1216,8 @@ class OrdersController {
         } catch (err) {
             console.error('Error updating payment status:', err);
             alert('Error updating payment status. Please try again.');
+        } finally {
+            this.pendingPaymentAction = null;
         }
     }
 
