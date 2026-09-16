@@ -941,6 +941,85 @@
   }
 }
 
+/* Fit all order columns within landscape tablet widths. */
+@media (orientation: landscape) and (min-width: 769px) and (max-width: 1400px) {
+  .orders-table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .orders-table th,
+  .orders-table td {
+    min-width: 0 !important;
+    padding: 10px 6px !important;
+    font-size: 12px !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+
+  .orders-table th {
+    font-size: 11px !important;
+    letter-spacing: 0;
+  }
+
+  .orders-table :is(th, td).col-order-id { width: 8%; }
+  .orders-table :is(th, td).col-customer { width: 10%; }
+  .orders-table :is(th, td).col-contact { width: 11%; }
+  .orders-table :is(th, td).col-items { width: 11%; }
+  .orders-table :is(th, td).col-total { width: 9%; }
+  .orders-table :is(th, td).col-type { width: 9%; }
+  .orders-table :is(th, td).col-status { width: 8%; }
+  .orders-table :is(th, td).col-date { width: 10%; }
+  .orders-table :is(th, td).col-actions { width: 24%; }
+
+  .orders-table .badge {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .orders-table .contact-number {
+    max-width: 100%;
+    font-size: 12px;
+  }
+
+  .orders-table .contact-number span {
+    min-width: 0;
+  }
+
+  .orders-table .order-date-cell {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 3px !important;
+  }
+
+  .orders-table .order-date-main,
+  .orders-table .order-time-sub {
+    white-space: normal;
+    font-size: 11px !important;
+  }
+
+  .orders-table .order-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow: visible;
+  }
+
+  .orders-table .order-actions .btn {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    min-height: 36px;
+    padding: 6px 4px;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+}
+
 /* Void Order Modal & Reason Textarea */
 .void-reason-group {
   margin-bottom: 0;
