@@ -244,8 +244,9 @@ main {
     }
 
     .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
-        gap: 28px;
+        /* Fit five flexible cards across common laptop viewport widths. */
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 24px;
     }
 }
 
