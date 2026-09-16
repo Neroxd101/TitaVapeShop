@@ -37,6 +37,12 @@
   gap: 12px;
 }
 
+.analytics-details-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .analytics-details-header h2 {
   font-size: 20px;
 }

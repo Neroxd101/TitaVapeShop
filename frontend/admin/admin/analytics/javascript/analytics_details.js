@@ -6,6 +6,12 @@ const AnalyticsDetails = {
         this.status = document.getElementById('analyticsDetailsStatus');
         this.table = document.getElementById('analyticsDetailsTable');
         this.pager = document.getElementById('analyticsDetailsPager');
+        this.endpoints = {
+            statRevenue: '/api/analytics/total-profit-details',
+            statSalesCount: '/api/analytics/total-orders-details',
+            statItemsSold: '/api/analytics/items-sold-details',
+            statAvgSale: '/api/analytics/gross-sales-details'
+        };
         this.metrics = {
             statRevenue: ['Total Profit', 'totalProfit', true],
             statSalesCount: ['Total Orders', 'ordersCount', false],
@@ -29,6 +35,7 @@ const AnalyticsDetails = {
             });
         });
         document.getElementById('analyticsDetailsClose').addEventListener('click', () => this.dialog.close());
+        document.getElementById('analyticsDetailsPrint').addEventListener('click', () => this.printModalDetails());
         this.dialog.addEventListener('click', event => {
             if (event.target !== this.dialog) return;
             const rect = this.dialog.getBoundingClientRect();
@@ -44,39 +51,48 @@ const AnalyticsDetails = {
         return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(value);
     },
 
-    getView(report, metricId) {
-        if (metricId === 'statSalesCount' || metricId === 'statAvgSale') {
-            const isOrders = metricId === 'statSalesCount';
+    getViewFromRpc(rpcData, metricId) {
+        if (metricId === 'statSalesCount') {
             return {
-                headers: isOrders ? ['Date', 'Order / sale', 'Customer', 'Source', 'Items ordered', 'Order total']
-                    : ['Date', 'Order / sale', 'Customer', 'Sales amount'],
-                note: isOrders ? 'One row per completed customer order or POS sale counted in Total Orders. Voided sales are excluded.'
-                    : 'Recorded sales totals for completed orders and POS sales. Voided sales are excluded.',
+                headers: ['Date', 'Order / sale', 'Customer', 'Source', 'Items ordered', 'Order total'],
+                note: 'One row per completed customer order or POS sale counted in Total Orders. Voided sales are excluded.',
                 empty: 'No completed orders or sales found for this date range.',
-                rows: report.orders.map(order => {
-                    const values = [new Date(order.date).toLocaleString('en-PH'), order.id, order.customer];
-                    if (isOrders) values.push(order.source, order.items.map(item => `${item.name} × ${item.quantity}`).join(', ') || 'No item details recorded');
-                    values.push(this.money(order.total));
-                    return values;
-                })
+                totalValue: rpcData.total,
+                rows: (rpcData.rows || []).map(row => [
+                    new Date(row.date).toLocaleString('en-PH'),
+                    row.order_id,
+                    row.customer,
+                    row.source,
+                    row.items_summary || 'No item details recorded',
+                    this.money(row.total_amount)
+                ])
             };
         }
-        const products = new Map();
-        for (const line of report.lines) {
-            const key = line.productId ? String(line.productId).toLowerCase() : line.name;
-            const item = products.get(key) || { name: line.name, quantity: 0, profitCents: 0 };
-            item.quantity += line.quantity;
-            item.profitCents += Math.round(line.profit * 100);
-            products.set(key, item);
+        if (metricId === 'statAvgSale') {
+            return {
+                headers: ['Date', 'Order / sale', 'Customer', 'Sales amount'],
+                note: 'Recorded sales totals for completed orders and POS sales. Voided sales are excluded.',
+                empty: 'No completed orders or sales found for this date range.',
+                totalValue: rpcData.total,
+                rows: (rpcData.rows || []).map(row => [
+                    new Date(row.date).toLocaleString('en-PH'),
+                    row.order_id,
+                    row.customer,
+                    this.money(row.total_amount)
+                ])
+            };
         }
         const isProfit = metricId === 'statRevenue';
-        const items = [...products.values()].sort((a, b) => isProfit ? b.profitCents - a.profitCents : b.quantity - a.quantity);
         return {
             headers: ['Product', isProfit ? 'Profit' : 'Units sold'],
             note: isProfit ? 'Total profit per product sold in this date range. Voided sales are excluded.'
                 : 'Total quantity sold per product in this date range. Voided sales are excluded.',
             empty: 'No products sold for this date range.',
-            rows: items.map(item => [item.name, isProfit ? this.money(item.profitCents / 100) : item.quantity])
+            totalValue: rpcData.total,
+            rows: (rpcData.rows || []).map(row => [
+                row.product_name,
+                isProfit ? this.money(row.profit) : row.quantity_sold
+            ])
         };
     },
 
@@ -100,16 +116,19 @@ const AnalyticsDetails = {
         this.status.textContent = this.range ? 'Loading sale details…' : 'Wait for Analytics to finish loading, then open this card again.';
         if (!this.dialog.open) this.dialog.showModal();
         if (!this.range) return;
+        const endpoint = this.endpoints[metricId];
         const params = new URLSearchParams({
             start_date: new Date(`${this.range.from}T00:00:00`).toISOString(),
             end_date: new Date(`${this.range.to}T00:00:00`).toISOString()
         });
         try {
-            const response = await fetch(`/api/analytics/sale-details?${params}`, { signal: abort.signal });
+            const response = await fetch(`${endpoint}?${params}`, { signal: abort.signal });
             const result = await response.json();
             if (!response.ok || !result.success) throw new Error(result.error || 'Unable to load sale details.');
             if (abort.signal.aborted) return;
-            const view = this.getView(result.report, metricId);
+
+            const view = this.getViewFromRpc(result.rpcData, metricId);
+
             this.rows = view.rows;
             this.table.classList.toggle('analytics-details-products', metricId === 'statRevenue' || metricId === 'statItemsSold');
             const heading = document.getElementById('analyticsDetailsHead');
@@ -121,7 +140,19 @@ const AnalyticsDetails = {
                 heading.appendChild(cell);
             });
             document.getElementById('analyticsDetailsNote').textContent = view.note;
-            total.textContent = `${title}: ${currency ? this.money(result.report[key]) : result.report[key].toLocaleString()}`;
+            
+            this.currentView = {
+                title,
+                headers: view.headers,
+                rows: view.rows,
+                note: view.note,
+                period: document.getElementById('analyticsDetailsPeriod').textContent,
+                totalText: total.textContent
+            };
+
+            const totalVal = result.rpcData != null ? view.totalValue : result.report[key];
+            total.textContent = `${title}: ${currency ? this.money(totalVal) : Number(totalVal).toLocaleString()}`;
+            this.currentView.totalText = total.textContent;
             this.status.textContent = this.rows.length ? '' : view.empty;
             this.status.hidden = this.rows.length > 0;
             this.table.hidden = !this.rows.length;
@@ -149,6 +180,140 @@ const AnalyticsDetails = {
         document.getElementById('analyticsDetailsPage').textContent = `Page ${this.page + 1} of ${Math.max(1, Math.ceil(this.rows.length / 25))}`;
         document.getElementById('analyticsDetailsPrev').disabled = this.page === 0;
         document.getElementById('analyticsDetailsNext').disabled = (this.page + 1) * 25 >= this.rows.length;
+    },
+
+    printModalDetails() {
+        if (!this.currentView || !this.currentView.rows || !this.currentView.rows.length) {
+            alert('No details available to print.');
+            return;
+        }
+
+        const { title, headers, rows, note, period, totalText } = this.currentView;
+        const currentDate = new Date().toLocaleDateString('en-PH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert('Please allow popups to print.');
+            return;
+        }
+
+        const headerHtml = headers.map(h => `<th>${h}</th>`).join('');
+        const rowsHtml = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>${title} Details - ${currentDate}</title>
+    <style>
+        @media print {
+            @page { margin: 1cm; size: auto; }
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #111;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #222;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            margin: 0 0 4px;
+            font-size: 22px;
+        }
+        .header h2 {
+            margin: 0 0 6px;
+            font-size: 16px;
+            color: #444;
+            font-weight: 500;
+        }
+        .header p {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+        }
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f4f4f5;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        .summary-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f766e;
+        }
+        .note {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Tita's Vape Shop</h1>
+        <h2>${title} Details Report</h2>
+        <p>Printed on ${currentDate}${period ? ` | Period: ${period}` : ''}</p>
+    </div>
+    <div class="summary">
+        <div><strong>Total Records:</strong> ${rows.length}</div>
+        <div class="summary-total">${totalText}</div>
+    </div>
+    ${note ? `<div class="note">${note}</div>` : ''}
+    <table>
+        <thead>
+            <tr>${headerHtml}</tr>
+        </thead>
+        <tbody>
+            ${rowsHtml}
+        </tbody>
+    </table>
+    <div class="footer">Generated by Tita's Vape Shop Management System</div>
+</body>
+</html>`;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+        }, 300);
     }
 };
 window.AnalyticsDetails = AnalyticsDetails;

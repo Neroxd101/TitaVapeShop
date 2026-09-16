@@ -10,31 +10,44 @@
 
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../../../../database/supabase');
+const { supabase } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
-const { getSaleDetails } = require('./analytics_sale_details');
 
-router.get('/api/analytics/sale-details', isAuthenticated, hasRole(['admin']), async (req, res) => {
-    const start = new Date(req.query.start_date);
-    const end = new Date(req.query.end_date);
-    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || start > end) {
-        return res.status(400).json({ success: false, error: 'Choose a valid date range.' });
-    }
-    // Direct table reads require the server-only service role; the public client
-    // silently returns no rows under RLS. Admin authentication is enforced above.
-    if (!supabaseAdmin) return res.status(503).json({
-        success: false,
-        error: 'Sale details are unavailable: the server administrator must configure SUPABASE_SERVICE_ROLE_KEY.'
-    });
-    // The dashboard RPCs include the entire end day.
-    end.setTime(end.getTime() + 86400000);
+// GET /api/analytics/total-profit-details
+router.get('/api/analytics/total-profit-details', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
-        const report = await getSaleDetails(supabaseAdmin, start.toISOString(), end.toISOString());
+        if (!supabase) {
+            return res.status(500).json({ success: false, error: 'Database not configured' });
+        }
+
+        const rpcParams = {
+            p_start_date: req.query.start_date || null,
+            p_end_date: req.query.end_date || null
+        };
+
+        const { data, error } = await supabase.rpc('analytics_modal_total_profit', rpcParams);
+
+        if (error) {
+            console.error('RPC Error in total profit details API:', error);
+            return res.status(400).json({
+                success: false,
+                error: error.message || 'Failed to fetch total profit details'
+            });
+        }
+
         res.set('Cache-Control', 'private, no-store');
-        res.json({ success: true, report });
+        res.json({
+            success: true,
+            rpcData: data
+        });
+
     } catch (error) {
-        console.error('Analytics sale details failed:', error);
-        res.status(500).json({ success: false, error: 'Unable to load sale details. Please try again.' });
+        console.error('Error in total profit details API:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error',
+            details: error.message
+        });
     }
 });
 
