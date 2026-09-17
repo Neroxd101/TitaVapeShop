@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // GET /inventory and GET /admin/inventory - Serve inventory page
@@ -14,7 +14,7 @@ router.get('/admin/inventory', isAuthenticated, hasRole(['admin']), serveInvento
 // GET /inventory/inventory_get_all - Get all inventory items
 router.get('/inventory/inventory_get_all', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -22,7 +22,7 @@ router.get('/inventory/inventory_get_all', isAuthenticated, hasRole(['admin', 's
 
         // Call database RPC function directly
         // All filtering and sorting is done in the database
-        const { data, error } = await supabase.rpc('inventory_get_all', {
+        const { data, error } = await supabaseAdmin.rpc('inventory_get_all', {
             filter_category: category || null,
             filter_search: search || null
         });

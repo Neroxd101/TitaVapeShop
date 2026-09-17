@@ -4,7 +4,7 @@
 -- Uses stored total_profit column from inventory table
 -- =============================================
 
-CREATE OR REPLACE FUNCTION inventory_get_all(
+CREATE OR REPLACE FUNCTION public.inventory_get_all(
     filter_category VARCHAR(20) DEFAULT NULL,
     filter_search VARCHAR(100) DEFAULT NULL
 )
@@ -43,4 +43,14 @@ BEGIN
         AND (filter_search IS NULL OR filter_search = '' OR i.name ILIKE '%' || filter_search || '%')
     ORDER BY i.created_at DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Only the trusted backend service-role client may call this RPC.
+-- Browser clients using the public anon key cannot execute it directly.
+REVOKE ALL ON FUNCTION public.inventory_get_all(VARCHAR, VARCHAR)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.inventory_get_all(VARCHAR, VARCHAR)
+TO service_role;
