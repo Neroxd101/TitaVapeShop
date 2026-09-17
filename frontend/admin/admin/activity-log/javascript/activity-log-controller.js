@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Initialize sidebar
-    if (typeof initSidebar === 'function') initSidebar('transactions');
+    if (typeof initSidebar === 'function') initSidebar('activity-log');
 
     // Initialize Modules
     const data = new TransactionsData();
