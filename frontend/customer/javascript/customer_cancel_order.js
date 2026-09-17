@@ -40,11 +40,7 @@ const CustomerCancelOrder = {
 
       // Update cached order status in localStorage if present
       try {
-        const storedOrders = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
-        if (Array.isArray(storedOrders)) {
-          const updated = storedOrders.map(o => o.id === orderId ? { ...o, status: 'cancelled' } : o);
-          localStorage.setItem('tita_recent_orders', JSON.stringify(updated));
-        }
+        window.CustomerOrderCache.upsert(data.order);
 
         const activeOrder = JSON.parse(localStorage.getItem('activeOrder') || 'null');
         if (activeOrder && activeOrder.id === orderId) {

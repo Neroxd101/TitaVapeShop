@@ -10,7 +10,6 @@ class AnalyticsController {
             dateFrom: range.from,
             dateTo: range.to,
             reportRange: null,
-            stats: null,
             report: null
         };
     }

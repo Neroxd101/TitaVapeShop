@@ -13,10 +13,10 @@ const AnalyticsDetails = {
             statAvgSale: window.AnalyticsModalGrossSales
         };
         this.metrics = {
-            statRevenue: ['Total Profit', 'totalProfit', true],
-            statSalesCount: ['Total Orders', 'ordersCount', false],
-            statItemsSold: ['Items Sold', 'itemsSold', false],
-            statAvgSale: ['Gross Sales', 'grossSales', true]
+            statRevenue: ['Total Profit', true],
+            statSalesCount: ['Total Orders', false],
+            statItemsSold: ['Items Sold', false],
+            statAvgSale: ['Gross Sales', true]
         };
         Object.keys(this.metrics).forEach(id => {
             const card = document.getElementById(id).closest('.stat-card');
@@ -101,7 +101,7 @@ const AnalyticsDetails = {
         const abort = this.abort = new AbortController();
         this.metricId = metricId;
         this.range = selectedRange || this.controller.state.reportRange;
-        const [title, key, currency] = this.metrics[metricId];
+        const [title, currency] = this.metrics[metricId];
         document.getElementById('analyticsDetailsTitle').textContent = `${title} Details`;
         const total = document.getElementById('analyticsDetailsTotal');
         total.textContent = '';
@@ -148,7 +148,7 @@ const AnalyticsDetails = {
                 totalText: total.textContent
             };
 
-            const totalVal = result.rpcData != null ? view.totalValue : result.report[key];
+            const totalVal = view.totalValue;
             total.textContent = `${title}: ${currency ? this.money(totalVal) : Number(totalVal).toLocaleString()}`;
             this.currentView.totalText = total.textContent;
             this.status.textContent = this.rows.length ? '' : view.empty;

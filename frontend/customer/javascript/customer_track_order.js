@@ -54,27 +54,7 @@ const CustomerTrackOrder = {
       }
 
       if (data && data.success && data.order) {
-        // Synchronize localStorage cache
-        try {
-          let orders = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
-          if (!Array.isArray(orders)) orders = [];
-          const existingIndex = orders.findIndex(o => o.id === data.order.id);
-          const orderEntry = {
-            id: data.order.id,
-            order_type: data.order.order_type,
-            total_amount: data.order.total_amount,
-            status: data.order.status,
-            created_at: data.order.created_at,
-            customer_name: data.order.customer_name,
-            updated_at: new Date().toISOString()
-          };
-          if (existingIndex >= 0) {
-            orders[existingIndex] = { ...orders[existingIndex], ...orderEntry };
-          } else {
-            orders.unshift(orderEntry);
-          }
-          localStorage.setItem('tita_recent_orders', JSON.stringify(orders));
-        } catch (_) {}
+        window.CustomerOrderCache.upsert(data.order);
 
         return { success: true, order: data.order, status: 200 };
       }

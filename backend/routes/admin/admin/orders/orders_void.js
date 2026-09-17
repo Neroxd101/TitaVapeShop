@@ -4,12 +4,11 @@ const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect orders routes - Admin and Staff
-router.use(isAuthenticated, hasRole(['admin', 'staff']));
 
 /**
  * POST /api/orders/void - Void an order (1-to-1 RPC to orders_void)
  */
-router.post('/api/orders/void', async (req, res) => {
+router.post('/api/orders/void', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
         if (!supabaseAdmin) {
             return res.status(503).json({ success: false, error: 'Order voiding requires the server database service key.' });

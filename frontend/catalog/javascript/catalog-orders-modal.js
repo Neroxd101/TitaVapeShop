@@ -206,9 +206,7 @@ const CatalogOrdersModal = {
           created_at: remote.created_at,
           customer_name: remote.customer_name
         }));
-        try {
-          localStorage.setItem('tita_recent_orders', JSON.stringify(orders));
-        } catch (_) {}
+
 
         if (orders.length > 0) {
           this.emptyState.style.display = 'none';

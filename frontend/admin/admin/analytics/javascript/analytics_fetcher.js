@@ -28,7 +28,7 @@ const AnalyticsFetcher = {
                 window.AnalyticsTopProducts.getData(filters),
                 window.AnalyticsCategoryStats.getData(filters)
             ]);
-            const report = { rawSales: [] };
+            const report = {};
             for (const { success, ...data } of results) Object.assign(report, data);
             return { success: true, report };
         } catch (error) {

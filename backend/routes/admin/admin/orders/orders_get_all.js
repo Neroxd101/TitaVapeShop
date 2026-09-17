@@ -4,10 +4,9 @@ const { supabase, supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect orders routes
-router.use(isAuthenticated, hasRole(['admin', 'staff']));
 
 // GET /api/orders/get_all - Get all orders (1-to-1 RPC)
-router.get('/api/orders/get_all', async (req, res) => {
+router.get('/api/orders/get_all', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
         const client = supabaseAdmin || supabase;
         if (!client) {

@@ -26,10 +26,7 @@ const CustomerAuth = {
     if (!container) return;
 
     try {
-      let res = await fetch('/customer/customer-auth-modal.html');
-      if (!res.ok) {
-        res = await fetch('/catalog/customer-auth-modal.html');
-      }
+      const res = await fetch('/customer/customer-auth-modal.html');
       if (res.ok) {
         container.innerHTML = await res.text();
         this.setupEventListeners();

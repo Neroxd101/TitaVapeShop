@@ -280,7 +280,6 @@
         throw new Error(result?.error || 'Unable to cancel your order. Please try again.');
       }
       currentOrder = result.order;
-      saveOrderToLocalStorage(currentOrder);
       renderOrder(currentOrder);
       cancelOrderMessage.textContent = 'Your order has been cancelled.';
       cancelOrderDialog.close();
@@ -322,7 +321,6 @@
         currentOrder = result.order;
 
         // Save order to localStorage for recent orders modal
-        saveOrderToLocalStorage(currentOrder);
 
         renderOrder(currentOrder);
         showState('content');
@@ -345,40 +343,6 @@
       if (!isSilentRefresh) {
         showError('Connection Error', 'Unable to retrieve order. Please check your internet connection.');
       }
-    }
-  }
-
-  /**
-   * Save order to localStorage for quick customer retrieval
-   */
-  function saveOrderToLocalStorage(order) {
-    if (!order || !order.id) return;
-    try {
-      let orders = JSON.parse(localStorage.getItem('tita_recent_orders') || '[]');
-      if (!Array.isArray(orders)) orders = [];
-
-      const existingIndex = orders.findIndex(o => o.id === order.id);
-      const orderEntry = {
-        id: order.id,
-        order_type: order.order_type,
-        total_amount: order.total_amount,
-        status: order.status,
-        created_at: order.created_at,
-        customer_name: order.customer_name,
-        updated_at: new Date().toISOString()
-      };
-
-      if (existingIndex >= 0) {
-        orders[existingIndex] = { ...orders[existingIndex], ...orderEntry };
-      } else {
-        orders.unshift(orderEntry);
-      }
-
-      // Keep latest 15 orders
-      orders = orders.slice(0, 15);
-      localStorage.setItem('tita_recent_orders', JSON.stringify(orders));
-    } catch (e) {
-      console.warn('LocalStorage save error:', e);
     }
   }
 

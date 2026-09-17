@@ -4,10 +4,9 @@ const { supabase } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect all inventory routes
-router.use(isAuthenticated, hasRole(['admin', 'staff']));
 
 // GET /inventory/inventory_get_sales_history/:id - Get sales history for an item
-router.get('/inventory/inventory_get_sales_history/:id', async (req, res) => {
+router.get('/inventory/inventory_get_sales_history/:id', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
         if (!supabase) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
