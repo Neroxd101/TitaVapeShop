@@ -11,22 +11,13 @@ const CustomerGetOrders = {
    */
   async fetchOrders(limit = 25) {
     try {
-      let res = await fetch('/api/customer/orders/batch', {
+      const res = await fetch('/api/customer/orders/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ limit })
       });
 
-      if (!res.ok && res.status === 404) {
-        // Fallback to alias if needed
-        res = await fetch('/api/orders/track-batch', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ limit })
-        });
-      }
 
       const data = await res.json();
 

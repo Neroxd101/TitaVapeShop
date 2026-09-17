@@ -11,22 +11,13 @@ const CustomerSubmitPaymentProof = {
    */
   async submit(paymentData) {
     try {
-      let response = await fetch('/api/customer/orders/submit-payment', {
+      const response = await fetch('/api/customer/orders/submit-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(paymentData)
       });
 
-      if (!response.ok && response.status === 404) {
-        // Fallback to alias if needed
-        response = await fetch('/api/orders/submit-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(paymentData)
-        });
-      }
 
       const result = await response.json().catch(() => ({ success: false, error: 'Network error parsing response' }));
 

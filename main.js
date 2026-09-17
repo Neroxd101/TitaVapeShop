@@ -60,7 +60,6 @@ const transactionsReportRoutes = require('./backend/routes/admin/admin/activity-
 
 // Analytics routes
 const analyticsServeRoutes = require('./backend/routes/admin/admin/analytics/analytics_controller');
-const analyticsDashboardRoutes = require('./backend/routes/admin/admin/analytics/analytics_dashboard');
 const analyticsTotalProfitRoutes = require('./backend/routes/admin/admin/analytics/analytics_total_profit');
 const analyticsTotalOrdersRoutes = require('./backend/routes/admin/admin/analytics/analytics_total_orders');
 const analyticsItemsSoldRoutes = require('./backend/routes/admin/admin/analytics/analytics_items_sold');
@@ -138,7 +137,6 @@ app.use('/', transactionsListRoutes);
 app.use('/', transactionsStatsRoutes);
 app.use('/', transactionsReportRoutes);
 app.use('/', analyticsServeRoutes);
-app.use('/', analyticsDashboardRoutes);
 app.use('/', analyticsTotalProfitRoutes);
 app.use('/', analyticsTotalOrdersRoutes);
 app.use('/', analyticsItemsSoldRoutes);

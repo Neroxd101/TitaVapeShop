@@ -235,18 +235,7 @@
         phone: currentOrder.contact_number
       };
 
-      let result;
-      if (window.CustomerSubmitPaymentProof) {
-        result = await window.CustomerSubmitPaymentProof.submit(paymentPayload);
-      } else {
-        const response = await fetch('/api/customer/orders/submit-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(paymentPayload)
-        });
-        result = await response.json();
-      }
+      const result = await window.CustomerSubmitPaymentProof.submit(paymentPayload);
 
       if (!result || !result.success) {
         throw new Error(result?.error || 'Failed to record payment proof. Please try again.');
@@ -285,21 +274,7 @@
     cancelOrderBtn.textContent = 'Cancelling...';
     cancelOrderMessage.hidden = true;
     try {
-      let result = null;
-      if (window.CustomerCancelOrder && typeof window.CustomerCancelOrder.cancelOrder === 'function') {
-        result = await window.CustomerCancelOrder.cancelOrder(currentOrder.id, contactNumberInput?.value?.trim());
-      } else {
-        const response = await fetch('/api/orders/cancel', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: currentOrder.id, phone: contactNumberInput?.value?.trim() })
-        });
-        if (response.redirected || !response.headers.get('content-type')?.includes('application/json')) {
-          throw new Error('Cancellation is unavailable. The app server may need restarting to load the latest update.');
-        }
-        const data = await response.json();
-        result = data;
-      }
+      const result = await window.CustomerCancelOrder.cancelOrder(currentOrder.id, contactNumberInput?.value?.trim());
 
       if (!result || !result.success || !result.order) {
         throw new Error(result?.error || 'Unable to cancel your order. Please try again.');
@@ -339,24 +314,7 @@
     }
 
     try {
-      let result = null;
-      if (window.CustomerTrackOrder && typeof window.CustomerTrackOrder.trackOrder === 'function') {
-        result = await window.CustomerTrackOrder.trackOrder(targetId, phoneInput || '');
-      } else {
-        let url = `/api/orders/track?id=${encodeURIComponent(targetId)}`;
-        if (phoneInput) {
-          url += `&phone=${encodeURIComponent(phoneInput)}`;
-        }
-        const response = await fetch(url);
-        const data = await response.json().catch(() => null);
-        result = {
-          success: response.ok && data?.success,
-          order: data?.order,
-          requiresPhone: response.status === 401 && data?.requiresPhone,
-          status: response.status,
-          error: data?.error
-        };
-      }
+      const result = await window.CustomerTrackOrder.trackOrder(targetId, phoneInput || '');
 
       if (requestVersion !== orderRequestVersion) return;
 

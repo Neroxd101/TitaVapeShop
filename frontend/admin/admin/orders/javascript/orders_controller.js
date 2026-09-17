@@ -870,18 +870,7 @@ class OrdersController {
             button.disabled = true;
             errorBox.textContent = '';
             try {
-                let result;
-                if (window.OrdersVoid && typeof window.OrdersVoid.voidOrder === 'function') {
-                    result = await window.OrdersVoid.voidOrder(orderId, reason);
-                } else {
-                    const response = await fetch('/api/orders/void', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ order_id: orderId, reason })
-                    });
-                    result = await response.json();
-                }
+                const result = await window.OrdersVoid.voidOrder(orderId, reason);
 
                 if (!result || !result.success) throw new Error(result?.error || 'Unable to void order.');
                 modal.classList.remove('show');

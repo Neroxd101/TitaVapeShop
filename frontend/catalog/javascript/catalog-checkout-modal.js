@@ -158,37 +158,14 @@ const CatalogCheckoutModal = {
         let isRedirecting = false;
 
         try {
-            let result;
-            if (window.CustomerCreateOrder) {
-                result = await window.CustomerCreateOrder.submit({
-                    customer_name: customerName,
-                    contact_number: digitsOnly,
-                    customer_email: customerEmail,
-                    order_type: orderType,
-                    items: items,
-                    total_amount: totalAmount
-                });
-            } else {
-                const response = await fetch('/api/orders/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        customer_name: customerName,
-                        contact_number: digitsOnly,
-                        customer_email: customerEmail,
-                        order_type: orderType,
-                        items: items,
-                        total_amount: totalAmount
-                    })
-                });
-                result = await response.json();
-                if (response.status === 401 || response.status === 403) {
-                    result.requiresAuth = true;
-                }
-            }
+            const result = await window.CustomerCreateOrder.submit({
+                customer_name: customerName,
+                contact_number: digitsOnly,
+                customer_email: customerEmail,
+                order_type: orderType,
+                items: items,
+                total_amount: totalAmount
+            });
 
             // Authentication or verification required from server
             if (result.requiresAuth) {

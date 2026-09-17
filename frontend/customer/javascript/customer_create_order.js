@@ -11,22 +11,13 @@ const CustomerCreateOrder = {
    */
   async submit(orderData) {
     try {
-      let response = await fetch('/api/customer/orders/create', {
+      const response = await fetch('/api/customer/orders/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(orderData)
       });
 
-      if (!response.ok && response.status === 404) {
-        // Fallback to alias if needed
-        response = await fetch('/api/orders/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(orderData)
-        });
-      }
 
       const result = await response.json();
 

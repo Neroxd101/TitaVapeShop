@@ -73,20 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function fetchProducts() {
         try {
-            if (window.CatalogGetProducts) {
-                const result = await window.CatalogGetProducts.fetchProducts();
-                if (result.success) {
-                    allProducts = result.data;
-                    if (window.CatalogProductModal) {
-                        CatalogProductModal.allProducts = allProducts;
-                    }
-                    filterAndRender();
-                    return;
-                }
-            }
-
-            const response = await fetch('/api/catalog/products');
-            const result = await response.json();
+            const result = await window.CatalogGetProducts.fetchProducts();
 
             if (result.success) {
                 allProducts = result.data;

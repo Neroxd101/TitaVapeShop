@@ -19,12 +19,8 @@ const CatalogGetProducts = {
       if (search) params.append('search', search);
 
       const qs = params.toString() ? `?${params.toString()}` : '';
-      let res = await fetch(`/api/catalog/products${qs}`);
+      const res = await fetch(`/api/catalog/products${qs}`);
       
-      if (!res.ok) {
-        // Fallback to alias if needed
-        res = await fetch(`/api/inventory/list${qs}`);
-      }
 
       const result = await res.json();
       if (result.success && Array.isArray(result.data)) {

@@ -16,7 +16,7 @@ const CustomerCancelOrder = {
     }
 
     try {
-      let res = await fetch('/api/customer/orders/cancel', {
+      const res = await fetch('/api/customer/orders/cancel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -24,14 +24,6 @@ const CustomerCancelOrder = {
       });
 
       // Fallback to alias if needed
-      if (!res.ok && res.status === 404) {
-        res = await fetch('/api/orders/cancel', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ id: orderId, phone: phone ? phone.trim() : undefined })
-        });
-      }
 
       if (res.redirected || !res.headers.get('content-type')?.includes('application/json')) {
         throw new Error('Cancellation service is unavailable. Please try again.');
