@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../../../../database/supabase');
-const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
+const { isAuthenticated } = require('../../../../middleware/authMiddleware');
 
 /**
  * Log a transaction/activity via RPC function
@@ -67,6 +67,5 @@ const handleLogTransaction = async (req, res) => {
 };
 
 router.post('/transactions/transactions_log', isAuthenticated, handleLogTransaction);
-router.post('/activity-log/transactions_log', isAuthenticated, handleLogTransaction);
 
 module.exports = router;

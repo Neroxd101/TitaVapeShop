@@ -9,7 +9,5 @@ const serveActivityLog = (req, res) => {
 };
 
 router.get('/activity-log', isAuthenticated, hasRole(['admin']), serveActivityLog);
-router.get('/admin/activity-log', isAuthenticated, hasRole(['admin']), serveActivityLog);
-router.get('/transactions', isAuthenticated, hasRole(['admin']), serveActivityLog);
 
 module.exports = router;

@@ -55,8 +55,6 @@ const salesEmailRoutes = require('./backend/routes/admin/admin/pos/email_send_re
 const transactionsServeRoutes = require('./backend/routes/admin/admin/activity-log/activity_log_controller');
 const transactionsLogRoutes = require('./backend/routes/admin/admin/activity-log/transactions_log');
 const transactionsListRoutes = require('./backend/routes/admin/admin/activity-log/transactions_get_all');
-const transactionsStatsRoutes = require('./backend/routes/admin/admin/activity-log/transactions_get_stats');
-const transactionsReportRoutes = require('./backend/routes/admin/admin/activity-log/transactions_get_report');
 
 // Analytics routes
 const analyticsServeRoutes = require('./backend/routes/admin/admin/analytics/analytics_controller');
@@ -134,8 +132,6 @@ app.use('/', uploadRoutes);
 app.use('/', transactionsServeRoutes);
 app.use('/', transactionsLogRoutes);
 app.use('/', transactionsListRoutes);
-app.use('/', transactionsStatsRoutes);
-app.use('/', transactionsReportRoutes);
 app.use('/', analyticsServeRoutes);
 app.use('/', analyticsTotalProfitRoutes);
 app.use('/', analyticsTotalOrdersRoutes);

@@ -43,6 +43,5 @@ const handleGetAllTransactions = async (req, res) => {
 };
 
 router.get('/transactions/transactions_get_all', isAuthenticated, hasRole(['admin']), handleGetAllTransactions);
-router.get('/activity-log/transactions_get_all', isAuthenticated, hasRole(['admin']), handleGetAllTransactions);
 
 module.exports = router;
