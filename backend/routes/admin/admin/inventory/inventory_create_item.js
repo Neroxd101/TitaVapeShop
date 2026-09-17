@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect all inventory routes
 // POST /inventory/inventory_create_item - Create new item
 router.post('/inventory/inventory_create_item', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -19,7 +19,7 @@ router.post('/inventory/inventory_create_item', isAuthenticated, hasRole(['admin
         }
 
         // Call database RPC function
-        const { data, error } = await supabase.rpc('inventory_create_item', {
+        const { data, error } = await supabaseAdmin.rpc('inventory_create_item', {
             p_category: category,
             p_name: name,
             p_description: description || null,

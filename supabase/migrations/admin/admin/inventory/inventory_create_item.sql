@@ -3,7 +3,7 @@
 -- Creates a new inventory item via RPC
 -- =============================================
 
-CREATE OR REPLACE FUNCTION inventory_create_item(
+CREATE OR REPLACE FUNCTION public.inventory_create_item(
     p_category VARCHAR(20),
     p_name VARCHAR(100),
     p_description TEXT DEFAULT NULL,
@@ -91,4 +91,15 @@ BEGIN
         new_item.created_at,
         new_item.updated_at;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Only the trusted backend service-role client may create inventory items.
+REVOKE ALL ON FUNCTION public.inventory_create_item(
+    VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+) FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.inventory_create_item(
+    VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+) TO service_role;
