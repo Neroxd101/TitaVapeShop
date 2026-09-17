@@ -132,6 +132,106 @@
   z-index: 1100;
 }
 
+/* Tablet Toolbar (600px to 1024px): Strictly 2 rows
+   Row 1: Category tabs (All, Hardware, Juices)
+   Row 2: Search + Scan QR + Checkout
+*/
+@media (min-width: 600px) and (max-width: 1024px) {
+  .filter-tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Row 1: Category tabs spanning full width */
+  .filter-tabs .filter-tabs-group {
+    order: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    flex: 1 0 100% !important;
+    margin: 0 !important;
+  }
+
+  .filter-tabs .filter-tab {
+    flex: 1 1 0 !important;
+    width: 100% !important;
+    height: 40px !important;
+    font-size: 13px !important;
+    padding: 10px 16px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+  }
+
+  .filter-tabs .filter-tab.active {
+    border-color: transparent !important;
+  }
+
+  /* Row 2: Search (left, absorbs available space) + Scan QR & Checkout actions (right) */
+  .filter-tabs .search-box {
+    order: 2 !important;
+    flex: 1 1 200px !important;
+    min-width: 160px !important;
+    max-width: none !important;
+    height: 40px !important;
+    margin: 0 !important;
+  }
+
+  .filter-tabs .search-box input {
+    height: 40px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border) !important;
+    box-sizing: border-box !important;
+  }
+
+  .filter-tabs .filter-tabs-actions {
+    order: 3 !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+  }
+
+  .filter-tabs .filter-tabs-actions .btn {
+    height: 40px !important;
+    font-size: 13px !important;
+    padding: 10px 16px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+
+  .filter-tabs .filter-tabs-actions .btn svg {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .product-list {
