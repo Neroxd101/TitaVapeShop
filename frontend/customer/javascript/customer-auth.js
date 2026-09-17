@@ -89,7 +89,7 @@ const CustomerAuth = {
 
   /**
    * Open modal in specific view
-   * @param {'signin'|'register'|'verify'|'profile'|'privacy'|'forgot'|'reset-otp'|'reset-pwd'} view
+   * @param {'signin'|'register'|'verify'|'profile'|'forgot'|'reset-otp'|'reset-pwd'} view
    * @param {string} [notice]
    */
   open(view = 'signin', notice = null) {
@@ -128,7 +128,6 @@ const CustomerAuth = {
     const signInView = document.getElementById('customerSignInView');
     const regView = document.getElementById('customerRegisterView');
     const verifyView = document.getElementById('customerVerifyView');
-    const privacyView = document.getElementById('customerPrivacyView');
     const profileView = document.getElementById('customerProfileView');
     const forgotPwdView = document.getElementById('customerForgotPwdView');
     const resetOtpView = document.getElementById('customerResetOtpView');
@@ -139,7 +138,6 @@ const CustomerAuth = {
 
     const modalContent = document.querySelector('.customer-auth-modal-content');
     if (modalContent) {
-      modalContent.classList.toggle('privacy-active', view === 'privacy');
       modalContent.classList.toggle('signin-active', view === 'signin');
       modalContent.classList.toggle('verify-active', view === 'verify');
       modalContent.classList.toggle('register-active', view === 'register');
@@ -152,7 +150,6 @@ const CustomerAuth = {
     if (signInView) signInView.style.display = view === 'signin' ? 'block' : 'none';
     if (regView) regView.style.display = view === 'register' ? 'block' : 'none';
     if (verifyView) verifyView.style.display = view === 'verify' ? 'block' : 'none';
-    if (privacyView) privacyView.style.display = view === 'privacy' ? 'block' : 'none';
     if (profileView) profileView.style.display = view === 'profile' ? 'block' : 'none';
     if (forgotPwdView) forgotPwdView.style.display = view === 'forgot' ? 'block' : 'none';
     if (resetOtpView) resetOtpView.style.display = isResetOtp ? 'block' : 'none';
@@ -336,18 +333,33 @@ const CustomerAuth = {
       });
     }
 
-    // Privacy View
-    const openPrivacyBtn = document.getElementById('openPrivacyModalBtn');
-    if (openPrivacyBtn) {
-      openPrivacyBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.switchView('privacy');
-      });
-    }
-    const closePrivacyBtn = document.getElementById('customerClosePrivacyBtn');
-    if (closePrivacyBtn) {
-      closePrivacyBtn.addEventListener('click', () => this.switchView('register'));
-    }
+    // Both notices require explicit acceptance.
+    ['Terms', 'Privacy'].forEach((notice) => {
+      const checkbox = document.getElementById(`customerReg${notice}Check`);
+      const dialog = document.getElementById(`customer${notice}Dialog`);
+      const acceptBtn = document.getElementById(`customerAccept${notice}Btn`);
+      const closeBtn = document.getElementById(`customerClose${notice}Btn`);
+      if (checkbox && dialog && acceptBtn && closeBtn) {
+        checkbox.addEventListener('click', (e) => {
+          if (!checkbox.checked) return; // Allow withdrawing an existing acceptance.
+          e.preventDefault();
+          dialog.showModal();
+          dialog.scrollTop = 0;
+          document.getElementById(`customer${notice}Title`)?.focus();
+        });
+        acceptBtn.addEventListener('click', () => {
+          checkbox.checked = true;
+          checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+          dialog.close();
+        });
+        closeBtn.addEventListener('click', () => dialog.close());
+        dialog.addEventListener('cancel', (e) => e.stopPropagation());
+        dialog.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') e.stopPropagation();
+        });
+        dialog.addEventListener('close', () => checkbox.focus());
+      }
+    });
 
     // Sign In Password Toggle
     const toggleSignInPassword = document.getElementById('toggleCustomerSignInPassword');
@@ -773,7 +785,8 @@ const CustomerAuth = {
       birthday: document.getElementById('customerRegBirthday').value,
       password: document.getElementById('customerRegPassword').value,
       confirm_password: document.getElementById('customerRegConfirmPassword')?.value || '',
-      privacy_check: document.getElementById('customerRegPrivacyCheck')?.checked || false
+      privacy_check: document.getElementById('customerRegPrivacyCheck')?.checked || false,
+      terms_accepted: document.getElementById('customerRegTermsCheck')?.checked || false
     };
 
     const validation = window.CustomerRegister.validate(payload);
@@ -791,7 +804,8 @@ const CustomerAuth = {
       email: payload.email,
       contact_number: payload.contact_number,
       birthday: payload.birthday,
-      password: payload.password
+      password: payload.password,
+      terms_accepted: payload.terms_accepted
     });
 
     if (!result.success) {

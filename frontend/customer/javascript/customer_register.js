@@ -5,7 +5,7 @@
 const CustomerRegister = {
   /**
    * Submit registration request
-   * @param {{full_name: string, email: string, contact_number: string, birthday: string, password: string}} payload
+   * @param {{full_name: string, email: string, contact_number: string, birthday: string, password: string, terms_accepted: boolean}} payload
    * @returns {Promise<{success: boolean, email?: string, message?: string, error?: string}>}
    */
   async submit(payload) {
@@ -29,7 +29,7 @@ const CustomerRegister = {
 
   /**
    * Validate registration fields client-side
-   * @param {{full_name: string, email: string, contact_number: string, birthday: string, password: string, confirm_password?: string, privacy_check?: boolean}} data
+   * @param {{full_name: string, email: string, contact_number: string, birthday: string, password: string, confirm_password?: string, privacy_check?: boolean, terms_accepted: boolean}} data
    * @returns {{valid: boolean, error?: string}}
    */
   validate(data) {
@@ -86,6 +86,10 @@ const CustomerRegister = {
 
     if (data.privacy_check !== undefined && !data.privacy_check) {
       return { valid: false, error: 'You must consent to the Data Privacy Act terms to register.' };
+    }
+
+    if (data.terms_accepted !== true) {
+      return { valid: false, error: 'You must agree to the Terms and Conditions to register.' };
     }
 
     return { valid: true };

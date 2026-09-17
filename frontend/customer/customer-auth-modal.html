@@ -139,11 +139,16 @@
         </div>
 
         <div class="form-group" style="margin-bottom: 8px;">
-          <label class="privacy-confirm-checkbox">
-            <input type="checkbox" id="customerRegPrivacyCheck" required>
-            <span>I consent to data processing under the <strong>Data Privacy Act (RA 10173)</strong> &amp; <button type="button" id="openPrivacyModalBtn" class="btn-link" style="color: var(--accent); text-decoration: underline; padding: 0; font-size: inherit; background: none; border: none; cursor: pointer; display: inline;">Privacy Notice</button>.</span>
+          <label class="privacy-confirm-checkbox" for="customerRegPrivacyCheck">
+            <input type="checkbox" id="customerRegPrivacyCheck" required aria-haspopup="dialog" aria-controls="customerPrivacyDialog">
+            <span>I consent to data processing under the <strong>Data Privacy Act (RA 10173)</strong> &amp; <strong>Privacy Notice</strong>.</span>
           </label>
         </div>
+
+        <label class="privacy-confirm-checkbox" for="customerRegTermsCheck">
+          <input type="checkbox" id="customerRegTermsCheck" name="terms_accepted" required aria-haspopup="dialog" aria-controls="customerTermsDialog">
+          <span>I have read and agree to the <strong>Terms and Conditions</strong>.</span>
+        </label>
 
         <p id="customerRegisterError" class="customer-auth-error" role="alert" style="display: none;"></p>
 
@@ -159,6 +164,27 @@
         <button type="button" class="btn-link" id="switchToSignInBtn">Sign In</button>
       </div>
     </div>
+
+    <dialog id="customerTermsDialog" class="customer-terms-dialog" aria-labelledby="customerTermsTitle" aria-describedby="customerTermsHint">
+      <div class="customer-terms-header">
+        <h3 id="customerTermsTitle" tabindex="-1" autofocus>Terms and Conditions</h3>
+        <button type="button" id="customerCloseTermsBtn" class="modal-close" aria-label="Close Terms and Conditions"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+      </div>
+      <p id="customerTermsHint">Please read the terms below before accepting.</p>
+      <div class="customer-terms-scroll" id="customerTermsScroll" tabindex="0" role="region" aria-label="Terms and Conditions text">
+        <div class="customer-terms-content">
+          <p>By creating a Tita's Vape Shop account, you agree to the following:</p>
+          <ol>
+            <li><strong>Account eligibility:</strong> You must be at least 18 years old and provide accurate registration and contact details.</li>
+            <li><strong>Account security:</strong> Keep your password and verification codes private. Contact the shop if you suspect unauthorized use of your account.</li>
+            <li><strong>Orders:</strong> Review product details, quantities, prices, and delivery information before placing an order. Follow the payment and fulfillment instructions shown at checkout.</li>
+            <li><strong>Responsible use:</strong> Do not use the service for fraudulent orders, impersonation, or other unlawful activity.</li>
+            <li><strong>Order concerns:</strong> Contact the shop with your order details for questions about cancellations, returns, or problems with your purchase.</li>
+          </ol>
+        </div>
+        <button type="button" id="customerAcceptTermsBtn" class="btn btn-primary btn-full">I Understand and Accept Terms and Conditions</button>
+      </div>
+    </dialog>
 
     <!-- 3. VERIFY EMAIL VIEW -->
     <div id="customerVerifyView" class="customer-auth-view" style="display: none;">
@@ -216,18 +242,14 @@
       </div>
     </div>
 
-    <!-- 4. DATA PRIVACY ACT VIEW -->
-    <div id="customerPrivacyView" class="customer-auth-view" style="display: none;">
-      <div class="modal-header privacy-header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="var(--accent)">
-            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-          </svg>
-          <h3 style="font-size: 22px; margin: 0;">Data Privacy Notice</h3>
-        </div>
+    <dialog id="customerPrivacyDialog" class="customer-terms-dialog" aria-labelledby="customerPrivacyTitle" aria-describedby="customerPrivacyHint">
+      <div class="customer-terms-header">
+        <h3 id="customerPrivacyTitle" tabindex="-1" autofocus>Data Privacy Notice</h3>
+        <button type="button" id="customerClosePrivacyBtn" class="modal-close" aria-label="Close Data Privacy Notice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
       </div>
-      
-      <div class="privacy-content">
+      <p id="customerPrivacyHint">Please read the privacy notice below before accepting.</p>
+      <div class="customer-terms-scroll" id="customerPrivacyScroll" tabindex="0" role="region" aria-label="Data Privacy Notice text">
+        <div class="customer-terms-content">
         <p class="privacy-intro">In compliance with <strong>Republic Act No. 10173 (Data Privacy Act of 2012)</strong> and the National Privacy Commission (NPC), Tita's Vape Shop is dedicated to protecting your privacy and personal data.</p>
         
         <div class="privacy-grid">
@@ -255,14 +277,10 @@
             <p>You have the legal right to be informed, access, correct, object, or request blocking/erasure of your stored personal data at any time.</p>
           </div>
         </div>
+        </div>
+        <button type="button" id="customerAcceptPrivacyBtn" class="btn btn-primary btn-full">I Understand and Accept the Data Privacy Notice</button>
       </div>
-
-      <div class="modal-actions privacy-actions">
-        <button type="button" id="customerClosePrivacyBtn" class="btn btn-primary btn-full">
-          I Understand &amp; Return to Sign Up
-        </button>
-      </div>
-    </div>
+    </dialog>
 
     <!-- 5. PROFILE VIEW -->
     <div id="customerProfileView" class="customer-auth-view" style="display: none;">

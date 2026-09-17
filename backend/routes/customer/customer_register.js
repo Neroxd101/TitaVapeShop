@@ -12,6 +12,10 @@ const dbClient = () => supabaseAdmin || supabase;
  */
 router.post('/api/customer/register', async (req, res) => {
   try {
+    if (req.body?.terms_accepted !== true) {
+      return res.status(400).json({ success: false, error: 'You must agree to the Terms and Conditions to register.' });
+    }
+
     const client = dbClient();
     if (!client) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
