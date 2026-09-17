@@ -461,6 +461,14 @@ body {
   gap: 6px;
 }
 
+.account-number-field {
+  white-space: nowrap;
+}
+
+.account-number-field .account-field-val {
+  flex-shrink: 0;
+}
+
 .copy-num-btn {
   background: rgba(0, 212, 170, 0.12);
   border: 1px solid rgba(0, 212, 170, 0.3);
@@ -880,6 +888,25 @@ body {
 }
 
 @media (max-width: 480px) {
+  .account-number-field {
+    gap: 4px;
+    font-size: 13px;
+  }
+
+  .account-number-field .account-field-label {
+    font-size: 12px;
+  }
+
+  .account-number-field .account-field-val {
+    gap: 3px;
+  }
+
+  .account-number-field .copy-num-btn {
+    gap: 3px;
+    padding: 3px 4px;
+    font-size: 12px;
+  }
+
   .order-headline > div:first-child {
     width: 100%;
   }
