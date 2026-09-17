@@ -1088,10 +1088,6 @@ body.customer-logged-in #ordersBtn {
   .customer-reg-grid .form-group label {
     font-size: 11px !important;
     margin-bottom: 3px !important;
-  }
-
-  .customer-reg-grid label[for="customerRegEmail"],
-  .customer-reg-grid label[for="customerRegBirthday"] {
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
@@ -1102,8 +1098,7 @@ body.customer-logged-in #ordersBtn {
     min-height: 30px;
   }
 
-  .customer-reg-grid label[for="customerRegEmail"] > span,
-  .customer-reg-grid label[for="customerRegBirthday"] > span {
+  .customer-reg-grid .form-group label > span {
     white-space: nowrap;
   }
 
