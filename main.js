@@ -69,6 +69,11 @@ const analyticsRevenueTrendRoutes = require('./backend/routes/admin/admin/analyt
 const analyticsTopProductsRoutes = require('./backend/routes/admin/admin/analytics/analytics_top_products');
 const analyticsCategoryStatsRoutes = require('./backend/routes/admin/admin/analytics/analytics_category_stats');
 
+const analyticsModalTotalProfitRoutes = require('./backend/routes/admin/admin/analytics/analytics_modal_total_profit');
+const analyticsModalTotalOrdersRoutes = require('./backend/routes/admin/admin/analytics/analytics_modal_total_orders');
+const analyticsModalItemsSoldRoutes = require('./backend/routes/admin/admin/analytics/analytics_modal_items_sold');
+const analyticsModalGrossSalesRoutes = require('./backend/routes/admin/admin/analytics/analytics_modal_gross_sales');
+
 // Orders routes
 const ordersControllerRoutes = require('./backend/routes/admin/admin/orders/orders_controller');
 const ordersGetAllRoutes = require('./backend/routes/admin/admin/orders/orders_get_all');
@@ -141,6 +146,10 @@ app.use('/', analyticsGrossSalesRoutes);
 app.use('/', analyticsRevenueTrendRoutes);
 app.use('/', analyticsTopProductsRoutes);
 app.use('/', analyticsCategoryStatsRoutes);
+app.use('/', analyticsModalTotalProfitRoutes);
+app.use('/', analyticsModalTotalOrdersRoutes);
+app.use('/', analyticsModalItemsSoldRoutes);
+app.use('/', analyticsModalGrossSalesRoutes);
 app.use('/', settingsRoutes);
 // Staff routes
 app.use('/', staffPosRoutes);

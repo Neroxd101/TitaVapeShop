@@ -6,11 +6,11 @@ const AnalyticsDetails = {
         this.status = document.getElementById('analyticsDetailsStatus');
         this.table = document.getElementById('analyticsDetailsTable');
         this.pager = document.getElementById('analyticsDetailsPager');
-        this.endpoints = {
-            statRevenue: '/api/analytics/total-profit-details',
-            statSalesCount: '/api/analytics/total-orders-details',
-            statItemsSold: '/api/analytics/items-sold-details',
-            statAvgSale: '/api/analytics/gross-sales-details'
+        this.clients = {
+            statRevenue: window.AnalyticsModalTotalProfit,
+            statSalesCount: window.AnalyticsModalTotalOrders,
+            statItemsSold: window.AnalyticsModalItemsSold,
+            statAvgSale: window.AnalyticsModalGrossSales
         };
         this.metrics = {
             statRevenue: ['Total Profit', 'totalProfit', true],
@@ -116,15 +116,13 @@ const AnalyticsDetails = {
         this.status.textContent = this.range ? 'Loading sale details…' : 'Wait for Analytics to finish loading, then open this card again.';
         if (!this.dialog.open) this.dialog.showModal();
         if (!this.range) return;
-        const endpoint = this.endpoints[metricId];
+        const client = this.clients[metricId];
         const params = new URLSearchParams({
             start_date: new Date(`${this.range.from}T00:00:00`).toISOString(),
             end_date: new Date(`${this.range.to}T00:00:00`).toISOString()
         });
         try {
-            const response = await fetch(`${endpoint}?${params}`, { signal: abort.signal });
-            const result = await response.json();
-            if (!response.ok || !result.success) throw new Error(result.error || 'Unable to load sale details.');
+            const result = await client.getData(params, abort.signal);
             if (abort.signal.aborted) return;
 
             const view = this.getViewFromRpc(result.rpcData, metricId);

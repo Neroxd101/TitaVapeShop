@@ -7,10 +7,7 @@ const SalesLoad = {
 
     async loadProducts(state) {
         try {
-            // Re-use inventory load route or potentially a specific sales load route
-            // For now, it seems it uses the inventory load
-            const response = await fetch('/inventory/inventory_get_all');
-            const result = await response.json();
+            const result = await window.InventoryGetAll.fetchItems();
 
             if (result.success) {
                 state.products = (result.data || []).filter(p => !p.deleted);

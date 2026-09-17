@@ -682,19 +682,10 @@ class OrdersController {
         }
 
         try {
-            const response = await fetch('/api/orders/update_status', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include', // Include cookies for authentication
-                body: JSON.stringify({
+            const result = await window.OrdersUpdateStatus.updateStatus({
                     order_id: orderId,
                     status: 'confirmed'
-                })
-            });
-
-            const result = await response.json();
+                });
 
             if (result.success) {
                 // Show success modal
@@ -807,19 +798,10 @@ class OrdersController {
         }
 
         try {
-            const response = await fetch('/api/orders/update_status', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include', // Include cookies for authentication
-                body: JSON.stringify({
+            const result = await window.OrdersUpdateStatus.updateStatus({
                     order_id: orderId,
                     status: 'completed'
-                })
-            });
-
-            const result = await response.json();
+                });
 
             if (result.success) {
                 const successModal = document.getElementById('orderCompletedSuccessModal');
@@ -931,19 +913,10 @@ class OrdersController {
         }
 
         try {
-            const response = await fetch('/api/orders/update_status', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include', // Include cookies for authentication
-                body: JSON.stringify({
+            const result = await window.OrdersUpdateStatus.updateStatus({
                     order_id: orderId,
                     status: 'cancelled'
-                })
-            });
-
-            const result = await response.json();
+                });
 
             if (result.success) {
                 const successModal = document.getElementById('orderCancelledSuccessModal');
@@ -1190,17 +1163,10 @@ class OrdersController {
 
     async executeVerifyPayment(orderId, paymentStatus) {
         try {
-            const response = await fetch('/api/orders/update_status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({
+            const result = await window.OrdersUpdateStatus.updateStatus({
                     order_id: orderId,
                     payment_status: paymentStatus
-                })
-            });
-
-            const result = await response.json();
+                });
             if (result.success) {
                 // Update local order data
                 const existing = this.state.orders.find(o => o.id === orderId);

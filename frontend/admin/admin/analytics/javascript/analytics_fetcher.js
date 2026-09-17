@@ -1,10 +1,11 @@
 /** Shared transport and orchestration for the individual analytics clients. */
 const AnalyticsFetcher = {
-    async request(endpoint, field, filters = {}) {
+    async request(endpoint, field, filters = {}, signal) {
         const params = new URLSearchParams(filters);
         const response = await fetch(`/api/analytics/${endpoint}?${params}`, {
             method: 'GET',
-            credentials: 'include'
+            credentials: 'include',
+            signal
         });
         const result = await response.json();
         if (!response.ok || !result || !result.success) {
