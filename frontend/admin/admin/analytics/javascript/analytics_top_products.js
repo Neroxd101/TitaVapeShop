@@ -3,6 +3,10 @@
  * Handles rendering of the top selling products chart
  */
 const AnalyticsTopProducts = {
+    getData(filters = {}) {
+        return window.AnalyticsFetcher.request('top-products', 'topProducts', filters);
+    },
+
     chart: null,
 
     /**

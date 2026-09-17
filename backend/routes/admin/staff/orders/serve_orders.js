@@ -9,6 +9,5 @@ const serveStaffOrders = (req, res) => {
 };
 
 router.get('/staff/orders', isAuthenticated, hasRole(['staff', 'admin']), serveStaffOrders);
-router.get('/staff/orders/', isAuthenticated, hasRole(['staff', 'admin']), serveStaffOrders);
 
 module.exports = router;

@@ -3,6 +3,10 @@
  * Handles rendering of the sales trend chart (Daily Gross Sales & Total Profit)
  */
 const AnalyticsRevenueTrend = {
+    getData(filters = {}) {
+        return window.AnalyticsFetcher.request('revenue-trend', 'dailyRevenue', filters);
+    },
+
     chart: null,
 
     /**

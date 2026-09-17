@@ -91,7 +91,7 @@ class AnalyticsController {
             const reportRange = { from: this.state.dateFrom, to: this.state.dateTo };
             const dateRange = this.getDateRange();
 
-            // Fetch all analytics data from the unified Edge Function
+            // Fetch each dataset through its matching frontend client and backend route
             const response = await AnalyticsFetcher.getDashboard(dateRange);
             if (requestId !== this.requestId) return;
 

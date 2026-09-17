@@ -1,50 +1,40 @@
-/**
- * Analytics Data Fetcher
- * Interacts with the backend Analytics API
- */
+/** Shared transport and orchestration for the individual analytics clients. */
 const AnalyticsFetcher = {
-    /**
-     * Get dashboard data
-     * @param {Object} filters - Date range filters
-     * @returns {Promise<Object>} The aggregated analytics data
-     */
+    async request(endpoint, field, filters = {}) {
+        const params = new URLSearchParams(filters);
+        const response = await fetch(`/api/analytics/${endpoint}?${params}`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+        const result = await response.json();
+        if (!response.ok || !result || !result.success) {
+            throw new Error(result?.error || result?.message || 'Failed to fetch ' + endpoint);
+        }
+        if (!Object.prototype.hasOwnProperty.call(result, field)) {
+            throw new Error('Invalid response format for ' + endpoint);
+        }
+        return result;
+    },
+
     async getDashboard(filters = {}) {
         try {
-            const params = new URLSearchParams(filters);
-            const response = await fetch(`/api/analytics/dashboard?${params}`, {
-                method: 'GET'
-            });
-            const result = await response.json();
-
-            if (!response.ok) {
-                console.error('Failed to fetch analytics:', result);
-                
-                // Show user-friendly error message
-                if (result.message) {
-                    alert(`Analytics Error: ${result.message}\n\nPlease check the browser console for details.`);
-                } else if (result.error) {
-                    alert(`Analytics Error: ${result.error}\n\nPlease check the browser console for details.`);
-                } else {
-                    alert('Failed to load analytics data. Please check the browser console for details.');
-                }
-                
-                return { success: false, error: result.error || result.message || 'Unknown error' };
-            }
-
-            // Check if report exists
-            if (!result.report) {
-                console.error('Invalid response format:', result);
-                alert('Analytics Error: Invalid response format. Please check the browser console.');
-                return { success: false, error: 'Invalid response format' };
-            }
-
-            return { success: true, report: result.report };
+            const results = await Promise.all([
+                window.AnalyticsTotalProfit.getData(filters),
+                window.AnalyticsTotalOrders.getData(filters),
+                window.AnalyticsItemsSold.getData(filters),
+                window.AnalyticsGrossSales.getData(filters),
+                window.AnalyticsRevenueTrend.getData(filters),
+                window.AnalyticsTopProducts.getData(filters),
+                window.AnalyticsCategoryStats.getData(filters)
+            ]);
+            const report = { rawSales: [] };
+            for (const { success, ...data } of results) Object.assign(report, data);
+            return { success: true, report };
         } catch (error) {
             console.error('Error fetching analytics:', error);
-            alert(`Network Error: ${error.message}\n\nPlease check your connection and try again.`);
+            alert('Analytics Error: ' + error.message);
             return { success: false, error: error.message };
         }
     }
 };
-
 window.AnalyticsFetcher = AnalyticsFetcher;

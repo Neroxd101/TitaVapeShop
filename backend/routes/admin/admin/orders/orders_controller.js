@@ -12,8 +12,6 @@ const serveOrders = (req, res) => {
 
 // GET /orders - Serve orders page
 router.get('/orders', serveOrders);
-router.get('/orders/', serveOrders);
 router.get('/admin/orders', serveOrders);
-router.get('/admin/orders/', serveOrders);
 
 module.exports = router;

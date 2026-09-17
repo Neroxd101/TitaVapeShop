@@ -77,74 +77,6 @@ const CatalogProductModal = {
     },
 
     /**
-     * Parse images from product (excludes QR code)
-     */
-    parseImages(product) {
-        if (!product.images) {
-            return [];
-        }
-
-        try {
-            let parsed;
-            if (typeof product.images === 'string') {
-                if (product.images.trim().startsWith('[') || product.images.trim().startsWith('{')) {
-                    parsed = JSON.parse(product.images);
-                } else {
-                    parsed = [product.images];
-                }
-            } else {
-                parsed = product.images;
-            }
-            
-            const imageArray = Array.isArray(parsed) ? parsed : (parsed ? [parsed] : []);
-            const validImages = imageArray.filter(img => img && typeof img === 'string' && img.trim() !== '');
-            const nonQrImages = validImages.filter(url => url && url !== product.qr_image_url);
-            
-            return nonQrImages.length > 0 ? nonQrImages : validImages;
-        } catch (e) {
-            console.error('Error parsing images for product:', product.id, product.name);
-            return [];
-        }
-    },
-
-    /**
-     * Extract Google Drive file ID from URL
-     */
-    getGoogleDriveFileId(url) {
-        if (!url) return null;
-
-        const patterns = [
-            /[?&]id=([a-zA-Z0-9_-]+)/,
-            /\/d\/([a-zA-Z0-9_-]+)/,
-        ];
-
-        for (const pattern of patterns) {
-            const match = url.match(pattern);
-            if (match) return match[1];
-        }
-
-        return null;
-    },
-
-    /**
-     * Get fallback URLs for Google Drive images
-     */
-    getFallbackUrls(url, size = 800) {
-        if (!url || typeof url !== 'string') return ['/img/placeholder-product.png'];
-        
-        const fileId = this.getGoogleDriveFileId(url);
-        if (!fileId) {
-            return [url];
-        }
-
-        return [
-            `/api/catalog/image/${fileId}`,
-            `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
-            url
-        ];
-    },
-
-    /**
      * Handle modal image error
      */
     handleModalImageError(imgElement) {
@@ -157,13 +89,13 @@ const CatalogProductModal = {
             } catch (e) {
                 const originalUrl = imgElement.getAttribute('data-original-url');
                 if (originalUrl) {
-                    fallbacks = this.getFallbackUrls(originalUrl, 800);
+                    fallbacks = window.CatalogImages.getFallbackUrls(originalUrl, 800);
                 }
             }
         } else {
             const originalUrl = imgElement.getAttribute('data-original-url');
             if (originalUrl) {
-                fallbacks = this.getFallbackUrls(originalUrl, 800);
+                fallbacks = window.CatalogImages.getFallbackUrls(originalUrl, 800);
             } else {
                 imgElement.src = '/img/placeholder-product.png';
                 return;
@@ -196,14 +128,14 @@ const CatalogProductModal = {
                 const originalUrl = imgElement.getAttribute('data-original-url');
                 if (originalUrl) {
                     const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
-                    fallbacks = this.getFallbackUrls(unescapedUrl, 200);
+                    fallbacks = window.CatalogImages.getFallbackUrls(unescapedUrl, 200);
                 }
             }
         } else {
             const originalUrl = imgElement.getAttribute('data-original-url');
             if (originalUrl) {
                 const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
-                fallbacks = this.getFallbackUrls(unescapedUrl, 200);
+                fallbacks = window.CatalogImages.getFallbackUrls(unescapedUrl, 200);
             } else {
                 imgElement.src = '/img/placeholder-product.png';
                 return;
@@ -236,7 +168,7 @@ const CatalogProductModal = {
             return;
         }
 
-        const fallbacks = this.getFallbackUrls(url, 800);
+        const fallbacks = window.CatalogImages.getFallbackUrls(url, 800);
         
         mainImageEl.setAttribute('data-original-url', url);
         mainImageEl.setAttribute('data-fallbacks', JSON.stringify(fallbacks));
@@ -260,9 +192,9 @@ const CatalogProductModal = {
 
         this.currentProduct = product;
 
-        const images = this.parseImages(product);
+        const images = window.CatalogImages.parseImages(product);
         const mainImageUrl = images.length > 0 ? images[0] : null;
-        const mainImageFallbacks = mainImageUrl ? this.getFallbackUrls(mainImageUrl, 800) : ['/img/placeholder-product.png'];
+        const mainImageFallbacks = mainImageUrl ? window.CatalogImages.getFallbackUrls(mainImageUrl, 800) : ['/img/placeholder-product.png'];
         
         const hasMultipleImages = images.length >= 2;
 
@@ -272,7 +204,7 @@ const CatalogProductModal = {
             thumbnailsHTML = `
                 <div class="modal-thumbnails">
                     ${images.map((img, index) => {
-                        const thumbFallbacks = this.getFallbackUrls(img, 200);
+                        const thumbFallbacks = window.CatalogImages.getFallbackUrls(img, 200);
                         const escapedUrl = img.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         const fallbacksJson = JSON.stringify(thumbFallbacks);
                         return `

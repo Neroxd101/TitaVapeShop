@@ -22,20 +22,11 @@ const CustomerTrackOrder = {
     }
 
     try {
-      let res = await fetch(`/api/customer/orders/track?${query}`, {
+      const res = await fetch(`/api/customer/orders/track?${query}`, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
         credentials: 'include'
       });
-
-      // Fallback to alias if needed
-      if (!res.ok && res.status === 404) {
-        res = await fetch(`/api/orders/track?${query}`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          credentials: 'include'
-        });
-      }
 
       const data = await res.json().catch(() => null);
 
