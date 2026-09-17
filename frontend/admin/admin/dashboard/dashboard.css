@@ -808,7 +808,7 @@ body {
   }
 }
 
-@media (orientation: landscape) and (min-width: 769px) and (max-width: 1400px) {
+@media (orientation: landscape) and (min-width: 769px) {
   .operations-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
