@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect all inventory routes
@@ -8,7 +8,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 // GET /inventory/inventory_get_sales_history/:id - Get sales history for an item
 router.get('/inventory/inventory_get_sales_history/:id', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -31,7 +31,7 @@ router.get('/inventory/inventory_get_sales_history/:id', isAuthenticated, hasRol
         if (endDate) rpcParams.p_end_date = endDate;
 
         // Call database RPC function
-        const { data, error } = await supabase.rpc('inventory_get_sales_history', rpcParams);
+        const { data, error } = await supabaseAdmin.rpc('inventory_get_sales_history', rpcParams);
 
         if (error) {
             console.error('RPC Error:', error);

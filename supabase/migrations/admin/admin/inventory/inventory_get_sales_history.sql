@@ -4,7 +4,7 @@
 -- Returns JSONB with sales array and metadata
 -- =============================================
 
-CREATE OR REPLACE FUNCTION inventory_get_sales_history(
+CREATE OR REPLACE FUNCTION public.inventory_get_sales_history(
     p_item_id UUID,
     p_limit INTEGER DEFAULT 50,
     p_offset INTEGER DEFAULT 0,
@@ -95,4 +95,15 @@ BEGIN
 
     RETURN result;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Only the trusted backend service-role client may read inventory sales history.
+REVOKE ALL ON FUNCTION public.inventory_get_sales_history(
+    UUID, INTEGER, INTEGER, TIMESTAMPTZ, TIMESTAMPTZ
+) FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.inventory_get_sales_history(
+    UUID, INTEGER, INTEGER, TIMESTAMPTZ, TIMESTAMPTZ
+) TO service_role;
