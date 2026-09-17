@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect all inventory routes
 // DELETE /inventory/inventory_delete_item/:id - Delete item
 router.delete('/inventory/inventory_delete_item/:id', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -18,7 +18,7 @@ router.delete('/inventory/inventory_delete_item/:id', isAuthenticated, hasRole([
         }
 
         // Call database RPC function
-        const { data, error } = await supabase.rpc('inventory_delete_item', {
+        const { data, error } = await supabaseAdmin.rpc('inventory_delete_item', {
             p_id: id
         });
 

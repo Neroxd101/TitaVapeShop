@@ -3,12 +3,13 @@
 -- Deletes an inventory item via RPC
 -- =============================================
 
-CREATE OR REPLACE FUNCTION inventory_delete_item(
+CREATE OR REPLACE FUNCTION public.inventory_delete_item(
     p_id UUID
 )
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     deleted_count INTEGER;
@@ -43,3 +44,10 @@ BEGIN
     );
 END;
 $$;
+
+-- Only the trusted backend service-role client may delete inventory items.
+REVOKE ALL ON FUNCTION public.inventory_delete_item(UUID)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.inventory_delete_item(UUID)
+TO service_role;
