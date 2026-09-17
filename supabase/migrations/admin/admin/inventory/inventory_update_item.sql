@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION inventory_update_item(
+CREATE OR REPLACE FUNCTION public.inventory_update_item(
     p_id UUID,
     p_category VARCHAR(20) DEFAULT NULL,
     p_name VARCHAR(100) DEFAULT NULL,
@@ -92,4 +92,15 @@ BEGIN
     FROM inventory AS inv
     WHERE inv.id = p_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Only the trusted backend service-role client may update inventory items.
+REVOKE ALL ON FUNCTION public.inventory_update_item(
+    UUID, VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+) FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.inventory_update_item(
+    UUID, VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+) TO service_role;
