@@ -7,7 +7,7 @@
 -- Drop obsolete 4-parameter overload if it exists to avoid PostgREST ambiguity error
 DROP FUNCTION IF EXISTS orders_get_all(VARCHAR(50), INTEGER, INTEGER, VARCHAR(255));
 
-CREATE OR REPLACE FUNCTION orders_get_all(
+CREATE OR REPLACE FUNCTION public.orders_get_all(
     p_status VARCHAR(50) DEFAULT NULL,
     p_limit INTEGER DEFAULT 50,
     p_offset INTEGER DEFAULT 0,
@@ -33,6 +33,13 @@ RETURNS TABLE (
     total_count BIGINT
 ) AS $$
 BEGIN
+    IF p_limit < 1 OR p_limit > 200 THEN
+        RAISE EXCEPTION 'Limit must be between 1 and 200';
+    END IF;
+    IF p_offset < 0 THEN
+        RAISE EXCEPTION 'Offset cannot be negative';
+    END IF;
+
     RETURN QUERY
     WITH filtered_orders AS (
         SELECT 
@@ -85,4 +92,6 @@ BEGIN
         fo.total_count
     FROM filtered_orders fo;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.orders_get_all(VARCHAR, INTEGER, INTEGER, VARCHAR, TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.orders_get_all(VARCHAR, INTEGER, INTEGER, VARCHAR, TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

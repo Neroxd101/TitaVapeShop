@@ -1,191 +1,134 @@
--- =============================================
--- Update Order Status Function
--- Updates the status of an order (e.g., confirm order)
--- =============================================
+-- Normal admin order workflow. Completion, inventory deduction, profit update,
+-- and audit logging are committed together or rolled back together.
+DROP FUNCTION IF EXISTS public.orders_update_status(UUID, VARCHAR, VARCHAR);
 
-CREATE OR REPLACE FUNCTION orders_update_status(
+CREATE FUNCTION public.orders_update_status(
     p_order_id UUID,
     p_status VARCHAR(50),
     p_user_email VARCHAR(255) DEFAULT NULL
 )
-RETURNS TABLE (
-    id UUID,
-    customer_name VARCHAR(255),
-    contact_number VARCHAR(20),
-    customer_email VARCHAR(255),
-    order_type VARCHAR(20),
-    items JSONB,
-    total_amount DECIMAL(10, 2),
-    status VARCHAR(50),
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ
-) AS $$
+RETURNS SETOF public.orders
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
-    updated_order RECORD;
-    current_status VARCHAR(50);
-    order_items JSONB;
-    order_customer_name VARCHAR(255);
-    order_customer_email VARCHAR(255);
-    order_total_amount DECIMAL(10,2);
-    order_type VARCHAR(20);
-    item_record JSONB;
+    target public.orders%ROWTYPE;
+    item JSONB;
     item_id UUID;
     item_qty INTEGER;
     item_price DECIMAL(10,2);
-    sale_items_formatted JSONB;
-    sale_item_formatted JSONB;
+    inventory_item public.inventory%ROWTYPE;
+    logged_items JSONB := '[]'::jsonb;
 BEGIN
-    -- Validate status
-    IF p_status NOT IN ('pending', 'confirmed', 'completed', 'cancelled') THEN
-        RAISE EXCEPTION 'Invalid status: %', p_status;
+    IF p_order_id IS NULL THEN
+        RAISE EXCEPTION 'Order ID is required';
+    END IF;
+    IF p_status NOT IN ('confirmed', 'completed', 'cancelled') THEN
+        RAISE EXCEPTION 'Invalid order status: %', p_status;
     END IF;
 
-    -- Get order details before update (to process inventory deduction and transaction logging)
-    SELECT o.items, o.status, o.customer_name, o.customer_email, o.total_amount, o.order_type
-    INTO order_items, current_status, order_customer_name, order_customer_email, order_total_amount, order_type
-    FROM orders o
-    WHERE o.id = p_order_id FOR UPDATE;
+    SELECT * INTO target
+    FROM public.orders
+    WHERE id = p_order_id
+    FOR UPDATE;
 
-    IF order_items IS NULL THEN
+    IF NOT FOUND THEN
         RAISE EXCEPTION 'Order not found';
     END IF;
-
-    IF current_status IN ('completed', 'voided', 'cancelled') AND p_status IS DISTINCT FROM current_status THEN
-        RAISE EXCEPTION 'This order cannot change status; completed orders must use Void';
+    IF target.status = p_status THEN
+        RETURN NEXT target;
+        RETURN;
+    END IF;
+    IF target.status IN ('completed', 'voided', 'cancelled') THEN
+        RAISE EXCEPTION 'A % order cannot change status', target.status;
+    END IF;
+    IF p_status = 'confirmed' AND target.status <> 'pending' THEN
+        RAISE EXCEPTION 'Only pending orders can be confirmed';
+    END IF;
+    IF p_status = 'completed' AND target.status <> 'confirmed' THEN
+        RAISE EXCEPTION 'Only confirmed orders can be completed';
+    END IF;
+    IF p_status = 'cancelled' AND target.status NOT IN ('pending', 'confirmed') THEN
+        RAISE EXCEPTION 'Only pending or confirmed orders can be cancelled';
     END IF;
 
-    -- Log transaction for order confirmation
-    IF p_status = 'confirmed' AND (current_status IS NULL OR current_status != 'confirmed') THEN
-        -- Log order confirmation transaction
-        PERFORM transactions_log(
-            p_action_type => 'order_confirm',
-            p_user_email => p_user_email,
-            p_entity_id => p_order_id,
-            p_entity_type => 'order',
-            p_sale_total => order_total_amount,
-            p_sale_items => order_items,
-            p_customer_name => order_customer_name,
-            p_customer_email => order_customer_email,
-            p_details => jsonb_build_object(
-                'order_id', p_order_id,
-                'order_type', order_type,
-                'items_count', jsonb_array_length(order_items),
-                'previous_status', current_status
-            )
-        );
-    END IF;
+    IF p_status = 'completed' THEN
+        IF target.items IS NULL OR jsonb_typeof(target.items) <> 'array' OR jsonb_array_length(target.items) = 0 THEN
+            RAISE EXCEPTION 'Order has no valid items';
+        END IF;
 
-    -- Log transaction for order cancellation
-    IF p_status = 'cancelled' AND (current_status IS NULL OR current_status != 'cancelled') THEN
-        -- Log order cancellation transaction
-        PERFORM transactions_log(
-            p_action_type => 'order_cancel',
-            p_user_email => p_user_email,
-            p_entity_id => p_order_id,
-            p_entity_type => 'order',
-            p_sale_total => order_total_amount,
-            p_sale_items => order_items,
-            p_customer_name => order_customer_name,
-            p_customer_email => order_customer_email,
-            p_details => jsonb_build_object(
-                'order_id', p_order_id,
-                'order_type', order_type,
-                'items_count', jsonb_array_length(order_items),
-                'previous_status', current_status
-            )
-        );
-    END IF;
-
-    -- If completing the order, deduct inventory quantities and log transaction
-    -- Only deduct if order was not already completed (prevent double deduction)
-    IF p_status = 'completed' AND (current_status IS NULL OR current_status != 'completed') THEN
-        -- Initialize sale_items array for transaction logging
-        sale_items_formatted := '[]'::jsonb;
-
-        -- Loop through each item in the order
-        FOR item_record IN SELECT * FROM jsonb_array_elements(order_items)
+        FOR item IN
+            SELECT value FROM jsonb_array_elements(target.items) ORDER BY value->>'id'
         LOOP
-            item_id := (item_record->>'id')::UUID;
-            item_qty := (item_record->>'quantity')::INTEGER;
-            item_price := (item_record->>'price')::DECIMAL(10,2);
+            item_id := (item->>'id')::UUID;
+            item_qty := (item->>'quantity')::INTEGER;
+            item_price := (item->>'price')::DECIMAL(10,2);
 
-            -- Validate item data
-            IF item_id IS NULL OR item_qty IS NULL OR item_qty <= 0 THEN
-                RAISE EXCEPTION 'Invalid item data in order';
+            IF item_id IS NULL OR item_qty IS NULL OR item_qty <= 0 OR item_price IS NULL OR item_price <= 0 THEN
+                RAISE EXCEPTION 'Order contains invalid item data';
             END IF;
 
-            -- Deduct inventory using inventory_complete_sale function
-            -- This handles quantity deduction and profit calculation
-            PERFORM inventory_complete_sale(
-                p_id => item_id,
-                p_qty_sold => item_qty,
-                p_sale_price => item_price
-            );
+            SELECT * INTO inventory_item
+            FROM public.inventory
+            WHERE id = item_id
+            FOR UPDATE;
 
-            -- Format item for transaction logging (sale_items format: id, qty, price)
-            sale_item_formatted := jsonb_build_object(
+            IF NOT FOUND THEN
+                RAISE EXCEPTION 'Inventory item % was not found', item_id;
+            END IF;
+            IF inventory_item.quantity < item_qty THEN
+                RAISE EXCEPTION 'Not enough stock for %. Available: %', inventory_item.name, inventory_item.quantity;
+            END IF;
+
+            UPDATE public.inventory
+            SET quantity = quantity - item_qty,
+                total_profit = COALESCE(total_profit, 0) + (item_price * item_qty),
+                updated_at = NOW()
+            WHERE id = item_id;
+
+            logged_items := logged_items || jsonb_build_array(jsonb_build_object(
                 'id', item_id,
+                'name', COALESCE(item->>'name', inventory_item.name),
                 'qty', item_qty,
-                'price', item_price
-            );
-
-            -- Add to sale_items array
-            sale_items_formatted := sale_items_formatted || jsonb_build_array(sale_item_formatted);
+                'price', item_price,
+                'cost_price', inventory_item.cost_price
+            ));
         END LOOP;
-
-        -- Log transaction for completed order
-        PERFORM transactions_log(
-            p_action_type => 'sale_complete',
-            p_user_email => p_user_email,
-            p_entity_id => p_order_id,
-            p_entity_type => 'order',
-            p_sale_total => order_total_amount,
-            p_sale_items => sale_items_formatted,
-            p_customer_name => order_customer_name,
-            p_customer_email => NULL,
-            p_details => jsonb_build_object(
-                'order_id', p_order_id,
-                'order_type', order_type,
-                'items_count', jsonb_array_length(order_items)
-            )
-        );
     END IF;
 
-    -- Update order status and return the updated order
-    UPDATE orders o
+    PERFORM public.transactions_log(
+        p_action_type => CASE
+            WHEN p_status = 'confirmed' THEN 'order_confirm'
+            WHEN p_status = 'cancelled' THEN 'order_cancel'
+            ELSE 'sale_complete'
+        END,
+        p_user_email => p_user_email,
+        p_entity_id => target.id,
+        p_entity_type => 'order',
+        p_sale_total => target.total_amount,
+        p_sale_items => CASE WHEN p_status = 'completed' THEN logged_items ELSE target.items END,
+        p_customer_name => target.customer_name,
+        p_customer_email => target.customer_email,
+        p_details => jsonb_build_object(
+            'order_id', target.id,
+            'order_type', target.order_type,
+            'previous_status', target.status,
+            'new_status', p_status,
+            'items_count', jsonb_array_length(target.items)
+        )
+    );
+
+    RETURN QUERY
+    UPDATE public.orders
     SET status = p_status,
         updated_at = NOW()
-    WHERE o.id = p_order_id
-    RETURNING 
-        o.id,
-        o.customer_name,
-        o.contact_number,
-        o.customer_email,
-        o.order_type,
-        o.items,
-        o.total_amount,
-        o.status,
-        o.created_at,
-        o.updated_at
-    INTO updated_order;
-
-    -- Check if order was found
-    IF updated_order.id IS NULL THEN
-        RAISE EXCEPTION 'Order not found';
-    END IF;
-
-    -- Return the updated order
-    RETURN QUERY
-    SELECT
-        updated_order.id,
-        updated_order.customer_name,
-        updated_order.contact_number,
-        updated_order.customer_email,
-        updated_order.order_type,
-        updated_order.items,
-        updated_order.total_amount,
-        updated_order.status,
-        updated_order.created_at,
-        updated_order.updated_at;
+    WHERE id = target.id
+    RETURNING *;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
+
+REVOKE ALL ON FUNCTION public.orders_update_status(UUID, VARCHAR, VARCHAR)
+FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.orders_update_status(UUID, VARCHAR, VARCHAR)
+TO service_role;

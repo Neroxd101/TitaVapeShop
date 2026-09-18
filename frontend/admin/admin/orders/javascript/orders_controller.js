@@ -1152,7 +1152,7 @@ class OrdersController {
 
     async executeVerifyPayment(orderId, paymentStatus) {
         try {
-            const result = await window.OrdersUpdateStatus.updateStatus({
+            const result = await window.OrdersUpdatePaymentStatus.update({
                     order_id: orderId,
                     payment_status: paymentStatus
                 });

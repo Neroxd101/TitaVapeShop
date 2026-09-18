@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Protect orders routes
@@ -8,8 +8,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 // GET /api/orders/get_all - Get all orders (1-to-1 RPC)
 router.get('/api/orders/get_all', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
-        const client = supabaseAdmin || supabase;
-        if (!client) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -30,7 +29,7 @@ router.get('/api/orders/get_all', isAuthenticated, hasRole(['admin', 'staff']), 
         }
 
         // Call database RPC function 1-to-1
-        const { data, error } = await client.rpc('orders_get_all', {
+        const { data, error } = await supabaseAdmin.rpc('orders_get_all', {
             p_status: status || null,
             p_limit: parsedLimit,
             p_offset: parsedOffset,
@@ -46,30 +45,6 @@ router.get('/api/orders/get_all', isAuthenticated, hasRole(['admin', 'staff']), 
 
         const orders = data || [];
         const total = orders.length > 0 ? parseInt(orders[0].total_count) || 0 : 0;
-
-        // Enrich orders with payment fields if not present in legacy RPC output
-        if (orders.length > 0 && orders[0].payment_status === undefined) {
-            const orderIds = orders.map(o => o.id);
-            const { data: payDetails } = await client
-                .from('orders')
-                .select('id, payment_method, payment_reference, payment_receipt_url, payment_status')
-                .in('id', orderIds);
-
-            if (payDetails && payDetails.length > 0) {
-                const payMap = new Map(payDetails.map(p => [p.id, p]));
-                orders.forEach(o => {
-                    const extra = payMap.get(o.id);
-                    if (extra) {
-                        o.payment_method = extra.payment_method;
-                        o.payment_reference = extra.payment_reference;
-                        o.payment_receipt_url = extra.payment_receipt_url;
-                        o.payment_status = extra.payment_status || 'unpaid';
-                    } else {
-                        o.payment_status = 'unpaid';
-                    }
-                });
-            }
-        }
 
         res.json({
             success: true,

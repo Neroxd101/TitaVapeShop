@@ -354,7 +354,8 @@ class TransactionsUI {
             'inventory_edit': '<span class="badge badge-edit">Edit</span>',
             'inventory_delete': '<span class="badge badge-delete">Delete</span>',
             'order_confirm': '<span class="badge badge-confirm">Confirm</span>',
-            'order_cancel': '<span class="badge badge-cancel">Cancel</span>'
+            'order_cancel': '<span class="badge badge-cancel">Cancel</span>',
+            'order_payment_update': '<span class="badge badge-edit">Payment</span>'
         };
         return map[type] || `<span class="badge">${type}</span>`;
     }
@@ -423,6 +424,10 @@ class TransactionsUI {
             const orderType = d.order_type || 'pickup';
             const action = d.cancelled_by === 'customer' ? 'Customer cancelled order' : 'Cancelled order';
             return `${action} ${orderId} (${itemsCount} items, ${orderType})`;
+        }
+
+        if (t.action_type === 'order_payment_update') {
+            return `Updated payment for order ${this.escapeHtml(d.order_id || t.entity_id || '')} from ${this.escapeHtml(d.previous_payment_status || 'unknown')} to ${this.escapeHtml(d.new_payment_status || 'unknown')}.`;
         }
 
         return JSON.stringify(d).substring(0, 50) + '...';

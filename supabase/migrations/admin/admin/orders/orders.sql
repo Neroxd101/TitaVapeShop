@@ -38,26 +38,15 @@ ALTER TABLE orders DROP COLUMN IF EXISTS social_media;
 -- Add RLS (Row Level Security)
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
--- Policy: Allow authenticated users (admin/staff) to view all orders
+-- Remove the obsolete generic create RPC. Customer order creation is managed
+-- separately by the customer module.
+DROP FUNCTION IF EXISTS public.orders_create_order(VARCHAR, VARCHAR, JSONB, DECIMAL, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS public.orders_create_order(VARCHAR, VARCHAR, JSONB, DECIMAL, VARCHAR, TEXT, VARCHAR);
+
+-- All order-table access goes through protected backend routes and RPCs.
 DROP POLICY IF EXISTS "Allow authenticated users to view orders" ON orders;
-CREATE POLICY "Allow authenticated users to view orders"
-    ON orders FOR SELECT
-    TO authenticated
-    USING (true);
-
--- Policy: Allow public to create orders (for catalog)
 DROP POLICY IF EXISTS "Allow public to create orders" ON orders;
-CREATE POLICY "Allow public to create orders"
-    ON orders FOR INSERT
-    TO public
-    WITH CHECK (true);
-
--- Policy: Allow authenticated users to update orders
 DROP POLICY IF EXISTS "Allow authenticated users to update orders" ON orders;
-CREATE POLICY "Allow authenticated users to update orders"
-    ON orders FOR UPDATE
-    TO authenticated
-    USING (true);
 
 -- Add updated_at trigger
 CREATE OR REPLACE FUNCTION update_orders_updated_at()

@@ -16,7 +16,8 @@ CHECK (action_type IN (
     'sale_complete',
     'sale_void',
     'order_confirm',
-    'order_cancel'
+    'order_cancel',
+    'order_payment_update'
 ));
 
 CREATE OR REPLACE FUNCTION public.transactions_log(
@@ -52,7 +53,7 @@ BEGIN
     END IF;
 
     -- Validate action_type
-    IF p_action_type NOT IN ('inventory_add', 'inventory_edit', 'inventory_delete', 'sale_complete', 'sale_void', 'order_confirm', 'order_cancel') THEN
+    IF p_action_type NOT IN ('inventory_add', 'inventory_edit', 'inventory_delete', 'sale_complete', 'sale_void', 'order_confirm', 'order_cancel', 'order_payment_update') THEN
         RAISE EXCEPTION 'Invalid action_type: %', p_action_type;
     END IF;
 

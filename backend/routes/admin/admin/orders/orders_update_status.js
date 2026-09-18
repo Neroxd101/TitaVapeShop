@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 const { sendOrderEmail } = require('./orders_email');
 
@@ -9,11 +9,11 @@ const { sendOrderEmail } = require('./orders_email');
 // POST /api/orders/update_status - Update order status
 router.post('/api/orders/update_status', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { order_id, status, payment_status } = req.body;
+        const { order_id, status } = req.body;
         if (status === 'voided') {
             return res.status(400).json({ success: false, error: 'Use /api/orders/void to void an order.' });
         }
@@ -23,31 +23,6 @@ router.post('/api/orders/update_status', isAuthenticated, hasRole(['admin', 'sta
                 success: false,
                 error: 'order_id is required'
             });
-        }
-
-        // If only updating payment_status without altering the order status
-        if (!status && payment_status) {
-            const validPaymentStatuses = ['unpaid', 'pending_verification', 'paid', 'rejected'];
-            if (!validPaymentStatuses.includes(payment_status)) {
-                return res.status(400).json({ success: false, error: 'Invalid payment status' });
-            }
-            const db = supabaseAdmin || supabase;
-            const updatePayload = {
-                payment_status,
-                updated_at: new Date().toISOString()
-            };
-
-            const { data: updatedPay, error: payError } = await db
-                .from('orders')
-                .update(updatePayload)
-                .eq('id', order_id)
-                .select()
-                .single();
-
-            if (payError) {
-                return res.status(400).json({ success: false, error: payError.message });
-            }
-            return res.json({ success: true, order: updatedPay });
         }
 
         if (!status) {
@@ -65,7 +40,7 @@ router.post('/api/orders/update_status', isAuthenticated, hasRole(['admin', 'sta
         }
 
         // Call database RPC function
-        const { data, error } = await supabase.rpc('orders_update_status', {
+        const { data, error } = await supabaseAdmin.rpc('orders_update_status', {
             p_order_id: order_id,
             p_status: status,
             p_user_email: user_email
@@ -79,20 +54,8 @@ router.post('/api/orders/update_status', isAuthenticated, hasRole(['admin', 'sta
             });
         }
 
-        // If payment_status is also provided, update it as well
-        if (payment_status) {
-            const db = supabaseAdmin || supabase;
-            await db
-                .from('orders')
-                .update({ payment_status, updated_at: new Date().toISOString() })
-                .eq('id', order_id);
-        }
-
         // Get the updated order (RPC returns array)
-        let updatedOrder = Array.isArray(data) && data.length > 0 ? data[0] : data;
-        if (payment_status && updatedOrder) {
-            updatedOrder = { ...updatedOrder, payment_status };
-        }
+        const updatedOrder = Array.isArray(data) && data.length > 0 ? data[0] : data;
 
         // Send email notification if status is confirmed or completed
         if (updatedOrder && (status === 'confirmed' || status === 'completed')) {

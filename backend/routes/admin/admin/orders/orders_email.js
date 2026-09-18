@@ -4,7 +4,7 @@
  */
 
 const nodemailer = require('nodemailer');
-const { supabase, supabaseAdmin } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 
 /**
  * Send order notification email
@@ -35,7 +35,7 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
         });
 
         // Fetch product images from database to display in the email
-        const client = supabaseAdmin || supabase;
+        const client = supabaseAdmin;
         try {
             const productIds = (orderData.items || []).map(item => item.id).filter(Boolean);
             if (productIds.length > 0 && client) {

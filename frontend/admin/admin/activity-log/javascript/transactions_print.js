@@ -232,7 +232,10 @@ const TransactionsPrint = {
                 'sale_void': 'Void',
                 'inventory_add': 'Inventory Add',
                 'inventory_edit': 'Inventory Edit',
-                'inventory_delete': 'Inventory Delete'
+                'inventory_delete': 'Inventory Delete',
+                'order_confirm': 'Order Confirm',
+                'order_cancel': 'Order Cancel',
+                'order_payment_update': 'Payment Update'
             };
             filters.push(`Action: ${actionMap[action] || action}`);
         }

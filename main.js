@@ -75,6 +75,7 @@ const analyticsModalGrossSalesRoutes = require('./backend/routes/admin/admin/ana
 const ordersControllerRoutes = require('./backend/routes/admin/admin/orders/orders_controller');
 const ordersGetAllRoutes = require('./backend/routes/admin/admin/orders/orders_get_all');
 const ordersUpdateStatusRoutes = require('./backend/routes/admin/admin/orders/orders_update_status');
+const ordersUpdatePaymentStatusRoutes = require('./backend/routes/admin/admin/orders/orders_update_payment_status');
 const ordersVoidRoutes = require('./backend/routes/admin/admin/orders/orders_void');
 
 // Staff routes
@@ -117,6 +118,7 @@ app.use('/', adminLoginRoutes);
 app.use('/', ordersControllerRoutes);
 app.use('/', ordersGetAllRoutes);
 app.use('/', ordersUpdateStatusRoutes);
+app.use('/', ordersUpdatePaymentStatusRoutes);
 app.use('/', ordersVoidRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', inventoryLoadRoutes);
