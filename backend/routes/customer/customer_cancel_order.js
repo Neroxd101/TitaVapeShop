@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const { supabaseAdmin } = require('../../database/supabase');
 
 /**
  * POST /api/customer/orders/cancel
@@ -19,16 +16,15 @@ router.post(['/api/customer/orders/cancel', '/api/orders/cancel'], async (req, r
       return res.status(400).json({ success: false, error: 'A valid order ID is required.' });
     }
 
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(503).json({ success: false, error: 'Order cancellation is currently unavailable.' });
     }
 
     // Check if customer is authenticated via cookie
     let customerPayload = null;
-    if (req.cookies?.customer_token && JWT_SECRET) {
+    if (req.cookies?.customer_token && process.env.JWT_SECRET) {
       try {
-        customerPayload = jwt.verify(req.cookies.customer_token, JWT_SECRET);
+        customerPayload = jwt.verify(req.cookies.customer_token, process.env.JWT_SECRET);
       } catch (_) {}
     }
 
@@ -37,7 +33,7 @@ router.post(['/api/customer/orders/cancel', '/api/orders/cancel'], async (req, r
     const trimmedPhone = typeof phone === 'string' ? phone.trim() : null;
 
     // Call customer_cancel_order RPC
-    const { data, error } = await client.rpc('customer_cancel_order', {
+    const { data, error } = await supabaseAdmin.rpc('customer_cancel_order', {
       p_order_id: id,
       p_customer_id: customerId,
       p_customer_email: customerEmail,

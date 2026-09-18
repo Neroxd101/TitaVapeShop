@@ -3,7 +3,7 @@
 -- Allows customers or guest orderers (with verified phone) to cancel pending orders
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_cancel_order(
+CREATE OR REPLACE FUNCTION public.customer_cancel_order(
     p_order_id UUID,
     p_customer_id UUID DEFAULT NULL,
     p_customer_email VARCHAR(255) DEFAULT NULL,
@@ -39,7 +39,8 @@ BEGIN
     -- 2. Fetch existing order
     SELECT * INTO v_order
     FROM public.orders
-    WHERE public.orders.id = p_order_id;
+    WHERE public.orders.id = p_order_id
+    FOR UPDATE;
 
     IF NOT FOUND THEN
         RAISE EXCEPTION 'Order not found.';
@@ -66,10 +67,7 @@ BEGIN
         v_input_digits := REGEXP_REPLACE(p_phone, '[^0-9]', '', 'g');
         v_order_digits := REGEXP_REPLACE(COALESCE(v_order.contact_number, ''), '[^0-9]', '', 'g');
 
-        IF LENGTH(v_input_digits) >= 4 AND (
-            v_order_digits = v_input_digits OR 
-            RIGHT(v_order_digits, LENGTH(v_input_digits)) = v_input_digits
-        ) THEN
+        IF LENGTH(v_input_digits) = 11 AND v_order_digits = v_input_digits THEN
             v_is_authorized := TRUE;
             v_actor_email := COALESCE(v_order.customer_email, 'Customer');
         END IF;
@@ -91,9 +89,8 @@ BEGIN
         RAISE EXCEPTION 'Only pending orders can be cancelled. This order may already have been updated.';
     END IF;
 
-    -- 5. Audit log to transactions_log (safe block)
-    BEGIN
-        PERFORM public.transactions_log(
+    -- 5. Audit logging is part of the same transaction as cancellation.
+    PERFORM public.transactions_log(
             p_action_type => 'order_cancel',
             p_user_email => COALESCE(v_actor_email, 'Customer'),
             p_entity_id => v_updated_order.id,
@@ -109,11 +106,7 @@ BEGIN
                 'cancelled_by', 'customer',
                 'items_count', CASE WHEN jsonb_typeof(v_updated_order.items) = 'array' THEN jsonb_array_length(v_updated_order.items) ELSE 0 END
             )
-        );
-    EXCEPTION WHEN OTHERS THEN
-        -- Fail silently on audit logging error so cancellation is not blocked
-        NULL;
-    END;
+    );
 
     -- 6. Return updated order
     RETURN QUERY
@@ -130,6 +123,12 @@ BEGIN
         v_updated_order.created_at,
         v_updated_order.updated_at;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
-COMMENT ON FUNCTION customer_cancel_order IS 'Cancels a pending order after verifying customer account or contact phone ownership.';
+REVOKE ALL ON FUNCTION public.customer_cancel_order(UUID, UUID, VARCHAR, VARCHAR)
+FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.customer_cancel_order(UUID, UUID, VARCHAR, VARCHAR)
+TO service_role;
+
+COMMENT ON FUNCTION public.customer_cancel_order(UUID, UUID, VARCHAR, VARCHAR) IS
+'Cancels a pending order after validating customer ownership or an exact full contact-number match.';
