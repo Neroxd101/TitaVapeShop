@@ -3,7 +3,7 @@
 -- Allows customers or guest orderers (with verified phone) to view order status & details
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_track_order(
+CREATE OR REPLACE FUNCTION public.customer_track_order(
     p_order_id UUID,
     p_customer_id UUID DEFAULT NULL,
     p_customer_email VARCHAR(255) DEFAULT NULL,
@@ -66,10 +66,7 @@ BEGIN
         v_input_digits := REGEXP_REPLACE(p_phone, '[^0-9]', '', 'g');
         v_order_digits := REGEXP_REPLACE(COALESCE(v_order.contact_number, ''), '[^0-9]', '', 'g');
 
-        IF LENGTH(v_input_digits) >= 4 AND (
-            v_order_digits = v_input_digits OR 
-            RIGHT(v_order_digits, LENGTH(v_input_digits)) = v_input_digits
-        ) THEN
+        IF LENGTH(v_input_digits) = 11 AND v_order_digits = v_input_digits THEN
             v_is_authorized := TRUE;
         ELSE
             RAISE EXCEPTION 'The contact number entered does not match this order.';
@@ -95,6 +92,12 @@ BEGIN
         v_order.payment_receipt_url,
         COALESCE(v_order.payment_status, 'unpaid') AS payment_status;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
-COMMENT ON FUNCTION customer_track_order IS 'Retrieves order details for an order after validating authenticated customer session or contact phone match.';
+REVOKE ALL ON FUNCTION public.customer_track_order(UUID, UUID, VARCHAR, VARCHAR)
+FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.customer_track_order(UUID, UUID, VARCHAR, VARCHAR)
+TO service_role;
+
+COMMENT ON FUNCTION public.customer_track_order(UUID, UUID, VARCHAR, VARCHAR) IS
+'Retrieves an order after validating customer ownership or an exact full contact-number match.';

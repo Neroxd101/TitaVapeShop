@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const { supabaseAdmin } = require('../../database/supabase');
 
 /**
  * GET /api/customer/orders/track
@@ -23,16 +20,15 @@ router.get(['/api/customer/orders/track', '/api/orders/track'], async (req, res)
       });
     }
 
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
     // Check if customer is authenticated via cookie
     let customerPayload = null;
-    if (req.cookies?.customer_token && JWT_SECRET) {
+    if (req.cookies?.customer_token && process.env.JWT_SECRET) {
       try {
-        customerPayload = jwt.verify(req.cookies.customer_token, JWT_SECRET);
+        customerPayload = jwt.verify(req.cookies.customer_token, process.env.JWT_SECRET);
       } catch (_) { }
     }
 
@@ -41,7 +37,7 @@ router.get(['/api/customer/orders/track', '/api/orders/track'], async (req, res)
     const trimmedPhone = typeof phone === 'string' ? phone.trim() : null;
 
     // Call customer_track_order RPC
-    const { data: rpcData, error: rpcError } = await client.rpc('customer_track_order', {
+    const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('customer_track_order', {
       p_order_id: targetOrderId,
       p_customer_id: customerId,
       p_customer_email: customerEmail,
@@ -87,4 +83,3 @@ router.get(['/api/customer/orders/track', '/api/orders/track'], async (req, res)
 });
 
 module.exports = router;
-
