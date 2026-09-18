@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let selectedUserId = null;
 
     // Initial Render
+    await syncGoogleConnection();
     renderGoogleSettings();
     if (isAdmin) {
         loadUsersList();
@@ -96,6 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Listen for messages from popup
     window.addEventListener('message', (e) => {
+        if (e.origin !== window.location.origin) return;
         if (e.data.type === 'GOOGLE_AUTH_SUCCESS') {
             renderGoogleSettings();
         } else if (e.data.type === 'GOOGLE_AUTH_ERROR') {
@@ -178,23 +180,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.textContent = 'Disconnecting...';
 
         try {
-            const token = localStorage.getItem('google_access_token');
-            if (token) {
-                await fetch('/auth/google/disconnect', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token })
-                });
-            }
+            await fetch('/auth/google/disconnect', { method: 'POST' });
         } catch (error) {
             console.error('Error disconnecting:', error);
         } finally {
             // Clear storage
             localStorage.removeItem('google_connected');
             localStorage.removeItem('google_user');
-            localStorage.removeItem('google_access_token');
-            localStorage.removeItem('google_refresh_token');
-            localStorage.removeItem('google_expires_at');
 
             // Notify other tabs
             window.dispatchEvent(new Event('storage'));
@@ -263,6 +255,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             return JSON.parse(localStorage.getItem('google_user'));
         } catch {
             return null;
+        }
+    }
+
+    async function syncGoogleConnection() {
+        try {
+            const response = await fetch('/auth/google/status');
+            const data = await response.json();
+            if (response.ok && data.connected && data.user) {
+                localStorage.setItem('google_connected', 'true');
+                localStorage.setItem('google_user', JSON.stringify(data.user));
+            } else if (response.ok) {
+                localStorage.removeItem('google_connected');
+                localStorage.removeItem('google_user');
+            }
+        } catch (error) {
+            console.error('Unable to verify Google connection:', error);
         }
     }
 

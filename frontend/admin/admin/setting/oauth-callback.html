@@ -37,10 +37,11 @@
         (async function () {
             const params = new URLSearchParams(window.location.search);
             const code = params.get('code');
+            const state = params.get('state');
             const error = params.get('error');
 
             if (error) {
-                window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error }, '*');
+                window.opener?.postMessage({ type: 'GOOGLE_AUTH_ERROR', error }, window.location.origin);
                 window.close();
                 return;
             }
@@ -50,26 +51,24 @@
                     const response = await fetch('/auth/google/exchange', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code })
+                        body: JSON.stringify({ code, state })
                     });
 
                     const data = await response.json();
 
                     if (data.success) {
-                        // Store in localStorage (domain-wide)
-                        localStorage.setItem('google_access_token', data.tokens.access_token);
-                        localStorage.setItem('google_refresh_token', data.tokens.refresh_token);
-                        localStorage.setItem('google_expires_at', Date.now() + (data.tokens.expires_in * 1000));
+                        // Only non-sensitive display information is stored here.
+                        // OAuth tokens remain in HttpOnly cookies managed by the backend.
                         localStorage.setItem('google_user', JSON.stringify(data.user));
                         localStorage.setItem('google_connected', 'true');
 
                         // Notify via storage event (for other tabs) AND postMessage (for opener direct feedback)
-                        window.opener.postMessage({ type: 'GOOGLE_AUTH_SUCCESS', user: data.user }, '*');
+                        window.opener?.postMessage({ type: 'GOOGLE_AUTH_SUCCESS', user: data.user }, window.location.origin);
                     } else {
-                        window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: data.error }, '*');
+                        window.opener?.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: data.error }, window.location.origin);
                     }
                 } catch (err) {
-                    window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: err.message }, '*');
+                    window.opener?.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: err.message }, window.location.origin);
                 } finally {
                     window.close();
                 }

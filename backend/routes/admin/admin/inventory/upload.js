@@ -166,7 +166,7 @@ async function uploadFile(googleToken, base64Data, filename, mimeType, folderId 
 router.post('/api/upload', async (req, res) => {
   try {
     const { image, filename, mimeType, productName } = req.body;
-    const googleToken = req.headers['x-google-token'];
+    const googleToken = req.cookies?.google_access_token;
 
     if (!googleToken) {
       return res.status(401).json({ error: 'Google account not connected' });
@@ -215,7 +215,7 @@ router.post('/api/upload', async (req, res) => {
 router.post('/api/upload/qrcode', async (req, res) => {
   try {
     const { qrCode, qrImage, productName } = req.body;
-    const googleToken = req.headers['x-google-token'];
+    const googleToken = req.cookies?.google_access_token;
 
     if (!googleToken) {
       return res.status(401).json({ error: 'Google account not connected' });
@@ -279,8 +279,7 @@ router.post('/api/upload/qrcode', async (req, res) => {
 router.get('/api/upload/drive-image/:fileId', async (req, res) => {
   try {
     const { fileId } = req.params;
-    // Check both header and query param for token
-    const googleToken = req.headers['x-google-token'] || req.headers['authorization']?.replace('Bearer ', '') || req.query.token;
+    const googleToken = req.cookies?.google_access_token;
 
     if (!googleToken) {
       return res.status(401).json({ error: 'Google account not connected' });
@@ -334,7 +333,7 @@ router.get('/api/upload/drive-image/:fileId', async (req, res) => {
 router.delete('/api/upload/:fileId', async (req, res) => {
   try {
     const { fileId } = req.params;
-    const googleToken = req.headers['x-google-token'];
+    const googleToken = req.cookies?.google_access_token;
 
     if (!googleToken) {
       return res.status(401).json({ error: 'Google account not connected' });

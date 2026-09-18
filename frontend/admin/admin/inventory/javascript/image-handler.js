@@ -215,11 +215,6 @@ const InventoryImage = {
       throw new Error('Please connect your Google account first');
     }
 
-    const googleToken = InventoryUtils.getGoogleToken();
-    if (!googleToken) {
-      throw new Error('Google token not found');
-    }
-
     // Mark as uploading
     InventoryState.currentImages[index].uploading = true;
     this.renderImagesGrid();
@@ -229,7 +224,6 @@ const InventoryImage = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Google-Token': googleToken,
         },
         body: JSON.stringify({
           image: imageData.preview,
@@ -297,11 +291,6 @@ const InventoryImage = {
       return null;
     }
 
-    const googleToken = InventoryUtils.getGoogleToken();
-    if (!googleToken) {
-      return null;
-    }
-
     try {
 
       // Backend will generate QR code and upload to Google Drive
@@ -309,7 +298,6 @@ const InventoryImage = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Google-Token': googleToken,
         },
         body: JSON.stringify({
           qrCode: productCode,

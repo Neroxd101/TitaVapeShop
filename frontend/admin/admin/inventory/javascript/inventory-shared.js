@@ -91,7 +91,5 @@ const InventoryUtils = {
         return localStorage.getItem('google_connected') === 'true';
     },
 
-    getGoogleToken() {
-        return localStorage.getItem('google_access_token');
-    }
+    // OAuth tokens are HttpOnly cookies and intentionally unavailable to JavaScript.
 };

@@ -64,6 +64,14 @@ async function handleLogin(req, res) {
       p_username: cleanUsername
     });
 
+    if (userError) {
+      console.error('[Admin Login] RPC error:', {
+        code: userError.code,
+        message: userError.message,
+        details: userError.details
+      });
+    }
+
     if (userError || !Array.isArray(userData) || userData.length === 0) {
       const message = 'Invalid credentials';
       return req.headers['content-type'] === 'application/x-www-form-urlencoded'

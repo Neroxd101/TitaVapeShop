@@ -3,6 +3,11 @@
 -- Handles authentication lookups and last login updates for admin/staff users
 -- =============================================
 
+-- Existing installations may predate session invalidation support. Keep this
+-- migration self-contained so the login RPC can safely return session_version.
+ALTER TABLE public.users
+ADD COLUMN IF NOT EXISTS session_version INTEGER NOT NULL DEFAULT 0;
+
 -- Return type changed to include session_version; remove old definitions first.
 DROP FUNCTION IF EXISTS public.user_get_by_username(TEXT);
 DROP FUNCTION IF EXISTS public.user_update_last_login(UUID);

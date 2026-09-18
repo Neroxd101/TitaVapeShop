@@ -1,11 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const { randomBytes, timingSafeEqual } = require('crypto');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // Google OAuth configuration - these should be in .env
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+function secureCookies() {
+  return process.env.NODE_ENV === 'production' || (process.env.APP_URL || '').startsWith('https');
+}
+
+function tokenCookieOptions(maxAge, cookiePath = '/') {
+  return {
+    httpOnly: true,
+    secure: secureCookies(),
+    sameSite: 'lax',
+    path: cookiePath,
+    maxAge
+  };
+}
 
 // Protect all routes in this router - Admin only
 router.use('/auth/google', isAuthenticated, hasRole(['admin']));
@@ -21,8 +36,8 @@ function getRedirectUri(req) {
 
   // Construct from base URL (for web OAuth type)
   let baseUrl;
-  if (process.env.GOOGLE_REDIRECT_URI_BASE) {
-    baseUrl = process.env.GOOGLE_REDIRECT_URI_BASE;
+  if (process.env.GOOGLE_REDIRECT_URI_BASE || process.env.APP_URL) {
+    baseUrl = process.env.GOOGLE_REDIRECT_URI_BASE || process.env.APP_URL;
   } else {
     // Check for forwarded protocol (hosting proxies forward the original protocol)
     const protocol = req.get('x-forwarded-proto') || req.protocol;
@@ -42,6 +57,9 @@ router.get('/auth/google', async (req, res) => {
     }
 
     const redirectUri = getRedirectUri(req);
+    const state = randomBytes(32).toString('hex');
+
+    res.cookie('google_oauth_state', state, tokenCookieOptions(10 * 60 * 1000, '/auth/google'));
 
     const scopes = [
       'https://www.googleapis.com/auth/drive.file',
@@ -56,6 +74,7 @@ router.get('/auth/google', async (req, res) => {
     authUrl.searchParams.set('scope', scopes.join(' '));
     authUrl.searchParams.set('access_type', 'offline');
     authUrl.searchParams.set('prompt', 'consent');
+    authUrl.searchParams.set('state', state);
 
     res.json({ success: true, authUrl: authUrl.toString() });
   } catch (error) {
@@ -76,7 +95,16 @@ router.post('/auth/google/exchange', async (req, res) => {
       return res.status(500).json({ error: 'Google OAuth not configured' });
     }
 
-    const { code } = req.body;
+    const { code, state } = req.body;
+    const expectedState = req.cookies?.google_oauth_state;
+
+    if (!code || !state || !expectedState ||
+        state.length !== expectedState.length ||
+        !timingSafeEqual(Buffer.from(state), Buffer.from(expectedState))) {
+      return res.status(400).json({ error: 'Invalid or expired OAuth state' });
+    }
+
+    res.clearCookie('google_oauth_state', { path: '/auth/google' });
     const redirectUri = getRedirectUri(req);
 
     // Exchange code for tokens
@@ -94,7 +122,7 @@ router.post('/auth/google/exchange', async (req, res) => {
 
     const tokens = await tokenResponse.json();
 
-    if (tokens.error) {
+    if (tokens.error || !tokens.access_token) {
       return res.status(400).json({ error: tokens.error_description || 'Failed to exchange code' });
     }
 
@@ -104,13 +132,21 @@ router.post('/auth/google/exchange', async (req, res) => {
     });
     const userInfo = await userInfoResponse.json();
 
+    res.cookie(
+      'google_access_token',
+      tokens.access_token,
+      tokenCookieOptions(Math.max(Number(tokens.expires_in || 3600) - 60, 60) * 1000)
+    );
+    if (tokens.refresh_token) {
+      res.cookie(
+        'google_refresh_token',
+        tokens.refresh_token,
+        tokenCookieOptions(30 * 24 * 60 * 60 * 1000, '/auth/google')
+      );
+    }
+
     res.json({
       success: true,
-      tokens: {
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-        expires_in: tokens.expires_in,
-      },
       user: {
         email: userInfo.email,
         name: userInfo.name,
@@ -123,6 +159,39 @@ router.post('/auth/google/exchange', async (req, res) => {
   }
 });
 
+// GET /auth/google/status - Validate the server-held access token.
+router.get('/auth/google/status', async (req, res) => {
+  const accessToken = req.cookies?.google_access_token;
+  if (!accessToken) {
+    return res.json({ success: true, connected: false });
+  }
+
+  try {
+    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    if (!userInfoResponse.ok) {
+      res.clearCookie('google_access_token', { path: '/' });
+      return res.json({ success: true, connected: false });
+    }
+
+    const userInfo = await userInfoResponse.json();
+    return res.json({
+      success: true,
+      connected: true,
+      user: {
+        email: userInfo.email,
+        name: userInfo.name,
+        picture: userInfo.picture
+      }
+    });
+  } catch (error) {
+    console.error('Google status error:', error);
+    return res.status(503).json({ error: 'Unable to verify Google connection' });
+  }
+});
+
 // POST /auth/google/refresh - Refresh access token
 router.post('/auth/google/refresh', async (req, res) => {
   try {
@@ -130,7 +199,10 @@ router.post('/auth/google/refresh', async (req, res) => {
       return res.status(500).json({ error: 'Google OAuth not configured' });
     }
 
-    const { refresh_token } = req.body;
+    const refresh_token = req.cookies?.google_refresh_token;
+    if (!refresh_token) {
+      return res.status(401).json({ error: 'Google account is not connected' });
+    }
 
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
@@ -149,11 +221,12 @@ router.post('/auth/google/refresh', async (req, res) => {
       return res.status(400).json({ error: tokens.error_description || 'Failed to refresh token' });
     }
 
-    res.json({
-      success: true,
-      access_token: tokens.access_token,
-      expires_in: tokens.expires_in,
-    });
+    res.cookie(
+      'google_access_token',
+      tokens.access_token,
+      tokenCookieOptions(Math.max(Number(tokens.expires_in || 3600) - 60, 60) * 1000)
+    );
+    res.json({ success: true, expires_in: tokens.expires_in });
   } catch (error) {
     console.error('Google refresh error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -163,7 +236,7 @@ router.post('/auth/google/refresh', async (req, res) => {
 // POST /auth/google/disconnect - Revoke token
 router.post('/auth/google/disconnect', async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.cookies?.google_access_token || req.cookies?.google_refresh_token;
 
     if (token) {
       // Attempt to revoke the token
@@ -173,11 +246,13 @@ router.post('/auth/google/disconnect', async (req, res) => {
       });
     }
 
-    // Always return success to allow frontend to clean up
+    res.clearCookie('google_access_token', { path: '/' });
+    res.clearCookie('google_refresh_token', { path: '/auth/google' });
     res.json({ success: true });
   } catch (error) {
     console.error('Google disconnect error:', error);
-    // Still return success so frontend can clear state
+    res.clearCookie('google_access_token', { path: '/' });
+    res.clearCookie('google_refresh_token', { path: '/auth/google' });
     res.json({ success: true });
   }
 });
