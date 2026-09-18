@@ -427,7 +427,13 @@ class TransactionsUI {
         }
 
         if (t.action_type === 'order_payment_update') {
-            return `Updated payment for order ${this.escapeHtml(d.order_id || t.entity_id || '')} from ${this.escapeHtml(d.previous_payment_status || 'unknown')} to ${this.escapeHtml(d.new_payment_status || 'unknown')}.`;
+            const orderId = String(d.order_id || t.entity_id || 'N/A').substring(0, 8);
+            const formatStatus = value => String(value || 'unknown')
+                .replace(/_/g, ' ')
+                .replace(/^\w/, character => character.toUpperCase());
+            const previousStatus = formatStatus(d.previous_payment_status);
+            const newStatus = formatStatus(d.new_payment_status);
+            return `Payment ${this.escapeHtml(orderId)}: ${this.escapeHtml(previousStatus)} &rarr; ${this.escapeHtml(newStatus)}`;
         }
 
         return JSON.stringify(d).substring(0, 50) + '...';

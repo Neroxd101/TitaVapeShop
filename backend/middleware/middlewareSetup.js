@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const sensitiveRateLimiter = require('./rateLimiter');
+const securityHeaders = require('./securityHeaders');
 
 function getAllowedOrigins() {
   const configured = [
@@ -36,6 +37,7 @@ function setupMiddleware(app) {
 
   // Reject abusive traffic before parsing its request body.
   app.use(sensitiveRateLimiter);
+  app.use(securityHeaders);
 
   // Browser requests without an Origin are same-origin or non-browser clients.
   // Cross-origin browser requests must match an explicitly trusted URL.
@@ -50,6 +52,21 @@ function setupMiddleware(app) {
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Accept']
   }));
+
+  // CORS controls who may read responses. This separate check prevents a
+  // foreign website from submitting cookie-authenticated state changes.
+  app.use((req, res, next) => {
+    if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+
+    const origin = req.get('origin');
+    const fetchSite = req.get('sec-fetch-site');
+    if (fetchSite === 'cross-site' ||
+        (origin && !allowedOrigins.has(origin.replace(/\/$/, '')))) {
+      return res.status(403).json({ success: false, error: 'Cross-site request blocked' });
+    }
+
+    return next();
+  });
 
   const normalJsonParser = express.json({ limit: '1mb' });
   const uploadJsonParser = express.json({ limit: '12mb' });
