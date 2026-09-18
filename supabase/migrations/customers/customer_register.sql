@@ -3,7 +3,7 @@
 -- Registers a new customer and generates a 6-digit OTP code
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_register(
+CREATE OR REPLACE FUNCTION public.customer_register(
     p_full_name TEXT,
     p_email TEXT,
     p_contact_number TEXT,
@@ -34,6 +34,13 @@ BEGIN
 
     IF LENGTH(v_clean_phone) <> 11 THEN
         RETURN jsonb_build_object('success', false, 'error', 'Contact number must be exactly 11 digits (e.g. 09123456789).');
+    END IF;
+
+    -- Only accept a bcrypt hash produced by the trusted backend.
+    IF p_password_hash IS NULL
+       OR LENGTH(p_password_hash) <> 60
+       OR p_password_hash !~ '^\$2[aby]\$[0-9]{2}\$' THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Invalid password data.');
     END IF;
 
     -- Age check (18+)
@@ -105,4 +112,14 @@ BEGIN
         'message', 'Verification code generated successfully.'
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+-- Registration must pass through the backend, which validates the request,
+-- hashes the password, and sends the verification email.
+REVOKE ALL ON FUNCTION public.customer_register(TEXT, TEXT, TEXT, TEXT, DATE)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.customer_register(TEXT, TEXT, TEXT, TEXT, DATE)
+TO service_role;

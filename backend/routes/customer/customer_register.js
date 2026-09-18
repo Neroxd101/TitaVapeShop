@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const { supabaseAdmin } = require('../../database/supabase');
 const { generateVerificationEmail, sendMail } = require('./customer_mailer');
-
-const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * POST /api/customer/register
@@ -16,8 +14,7 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(400).json({ success: false, error: 'You must agree to the Terms and Conditions to register.' });
     }
 
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
@@ -66,6 +63,10 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Password must be at least 8 characters long.' });
     }
 
+    if (password.length > 72) {
+      return res.status(400).json({ success: false, error: 'Password must not exceed 72 characters.' });
+    }
+
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
@@ -78,11 +79,11 @@ router.post('/api/customer/register', async (req, res) => {
       });
     }
 
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const birthDateFormatted = birthDate.toISOString().split('T')[0];
 
     // Call customer_register RPC
-    const { data: rpcResult, error: rpcError } = await client.rpc('customer_register', {
+    const { data: rpcResult, error: rpcError } = await supabaseAdmin.rpc('customer_register', {
       p_full_name: full_name.trim(),
       p_email: cleanEmail,
       p_contact_number: digitsOnly,
