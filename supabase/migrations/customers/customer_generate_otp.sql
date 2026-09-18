@@ -50,6 +50,7 @@ BEGIN
             SELECT customer_id INTO v_target_customer_id
             FROM public.customer_verification_codes
             WHERE LOWER(email) = v_clean_email
+              AND purpose = 'email_verification'
               AND verified = FALSE
             ORDER BY created_at DESC
             LIMIT 1;
@@ -72,6 +73,7 @@ BEGIN
         FROM public.customer_verification_codes
         WHERE customer_id = v_target_customer_id
           AND LOWER(email) = v_clean_email
+          AND purpose = 'email_verification'
           AND created_at > NOW() - INTERVAL '60 seconds'
     ) THEN
         RETURN jsonb_build_object(
@@ -85,6 +87,7 @@ BEGIN
     SET verified = TRUE
     WHERE customer_id = v_target_customer_id
       AND LOWER(email) = v_clean_email
+      AND purpose = 'email_verification'
       AND verified = FALSE;
 
     -- Generate fresh 6-digit OTP
@@ -97,14 +100,16 @@ BEGIN
         email,
         otp_code,
         expires_at,
-        verified
+        verified,
+        purpose
     )
     VALUES (
         v_target_customer_id,
         v_clean_email,
         v_otp_code,
         v_expires_at,
-        FALSE
+        FALSE,
+        'email_verification'
     );
 
     RETURN jsonb_build_object(

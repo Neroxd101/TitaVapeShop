@@ -6,6 +6,9 @@
 ALTER TABLE public.customer_verification_codes
 ADD COLUMN IF NOT EXISTS attempt_count INTEGER NOT NULL DEFAULT 0;
 
+ALTER TABLE public.customer_verification_codes
+ADD COLUMN IF NOT EXISTS purpose VARCHAR(30) NOT NULL DEFAULT 'email_verification';
+
 CREATE OR REPLACE FUNCTION public.customer_verify_otp(
     p_email TEXT,
     p_otp_code VARCHAR(6)
@@ -29,6 +32,7 @@ BEGIN
     INTO v_code_record
     FROM public.customer_verification_codes
     WHERE LOWER(email) = v_clean_email
+      AND purpose = 'email_verification'
       AND verified = FALSE
     ORDER BY created_at DESC
     LIMIT 1

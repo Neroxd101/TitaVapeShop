@@ -33,6 +33,12 @@ BEGIN
 END $$;
 
 -- 4. Rebuild indexes
+ALTER TABLE public.customer_verification_codes
+    ADD COLUMN IF NOT EXISTS attempt_count INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE public.customer_verification_codes
+    ADD COLUMN IF NOT EXISTS purpose VARCHAR(30) NOT NULL DEFAULT 'email_verification';
+
 CREATE INDEX IF NOT EXISTS idx_cust_verify_customer ON public.customer_verification_codes(customer_id);
 CREATE INDEX IF NOT EXISTS idx_cust_verify_email ON public.customer_verification_codes(email);
 CREATE INDEX IF NOT EXISTS idx_cust_verify_otp ON public.customer_verification_codes(email, otp_code);

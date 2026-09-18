@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS public.customer_verification_codes (
     otp_code VARCHAR(6) NOT NULL,
     expires_at TIMESTAMPTZ NOT NULL,
     verified BOOLEAN DEFAULT FALSE,
+    attempt_count INTEGER NOT NULL DEFAULT 0,
+    purpose VARCHAR(30) NOT NULL DEFAULT 'email_verification'
+        CHECK (purpose IN ('email_verification', 'password_reset')),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

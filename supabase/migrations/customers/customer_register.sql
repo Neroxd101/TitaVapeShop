@@ -92,14 +92,16 @@ BEGIN
         email,
         otp_code,
         expires_at,
-        verified
+        verified,
+        purpose
     )
     VALUES (
         v_customer_id,
         v_clean_email,
         v_otp_code,
         v_expires_at,
-        FALSE
+        FALSE,
+        'email_verification'
     );
 
     RETURN jsonb_build_object(

@@ -1,10 +1,11 @@
 const nodemailer = require('nodemailer');
+const { randomInt } = require('crypto');
 
 /**
  * Generate 6-digit verification code
  */
 function generateCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return randomInt(100000, 1000000).toString();
 }
 
 /**

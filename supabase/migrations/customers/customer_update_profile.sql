@@ -79,6 +79,7 @@ BEGIN
             SELECT 1
             FROM public.customer_verification_codes AS vc
             WHERE vc.customer_id = p_customer_id
+              AND vc.purpose = 'email_verification'
               AND vc.created_at > NOW() - INTERVAL '60 seconds'
         ) THEN
             RETURN jsonb_build_object(
@@ -90,6 +91,7 @@ BEGIN
         UPDATE public.customer_verification_codes AS vc
         SET verified = TRUE
         WHERE vc.customer_id = p_customer_id
+          AND vc.purpose = 'email_verification'
           AND vc.verified = FALSE;
 
         -- Update name and phone immediately, but NOT email yet
@@ -108,14 +110,16 @@ BEGIN
             email,
             otp_code,
             expires_at,
-            verified
+            verified,
+            purpose
         )
         VALUES (
             p_customer_id,
             v_clean_email,
             v_otp_code,
             v_expires_at,
-            FALSE
+            FALSE,
+            'email_verification'
         );
 
         RETURN jsonb_build_object(

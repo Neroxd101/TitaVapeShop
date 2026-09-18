@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const { supabaseAdmin } = require('../../database/supabase');
 const { generateCode, generatePasswordResetEmail, sendMail } = require('./customer_mailer');
-
-const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * Validate customer password strength against store policy:
@@ -17,6 +15,9 @@ const dbClient = () => supabaseAdmin || supabase;
 function validatePasswordStrength(password) {
   if (typeof password !== 'string' || password.length < 8) {
     return 'Password must be at least 8 characters long.';
+  }
+  if (password.length > 72) {
+    return 'Password must not exceed 72 characters.';
   }
   if (!/[A-Z]/.test(password)) {
     return 'Password must contain at least one uppercase letter.';
@@ -39,8 +40,7 @@ function validatePasswordStrength(password) {
  */
 router.post('/api/customer/forgot-password', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
@@ -53,7 +53,7 @@ router.post('/api/customer/forgot-password', async (req, res) => {
 
     const otpCode = generateCode();
 
-    const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_request', {
+    const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('customer_reset_password_request', {
       p_email: cleanEmail,
       p_otp_code: otpCode
     });
@@ -98,8 +98,7 @@ router.post('/api/customer/forgot-password', async (req, res) => {
  */
 router.post('/api/customer/verify-reset-code', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
@@ -115,7 +114,7 @@ router.post('/api/customer/verify-reset-code', async (req, res) => {
       return res.status(400).json({ success: false, error: 'A valid 6-digit verification code is required.' });
     }
 
-    const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_verify_code', {
+    const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('customer_reset_password_verify_code', {
       p_email: cleanEmail,
       p_otp_code: cleanCode
     });
@@ -146,8 +145,7 @@ router.post('/api/customer/verify-reset-code', async (req, res) => {
  */
 router.post('/api/customer/reset-password', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
@@ -172,9 +170,9 @@ router.post('/api/customer/reset-password', async (req, res) => {
       return res.status(400).json({ success: false, error: passwordError });
     }
 
-    const hashedPassword = bcrypt.hashSync(new_password, 10);
+    const hashedPassword = await bcrypt.hash(new_password, 10);
 
-    const { data: rpcData, error: rpcError } = await client.rpc('customer_reset_password_confirm', {
+    const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('customer_reset_password_confirm', {
       p_email: cleanEmail,
       p_otp_code: cleanCode,
       p_new_password_hash: hashedPassword

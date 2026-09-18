@@ -1,185 +1,178 @@
--- =============================================
--- Customer Reset Password RPC Functions
--- Handles requesting a password reset OTP, verifying the OTP first, and confirming password update
--- =============================================
+-- Password-reset codes must be isolated from registration and email-change codes.
+ALTER TABLE public.customer_verification_codes
+ADD COLUMN IF NOT EXISTS attempt_count INTEGER NOT NULL DEFAULT 0;
 
--- 1. Function to request password reset code
-CREATE OR REPLACE FUNCTION customer_reset_password_request(
-    p_email VARCHAR(255),
-    p_otp_code VARCHAR(6)
+ALTER TABLE public.customer_verification_codes
+ADD COLUMN IF NOT EXISTS purpose VARCHAR(30) NOT NULL DEFAULT 'email_verification';
+
+ALTER TABLE public.customer_verification_codes
+DROP CONSTRAINT IF EXISTS customer_verification_codes_purpose_check;
+
+ALTER TABLE public.customer_verification_codes
+ADD CONSTRAINT customer_verification_codes_purpose_check
+CHECK (purpose IN ('email_verification', 'password_reset'));
+
+-- Step 1: create a password-reset code. The backend generates and emails it.
+CREATE OR REPLACE FUNCTION public.customer_reset_password_request(
+    p_email VARCHAR(255), p_otp_code VARCHAR(6)
 )
-RETURNS TABLE (
-    success BOOLEAN,
-    customer_id UUID,
-    full_name VARCHAR(255),
-    error TEXT
-) AS $$
+RETURNS TABLE (success BOOLEAN, customer_id UUID, full_name VARCHAR(255), error TEXT)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+AS $$
 DECLARE
-    v_clean_email VARCHAR(255);
+    v_clean_email VARCHAR(255) := LOWER(BTRIM(p_email));
     v_customer RECORD;
-    v_expires_at TIMESTAMPTZ;
 BEGIN
-    v_clean_email := LOWER(TRIM(p_email));
-
-    IF v_clean_email IS NULL OR v_clean_email = '' THEN
-        RETURN QUERY SELECT FALSE, NULL::UUID, NULL::VARCHAR(255), 'Email address is required'::TEXT;
+    IF v_clean_email IS NULL OR v_clean_email = '' OR p_otp_code !~ '^[0-9]{6}$' THEN
+        RETURN QUERY SELECT FALSE, NULL::UUID, NULL::VARCHAR(255), 'Invalid reset request'::TEXT;
         RETURN;
     END IF;
 
-    -- Look up customer
     SELECT c.id, c.full_name INTO v_customer
-    FROM public.customers c
-    WHERE LOWER(c.email) = v_clean_email;
+    FROM public.customers AS c
+    WHERE LOWER(c.email) = v_clean_email AND c.is_verified IS TRUE;
 
     IF NOT FOUND THEN
-        -- Return false without sensitive disclosure (caller handles generic message)
         RETURN QUERY SELECT FALSE, NULL::UUID, NULL::VARCHAR(255), 'Customer account not found'::TEXT;
         RETURN;
     END IF;
 
-    v_expires_at := NOW() + INTERVAL '15 minutes';
+    IF EXISTS (
+        SELECT 1 FROM public.customer_verification_codes AS vc
+        WHERE vc.customer_id = v_customer.id
+          AND vc.purpose = 'password_reset'
+          AND vc.created_at > NOW() - INTERVAL '60 seconds'
+    ) THEN
+        RETURN QUERY SELECT FALSE, NULL::UUID, NULL::VARCHAR(255), 'Please wait before requesting another code'::TEXT;
+        RETURN;
+    END IF;
 
-    -- Insert verification code
+    UPDATE public.customer_verification_codes AS vc
+    SET verified = TRUE, expires_at = NOW()
+    WHERE vc.customer_id = v_customer.id
+      AND vc.purpose = 'password_reset'
+      AND vc.expires_at > NOW();
+
     INSERT INTO public.customer_verification_codes (
-        customer_id,
-        email,
-        otp_code,
-        expires_at,
-        verified
-    )
-    VALUES (
-        v_customer.id,
-        v_clean_email,
-        p_otp_code,
-        v_expires_at,
-        FALSE
+        customer_id, email, otp_code, expires_at, verified, attempt_count, purpose
+    ) VALUES (
+        v_customer.id, v_clean_email, p_otp_code,
+        NOW() + INTERVAL '15 minutes', FALSE, 0, 'password_reset'
     );
 
     RETURN QUERY SELECT TRUE, v_customer.id, v_customer.full_name::VARCHAR(255), NULL::TEXT;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
--- 2. Function to verify the OTP code before showing/accepting new password
-CREATE OR REPLACE FUNCTION customer_reset_password_verify_code(
-    p_email VARCHAR(255),
-    p_otp_code VARCHAR(6)
+-- Step 2: validate the code and authorize the final reset step.
+CREATE OR REPLACE FUNCTION public.customer_reset_password_verify_code(
+    p_email VARCHAR(255), p_otp_code VARCHAR(6)
 )
-RETURNS TABLE (
-    success BOOLEAN,
-    message TEXT,
-    error TEXT
-) AS $$
+RETURNS TABLE (success BOOLEAN, message TEXT, error TEXT)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+AS $$
 DECLARE
-    v_clean_email VARCHAR(255);
-    v_clean_code VARCHAR(6);
-    v_code_record RECORD;
+    v_clean_email VARCHAR(255) := LOWER(BTRIM(p_email));
+    v_clean_code VARCHAR(6) := BTRIM(p_otp_code);
+    v_code RECORD;
 BEGIN
-    v_clean_email := LOWER(TRIM(p_email));
-    v_clean_code := TRIM(p_otp_code);
-
-    IF v_clean_email IS NULL OR v_clean_email = '' THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Email address is required'::TEXT;
+    IF v_clean_email IS NULL OR v_clean_code !~ '^[0-9]{6}$' THEN
+        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Invalid or expired verification code.'::TEXT;
         RETURN;
     END IF;
 
-    IF v_clean_code IS NULL OR LENGTH(v_clean_code) != 6 THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'A valid 6-digit verification code is required'::TEXT;
+    SELECT vc.id, vc.otp_code, vc.expires_at, vc.attempt_count INTO v_code
+    FROM public.customer_verification_codes AS vc
+    WHERE LOWER(vc.email) = v_clean_email
+      AND vc.purpose = 'password_reset'
+      AND vc.verified = FALSE
+    ORDER BY vc.created_at DESC
+    LIMIT 1 FOR UPDATE;
+
+    IF NOT FOUND OR v_code.expires_at <= NOW() THEN
+        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Invalid or expired verification code.'::TEXT;
         RETURN;
     END IF;
 
-    -- Look up latest active unexpired code
-    SELECT * INTO v_code_record
-    FROM public.customer_verification_codes
-    WHERE LOWER(email) = v_clean_email
-      AND otp_code = v_clean_code
-      AND expires_at > NOW()
-    ORDER BY created_at DESC
-    LIMIT 1;
-
-    IF NOT FOUND THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Invalid or expired verification code. Please request a new code.'::TEXT;
+    IF v_code.attempt_count >= 5 THEN
+        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Too many attempts. Please request a new code.'::TEXT;
         RETURN;
     END IF;
 
-    -- Mark code as verified so caller knows it was successfully confirmed
-    UPDATE public.customer_verification_codes
-    SET verified = TRUE
-    WHERE id = v_code_record.id;
+    IF v_code.otp_code <> v_clean_code THEN
+        UPDATE public.customer_verification_codes AS vc
+        SET attempt_count = attempt_count + 1 WHERE vc.id = v_code.id;
+        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Invalid or expired verification code.'::TEXT;
+        RETURN;
+    END IF;
+
+    UPDATE public.customer_verification_codes AS vc
+    SET verified = TRUE WHERE vc.id = v_code.id;
 
     RETURN QUERY SELECT TRUE, 'Code verified successfully.'::TEXT, NULL::TEXT;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
--- 3. Function to confirm new password once code is verified
-CREATE OR REPLACE FUNCTION customer_reset_password_confirm(
-    p_email VARCHAR(255),
-    p_otp_code VARCHAR(6),
-    p_new_password_hash TEXT
+-- Step 3: consume the verified code and replace the password atomically.
+CREATE OR REPLACE FUNCTION public.customer_reset_password_confirm(
+    p_email VARCHAR(255), p_otp_code VARCHAR(6), p_new_password_hash TEXT
 )
-RETURNS TABLE (
-    success BOOLEAN,
-    message TEXT,
-    error TEXT
-) AS $$
+RETURNS TABLE (success BOOLEAN, message TEXT, error TEXT)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+AS $$
 DECLARE
-    v_clean_email VARCHAR(255);
-    v_clean_code VARCHAR(6);
-    v_code_record RECORD;
+    v_clean_email VARCHAR(255) := LOWER(BTRIM(p_email));
+    v_clean_code VARCHAR(6) := BTRIM(p_otp_code);
+    v_code RECORD;
 BEGIN
-    v_clean_email := LOWER(TRIM(p_email));
-    v_clean_code := TRIM(p_otp_code);
-
-    IF v_clean_email IS NULL OR v_clean_email = '' THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Email address is required'::TEXT;
+    IF v_clean_email IS NULL OR v_clean_code !~ '^[0-9]{6}$' THEN
+        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Invalid or expired verification code.'::TEXT;
         RETURN;
     END IF;
 
-    IF v_clean_code IS NULL OR LENGTH(v_clean_code) != 6 THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'A valid 6-digit verification code is required'::TEXT;
+    IF p_new_password_hash IS NULL
+       OR LENGTH(p_new_password_hash) <> 60
+       OR p_new_password_hash !~ '^\$2[aby]\$[0-9]{2}\$' THEN
+        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Invalid password data.'::TEXT;
         RETURN;
     END IF;
 
-    IF p_new_password_hash IS NULL OR LENGTH(p_new_password_hash) = 0 THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'New password hash is required'::TEXT;
-        RETURN;
-    END IF;
-
-    -- Look up matching active code
-    SELECT * INTO v_code_record
-    FROM public.customer_verification_codes
-    WHERE LOWER(email) = v_clean_email
-      AND otp_code = v_clean_code
-      AND expires_at > NOW()
-    ORDER BY created_at DESC
-    LIMIT 1;
+    SELECT vc.id, vc.customer_id INTO v_code
+    FROM public.customer_verification_codes AS vc
+    WHERE LOWER(vc.email) = v_clean_email
+      AND vc.otp_code = v_clean_code
+      AND vc.purpose = 'password_reset'
+      AND vc.verified = TRUE
+      AND vc.expires_at > NOW()
+    ORDER BY vc.created_at DESC
+    LIMIT 1 FOR UPDATE;
 
     IF NOT FOUND THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Invalid or expired verification code. Please request a new code.'::TEXT;
+        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Verify the reset code before changing your password.'::TEXT;
         RETURN;
     END IF;
 
-    -- Invalidate code so it cannot be used again
-    UPDATE public.customer_verification_codes
-    SET verified = TRUE,
-        expires_at = NOW()
-    WHERE id = v_code_record.id;
+    UPDATE public.customer_verification_codes AS vc
+    SET expires_at = NOW() WHERE vc.id = v_code.id;
 
-    -- Update customer password and ensure account is marked verified
-    UPDATE public.customers
-    SET password = p_new_password_hash,
-        is_verified = TRUE,
-        updated_at = NOW()
-    WHERE LOWER(email) = v_clean_email;
+    UPDATE public.customers AS c
+    SET password = p_new_password_hash, updated_at = NOW()
+    WHERE c.id = v_code.customer_id
+      AND LOWER(c.email) = v_clean_email
+      AND c.is_verified IS TRUE;
 
     IF NOT FOUND THEN
-        RETURN QUERY SELECT FALSE, NULL::TEXT, 'Customer account not found'::TEXT;
-        RETURN;
+        RAISE EXCEPTION 'Customer account not found';
     END IF;
 
     RETURN QUERY SELECT TRUE, 'Password has been reset successfully. You can now sign in.'::TEXT, NULL::TEXT;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
-COMMENT ON FUNCTION customer_reset_password_request IS 'Generates and stores a password reset OTP for a customer.';
-COMMENT ON FUNCTION customer_reset_password_verify_code IS 'Verifies that the customer has provided the correct OTP code before proceeding to password reset.';
-COMMENT ON FUNCTION customer_reset_password_confirm IS 'Consumes verified password reset OTP and updates customer password.';
+REVOKE ALL ON FUNCTION public.customer_reset_password_request(VARCHAR, VARCHAR) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.customer_reset_password_verify_code(VARCHAR, VARCHAR) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.customer_reset_password_confirm(VARCHAR, VARCHAR, TEXT) FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.customer_reset_password_request(VARCHAR, VARCHAR) TO service_role;
+GRANT EXECUTE ON FUNCTION public.customer_reset_password_verify_code(VARCHAR, VARCHAR) TO service_role;
+GRANT EXECUTE ON FUNCTION public.customer_reset_password_confirm(VARCHAR, VARCHAR, TEXT) TO service_role;
