@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const { supabase, supabaseAdmin } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
-
-const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * GET /api/user/profile/info
@@ -24,7 +22,7 @@ router.get('/api/user/profile/info', isAuthenticated, hasRole(['admin']), async 
 
     if (targetUserId) {
       // Fetch specific user by ID via RPC
-      const { data: userData, error: rpcError } = await supabase.rpc('users_get_all', {
+      const { data: userData, error: rpcError } = await supabaseAdmin.rpc('users_get_all', {
         p_user_id: targetUserId
       });
 
@@ -35,8 +33,8 @@ router.get('/api/user/profile/info', isAuthenticated, hasRole(['admin']), async 
       user = userData[0];
     } else {
       // Get current user info via RPC
-      const { data: userData, error: rpcError } = await supabase.rpc('user_get_by_username', {
-        p_username: req.user.username
+      const { data: userData, error: rpcError } = await supabaseAdmin.rpc('users_get_all', {
+        p_user_id: userId
       });
 
       if (rpcError || !userData || userData.length === 0) {
@@ -70,12 +68,12 @@ router.get('/api/user/profile/info', isAuthenticated, hasRole(['admin']), async 
  */
 router.get('/api/users/list', isAuthenticated, hasRole(['admin']), async (req, res) => {
   try {
-    if (!supabase) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
     
     // Call RPC function to get all users
-    const { data: users, error } = await supabase.rpc('users_get_all');
+    const { data: users, error } = await supabaseAdmin.rpc('users_get_all');
 
     if (error) {
       console.error('RPC error fetching users:', error);
@@ -131,7 +129,7 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
     }
 
     // Generate OTP via RPC
-    const { data: otpData, error: rpcError } = await supabase.rpc('user_profile_generate_otp', {
+    const { data: otpData, error: rpcError } = await supabaseAdmin.rpc('user_profile_generate_otp', {
       p_user_id: userId
     });
 
@@ -191,7 +189,7 @@ router.post('/api/user/profile/verify-otp', isAuthenticated, hasRole(['admin']),
     }
 
     // Verify OTP via RPC
-    const { data: verifyData, error: rpcError } = await supabase.rpc('user_profile_verify_otp', {
+    const { data: verifyData, error: rpcError } = await supabaseAdmin.rpc('user_profile_verify_otp', {
       p_user_id: userId,
       p_otp_code: otp
     });
@@ -225,6 +223,10 @@ router.post('/api/user/profile/update-username', isAuthenticated, hasRole(['admi
       return res.status(401).json({ success: false, error: 'User not authenticated' });
     }
 
+    if (!supabaseAdmin) {
+      return res.status(503).json({ success: false, error: 'Database service unavailable' });
+    }
+
     if (!new_username || !otp) {
       return res.status(400).json({ success: false, error: 'New username and OTP are required' });
     }
@@ -233,7 +235,7 @@ router.post('/api/user/profile/update-username', isAuthenticated, hasRole(['admi
     const targetUserId = target_user_id || adminUserId;
 
     // Verify OTP first (always use admin's OTP for verification)
-    const { data: verifyData, error: verifyError } = await supabase.rpc('user_profile_verify_otp', {
+    const { data: verifyData, error: verifyError } = await supabaseAdmin.rpc('user_profile_verify_otp', {
       p_user_id: adminUserId,
       p_otp_code: otp
     });
@@ -244,7 +246,7 @@ router.post('/api/user/profile/update-username', isAuthenticated, hasRole(['admi
     }
 
     // Update username via RPC
-    const { data: updateData, error: rpcError } = await supabase.rpc('user_update_username', {
+    const { data: updateData, error: rpcError } = await supabaseAdmin.rpc('user_update_username', {
       p_user_id: targetUserId,
       p_new_username: new_username
     });
@@ -279,12 +281,21 @@ router.post('/api/user/profile/update-password', isAuthenticated, hasRole(['admi
       return res.status(401).json({ success: false, error: 'User not authenticated' });
     }
 
+    if (!supabaseAdmin) {
+      return res.status(503).json({ success: false, error: 'Database service unavailable' });
+    }
+
     if (!new_password || !otp) {
       return res.status(400).json({ success: false, error: 'New password and OTP are required' });
     }
 
-    if (new_password.length < 6) {
-      return res.status(400).json({ success: false, error: 'Password must be at least 6 characters' });
+    if (new_password.length < 8 || new_password.length > 72 ||
+        !/[A-Z]/.test(new_password) || !/[a-z]/.test(new_password) ||
+        !/[0-9]/.test(new_password) || !/[^A-Za-z0-9]/.test(new_password)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be 8–72 characters and include uppercase, lowercase, number, and symbol.'
+      });
     }
 
     // Determine target user: admin can update others, regular users update themselves
@@ -313,14 +324,14 @@ router.post('/api/user/profile/update-password', isAuthenticated, hasRole(['admi
       }
 
       // Check current password with stored bcrypt hash
-      const isMatch = bcrypt.compareSync(current_password, userData.password);
+      const isMatch = await bcrypt.compare(current_password, userData.password);
       if (!isMatch) {
         return res.status(400).json({ success: false, error: 'Incorrect current password' });
       }
     }
 
     // Verify OTP first (always use admin's OTP for verification)
-    const { data: verifyData, error: verifyError } = await supabase.rpc('user_profile_verify_otp', {
+    const { data: verifyData, error: verifyError } = await supabaseAdmin.rpc('user_profile_verify_otp', {
       p_user_id: adminUserId,
       p_otp_code: otp
     });
@@ -331,11 +342,10 @@ router.post('/api/user/profile/update-password', isAuthenticated, hasRole(['admi
     }
 
     // Hash new password
-    const saltRounds = 10;
-    const hashedPassword = bcrypt.hashSync(new_password, saltRounds);
+    const hashedPassword = await bcrypt.hash(new_password, 10);
 
     // Update password via RPC
-    const { data: updateData, error: rpcError } = await supabase.rpc('password_reset_update_password', {
+    const { data: updateData, error: rpcError } = await supabaseAdmin.rpc('user_admin_update_password', {
       p_user_id: targetUserId,
       p_new_password_hash: hashedPassword
     });

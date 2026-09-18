@@ -1,6 +1,5 @@
 // Forgot Password Flow
 let currentUsername = '';
-let currentUserId = null;
 let currentTokenId = null;
 
 // DOM Elements
@@ -105,8 +104,7 @@ verifyOtpForm.addEventListener('submit', async (e) => {
       return;
     }
 
-    // Store user ID and token for password reset
-    currentUserId = data.user_id;
+    // Store the verified one-time token for the final reset step
     currentTokenId = data.token_id;
 
     // Move to reset password step
@@ -129,8 +127,8 @@ resetPasswordForm.addEventListener('submit', async (e) => {
   const newPassword = document.getElementById('newPassword').value;
   const confirmPassword = document.getElementById('confirmPassword').value;
 
-  if (newPassword.length < 6) {
-    showResetError('Password must be at least 6 characters long');
+  if (newPassword.length < 8) {
+    showResetError('Password must be at least 8 characters long');
     return;
   }
 
@@ -149,7 +147,7 @@ resetPasswordForm.addEventListener('submit', async (e) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        user_id: currentUserId,
+        token_id: currentTokenId,
         new_password: newPassword
       })
     });

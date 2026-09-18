@@ -3,7 +3,8 @@ const path = require('path');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const { supabase } = require('../../../database/supabase');
+const { randomInt } = require('crypto');
+const { supabaseAdmin } = require('../../../database/supabase');
 
 /**
  * GET /forgot-password - Serve admin/staff forgot password page
@@ -22,6 +23,10 @@ router.get('/admin/forgot-password', serveForgotPassword);
  */
 router.post('/api/password-reset/request', async (req, res) => {
   try {
+    if (!supabaseAdmin) {
+      return res.status(503).json({ success: false, error: 'Password reset service unavailable' });
+    }
+
     const { username } = req.body;
 
     if (!username) {
@@ -29,13 +34,18 @@ router.post('/api/password-reset/request', async (req, res) => {
     }
 
     // Generate OTP via RPC
-    const { data: otpData, error: rpcError } = await supabase.rpc('password_reset_generate_otp', {
-      p_username: username
+    const otpCode = randomInt(100000, 1000000).toString();
+    const { data: otpData, error: rpcError } = await supabaseAdmin.rpc('password_reset_generate_otp', {
+      p_username: username,
+      p_otp_code: otpCode
     });
 
     if (rpcError || !otpData || !otpData.success) {
-      const errorMessage = rpcError?.message || otpData?.error || 'Failed to generate OTP';
-      return res.status(400).json({ success: false, error: errorMessage });
+      console.error('[Admin Password Reset] Request RPC error:', rpcError || otpData?.error);
+      return res.json({
+        success: true,
+        message: 'If the username exists, an OTP has been sent to the registered email address.'
+      });
     }
 
     // Send OTP via email (OTP code is in otpData, server-side only)
@@ -79,6 +89,9 @@ router.post('/api/password-reset/request', async (req, res) => {
  */
 router.post('/api/password-reset/verify', async (req, res) => {
   try {
+    if (!supabaseAdmin) {
+      return res.status(503).json({ success: false, error: 'Password reset service unavailable' });
+    }
     const { username, otp } = req.body;
 
     if (!username || !otp) {
@@ -86,7 +99,7 @@ router.post('/api/password-reset/verify', async (req, res) => {
     }
 
     // Verify OTP via RPC
-    const { data: verifyData, error: rpcError } = await supabase.rpc('password_reset_verify_otp', {
+    const { data: verifyData, error: rpcError } = await supabaseAdmin.rpc('password_reset_verify_otp', {
       p_username: username,
       p_otp_code: otp
     });
@@ -99,7 +112,6 @@ router.post('/api/password-reset/verify', async (req, res) => {
     res.json({
       success: true,
       token_id: verifyData.token_id,
-      user_id: verifyData.user_id,
       message: 'OTP verified successfully'
     });
   } catch (error) {
@@ -114,23 +126,29 @@ router.post('/api/password-reset/verify', async (req, res) => {
  */
 router.post('/api/password-reset/reset', async (req, res) => {
   try {
-    const { user_id, new_password } = req.body;
-
-    if (!user_id || !new_password) {
-      return res.status(400).json({ success: false, error: 'User ID and new password are required' });
+    if (!supabaseAdmin) {
+      return res.status(503).json({ success: false, error: 'Password reset service unavailable' });
     }
 
-    if (new_password.length < 6) {
-      return res.status(400).json({ success: false, error: 'Password must be at least 6 characters' });
+    const { token_id, new_password } = req.body;
+
+    if (!token_id || !new_password) {
+      return res.status(400).json({ success: false, error: 'Verified reset token and new password are required' });
     }
 
-    // Hash new password
-    const saltRounds = 10;
-    const hashedPassword = bcrypt.hashSync(new_password, saltRounds);
+    if (new_password.length < 8 || new_password.length > 72 ||
+        !/[A-Z]/.test(new_password) || !/[a-z]/.test(new_password) ||
+        !/[0-9]/.test(new_password) || !/[^A-Za-z0-9]/.test(new_password)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be 8–72 characters and include uppercase, lowercase, number, and symbol.'
+      });
+    }
 
-    // Update password via RPC
-    const { data: updateData, error: rpcError } = await supabase.rpc('password_reset_update_password', {
-      p_user_id: user_id,
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+
+    const { data: updateData, error: rpcError } = await supabaseAdmin.rpc('password_reset_update_password', {
+      p_token_id: token_id,
       p_new_password_hash: hashedPassword
     });
 

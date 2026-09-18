@@ -13,6 +13,10 @@ const JWT_SECRET = process.env.JWT_SECRET;
  * 4. Allows request to proceed if valid, otherwise blocks it
  */
 function isAuthenticated(req, res, next) {
+    if (!JWT_SECRET) {
+        return res.status(503).json({ error: 'Authentication service unavailable' });
+    }
+
     // Step 1: Get JWT token from HTTP-only cookie
     const token = req.cookies?.token;
 
@@ -31,6 +35,10 @@ function isAuthenticated(req, res, next) {
         // Step 4: Verify JWT token signature and expiration
         // jwt.verify throws error if token is invalid or expired
         const decoded = jwt.verify(token, JWT_SECRET);
+
+        if (!decoded?.id || !decoded?.username || !decoded?.roles) {
+            throw new Error('Invalid session payload');
+        }
         
         // Step 5: Attach user info to request object for use in route handlers
         // This makes user data available in req.user throughout the request

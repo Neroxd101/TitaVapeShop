@@ -30,7 +30,9 @@ BEGIN
     WHERE LOWER(u.username) = LOWER(TRIM(p_username))
        OR (u.email IS NOT NULL AND LOWER(u.email) = LOWER(TRIM(p_username)));
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
 -- Update Admin / Staff Last Login Timestamp
 CREATE OR REPLACE FUNCTION public.admin_update_last_login(
@@ -42,33 +44,18 @@ BEGIN
     SET last_login = NOW()
     WHERE id = p_user_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
--- Backward Compatibility Alias for user_get_by_username
-CREATE OR REPLACE FUNCTION public.user_get_by_username(
-    p_username TEXT
-)
-RETURNS TABLE (
-    id UUID,
-    username TEXT,
-    email TEXT,
-    password TEXT,
-    roles TEXT,
-    last_login TIMESTAMPTZ,
-    created_at TIMESTAMPTZ
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT * FROM public.admin_login(p_username);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Remove legacy duplicate entry points that exposed password hashes.
+DROP FUNCTION IF EXISTS public.user_get_by_username(TEXT);
+DROP FUNCTION IF EXISTS public.user_update_last_login(UUID);
 
--- Backward Compatibility Alias for user_update_last_login
-CREATE OR REPLACE FUNCTION public.user_update_last_login(
-    p_user_id UUID
-)
-RETURNS VOID AS $$
-BEGIN
-    PERFORM public.admin_update_last_login(p_user_id);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+REVOKE ALL ON FUNCTION public.admin_login(TEXT)
+FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.admin_update_last_login(UUID)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.admin_login(TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.admin_update_last_login(UUID) TO service_role;

@@ -3,10 +3,9 @@ const path = require('path');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { supabase, supabaseAdmin } = require('../../../database/supabase');
+const { supabaseAdmin } = require('../../../database/supabase');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * Helper to serve the admin/staff login page
@@ -17,7 +16,7 @@ const dbClient = () => supabaseAdmin || supabase;
 function serveLoginPage(req, res) {
   const token = req.cookies?.token;
 
-  if (token) {
+  if (token && JWT_SECRET) {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       const roles = decoded.roles || [];
@@ -56,13 +55,12 @@ async function handleLogin(req, res) {
         : res.status(400).json({ success: false, error: message });
     }
 
-    const client = dbClient();
-    if (!client) {
-      return res.status(500).json({ success: false, error: 'Database service unavailable' });
+    if (!supabaseAdmin || !JWT_SECRET) {
+      return res.status(503).json({ success: false, error: 'Authentication service unavailable' });
     }
 
     // 1. Fetch user by username via RPC
-    const { data: userData, error: userError } = await client.rpc('user_get_by_username', {
+    const { data: userData, error: userError } = await supabaseAdmin.rpc('admin_login', {
       p_username: cleanUsername
     });
 
@@ -76,7 +74,7 @@ async function handleLogin(req, res) {
     const user = userData[0];
 
     // 2. Verify password with bcrypt
-    if (!user.password || !bcrypt.compareSync(password, user.password)) {
+    if (!user.password || !(await bcrypt.compare(password, user.password))) {
       const message = 'Invalid credentials';
       return req.headers['content-type'] === 'application/x-www-form-urlencoded'
         ? res.redirect('/login?error=' + encodeURIComponent(message))
@@ -85,11 +83,14 @@ async function handleLogin(req, res) {
 
     // 3. Update last login timestamp in background via RPC
     try {
-      await client.rpc('user_update_last_login', { p_user_id: user.id });
+      await supabaseAdmin.rpc('admin_update_last_login', { p_user_id: user.id });
     } catch (_) {}
 
     const roles = user.roles || '';
     const roleList = Array.isArray(roles) ? roles : String(roles).split(',').map(r => r.trim()).filter(Boolean);
+    if (!roleList.some(role => role === 'admin' || role === 'staff')) {
+      return res.status(403).json({ success: false, error: 'Account does not have administrative access' });
+    }
     const rolesString = roleList.join(','); // normalized comma-separated string for JWT
 
     // Generate JWT token (24h)
@@ -99,13 +100,13 @@ async function handleLogin(req, res) {
       { expiresIn: '24h' }
     );
 
-    const isSecure = (process.env.APP_URL || '').startsWith('https');
+    const isSecure = process.env.NODE_ENV === 'production' || (process.env.APP_URL || '').startsWith('https');
 
     // Set HTTP-only cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: isSecure ? 'none' : 'lax',
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000
     });
 
@@ -127,7 +128,7 @@ async function handleLogin(req, res) {
     });
   } catch (error) {
     console.error('[Admin Login] Error:', error);
-    const message = error.message || 'Internal server error';
+    const message = 'Internal server error';
     return req.headers['content-type'] === 'application/x-www-form-urlencoded'
       ? res.redirect('/login?error=' + encodeURIComponent(message))
       : res.status(500).json({ success: false, error: message });
