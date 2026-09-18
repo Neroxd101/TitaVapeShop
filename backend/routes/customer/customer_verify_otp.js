@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const { supabaseAdmin } = require('../../database/supabase');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * POST /api/customer/verify-email
@@ -13,21 +12,20 @@ const dbClient = () => supabaseAdmin || supabase;
  */
 router.post('/api/customer/verify-email', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
-      return res.status(500).json({ success: false, error: 'Database service unavailable' });
+    if (!supabaseAdmin || !JWT_SECRET) {
+      return res.status(500).json({ success: false, error: 'Authentication service unavailable' });
     }
 
     const { email, code } = req.body;
     const cleanEmail = (email || '').trim().toLowerCase();
     const cleanCode = (code || '').trim();
 
-    if (!cleanEmail || !cleanCode) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail) || !/^\d{6}$/.test(cleanCode)) {
       return res.status(400).json({ success: false, error: 'Email and 6-digit code are required.' });
     }
 
     // Call customer_verify_otp RPC
-    const { data: rpcResult, error: rpcError } = await client.rpc('customer_verify_otp', {
+    const { data: rpcResult, error: rpcError } = await supabaseAdmin.rpc('customer_verify_otp', {
       p_email: cleanEmail,
       p_otp_code: cleanCode
     });

@@ -3,7 +3,10 @@
 -- Verifies 6-digit OTP code, activates customer, updates email
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_verify_otp(
+ALTER TABLE public.customer_verification_codes
+ADD COLUMN IF NOT EXISTS attempt_count INTEGER NOT NULL DEFAULT 0;
+
+CREATE OR REPLACE FUNCTION public.customer_verify_otp(
     p_email TEXT,
     p_otp_code VARCHAR(6)
 )
@@ -17,22 +20,36 @@ BEGIN
     v_clean_email := LOWER(TRIM(p_email));
     v_clean_code := TRIM(p_otp_code);
 
-    IF v_clean_email IS NULL OR v_clean_code IS NULL OR LENGTH(v_clean_code) <> 6 THEN
+    IF v_clean_email IS NULL OR v_clean_code IS NULL OR v_clean_code !~ '^[0-9]{6}$' THEN
         RETURN jsonb_build_object('success', false, 'error', 'Valid email and 6-digit code are required.');
     END IF;
 
-    -- Look up latest active matching code
-    SELECT id, customer_id, email, expires_at, verified
+    -- Lock the latest active code so attempts cannot race each other.
+    SELECT id, customer_id, email, otp_code, expires_at, verified, attempt_count
     INTO v_code_record
     FROM public.customer_verification_codes
     WHERE LOWER(email) = v_clean_email
-      AND otp_code = v_clean_code
       AND verified = FALSE
-      AND expires_at > NOW()
     ORDER BY created_at DESC
-    LIMIT 1;
+    LIMIT 1
+    FOR UPDATE;
 
-    IF v_code_record IS NULL THEN
+    IF v_code_record IS NULL OR v_code_record.expires_at <= NOW() THEN
+        RETURN jsonb_build_object(
+            'success', false,
+            'error', 'Invalid or expired verification code. Please check your code or request a new one.'
+        );
+    END IF;
+
+    IF v_code_record.attempt_count >= 5 THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Too many attempts. Please request a new code.');
+    END IF;
+
+    IF v_code_record.otp_code <> v_clean_code THEN
+        UPDATE public.customer_verification_codes
+        SET attempt_count = attempt_count + 1
+        WHERE id = v_code_record.id;
+
         RETURN jsonb_build_object(
             'success', false,
             'error', 'Invalid or expired verification code. Please check your code or request a new one.'
@@ -71,4 +88,12 @@ BEGIN
         )
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+REVOKE ALL ON FUNCTION public.customer_verify_otp(TEXT, VARCHAR)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.customer_verify_otp(TEXT, VARCHAR)
+TO service_role;

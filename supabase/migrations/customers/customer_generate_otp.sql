@@ -3,7 +3,7 @@
 -- Generates a fresh 6-digit OTP for registration or email change
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_generate_otp(
+CREATE OR REPLACE FUNCTION public.customer_generate_otp(
     p_email TEXT,
     p_customer_id UUID DEFAULT NULL
 )
@@ -28,8 +28,10 @@ BEGIN
         FROM public.customers
         WHERE id = v_target_customer_id;
 
-        IF v_customer IS NOT NULL THEN
+        IF v_customer IS NOT NULL AND LOWER(v_customer.email) = v_clean_email THEN
             v_target_name := v_customer.full_name;
+        ELSE
+            RETURN jsonb_build_object('success', false, 'error', 'Customer account does not match this email.');
         END IF;
     ELSE
         -- Look up customer by email
@@ -64,6 +66,27 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'No customer account found with this email.');
     END IF;
 
+    -- Prevent email flooding and uncontrolled OTP creation.
+    IF EXISTS (
+        SELECT 1
+        FROM public.customer_verification_codes
+        WHERE customer_id = v_target_customer_id
+          AND LOWER(email) = v_clean_email
+          AND created_at > NOW() - INTERVAL '60 seconds'
+    ) THEN
+        RETURN jsonb_build_object(
+            'success', false,
+            'error', 'Please wait 60 seconds before requesting another code.'
+        );
+    END IF;
+
+    -- A newly generated code replaces all older active codes.
+    UPDATE public.customer_verification_codes
+    SET verified = TRUE
+    WHERE customer_id = v_target_customer_id
+      AND LOWER(email) = v_clean_email
+      AND verified = FALSE;
+
     -- Generate fresh 6-digit OTP
     v_otp_code := LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0');
     v_expires_at := NOW() + INTERVAL '15 minutes';
@@ -94,4 +117,12 @@ BEGIN
         'message', 'A new verification code has been generated.'
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+REVOKE ALL ON FUNCTION public.customer_generate_otp(TEXT, UUID)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.customer_generate_otp(TEXT, UUID)
+TO service_role;

@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const { supabaseAdmin } = require('../../database/supabase');
 const { generateVerificationEmail, sendMail } = require('./customer_mailer');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * POST /api/customer/resend-otp
@@ -13,16 +12,15 @@ const dbClient = () => supabaseAdmin || supabase;
  */
 router.post('/api/customer/resend-otp', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
-      return res.status(500).json({ success: false, error: 'Database service unavailable' });
+    if (!supabaseAdmin || !JWT_SECRET) {
+      return res.status(500).json({ success: false, error: 'Authentication service unavailable' });
     }
 
     const { email } = req.body;
     const cleanEmail = (email || '').trim().toLowerCase();
 
-    if (!cleanEmail) {
-      return res.status(400).json({ success: false, error: 'Email address is required.' });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ success: false, error: 'A valid email address is required.' });
     }
 
     let targetUserId = null;
@@ -37,7 +35,7 @@ router.post('/api/customer/resend-otp', async (req, res) => {
     }
 
     // Call customer_generate_otp RPC
-    const { data: rpcResult, error: rpcError } = await client.rpc('customer_generate_otp', {
+    const { data: rpcResult, error: rpcError } = await supabaseAdmin.rpc('customer_generate_otp', {
       p_email: cleanEmail,
       p_customer_id: targetUserId
     });
