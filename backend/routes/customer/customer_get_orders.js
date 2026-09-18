@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const { supabaseAdmin } = require('../../database/supabase');
 
 /**
  * POST /api/customer/orders/batch
@@ -13,9 +10,11 @@ const dbClient = () => supabaseAdmin || supabase;
  */
 router.post(['/api/customer/orders/batch', '/api/orders/track-batch'], async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
+    }
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ success: false, error: 'Customer authentication is not configured', orders: [] });
     }
 
     // Require verified logged-in customer session
@@ -31,7 +30,7 @@ router.post(['/api/customer/orders/batch', '/api/orders/track-batch'], async (re
 
     let customerPayload = null;
     try {
-      customerPayload = jwt.verify(customerToken, JWT_SECRET);
+      customerPayload = jwt.verify(customerToken, process.env.JWT_SECRET);
     } catch (_) {
       return res.json({
         success: false,
@@ -50,9 +49,10 @@ router.post(['/api/customer/orders/batch', '/api/orders/track-batch'], async (re
       });
     }
 
-    const limit = Math.min(parseInt(req.body?.limit) || 25, 50);
+    const requestedLimit = Number.parseInt(req.body?.limit, 10);
+    const limit = Number.isInteger(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 50) : 25;
 
-    const { data: rpcOrders, error: rpcError } = await client.rpc('customer_get_orders', {
+    const { data: rpcOrders, error: rpcError } = await supabaseAdmin.rpc('customer_get_orders', {
       p_customer_id: customerPayload.id,
       p_limit: limit
     });
