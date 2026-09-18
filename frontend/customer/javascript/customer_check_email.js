@@ -7,18 +7,19 @@ const CustomerCheckEmail = {
    * Check if email is already registered
    * @param {string} email
    * @param {string|null} excludeUserId
-   * @returns {Promise<{success: boolean, exists: boolean, is_verified?: boolean}>}
+   * @returns {Promise<{success: boolean, exists: boolean}>}
    */
   async check(email, excludeUserId = null) {
     const cleanEmail = (email || '').trim().toLowerCase();
     if (!cleanEmail) return { success: false, exists: false };
 
     try {
-      const resolvedExclude = typeof excludeUserId === 'function' ? excludeUserId() : excludeUserId;
-      const excludeParam = (resolvedExclude && typeof resolvedExclude === 'string') 
-        ? `&exclude_user_id=${encodeURIComponent(resolvedExclude.trim())}` 
-        : '';
-      const res = await fetch(`/api/customer/check-email?email=${encodeURIComponent(cleanEmail)}${excludeParam}`);
+      const res = await fetch('/api/customer/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email: cleanEmail })
+      });
       return await res.json();
     } catch (err) {
       console.error('[CustomerCheckEmail] Error checking email:', err);

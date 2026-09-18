@@ -1,32 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const jwt = require('jsonwebtoken');
+const { supabaseAdmin } = require('../../database/supabase');
 
-const dbClient = () => supabaseAdmin || supabase;
+function getSessionCustomerId(req) {
+  const token = req.cookies?.customer_token;
+  if (!token || !process.env.JWT_SECRET) return null;
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    return payload?.role === 'customer' && payload.id ? payload.id : null;
+  } catch (_) {
+    return null;
+  }
+}
 
 /**
- * GET /api/customer/check-phone
+ * POST /api/customer/check-phone
  * Check if contact number is already registered via customer_check_phone RPC
  */
-router.get('/api/customer/check-phone', async (req, res) => {
+router.post('/api/customer/check-phone', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
-    const cleanPhone = (req.query.phone || '').trim().replace(/\D/g, '');
-    const rawExclude = (req.query.exclude_user_id || '').trim();
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const excludeUserId = uuidRegex.test(rawExclude) ? rawExclude : null;
+    const cleanPhone = (req.body?.phone || '').trim().replace(/\D/g, '');
 
-    if (!cleanPhone || cleanPhone.length < 10) {
-      return res.status(400).json({ success: false, error: 'Valid phone number is required.' });
+    if (!/^09\d{9}$/.test(cleanPhone)) {
+      return res.status(400).json({ success: false, error: 'A valid 11-digit phone number is required.' });
     }
 
-    const { data, error } = await client.rpc('customer_check_phone', {
+    const { data, error } = await supabaseAdmin.rpc('customer_check_phone', {
       p_phone: cleanPhone,
-      p_exclude_id: excludeUserId
+      p_exclude_id: getSessionCustomerId(req)
     });
 
     if (error) {

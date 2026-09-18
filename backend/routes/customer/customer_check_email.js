@@ -1,32 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const jwt = require('jsonwebtoken');
+const { supabaseAdmin } = require('../../database/supabase');
 
-const dbClient = () => supabaseAdmin || supabase;
+function getSessionCustomerId(req) {
+  const token = req.cookies?.customer_token;
+  if (!token || !process.env.JWT_SECRET) return null;
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    return payload?.role === 'customer' && payload.id ? payload.id : null;
+  } catch (_) {
+    return null;
+  }
+}
 
 /**
- * GET /api/customer/check-email
+ * POST /api/customer/check-email
  * Check if email is already registered via customer_check_email RPC
  */
-router.get('/api/customer/check-email', async (req, res) => {
+router.post('/api/customer/check-email', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
+    if (!supabaseAdmin) {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
-    const cleanEmail = (req.query.email || '').trim().toLowerCase();
-    const rawExclude = (req.query.exclude_user_id || '').trim();
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const excludeUserId = uuidRegex.test(rawExclude) ? rawExclude : null;
+    const cleanEmail = (req.body?.email || '').trim().toLowerCase();
 
-    if (!cleanEmail) {
-      return res.status(400).json({ success: false, error: 'Email parameter is required.' });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ success: false, error: 'A valid email parameter is required.' });
     }
 
-    const { data, error } = await client.rpc('customer_check_email', {
+    const { data, error } = await supabaseAdmin.rpc('customer_check_email', {
       p_email: cleanEmail,
-      p_exclude_id: excludeUserId
+      p_exclude_id: getSessionCustomerId(req)
     });
 
     if (error) {
@@ -36,8 +43,7 @@ router.get('/api/customer/check-email', async (req, res) => {
 
     return res.json({
       success: true,
-      exists: Boolean(data?.exists),
-      is_verified: Boolean(data?.is_verified)
+      exists: Boolean(data?.exists)
     });
   } catch (err) {
     console.error('[Customer Check Email] Exception:', err);

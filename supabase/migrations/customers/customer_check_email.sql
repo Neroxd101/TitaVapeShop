@@ -3,7 +3,7 @@
 -- Checks if an email is already registered in customers table
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_check_email(
+CREATE OR REPLACE FUNCTION public.customer_check_email(
     p_email TEXT,
     p_exclude_id UUID DEFAULT NULL
 )
@@ -11,7 +11,6 @@ RETURNS JSONB AS $$
 DECLARE
     v_clean_email TEXT;
     v_exists BOOLEAN := FALSE;
-    v_is_verified BOOLEAN := FALSE;
     v_record RECORD;
 BEGIN
     v_clean_email := LOWER(TRIM(p_email));
@@ -20,21 +19,27 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Email is required');
     END IF;
 
-    SELECT id, is_verified INTO v_record
-    FROM public.customers
-    WHERE LOWER(email) = v_clean_email
-      AND (p_exclude_id IS NULL OR id <> p_exclude_id)
+    SELECT c.id INTO v_record
+    FROM public.customers AS c
+    WHERE LOWER(c.email) = v_clean_email
+      AND (p_exclude_id IS NULL OR c.id <> p_exclude_id)
     LIMIT 1;
 
     IF v_record IS NOT NULL THEN
         v_exists := TRUE;
-        v_is_verified := COALESCE(v_record.is_verified, FALSE);
     END IF;
 
     RETURN jsonb_build_object(
         'success', true,
-        'exists', v_exists,
-        'is_verified', v_is_verified
+        'exists', v_exists
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+REVOKE ALL ON FUNCTION public.customer_check_email(TEXT, UUID)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.customer_check_email(TEXT, UUID)
+TO service_role;

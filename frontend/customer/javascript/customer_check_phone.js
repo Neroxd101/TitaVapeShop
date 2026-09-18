@@ -14,11 +14,12 @@ const CustomerCheckPhone = {
     if (!cleanPhone || cleanPhone.length < 10) return { success: false, exists: false };
 
     try {
-      const resolvedExclude = typeof excludeUserId === 'function' ? excludeUserId() : excludeUserId;
-      const excludeParam = (resolvedExclude && typeof resolvedExclude === 'string') 
-        ? `&exclude_user_id=${encodeURIComponent(resolvedExclude.trim())}` 
-        : '';
-      const res = await fetch(`/api/customer/check-phone?phone=${encodeURIComponent(cleanPhone)}${excludeParam}`);
+      const res = await fetch('/api/customer/check-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ phone: cleanPhone })
+      });
       return await res.json();
     } catch (err) {
       console.error('[CustomerCheckPhone] Error checking phone:', err);
