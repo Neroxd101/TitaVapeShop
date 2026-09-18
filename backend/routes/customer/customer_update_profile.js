@@ -1,17 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const { supabaseAdmin } = require('../../database/supabase');
 const { generateVerificationEmail, sendMail } = require('./customer_mailer');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * PUT /api/customer/profile
  * Update customer profile (full_name, contact_number, email) via customer_update_profile RPC
  */
 router.put('/api/customer/profile', async (req, res) => {
+  if (!supabaseAdmin || !JWT_SECRET) {
+    return res.status(500).json({ success: false, error: 'Authentication service unavailable' });
+  }
+
   const token = req.cookies?.customer_token;
   if (!token) {
     return res.status(401).json({ success: false, error: 'Please sign in to update your profile.' });
@@ -25,12 +28,11 @@ router.put('/api/customer/profile', async (req, res) => {
     return res.status(401).json({ success: false, error: 'Session expired. Please sign in again.' });
   }
 
-  const { full_name, contact_number, email } = req.body;
-  const client = dbClient();
-
-  if (!client) {
-    return res.status(500).json({ success: false, error: 'Database service unavailable' });
+  if (decoded?.role !== 'customer' || !decoded.id) {
+    return res.status(401).json({ success: false, error: 'Invalid customer session.' });
   }
+
+  const { full_name, contact_number, email } = req.body;
 
   // Validate full_name
   if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
@@ -50,12 +52,15 @@ router.put('/api/customer/profile', async (req, res) => {
   }
 
   const normalizedEmail = email.trim().toLowerCase();
-  const normalizedPhone = contact_number.trim();
+  const phoneDigits = contact_number.trim().replace(/\D/g, '');
+  const normalizedPhone = phoneDigits.startsWith('639')
+    ? `0${phoneDigits.slice(2)}`
+    : phoneDigits;
   const normalizedName = full_name.trim();
 
   try {
     // Call customer_update_profile RPC
-    const { data: rpcResult, error: rpcError } = await client.rpc('customer_update_profile', {
+    const { data: rpcResult, error: rpcError } = await supabaseAdmin.rpc('customer_update_profile', {
       p_customer_id: decoded.id,
       p_full_name: normalizedName,
       p_contact_number: normalizedPhone,
@@ -84,6 +89,10 @@ router.put('/api/customer/profile', async (req, res) => {
         );
       } catch (mailErr) {
         console.error('[Customer Update Profile] Email dispatch error:', mailErr);
+        return res.status(500).json({
+          success: false,
+          error: 'Your profile was updated, but the verification email could not be sent. Please try again shortly.'
+        });
       }
 
       return res.json({

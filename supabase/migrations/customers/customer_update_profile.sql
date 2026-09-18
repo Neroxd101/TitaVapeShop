@@ -3,7 +3,7 @@
 -- Updates customer name, phone, and initiates email change OTP
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_update_profile(
+CREATE OR REPLACE FUNCTION public.customer_update_profile(
     p_customer_id UUID,
     p_full_name TEXT,
     p_contact_number TEXT,
@@ -28,7 +28,11 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Please enter your full name (at least 2 characters).');
     END IF;
 
-    IF LENGTH(v_clean_phone) <> 11 THEN
+    IF v_clean_phone ~ '^639[0-9]{9}$' THEN
+        v_clean_phone := '0' || SUBSTRING(v_clean_phone FROM 3);
+    END IF;
+
+    IF v_clean_phone !~ '^09[0-9]{9}$' THEN
         RETURN jsonb_build_object('success', false, 'error', 'Please enter a valid 11-digit mobile number (e.g. 09123456789).');
     END IF;
 
@@ -37,22 +41,23 @@ BEGIN
     END IF;
 
     -- Look up active customer
-    SELECT id, email, full_name, contact_number, birthday INTO v_current_customer
-    FROM public.customers
-    WHERE id = p_customer_id;
+    SELECT c.id, c.email, c.full_name, c.contact_number, c.birthday, c.is_verified
+    INTO v_current_customer
+    FROM public.customers AS c
+    WHERE c.id = p_customer_id
+    FOR UPDATE;
 
-    IF v_current_customer IS NULL THEN
+    IF v_current_customer IS NULL OR v_current_customer.is_verified IS NOT TRUE THEN
         RETURN jsonb_build_object('success', false, 'error', 'Customer account not found.');
     END IF;
 
     -- Check if phone is already in use by another account
     IF EXISTS (
-        SELECT 1 FROM public.customers
-        WHERE id <> p_customer_id
+        SELECT 1 FROM public.customers AS c
+        WHERE c.id <> p_customer_id
           AND (
-              contact_number = v_clean_phone
-              OR contact_number = '0' || SUBSTRING(v_clean_phone FROM 2)
-              OR contact_number = '+63' || SUBSTRING(v_clean_phone FROM 2)
+              c.contact_number = v_clean_phone
+              OR c.contact_number = '+63' || SUBSTRING(v_clean_phone FROM 2)
           )
     ) THEN
         RETURN jsonb_build_object('success', false, 'error', 'This mobile number is already associated with another account.');
@@ -63,19 +68,36 @@ BEGIN
     IF v_is_email_changing THEN
         -- Check if new email belongs to someone else
         IF EXISTS (
-            SELECT 1 FROM public.customers
-            WHERE id <> p_customer_id
-              AND LOWER(email) = v_clean_email
+            SELECT 1 FROM public.customers AS c
+            WHERE c.id <> p_customer_id
+              AND LOWER(c.email) = v_clean_email
         ) THEN
             RETURN jsonb_build_object('success', false, 'error', 'This email is already associated with another account.');
         END IF;
 
+        IF EXISTS (
+            SELECT 1
+            FROM public.customer_verification_codes AS vc
+            WHERE vc.customer_id = p_customer_id
+              AND vc.created_at > NOW() - INTERVAL '60 seconds'
+        ) THEN
+            RETURN jsonb_build_object(
+                'success', false,
+                'error', 'Please wait 60 seconds before requesting another verification email.'
+            );
+        END IF;
+
+        UPDATE public.customer_verification_codes AS vc
+        SET verified = TRUE
+        WHERE vc.customer_id = p_customer_id
+          AND vc.verified = FALSE;
+
         -- Update name and phone immediately, but NOT email yet
-        UPDATE public.customers
+        UPDATE public.customers AS c
         SET full_name = v_clean_name,
             contact_number = v_clean_phone,
             updated_at = NOW()
-        WHERE id = p_customer_id;
+        WHERE c.id = p_customer_id;
 
         -- Generate 6-digit OTP for the new email
         v_otp_code := LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0');
@@ -110,12 +132,12 @@ BEGIN
     END IF;
 
     -- Email unchanged: update name & contact number only
-    UPDATE public.customers
+    UPDATE public.customers AS c
     SET full_name = v_clean_name,
         contact_number = v_clean_phone,
         updated_at = NOW()
-    WHERE id = p_customer_id
-    RETURNING id, email, full_name, contact_number, birthday
+    WHERE c.id = p_customer_id
+    RETURNING c.id, c.email, c.full_name, c.contact_number, c.birthday
     INTO v_updated_customer;
 
     RETURN jsonb_build_object(
@@ -132,4 +154,12 @@ BEGIN
         )
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+REVOKE ALL ON FUNCTION public.customer_update_profile(UUID, TEXT, TEXT, TEXT)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.customer_update_profile(UUID, TEXT, TEXT, TEXT)
+TO service_role;
