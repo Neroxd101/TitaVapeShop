@@ -3,6 +3,33 @@ const router = express.Router();
 const QRCode = require('qrcode');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+function validateBase64Image(value, declaredMimeType) {
+  if (typeof value !== 'string') {
+    throw new Error('A valid image is required');
+  }
+
+  const match = value.match(/^data:(image\/[a-z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/i);
+  const mimeType = (match?.[1] || declaredMimeType || '').toLowerCase();
+  const base64Data = (match?.[2] || value).replace(/\s/g, '');
+
+  if (!ALLOWED_IMAGE_TYPES.has(mimeType)) {
+    throw new Error('Only JPEG, PNG, and WebP images are allowed');
+  }
+  if (!base64Data || !/^[A-Za-z0-9+/]+={0,2}$/.test(base64Data)) {
+    throw new Error('Image data is invalid');
+  }
+
+  const imageBytes = Buffer.from(base64Data, 'base64');
+  if (imageBytes.length === 0 || imageBytes.length > MAX_IMAGE_BYTES) {
+    throw new Error('Image must be 8 MB or smaller');
+  }
+
+  return { base64Data, mimeType };
+}
+
 // Protect only upload routes so unrelated staff pages can reach their handlers.
 router.use('/api/upload', isAuthenticated, hasRole(['admin']));
 
@@ -176,8 +203,7 @@ router.post('/api/upload', async (req, res) => {
       return res.status(400).json({ error: 'No image provided' });
     }
 
-    // Remove data URL prefix if present
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+    const validatedImage = validateBase64Image(image, mimeType);
 
     let folderId = null;
 
@@ -195,9 +221,9 @@ router.post('/api/upload', async (req, res) => {
 
     const result = await uploadFile(
       googleToken,
-      base64Data,
+      validatedImage.base64Data,
       filename || `product-${Date.now()}.jpg`,
-      mimeType || 'image/jpeg',
+      validatedImage.mimeType,
       folderId
     );
 
@@ -229,7 +255,7 @@ router.post('/api/upload/qrcode', async (req, res) => {
 
     // If qrImage is provided (from frontend), use it
     if (qrImage) {
-      base64Data = qrImage.replace(/^data:image\/\w+;base64,/, '');
+      base64Data = validateBase64Image(qrImage, 'image/png').base64Data;
     } else {
       // Generate QR code directly using qrcode library
       // This encodes the product code as plain text (not a URL)

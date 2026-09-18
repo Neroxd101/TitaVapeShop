@@ -4,7 +4,7 @@
 -- Excludes sensitive cost_price and total_profit columns
 -- =============================================
 
-CREATE OR REPLACE FUNCTION catalog_get_products(
+CREATE OR REPLACE FUNCTION public.catalog_get_products(
     filter_category VARCHAR(20) DEFAULT NULL,
     filter_search VARCHAR(100) DEFAULT NULL
 )
@@ -21,6 +21,16 @@ RETURNS TABLE (
     updated_at TIMESTAMPTZ
 ) AS $$
 BEGIN
+    IF filter_category IS NOT NULL
+       AND filter_category <> ''
+       AND LOWER(filter_category) NOT IN ('all', 'hardware', 'juices') THEN
+        RAISE EXCEPTION 'Invalid catalog category';
+    END IF;
+
+    IF filter_search IS NOT NULL AND LENGTH(filter_search) > 100 THEN
+        RAISE EXCEPTION 'Catalog search is too long';
+    END IF;
+
     RETURN QUERY
     SELECT 
         i.id,
@@ -39,4 +49,20 @@ BEGIN
         AND (filter_search IS NULL OR filter_search = '' OR i.name ILIKE '%' || filter_search || '%' OR i.description ILIKE '%' || filter_search || '%')
     ORDER BY i.created_at DESC;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public;
+
+-- The catalog is intentionally public, but callers may only execute this
+-- restricted function. They cannot select the private inventory columns.
+REVOKE ALL ON FUNCTION public.catalog_get_products(VARCHAR, VARCHAR)
+FROM PUBLIC, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.catalog_get_products(VARCHAR, VARCHAR)
+TO anon, service_role;
+
+-- Defense in depth: direct table reads would expose cost and profit fields.
+ALTER TABLE public.inventory ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.inventory FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.inventory TO service_role;
