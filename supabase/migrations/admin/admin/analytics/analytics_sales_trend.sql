@@ -3,7 +3,9 @@
 -- Gets daily gross sales and daily profit grouped by date for trend analysis
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_revenue_trend(
+DROP FUNCTION IF EXISTS public.analytics_revenue_trend(TIMESTAMPTZ, TIMESTAMPTZ);
+
+CREATE OR REPLACE FUNCTION public.analytics_sales_trend(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -67,4 +69,6 @@ BEGIN
 
     RETURN daily_revenue;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_sales_trend(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_sales_trend(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

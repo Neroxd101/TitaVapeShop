@@ -3,7 +3,7 @@
 -- Gets revenue and units sold statistics by category
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_category_stats(
+CREATE OR REPLACE FUNCTION public.analytics_category_stats(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -51,4 +51,6 @@ BEGIN
 
     RETURN category_stats;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_category_stats(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_category_stats(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

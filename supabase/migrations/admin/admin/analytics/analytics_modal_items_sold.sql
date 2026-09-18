@@ -3,7 +3,7 @@
 -- Returns total items sold and per-product quantity breakdown for the modal
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_modal_items_sold(
+CREATE OR REPLACE FUNCTION public.analytics_modal_items_sold(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -66,4 +66,6 @@ BEGIN
         'rows', COALESCE(v_rows, '[]'::jsonb)
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_modal_items_sold(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_modal_items_sold(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

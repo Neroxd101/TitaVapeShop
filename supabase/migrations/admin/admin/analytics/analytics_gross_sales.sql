@@ -3,7 +3,9 @@
 -- Calculates the total gross sales amount from all sales transactions
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_gross_sales(
+DROP FUNCTION IF EXISTS public.analytics_avg_basket(TIMESTAMPTZ, TIMESTAMPTZ);
+
+CREATE OR REPLACE FUNCTION public.analytics_gross_sales(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -29,15 +31,6 @@ BEGIN
 
     RETURN total_gross;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Backwards compatibility alias for analytics_avg_basket if needed
-CREATE OR REPLACE FUNCTION analytics_avg_basket(
-    p_start_date TIMESTAMPTZ DEFAULT NULL,
-    p_end_date TIMESTAMPTZ DEFAULT NULL
-)
-RETURNS DECIMAL(10, 2) AS $$
-BEGIN
-    RETURN analytics_gross_sales(p_start_date, p_end_date);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_gross_sales(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_gross_sales(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

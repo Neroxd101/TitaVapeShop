@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 // GET /api/analytics/items-sold-details
 router.get('/api/analytics/items-sold-details', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -15,7 +15,7 @@ router.get('/api/analytics/items-sold-details', isAuthenticated, hasRole(['admin
             p_end_date: req.query.end_date || null
         };
 
-        const { data, error } = await supabase.rpc('analytics_modal_items_sold', rpcParams);
+        const { data, error } = await supabaseAdmin.rpc('analytics_modal_items_sold', rpcParams);
 
         if (error) {
             console.error('RPC Error in items sold details API:', error);

@@ -9,12 +9,12 @@
 
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 const getTotalOrdersHandler = async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -25,7 +25,7 @@ const getTotalOrdersHandler = async (req, res) => {
         };
 
         // Call RPC function
-        const { data, error } = await supabase.rpc('analytics_total_orders', rpcParams);
+        const { data, error } = await supabaseAdmin.rpc('analytics_total_orders', rpcParams);
 
         if (error) {
             console.error('RPC Error in total orders API:', error);

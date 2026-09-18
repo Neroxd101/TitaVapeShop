@@ -3,18 +3,18 @@
  * ANALYTICS: Revenue Trend Route
  * ============================================
  * 
- * GET /api/analytics/revenue-trend
- * Gets daily revenue grouped by date for trend analysis
+ * GET /api/analytics/sales-trend
+ * Gets daily sales and profit grouped by date for trend analysis
  */
 
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-router.get('/api/analytics/revenue-trend', isAuthenticated, hasRole(['admin']), async (req, res) => {
+router.get('/api/analytics/sales-trend', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -25,7 +25,7 @@ router.get('/api/analytics/revenue-trend', isAuthenticated, hasRole(['admin']), 
         };
 
         // Call RPC function
-        const { data, error } = await supabase.rpc('analytics_revenue_trend', rpcParams);
+        const { data, error } = await supabaseAdmin.rpc('analytics_sales_trend', rpcParams);
 
         if (error) {
             console.error('RPC Error:', error);
@@ -37,7 +37,7 @@ router.get('/api/analytics/revenue-trend', isAuthenticated, hasRole(['admin']), 
 
         res.json({
             success: true,
-            dailyRevenue: data ?? []
+            salesTrend: data ?? []
         });
 
     } catch (error) {

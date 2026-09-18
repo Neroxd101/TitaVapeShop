@@ -10,12 +10,12 @@
 
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 const getGrossSalesHandler = async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -26,7 +26,7 @@ const getGrossSalesHandler = async (req, res) => {
         };
 
         // Call RPC function
-        const { data, error } = await supabase.rpc('analytics_gross_sales', rpcParams);
+        const { data, error } = await supabaseAdmin.rpc('analytics_gross_sales', rpcParams);
 
         if (error) {
             console.error('RPC Error in gross sales API:', error);

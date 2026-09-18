@@ -3,7 +3,7 @@
 -- Calculates the total number of items sold across all sales
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_items_sold(
+CREATE OR REPLACE FUNCTION public.analytics_items_sold(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -35,4 +35,6 @@ BEGIN
 
     RETURN items_sold;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_items_sold(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_items_sold(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

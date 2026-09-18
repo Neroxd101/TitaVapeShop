@@ -3,7 +3,7 @@
 -- Returns total orders count and order details breakdown for the modal
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_modal_total_orders(
+CREATE OR REPLACE FUNCTION public.analytics_modal_total_orders(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -15,7 +15,7 @@ BEGIN
     WITH filtered_transactions AS (
         SELECT 
             s.id,
-            COALESCE(s.entity_id, s.id::text) AS order_id,
+            COALESCE(s.entity_id::text, s.id::text) AS order_id,
             s.created_at,
             COALESCE(s.customer_name, 'Customer not recorded') AS customer,
             CASE WHEN s.entity_type = 'order' THEN 'Customer order' ELSE 'POS sale' END AS source,
@@ -89,4 +89,6 @@ BEGIN
         'rows', COALESCE(v_rows, '[]'::jsonb)
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_modal_total_orders(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_modal_total_orders(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

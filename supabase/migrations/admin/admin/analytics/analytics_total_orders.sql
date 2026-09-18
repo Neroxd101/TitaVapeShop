@@ -3,7 +3,9 @@
 -- Counts the total number of completed order/sale transactions
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_total_orders(
+DROP FUNCTION IF EXISTS public.analytics_total_sales(TIMESTAMPTZ, TIMESTAMPTZ);
+
+CREATE OR REPLACE FUNCTION public.analytics_total_orders(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -29,15 +31,6 @@ BEGIN
 
     RETURN total_orders;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Backwards compatibility alias
-CREATE OR REPLACE FUNCTION analytics_total_sales(
-    p_start_date TIMESTAMPTZ DEFAULT NULL,
-    p_end_date TIMESTAMPTZ DEFAULT NULL
-)
-RETURNS INTEGER AS $$
-BEGIN
-    RETURN analytics_total_orders(p_start_date, p_end_date);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_total_orders(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_total_orders(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

@@ -9,12 +9,12 @@
 
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 router.get('/api/analytics/top-products', isAuthenticated, hasRole(['admin']), async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -25,7 +25,7 @@ router.get('/api/analytics/top-products', isAuthenticated, hasRole(['admin']), a
         };
 
         // Call RPC function
-        const { data, error } = await supabase.rpc('analytics_top_products', rpcParams);
+        const { data, error } = await supabaseAdmin.rpc('analytics_top_products', rpcParams);
 
         if (error) {
             console.error('RPC Error:', error);

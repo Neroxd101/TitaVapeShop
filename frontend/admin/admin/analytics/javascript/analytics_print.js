@@ -220,7 +220,7 @@ const AnalyticsPrint = {
     </table>
 
     <!-- Daily Revenue Summary -->
-    ${this.renderDailyRevenue(report.dailyRevenue || [])}
+    ${this.renderSalesTrend(report.salesTrend || [])}
 
     <div class="print-footer">
         <p>Total Products: ${products.length}</p>
@@ -269,17 +269,17 @@ const AnalyticsPrint = {
 
     /**
      * Render daily revenue summary
-     * @param {Array} dailyRevenue - Array of daily revenue data
+     * @param {Array} salesTrend - Array of daily sales trend data
      * @returns {string} HTML string
      */
-    renderDailyRevenue(dailyRevenue) {
-        if (!dailyRevenue || dailyRevenue.length === 0) {
+    renderSalesTrend(salesTrend) {
+        if (!salesTrend || salesTrend.length === 0) {
             return '';
         }
 
         let html = '<div class="section-header">Daily Sales & Profit Summary</div><table><thead><tr><th>Date</th><th>Gross Sales</th><th>Total Profit</th></tr></thead><tbody>';
         
-        dailyRevenue.forEach(day => {
+        salesTrend.forEach(day => {
             const date = new Date(day.date).toLocaleDateString('en-PH', {
                 year: 'numeric',
                 month: 'long',

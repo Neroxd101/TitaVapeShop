@@ -3,7 +3,7 @@
 -- Returns total profit and per-product profit breakdown for the modal
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_modal_total_profit(
+CREATE OR REPLACE FUNCTION public.analytics_modal_total_profit(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -70,4 +70,6 @@ BEGIN
         'rows', COALESCE(v_rows, '[]'::jsonb)
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_modal_total_profit(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_modal_total_profit(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

@@ -2,9 +2,9 @@
  * Analytics Sales Trend Module
  * Handles rendering of the sales trend chart (Daily Gross Sales & Total Profit)
  */
-const AnalyticsRevenueTrend = {
+const AnalyticsSalesTrend = {
     getData(filters = {}) {
-        return window.AnalyticsFetcher.request('revenue-trend', 'dailyRevenue', filters);
+        return window.AnalyticsFetcher.request('sales-trend', 'salesTrend', filters);
     },
 
     chart: null,
@@ -140,4 +140,4 @@ const AnalyticsRevenueTrend = {
     }
 };
 
-window.AnalyticsRevenueTrend = AnalyticsRevenueTrend;
+window.AnalyticsSalesTrend = AnalyticsSalesTrend;

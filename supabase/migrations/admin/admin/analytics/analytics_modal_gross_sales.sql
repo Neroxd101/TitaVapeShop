@@ -3,7 +3,7 @@
 -- Returns total gross sales and order sales breakdown for the modal
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_modal_gross_sales(
+CREATE OR REPLACE FUNCTION public.analytics_modal_gross_sales(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -15,7 +15,7 @@ BEGIN
     WITH filtered_transactions AS (
         SELECT 
             s.id,
-            COALESCE(s.entity_id, s.id::text) AS order_id,
+            COALESCE(s.entity_id::text, s.id::text) AS order_id,
             s.created_at,
             COALESCE(s.customer_name, 'Customer not recorded') AS customer,
             COALESCE(s.sale_total, 0) AS total_amount
@@ -55,4 +55,6 @@ BEGIN
         'rows', COALESCE(v_rows, '[]'::jsonb)
     );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_modal_gross_sales(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_modal_gross_sales(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

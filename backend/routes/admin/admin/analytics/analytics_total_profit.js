@@ -10,13 +10,13 @@
 
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
 
 const getTotalProfitHandler = async (req, res) => {
     try {
-        if (!supabase) {
+        if (!supabaseAdmin) {
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
@@ -27,7 +27,7 @@ const getTotalProfitHandler = async (req, res) => {
         };
 
         // Call RPC function with fallback if analytics_total_profit isn't created yet in DB
-        let result = await supabase.rpc('analytics_total_profit', rpcParams);
+        let result = await supabaseAdmin.rpc('analytics_total_profit', rpcParams);
 
 
         if (result.error) {

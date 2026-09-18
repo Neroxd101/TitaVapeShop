@@ -3,7 +3,7 @@
 -- Gets top selling products with revenue, units sold, and stock info
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_top_products(
+CREATE OR REPLACE FUNCTION public.analytics_top_products(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -75,4 +75,6 @@ BEGIN
 
     RETURN top_products;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_top_products(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_top_products(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

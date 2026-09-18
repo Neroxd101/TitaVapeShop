@@ -3,7 +3,9 @@
 -- Calculates the total profit (sale price minus cost price) from all completed sales
 -- =============================================
 
-CREATE OR REPLACE FUNCTION analytics_total_profit(
+DROP FUNCTION IF EXISTS public.analytics_total_revenue(TIMESTAMPTZ, TIMESTAMPTZ);
+
+CREATE OR REPLACE FUNCTION public.analytics_total_profit(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
@@ -50,15 +52,6 @@ BEGIN
 
     RETURN total_profit;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Backwards compatibility alias
-CREATE OR REPLACE FUNCTION analytics_total_revenue(
-    p_start_date TIMESTAMPTZ DEFAULT NULL,
-    p_end_date TIMESTAMPTZ DEFAULT NULL
-)
-RETURNS DECIMAL(10, 2) AS $$
-BEGIN
-    RETURN analytics_total_profit(p_start_date, p_end_date);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+REVOKE ALL ON FUNCTION public.analytics_total_profit(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.analytics_total_profit(TIMESTAMPTZ, TIMESTAMPTZ) TO service_role;

@@ -24,7 +24,7 @@ const AnalyticsFetcher = {
                 window.AnalyticsTotalOrders.getData(filters),
                 window.AnalyticsItemsSold.getData(filters),
                 window.AnalyticsGrossSales.getData(filters),
-                window.AnalyticsRevenueTrend.getData(filters),
+                window.AnalyticsSalesTrend.getData(filters),
                 window.AnalyticsTopProducts.getData(filters),
                 window.AnalyticsCategoryStats.getData(filters)
             ]);

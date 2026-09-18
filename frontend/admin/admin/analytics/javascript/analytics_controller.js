@@ -104,8 +104,8 @@ class AnalyticsController {
                     AnalyticsStats.render(data);
                 }
                 
-                if (window.AnalyticsRevenueTrend) {
-                    AnalyticsRevenueTrend.render(data.dailyRevenue || []);
+                if (window.AnalyticsSalesTrend) {
+                    AnalyticsSalesTrend.render(data.salesTrend || []);
                 }
                 
                 if (window.AnalyticsTopProducts) {
