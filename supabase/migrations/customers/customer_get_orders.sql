@@ -23,12 +23,14 @@ BEGIN
     IF p_customer_id IS NULL THEN
         RAISE EXCEPTION 'Customer account is required';
     END IF;
-    IF p_limit < 1 OR p_limit > 50 THEN
+    IF p_limit IS NULL OR p_limit < 1 OR p_limit > 50 THEN
         RAISE EXCEPTION 'Limit must be between 1 and 50';
     END IF;
     IF NOT EXISTS (
-        SELECT 1 FROM public.customers
-        WHERE id = p_customer_id AND is_verified IS TRUE
+        SELECT 1
+        FROM public.customers AS c
+        WHERE c.id = p_customer_id
+          AND c.is_verified IS TRUE
     ) THEN
         RAISE EXCEPTION 'A verified customer account is required';
     END IF;
