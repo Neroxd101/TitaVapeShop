@@ -407,6 +407,22 @@ class OrdersController {
     }
 
     setupEventListeners() {
+        document.addEventListener('click', (event) => {
+            const actionButton = event.target.closest('[data-order-action]');
+            if (!actionButton) return;
+
+            const orderId = actionButton.dataset.orderId;
+            const action = actionButton.dataset.orderAction;
+            if (!orderId || typeof this[action] !== 'function') return;
+
+            event.preventDefault();
+            if (action === 'verifyPayment') {
+                this.verifyPayment(orderId, actionButton.dataset.paymentStatus);
+                return;
+            }
+            this[action](orderId);
+        });
+
         if (this.elements.orderSearchInput) {
             let debounceTimer;
             this.elements.orderSearchInput.addEventListener('input', (e) => {
@@ -591,21 +607,21 @@ class OrdersController {
                     </td>
                     <td class="col-actions" data-label="Actions">
                         <div class="order-actions">
-                            ${order.status === 'completed' ? `<button class="btn btn-small btn-danger" onclick="window.ordersController.voidOrder('${order.id}')">Void</button>` : ''}
-                            <button class="btn btn-small btn-secondary" onclick="OrdersController.viewOrder('${order.id}')">View</button>
+                            ${order.status === 'completed' ? `<button type="button" class="btn btn-small btn-danger" data-order-action="voidOrder" data-order-id="${order.id}">Void</button>` : ''}
+                            <button type="button" class="btn btn-small btn-secondary" data-order-action="viewOrder" data-order-id="${order.id}">View</button>
                             ${order.status === 'pending' 
                                 ? `
-                                    <button class="btn btn-small btn-primary" onclick="OrdersController.confirmOrder('${order.id}')">Confirm</button>
-                                    <button class="btn btn-small btn-danger" onclick="OrdersController.cancelOrder('${order.id}')">Cancel</button>
+                                    <button type="button" class="btn btn-small btn-primary" data-order-action="confirmOrder" data-order-id="${order.id}">Confirm</button>
+                                    <button type="button" class="btn btn-small btn-danger" data-order-action="cancelOrder" data-order-id="${order.id}">Cancel</button>
                                 `
                                 : ''}
                             ${order.status === 'confirmed'
                                 ? `
                                     ${orderType === 'pickup' 
-                                        ? `<button class="btn btn-small btn-info" onclick="OrdersController.scanCustomerQR('${order.id}')">Scan QR</button>`
+                                        ? `<button type="button" class="btn btn-small btn-info" data-order-action="scanCustomerQR" data-order-id="${order.id}">Scan QR</button>`
                                         : ''}
-                                    <button class="btn btn-small btn-success" onclick="OrdersController.completeOrder('${order.id}')">Complete</button>
-                                    <button class="btn btn-small btn-danger" onclick="OrdersController.cancelOrder('${order.id}')">Cancel</button>
+                                    <button type="button" class="btn btn-small btn-success" data-order-action="completeOrder" data-order-id="${order.id}">Complete</button>
+                                    <button type="button" class="btn btn-small btn-danger" data-order-action="cancelOrder" data-order-id="${order.id}">Cancel</button>
                                 `
                                 : ''}
                         </div>
@@ -992,10 +1008,10 @@ class OrdersController {
                                 <p><strong>Reference No:</strong> ${order.payment_reference ? `<code>${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
                                 ${paymentStatus === 'pending_verification' && Boolean(order.payment_reference || order.payment_receipt_url) ? `
                                     <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                                        <button class="btn btn-small btn-success" onclick="OrdersController.verifyPayment('${order.id}', 'paid')">
+                                        <button type="button" class="btn btn-small btn-success" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="paid">
                                             ✓ Mark Paid
                                         </button>
-                                        <button class="btn btn-small btn-danger" onclick="OrdersController.verifyPayment('${order.id}', 'rejected')">
+                                        <button type="button" class="btn btn-small btn-danger" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="rejected">
                                             ✕ Reject Proof
                                         </button>
                                     </div>
