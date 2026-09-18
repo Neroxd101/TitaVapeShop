@@ -118,20 +118,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     /**
      * Render Google Integration Status
      */
+    function escapeHtml(value) {
+        const element = document.createElement('div');
+        element.textContent = String(value || '');
+        return element.innerHTML;
+    }
+
+    function safeGooglePicture(value) {
+        try {
+            const url = new URL(value);
+            return url.protocol === 'https:' ? url.href : '';
+        } catch (_) {
+            return '';
+        }
+    }
+
     function renderGoogleSettings() {
         const isConnected = localStorage.getItem('google_connected') === 'true';
         const user = getGoogleUser();
 
         if (isConnected && user) {
+            const accountName = escapeHtml(user.name || 'Google Account');
+            const accountEmail = escapeHtml(user.email || '');
+            const accountPicture = safeGooglePicture(user.picture);
+
             // Connected State
             googleStatusContainer.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                <div class="google-account-row">
                     <div class="avatar-wrapper">
-                        <img src="${user.picture}" alt="Avatar" class="user-avatar-large">
-                        <div class="status-indicator online"></div>
+                        ${accountPicture
+                            ? `<img src="${accountPicture}" alt="${accountName}" class="user-avatar-large" referrerpolicy="no-referrer">`
+                            : `<div class="google-avatar-fallback" aria-hidden="true">${accountName.charAt(0).toUpperCase()}</div>`}
                     </div>
-                    <div style="text-align: center;">
-                        <p style="color: var(--text-primary); font-size: 15px; font-weight: 600; margin: 0 0 8px 0;">${user.name}</p>
+                    <div class="google-account-details">
+                        <p class="google-account-name">${accountName}</p>
+                        ${accountEmail ? `<p class="google-account-email">${accountEmail}</p>` : ''}
                         <span class="status-badge connected">Connected</span>
                     </div>
                 </div>

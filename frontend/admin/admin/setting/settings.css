@@ -317,9 +317,9 @@
 /* Avatar Wrapper */
 .avatar-wrapper {
     position: relative;
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 12px;
+    width: 80px;
+    height: 80px;
+    flex: 0 0 80px;
 }
 
 .user-avatar-large {
@@ -329,6 +329,53 @@
     object-fit: cover;
     border: 3px solid var(--bg-card);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.google-account-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    text-align: left;
+}
+
+.google-account-details {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.google-account-name {
+    max-width: 100%;
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.google-account-email {
+    max-width: 100%;
+    margin: 0 0 3px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.google-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(66, 133, 244, 0.18);
+    color: #8ab4f8;
+    border: 3px solid var(--bg-card);
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .status-indicator {

@@ -157,7 +157,11 @@ router.post('/api/login', handleLogin);
  * Handle admin / staff logout
  */
 function handleLogout(req, res) {
-  res.clearCookie('token');
+  res.clearCookie('token', { path: '/' });
+  res.clearCookie('google_access_token', { path: '/' });
+  res.clearCookie('google_refresh_token', { path: '/auth/google' });
+  res.clearCookie('google_oauth_state', { path: '/auth/google' });
+
   if (req.headers['accept']?.includes('text/html')) {
     return res.redirect('/login');
   }
