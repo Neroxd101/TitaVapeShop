@@ -3,7 +3,23 @@
 -- Logs a transaction/activity via RPC
 -- =============================================
 
-CREATE OR REPLACE FUNCTION transactions_log(
+-- Keep the table constraint synchronized with the action types accepted below.
+ALTER TABLE public.transactions
+DROP CONSTRAINT IF EXISTS transactions_action_type_check;
+
+ALTER TABLE public.transactions
+ADD CONSTRAINT transactions_action_type_check
+CHECK (action_type IN (
+    'inventory_add',
+    'inventory_edit',
+    'inventory_delete',
+    'sale_complete',
+    'sale_void',
+    'order_confirm',
+    'order_cancel'
+));
+
+CREATE OR REPLACE FUNCTION public.transactions_log(
     p_action_type VARCHAR(50),
     p_user_email VARCHAR(255) DEFAULT NULL,
     p_entity_id UUID DEFAULT NULL,
@@ -79,7 +95,14 @@ BEGIN
         new_transaction.customer_email,
         new_transaction.created_at;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
--- Grant execute permission to authenticated users (anon role for service role calls)
-GRANT EXECUTE ON FUNCTION transactions_log TO anon, authenticated, service_role;
+REVOKE ALL ON FUNCTION public.transactions_log(
+    VARCHAR, VARCHAR, UUID, VARCHAR, JSONB, DECIMAL, JSONB, VARCHAR, VARCHAR
+) FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.transactions_log(
+    VARCHAR, VARCHAR, UUID, VARCHAR, JSONB, DECIMAL, JSONB, VARCHAR, VARCHAR
+) TO service_role;

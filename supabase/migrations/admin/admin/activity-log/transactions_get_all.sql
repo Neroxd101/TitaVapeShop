@@ -4,7 +4,11 @@
 -- Returns JSONB with transactions array and metadata
 -- =============================================
 
-CREATE OR REPLACE FUNCTION transactions_get_all(
+-- These unused analytics functions do not belong to the Activity Log module.
+DROP FUNCTION IF EXISTS public.transactions_get_report(TIMESTAMPTZ, TIMESTAMPTZ);
+DROP FUNCTION IF EXISTS public.transactions_get_stats(TIMESTAMPTZ, TIMESTAMPTZ);
+
+CREATE OR REPLACE FUNCTION public.transactions_get_all(
     p_action_type VARCHAR(50) DEFAULT NULL,
     p_user_email VARCHAR(255) DEFAULT NULL,
     p_entity_id UUID DEFAULT NULL,
@@ -19,6 +23,14 @@ DECLARE
     transaction_data JSONB;
     result JSONB;
 BEGIN
+    IF p_limit < 1 OR p_limit > 500 THEN
+        RAISE EXCEPTION 'Limit must be between 1 and 500';
+    END IF;
+
+    IF p_offset < 0 THEN
+        RAISE EXCEPTION 'Offset cannot be negative';
+    END IF;
+
     -- Count total matching records
     SELECT COUNT(*) INTO total_count
     FROM transactions
@@ -70,4 +82,14 @@ BEGIN
 
     RETURN result;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+REVOKE ALL ON FUNCTION public.transactions_get_all(
+    VARCHAR, VARCHAR, UUID, INTEGER, INTEGER, TIMESTAMPTZ, TIMESTAMPTZ
+) FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.transactions_get_all(
+    VARCHAR, VARCHAR, UUID, INTEGER, INTEGER, TIMESTAMPTZ, TIMESTAMPTZ
+) TO service_role;
