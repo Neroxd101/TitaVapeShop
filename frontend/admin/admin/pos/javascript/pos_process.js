@@ -68,7 +68,9 @@ const SalesCreate = {
             proceedBtn.disabled = true;
         }
 
-        // 1. Deduct Inventory (Checkout)
+        let checkoutResult;
+
+        // 1. Complete the sale atomically using server-verified prices
         try {
             const checkoutResponse = await fetch(checkoutUrl, {
                 method: 'POST',
@@ -77,21 +79,22 @@ const SalesCreate = {
                 },
                 credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify({ 
-                    items: state.cart,
+                    items: state.cart.map(item => ({ id: item.id, qty: item.qty })),
+                    cash,
                     customer_name: customerName,
                     customer_email: customerEmail
                 })
             });
 
-            const checkoutResult = await checkoutResponse.json();
+            checkoutResult = await checkoutResponse.json();
 
             if (!checkoutResult.success) {
                 console.error('Checkout failed:', checkoutResult);
-                let errorMsg = 'Failed to process sale (Inventory Error).\n';
+                let errorMsg = 'Failed to process sale.\n';
                 if (checkoutResult.errors) {
                     errorMsg += checkoutResult.errors.map(e => `- ${e.name}: ${e.error}`).join('\n');
                 } else {
-                    errorMsg += checkoutResult.message || 'Unknown error';
+                    errorMsg += checkoutResult.error || checkoutResult.message || 'Unknown error';
                 }
                 alert(errorMsg);
                 if (proceedBtn) {
@@ -112,6 +115,11 @@ const SalesCreate = {
             return;
         }
 
+        const confirmedItems = checkoutResult.items || state.cart;
+        const confirmedTotal = Number(checkoutResult.total);
+        const confirmedCash = Number(checkoutResult.cash);
+        const confirmedChange = Number(checkoutResult.change);
+
         // 2. Send email receipt if email is provided
         let emailSent = false;
         let emailError = false;
@@ -126,10 +134,10 @@ const SalesCreate = {
                     body: JSON.stringify({
                         customerEmail: customerEmail,
                         customerName: customerName,
-                        items: state.cart,
-                        total,
-                        cash,
-                        change,
+                        items: confirmedItems,
+                        total: confirmedTotal,
+                        cash: confirmedCash,
+                        change: confirmedChange,
                         saleDate: new Date().toLocaleString('en-PH', {
                             timeZone: 'Asia/Manila',
                             dateStyle: 'medium',
@@ -148,7 +156,7 @@ const SalesCreate = {
         }
 
         // Show success modal
-        this.showSuccessModal(customerName, total, cash, change, customerEmail, emailSent, emailError);
+        this.showSuccessModal(customerName, confirmedTotal, confirmedCash, confirmedChange, customerEmail, emailSent, emailError);
 
         // Reset pending sale
         window._pendingSale = null;
