@@ -42,3 +42,13 @@ ALTER TABLE public.customer_verification_codes
 CREATE INDEX IF NOT EXISTS idx_cust_verify_customer ON public.customer_verification_codes(customer_id);
 CREATE INDEX IF NOT EXISTS idx_cust_verify_email ON public.customer_verification_codes(email);
 CREATE INDEX IF NOT EXISTS idx_cust_verify_otp ON public.customer_verification_codes(email, otp_code);
+CREATE INDEX IF NOT EXISTS idx_cust_verify_purpose_lookup
+    ON public.customer_verification_codes(LOWER(email), purpose, created_at DESC);
+
+ALTER TABLE public.customer_verification_codes ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.customer_verification_codes FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.customer_verification_codes TO service_role;
+
+ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.customers FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.customers TO service_role;

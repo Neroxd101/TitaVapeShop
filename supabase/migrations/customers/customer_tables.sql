@@ -24,6 +24,10 @@ CREATE INDEX IF NOT EXISTS idx_customers_contact ON public.customers(contact_num
 -- Enable RLS
 ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
 
+-- Password hashes and account records are backend-only.
+REVOKE ALL ON TABLE public.customers FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.customers TO service_role;
+
 -- 2. Create customer email verification codes table
 CREATE TABLE IF NOT EXISTS public.customer_verification_codes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -44,6 +48,10 @@ CREATE INDEX IF NOT EXISTS idx_cust_verify_otp ON public.customer_verification_c
 
 -- Enable RLS
 ALTER TABLE public.customer_verification_codes ENABLE ROW LEVEL SECURITY;
+
+-- OTP values must never be readable or writable directly from a browser client.
+REVOKE ALL ON TABLE public.customer_verification_codes FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.customer_verification_codes TO service_role;
 
 -- 3. Ensure orders table has customer_id column referencing customers
 DO $$ 
