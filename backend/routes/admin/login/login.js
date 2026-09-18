@@ -95,7 +95,12 @@ async function handleLogin(req, res) {
 
     // Generate JWT token (24h)
     const token = jwt.sign(
-      { id: user.id, username: user.username, roles: rolesString },
+      {
+        id: user.id,
+        username: user.username,
+        roles: rolesString,
+        session_version: Number(user.session_version || 0)
+      },
       JWT_SECRET,
       { expiresIn: '24h' }
     );

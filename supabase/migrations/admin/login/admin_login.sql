@@ -3,8 +3,13 @@
 -- Handles authentication lookups and last login updates for admin/staff users
 -- =============================================
 
+-- Return type changed to include session_version; remove old definitions first.
+DROP FUNCTION IF EXISTS public.user_get_by_username(TEXT);
+DROP FUNCTION IF EXISTS public.user_update_last_login(UUID);
+DROP FUNCTION IF EXISTS public.admin_login(TEXT);
+
 -- Primary RPC: admin_login
-CREATE OR REPLACE FUNCTION public.admin_login(
+CREATE FUNCTION public.admin_login(
     p_username TEXT
 )
 RETURNS TABLE (
@@ -13,6 +18,7 @@ RETURNS TABLE (
     email TEXT,
     password TEXT,
     roles TEXT,
+    session_version INTEGER,
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ
 ) AS $$
@@ -24,6 +30,7 @@ BEGIN
         u.email,
         u.password,
         u.roles,
+        u.session_version,
         u.last_login,
         u.created_at
     FROM public.users u
@@ -47,10 +54,6 @@ END;
 $$ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public;
-
--- Remove legacy duplicate entry points that exposed password hashes.
-DROP FUNCTION IF EXISTS public.user_get_by_username(TEXT);
-DROP FUNCTION IF EXISTS public.user_update_last_login(UUID);
 
 REVOKE ALL ON FUNCTION public.admin_login(TEXT)
 FROM PUBLIC, anon, authenticated;

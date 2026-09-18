@@ -5,7 +5,7 @@
 -- Returns user info without password
 -- =============================================
 
-CREATE OR REPLACE FUNCTION users_get_all(
+CREATE OR REPLACE FUNCTION public.users_get_all(
     p_user_id UUID DEFAULT NULL
 )
 RETURNS TABLE (
@@ -29,4 +29,10 @@ BEGIN
     WHERE (p_user_id IS NULL OR u.id = p_user_id)
     ORDER BY u.username ASC;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
+
+REVOKE ALL ON FUNCTION public.users_get_all(UUID)
+FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.users_get_all(UUID) TO service_role;

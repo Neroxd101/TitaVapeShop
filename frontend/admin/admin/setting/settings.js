@@ -627,7 +627,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('changePasswordForm').reset();
 
                     closeOTPModal();
-                    showSuccessModal('Success', 'Your password has been updated successfully!');
+                    showSuccessModal('Success', data.message || 'Your password has been updated successfully!');
+                    if (data.requires_login) {
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 1200);
+                    }
                 } catch (error) {
                     showModalError(error.message || 'Failed to update password');
                 } finally {

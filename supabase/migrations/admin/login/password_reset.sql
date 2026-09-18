@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.password_reset_tokens (
     verified_at TIMESTAMPTZ,
     used BOOLEAN NOT NULL DEFAULT FALSE,
     attempt_count INTEGER NOT NULL DEFAULT 0,
+    purpose VARCHAR(30) NOT NULL DEFAULT 'password_reset',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -15,6 +16,14 @@ ALTER TABLE public.password_reset_tokens
 ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ;
 ALTER TABLE public.password_reset_tokens
 ADD COLUMN IF NOT EXISTS attempt_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE public.password_reset_tokens
+ADD COLUMN IF NOT EXISTS purpose VARCHAR(30) NOT NULL DEFAULT 'password_reset';
+
+ALTER TABLE public.password_reset_tokens
+DROP CONSTRAINT IF EXISTS password_reset_tokens_purpose_check;
+ALTER TABLE public.password_reset_tokens
+ADD CONSTRAINT password_reset_tokens_purpose_check
+CHECK (purpose IN ('password_reset', 'profile_update'));
 
 CREATE INDEX IF NOT EXISTS idx_password_reset_user_created
     ON public.password_reset_tokens(user_id, created_at DESC);
@@ -52,6 +61,7 @@ BEGIN
     IF EXISTS (
         SELECT 1 FROM public.password_reset_tokens AS t
         WHERE t.user_id = v_user.id
+          AND t.purpose = 'password_reset'
           AND t.created_at > NOW() - INTERVAL '60 seconds'
     ) THEN
         RETURN jsonb_build_object('success', false, 'error', 'Please wait before requesting another code');
@@ -59,10 +69,12 @@ BEGIN
 
     UPDATE public.password_reset_tokens AS t
     SET used = TRUE
-    WHERE t.user_id = v_user.id AND t.used = FALSE;
+    WHERE t.user_id = v_user.id
+      AND t.purpose = 'password_reset'
+      AND t.used = FALSE;
 
-    INSERT INTO public.password_reset_tokens(user_id, otp_code, email, expires_at)
-    VALUES (v_user.id, p_otp_code, v_user.email, NOW() + INTERVAL '15 minutes');
+    INSERT INTO public.password_reset_tokens(user_id, otp_code, email, expires_at, purpose)
+    VALUES (v_user.id, p_otp_code, v_user.email, NOW() + INTERVAL '15 minutes', 'password_reset');
 
     RETURN jsonb_build_object(
         'success', true,
@@ -97,7 +109,9 @@ BEGIN
 
     SELECT t.id, t.otp_code, t.expires_at, t.attempt_count INTO v_token
     FROM public.password_reset_tokens AS t
-    WHERE t.user_id = v_user_id AND t.used = FALSE
+    WHERE t.user_id = v_user_id
+      AND t.purpose = 'password_reset'
+      AND t.used = FALSE
     ORDER BY t.created_at DESC
     LIMIT 1 FOR UPDATE;
 
@@ -151,6 +165,7 @@ BEGIN
       AND t.used = FALSE
       AND t.verified_at IS NOT NULL
       AND t.expires_at > NOW()
+      AND t.purpose = 'password_reset'
     FOR UPDATE;
 
     IF NOT FOUND THEN
@@ -158,7 +173,8 @@ BEGIN
     END IF;
 
     UPDATE public.users AS u
-    SET password = p_new_password_hash
+    SET password = p_new_password_hash,
+        session_version = COALESCE(u.session_version, 0) + 1
     WHERE u.id = v_token.user_id;
 
     IF NOT FOUND THEN
@@ -167,7 +183,9 @@ BEGIN
 
     UPDATE public.password_reset_tokens AS t
     SET used = TRUE
-    WHERE t.user_id = v_token.user_id AND t.used = FALSE;
+    WHERE t.user_id = v_token.user_id
+      AND t.purpose = 'password_reset'
+      AND t.used = FALSE;
 
     RETURN jsonb_build_object('success', true, 'message', 'Password updated successfully');
 END;
@@ -189,7 +207,10 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Invalid password data');
     END IF;
 
-    UPDATE public.users AS u SET password = p_new_password_hash WHERE u.id = p_user_id;
+    UPDATE public.users AS u
+    SET password = p_new_password_hash,
+        session_version = COALESCE(u.session_version, 0) + 1
+    WHERE u.id = p_user_id;
     IF NOT FOUND THEN
         RETURN jsonb_build_object('success', false, 'error', 'User not found');
     END IF;

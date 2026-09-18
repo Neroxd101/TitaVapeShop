@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { supabaseAdmin } = require('../database/supabase');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
@@ -12,8 +13,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
  * 3. Attaches decoded user info to req.user
  * 4. Allows request to proceed if valid, otherwise blocks it
  */
-function isAuthenticated(req, res, next) {
-    if (!JWT_SECRET) {
+async function isAuthenticated(req, res, next) {
+    if (!JWT_SECRET || !supabaseAdmin) {
         return res.status(503).json({ error: 'Authentication service unavailable' });
     }
 
@@ -36,13 +37,35 @@ function isAuthenticated(req, res, next) {
         // jwt.verify throws error if token is invalid or expired
         const decoded = jwt.verify(token, JWT_SECRET);
 
-        if (!decoded?.id || !decoded?.username || !decoded?.roles) {
+        if (!decoded?.id || !decoded?.username || !decoded?.roles ||
+            !Number.isInteger(decoded.session_version)) {
             throw new Error('Invalid session payload');
+        }
+
+        // Recheck the database so deleted users, role changes, and password
+        // changes take effect immediately instead of waiting for JWT expiry.
+        const { data: currentUser, error } = await supabaseAdmin
+            .from('users')
+            .select('id, username, roles, session_version')
+            .eq('id', decoded.id)
+            .maybeSingle();
+
+        if (error) {
+            console.error('[Auth Middleware] User lookup failed:', error.message);
+            return res.status(503).json({ error: 'Authentication service unavailable' });
+        }
+
+        if (!currentUser || Number(currentUser.session_version || 0) !== decoded.session_version) {
+            throw new Error('Session has been revoked');
         }
         
         // Step 5: Attach user info to request object for use in route handlers
         // This makes user data available in req.user throughout the request
-        req.user = decoded;
+        req.user = {
+            ...decoded,
+            username: currentUser.username,
+            roles: currentUser.roles
+        };
         
         // Step 6: Allow request to proceed to the next middleware/route handler
         return next();

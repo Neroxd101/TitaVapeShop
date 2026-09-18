@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     email TEXT UNIQUE,
     password TEXT NOT NULL, -- Hashed password
     roles TEXT DEFAULT 'user',
+    session_version INTEGER NOT NULL DEFAULT 0,
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -18,6 +19,12 @@ CREATE INDEX IF NOT EXISTS users_email_idx ON public.users (email);
 -- Enable Row Level Security (optional, depending on project needs)
 -- Enable Row Level Security
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.users
+ADD COLUMN IF NOT EXISTS session_version INTEGER NOT NULL DEFAULT 0;
+
+REVOKE ALL ON TABLE public.users FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.users TO service_role;
 
 -- Block all public access (Implicitly allows Service Role/Admin)
 -- We do not add any public policies, so only the Service Role key can access this table.

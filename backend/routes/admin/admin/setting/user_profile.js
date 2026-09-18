@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
+const { randomInt } = require('crypto');
 const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
@@ -122,7 +123,7 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
       }
 
       // Check current password with stored bcrypt hash
-      const isMatch = bcrypt.compareSync(current_password, userData.password);
+      const isMatch = await bcrypt.compare(current_password, userData.password);
       if (!isMatch) {
         return res.status(400).json({ success: false, error: 'Incorrect current password' });
       }
@@ -130,7 +131,8 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
 
     // Generate OTP via RPC
     const { data: otpData, error: rpcError } = await supabaseAdmin.rpc('user_profile_generate_otp', {
-      p_user_id: userId
+      p_user_id: userId,
+      p_otp_code: randomInt(100000, 1000000).toString()
     });
 
     if (rpcError || !otpData || !otpData.success) {
@@ -355,9 +357,16 @@ router.post('/api/user/profile/update-password', isAuthenticated, hasRole(['admi
       return res.status(400).json({ success: false, error: errorMessage });
     }
 
+    if (isSelf) {
+      res.clearCookie('token');
+    }
+
     res.json({
       success: true,
-      message: 'Password updated successfully'
+      message: isSelf
+        ? 'Password updated successfully. Please sign in again.'
+        : 'Password updated successfully',
+      requires_login: isSelf
     });
   } catch (error) {
     console.error('Update password error:', error);
