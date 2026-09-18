@@ -2,22 +2,20 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { supabase, supabaseAdmin } = require('../../database/supabase');
-const { generateCode, generateVerificationEmail, sendMail } = require('./customer_mailer');
+const { supabaseAdmin } = require('../../database/supabase');
+const { generateVerificationEmail, sendMail } = require('./customer_mailer');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const dbClient = () => supabaseAdmin || supabase;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * POST /api/customer/login
  * Customer Login endpoint
- * Calls RPC customer_login (or fallback customer_get_by_email), verifies bcrypt hash, and issues session cookie
+ * Calls customer_login, verifies the bcrypt hash, and issues a session cookie
  */
 router.post('/api/customer/login', async (req, res) => {
   try {
-    const client = dbClient();
-    if (!client) {
-      return res.status(500).json({ success: false, error: 'Database service unavailable' });
+    if (!supabaseAdmin || !JWT_SECRET) {
+      return res.status(500).json({ success: false, error: 'Authentication service unavailable' });
     }
 
     const { email, password } = req.body;
@@ -28,7 +26,7 @@ router.post('/api/customer/login', async (req, res) => {
     }
 
     // 1. Call customer_login RPC
-    const { data: rpcData, error: rpcError } = await client.rpc('customer_login', { p_email: cleanEmail });
+    const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('customer_login', { p_email: cleanEmail });
 
     if (rpcError || !Array.isArray(rpcData) || rpcData.length === 0) {
       return res.status(401).json({ success: false, error: 'Invalid email or password.' });
@@ -36,14 +34,14 @@ router.post('/api/customer/login', async (req, res) => {
 
     const customer = rpcData[0];
 
-    if (!customer.password || !bcrypt.compareSync(password, customer.password)) {
+    if (!customer.password || !(await bcrypt.compare(password, customer.password))) {
       return res.status(401).json({ success: false, error: 'Invalid email or password.' });
     }
 
     // If account is not verified, generate OTP via RPC and prompt verification
     if (!customer.is_verified) {
       try {
-        const { data: otpResult } = await client.rpc('customer_generate_otp', {
+        const { data: otpResult } = await supabaseAdmin.rpc('customer_generate_otp', {
           p_email: cleanEmail,
           p_customer_id: customer.id
         });
@@ -108,26 +106,21 @@ router.get('/api/customer/me', async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const client = dbClient();
+    if (!supabaseAdmin || !JWT_SECRET) {
+      return res.status(500).json({ authenticated: false, error: 'Authentication service unavailable' });
+    }
 
-    const { data: customer, error } = await client
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const { data: customer, error } = await supabaseAdmin
       .from('customers')
-      .select('id, email, full_name, contact_number, birthday')
+      .select('id, email, full_name, contact_number, birthday, is_verified')
       .eq('id', decoded.id)
       .maybeSingle();
 
-    if (error || !customer) {
-      return res.json({
-        authenticated: true,
-        user: {
-          id: decoded.id,
-          email: decoded.email,
-          full_name: decoded.full_name || '',
-          contact_number: decoded.contact_number || '',
-          birthday: decoded.birthday || null
-        }
-      });
+    if (error || !customer || customer.is_verified !== true) {
+      res.clearCookie('customer_token');
+      return res.json({ authenticated: false });
     }
 
     return res.json({

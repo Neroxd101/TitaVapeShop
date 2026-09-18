@@ -4,7 +4,7 @@
 -- Password verification is done in Express using bcrypt
 -- =============================================
 
-CREATE OR REPLACE FUNCTION customer_login(
+CREATE OR REPLACE FUNCTION public.customer_login(
     p_email TEXT
 )
 RETURNS TABLE (
@@ -31,24 +31,16 @@ BEGIN
     FROM public.customers c
     WHERE LOWER(c.email) = LOWER(TRIM(p_email));
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public;
 
--- Backward compatibility alias
-CREATE OR REPLACE FUNCTION customer_get_by_email(
-    p_email TEXT
-)
-RETURNS TABLE (
-    id UUID,
-    email TEXT,
-    password TEXT,
-    full_name TEXT,
-    contact_number VARCHAR(20),
-    birthday DATE,
-    is_verified BOOLEAN,
-    created_at TIMESTAMPTZ
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT * FROM customer_login(p_email);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Remove the old duplicate password-reading entry point.
+DROP FUNCTION IF EXISTS public.customer_get_by_email(TEXT);
+
+-- This function returns a password hash, so only the trusted backend may run it.
+REVOKE ALL ON FUNCTION public.customer_login(TEXT)
+FROM PUBLIC, anon, authenticated;
+
+GRANT EXECUTE ON FUNCTION public.customer_login(TEXT)
+TO service_role;
