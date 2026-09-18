@@ -9,9 +9,9 @@
 }
 
 .logo-text {
-  font-family: 'Coolpbl', 'Outfit', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 36px;
-  font-weight: normal;
+  font-weight: 700;
   background: linear-gradient(135deg, var(--accent), #0096ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

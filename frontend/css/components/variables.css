@@ -3,15 +3,6 @@
    Global design tokens and theme variables
    ============================================= */
 
-/* Custom Font */
-@font-face {
-  font-family: 'Coolpbl';
-  src: url('/fonts/Coolpbl.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 :root {
   --bg-primary: #0a0a0f;
   --bg-secondary: #12121a;

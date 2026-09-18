@@ -536,6 +536,19 @@ const CustomerAuth = {
       });
     }
 
+    const toggleConfirmNewPwd = document.getElementById('toggleCustomerConfirmNewPassword');
+    const confirmNewPwdInput = document.getElementById('customerConfirmNewPassword');
+    if (toggleConfirmNewPwd && confirmNewPwdInput) {
+      toggleConfirmNewPwd.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isPwd = confirmNewPwdInput.type === 'password';
+        confirmNewPwdInput.type = isPwd ? 'text' : 'password';
+        toggleConfirmNewPwd.classList.toggle('is-visible', isPwd);
+        toggleConfirmNewPwd.setAttribute('aria-pressed', isPwd ? 'true' : 'false');
+        toggleConfirmNewPwd.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+      });
+    }
+
     // Live Password Criteria Badges on New Password
     if (newPwdInput) {
       newPwdInput.addEventListener('input', (e) => {
@@ -603,6 +616,19 @@ const CustomerAuth = {
         toggleResetPassword.classList.toggle('is-visible', isPassword);
         toggleResetPassword.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
         toggleResetPassword.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      });
+    }
+
+    const toggleResetConfirmPassword = document.getElementById('toggleCustomerResetConfirmPassword');
+    const resetConfirmPasswordInput = document.getElementById('customerResetConfirmPassword');
+    if (toggleResetConfirmPassword && resetConfirmPasswordInput) {
+      toggleResetConfirmPassword.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isPassword = resetConfirmPasswordInput.type === 'password';
+        resetConfirmPasswordInput.type = isPassword ? 'text' : 'password';
+        toggleResetConfirmPassword.classList.toggle('is-visible', isPassword);
+        toggleResetConfirmPassword.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+        toggleResetConfirmPassword.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
       });
     }
 
