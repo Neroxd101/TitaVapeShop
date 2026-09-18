@@ -1,97 +1,92 @@
--- =============================================
--- Customer Create Order RPC Function
--- Creates a new order directly linked to the customer account
--- =============================================
+-- Customer checkout. The database owns customer identity, product prices,
+-- order lines, totals, and initial payment state.
+DROP FUNCTION IF EXISTS public.customer_create_order(UUID, VARCHAR, VARCHAR, JSONB, DECIMAL, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS public.customer_create_order(UUID, JSONB, VARCHAR);
 
-CREATE OR REPLACE FUNCTION customer_create_order(
+CREATE FUNCTION public.customer_create_order(
     p_customer_id UUID,
-    p_customer_name VARCHAR(255),
-    p_contact_number VARCHAR(20),
     p_items JSONB,
-    p_total_amount DECIMAL(10, 2),
-    p_order_type VARCHAR(20) DEFAULT 'pickup',
-    p_customer_email VARCHAR(255) DEFAULT NULL
+    p_order_type VARCHAR(20) DEFAULT 'pickup'
 )
-RETURNS TABLE (
-    id UUID,
-    customer_id UUID,
-    customer_name VARCHAR(255),
-    contact_number VARCHAR(20),
-    customer_email VARCHAR(255),
-    order_type VARCHAR(20),
-    items JSONB,
-    total_amount DECIMAL(10, 2),
-    status VARCHAR(50),
-    created_at TIMESTAMPTZ
-) AS $$
+RETURNS SETOF public.orders
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
-    new_order RECORD;
-    v_clean_name VARCHAR(255);
-    v_clean_contact VARCHAR(20);
-    v_clean_email VARCHAR(255);
+    customer_record public.customers%ROWTYPE;
+    requested RECORD;
+    product public.inventory%ROWTYPE;
+    official_items JSONB := '[]'::jsonb;
+    official_total DECIMAL(10,2) := 0;
 BEGIN
-    v_clean_name := TRIM(p_customer_name);
-    v_clean_contact := TRIM(p_contact_number);
-    v_clean_email := CASE WHEN p_customer_email IS NOT NULL THEN LOWER(TRIM(p_customer_email)) ELSE NULL END;
-
-    -- Validation
-    IF v_clean_name IS NULL OR v_clean_name = '' THEN
-        RAISE EXCEPTION 'Customer name is required';
+    IF p_customer_id IS NULL THEN
+        RAISE EXCEPTION 'Customer account is required';
     END IF;
-
-    IF v_clean_contact IS NULL OR v_clean_contact = '' THEN
-        RAISE EXCEPTION 'Contact number is required';
-    END IF;
-
-    IF LENGTH(REGEXP_REPLACE(v_clean_contact, '[^0-9]', '', 'g')) != 11 THEN
-        RAISE EXCEPTION 'Contact number must be exactly 11 digits';
-    END IF;
-
     IF p_order_type NOT IN ('pickup', 'delivery') THEN
-        RAISE EXCEPTION 'Order type must be either "pickup" or "delivery"';
+        RAISE EXCEPTION 'Order type must be pickup or delivery';
     END IF;
-
-    IF p_items IS NULL OR jsonb_array_length(p_items) = 0 THEN
+    IF p_items IS NULL OR jsonb_typeof(p_items) <> 'array' OR jsonb_array_length(p_items) = 0 THEN
         RAISE EXCEPTION 'Order must contain at least one item';
     END IF;
 
-    IF p_total_amount IS NULL OR p_total_amount <= 0 THEN
-        RAISE EXCEPTION 'Total amount must be greater than 0';
+    SELECT * INTO customer_record
+    FROM public.customers
+    WHERE id = p_customer_id;
+
+    IF NOT FOUND OR customer_record.is_verified IS NOT TRUE THEN
+        RAISE EXCEPTION 'A verified customer account is required';
     END IF;
 
-    -- Insert order with customer_id explicitly linked
-    INSERT INTO public.orders (
-        customer_id,
-        customer_name,
-        contact_number,
-        customer_email,
-        order_type,
-        items,
-        total_amount,
-        status
-    ) VALUES (
-        p_customer_id,
-        v_clean_name,
-        v_clean_contact,
-        v_clean_email,
-        p_order_type,
-        p_items,
-        p_total_amount,
-        'pending'
-    )
-    RETURNING * INTO new_order;
+    FOR requested IN
+        SELECT (value->>'id')::UUID AS id,
+               SUM((value->>'quantity')::INTEGER)::INTEGER AS quantity
+        FROM jsonb_array_elements(p_items)
+        GROUP BY (value->>'id')::UUID
+        ORDER BY (value->>'id')::UUID
+    LOOP
+        IF requested.id IS NULL OR requested.quantity IS NULL OR requested.quantity <= 0 THEN
+            RAISE EXCEPTION 'Every order item requires a valid id and positive quantity';
+        END IF;
+
+        SELECT * INTO product
+        FROM public.inventory
+        WHERE id = requested.id;
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Product % was not found', requested.id;
+        END IF;
+        IF product.quantity < requested.quantity THEN
+            RAISE EXCEPTION 'Not enough stock for %. Available: %', product.name, product.quantity;
+        END IF;
+
+        official_items := official_items || jsonb_build_array(jsonb_build_object(
+            'id', product.id,
+            'name', product.name,
+            'quantity', requested.quantity,
+            'price', product.sale_price,
+            'category', product.category,
+            'images', COALESCE(product.images, '[]'::jsonb)
+        ));
+        official_total := official_total + (product.sale_price * requested.quantity);
+    END LOOP;
 
     RETURN QUERY
-    SELECT
-        new_order.id,
-        new_order.customer_id,
-        new_order.customer_name,
-        new_order.contact_number,
-        new_order.customer_email,
-        new_order.order_type,
-        new_order.items,
-        new_order.total_amount,
-        new_order.status,
-        new_order.created_at;
+    INSERT INTO public.orders (
+        customer_id, customer_name, contact_number, customer_email,
+        order_type, items, total_amount, status,
+        payment_method, payment_status
+    ) VALUES (
+        customer_record.id, customer_record.full_name, customer_record.contact_number,
+        LOWER(customer_record.email), p_order_type, official_items, official_total, 'pending',
+        CASE WHEN p_order_type = 'delivery' THEN 'gcash' ELSE 'cash' END,
+        'unpaid'
+    )
+    RETURNING *;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
+
+REVOKE ALL ON FUNCTION public.customer_create_order(UUID, JSONB, VARCHAR)
+FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.customer_create_order(UUID, JSONB, VARCHAR)
+TO service_role;

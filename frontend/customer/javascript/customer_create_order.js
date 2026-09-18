@@ -6,7 +6,7 @@
 const CustomerCreateOrder = {
   /**
    * Submit an order to the customer order creation endpoint
-   * @param {{customer_name: string, contact_number: string, customer_email: string, order_type: string, items: Array, total_amount: number}} orderData
+   * @param {{order_type: string, items: Array}} orderData
    * @returns {Promise<{success: boolean, order?: object, trackingUrl?: string, error?: string, requiresAuth?: boolean}>}
    */
   async submit(orderData) {
@@ -15,7 +15,13 @@ const CustomerCreateOrder = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(orderData)
+        body: JSON.stringify({
+          order_type: orderData.order_type,
+          items: (orderData.items || []).map(item => ({
+            id: item.id,
+            quantity: item.quantity
+          }))
+        })
       });
 
 
