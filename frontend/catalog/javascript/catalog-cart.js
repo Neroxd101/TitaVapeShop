@@ -106,7 +106,7 @@ const CatalogCart = {
      * @param {string} productId - Product ID
      * @param {number} quantity - New quantity
      */
-    updateQuantity(productId, quantity) {
+    updateQuantity(productId, quantity, renderCart = true) {
         const item = this.cart.find(item => item.id === productId);
         if (!item) return;
 
@@ -132,7 +132,7 @@ const CatalogCart = {
         item.quantity = quantity;
         this.saveCart();
         // Re-render cart if modal is open
-        if (window.CatalogCartModal && window.CatalogCartModal.modal && window.CatalogCartModal.modal.classList.contains('show')) {
+        if (renderCart && window.CatalogCartModal && window.CatalogCartModal.modal && window.CatalogCartModal.modal.classList.contains('show')) {
             this.renderCart();
         }
         this.updateCartBadge();
@@ -224,10 +224,10 @@ const CatalogCart = {
                         <div class="cart-name">${this.escapeHtml(item.name)}</div>
                         <div class="cart-price">${this.escapeHtml(item.category)} • ₱${parseFloat(item.sale_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                     </div>
-                    <input type="number" class="cart-qty-input" value="${item.quantity}" min="1" max="${maxQuantity}"
-                           onchange="CatalogCart.updateQuantity('${item.id}', parseInt(this.value) || 1)">
+                    <input type="number" class="cart-qty-input" data-product-id="${this.escapeHtml(item.id)}"
+                           value="${item.quantity}" min="1" max="${maxQuantity}">
                     <div class="cart-subtotal">₱${(parseFloat(item.sale_price) * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                    <button class="cart-remove-btn" onclick="CatalogCart.removeFromCart('${item.id}')" title="Remove">
+                    <button type="button" class="cart-remove-btn" data-product-id="${this.escapeHtml(item.id)}" title="Remove">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                         </svg>
@@ -235,6 +235,41 @@ const CatalogCart = {
                 </div>
             `;
         }).join('');
+
+        cartItems.querySelectorAll('.cart-qty-input').forEach(input => {
+            input.addEventListener('input', () => {
+                const quantity = parseInt(input.value, 10);
+                if (!Number.isInteger(quantity) || quantity < 1) return;
+
+                const productId = input.dataset.productId;
+                this.updateQuantity(productId, quantity, false);
+
+                const item = this.cart.find(cartItem => cartItem.id === productId);
+                if (!item) return;
+
+                // Reflect stock clamping immediately without rebuilding the row and
+                // interrupting keyboard input.
+                input.value = String(item.quantity);
+                const subtotal = input.closest('.cart-row')?.querySelector('.cart-subtotal');
+                if (subtotal) {
+                    subtotal.textContent = `₱${(parseFloat(item.sale_price) * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                }
+                if (cartTotal) {
+                    cartTotal.textContent = `₱${this.getTotalAmount().toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                }
+            });
+
+            input.addEventListener('change', () => {
+                const quantity = parseInt(input.value, 10) || 1;
+                this.updateQuantity(input.dataset.productId, quantity);
+            });
+        });
+
+        cartItems.querySelectorAll('.cart-remove-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                this.removeFromCart(button.dataset.productId);
+            });
+        });
     },
 
     /**
