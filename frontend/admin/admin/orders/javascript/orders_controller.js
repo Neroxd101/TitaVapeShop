@@ -1005,7 +1005,7 @@ class OrdersController {
                                 <h4>Payment Information</h4>
                                 <p><strong>Payment Method:</strong> GCash / InstaPay</p>
                                 <p><strong>Payment Status:</strong> ${this.getPaymentBadge(paymentStatus)}</p>
-                                <p><strong>Reference No:</strong> ${order.payment_reference ? `<code>${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
+                                <p class="payment-reference-row"><strong>Reference No:</strong> ${order.payment_reference ? `<code class="payment-reference-value">${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
                                 ${paymentStatus === 'pending_verification' && Boolean(order.payment_reference || order.payment_receipt_url) ? `
                                     <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                                         <button type="button" class="btn btn-small btn-success" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="paid">

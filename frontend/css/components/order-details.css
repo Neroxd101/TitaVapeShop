@@ -39,6 +39,22 @@
   font-size: 12px;
 }
 
+.payment-reference-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.order-details-info .payment-reference-value {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
 .order-qr-section {
   text-align: center;
 }
@@ -286,6 +302,18 @@
   .order-details-info code {
     padding: 3px 6px;
     font-size: 11px;
+  }
+
+  .payment-reference-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .order-details-info .payment-reference-value {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .order-qr-section {
