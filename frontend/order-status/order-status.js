@@ -603,6 +603,35 @@
     });
   }
 
+  function getItemImageFallbacks(url) {
+    if (!url || typeof url !== 'string') return [];
+
+    const match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (!match) return [url];
+
+    const fileId = match[1];
+    return [
+      `/api/catalog/image/${encodeURIComponent(fileId)}`,
+      `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w300`,
+      url
+    ];
+  }
+
+  function attachItemImageFallback(img, fallbackUrls) {
+    let fallbackIndex = 0;
+
+    img.addEventListener('error', () => {
+      fallbackIndex += 1;
+      if (fallbackIndex < fallbackUrls.length) {
+        img.src = fallbackUrls[fallbackIndex];
+        return;
+      }
+
+      const thumb = img.closest('.item-thumb');
+      if (thumb) thumb.textContent = '📦';
+    });
+  }
+
   /**
    * Render Items list
    */
@@ -640,8 +669,9 @@
         }
       }
 
-      const imgHtml = imgSrc
-        ? `<div class="item-thumb"><img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(item.name || 'Product')}" onerror="this.parentElement.innerHTML='📦'"></div>`
+      const imageFallbacks = getItemImageFallbacks(imgSrc);
+      const imgHtml = imageFallbacks.length
+        ? `<div class="item-thumb"><img alt="${escapeHtml(item.name || 'Product')}"></div>`
         : `<div class="item-thumb">📦</div>`;
 
       row.innerHTML = `
@@ -654,6 +684,12 @@
         </div>
         <div class="item-subtotal">${formatMoney(subtotal)}</div>
       `;
+
+      const itemImage = row.querySelector('.item-thumb img');
+      if (itemImage) {
+        attachItemImageFallback(itemImage, imageFallbacks);
+        itemImage.src = imageFallbacks[0];
+      }
 
       itemsList.appendChild(row);
     });
