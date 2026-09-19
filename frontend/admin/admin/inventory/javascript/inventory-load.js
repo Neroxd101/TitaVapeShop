@@ -87,13 +87,12 @@ const InventoryLoad = {
         const imagesHtml = firstImage
             ? (() => {
                 const fallbacks = InventoryImage.getFallbackUrls(firstImage, 800);
-                const escapedUrl = firstImage.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                return `<div class="card-images single"><img src="${fallbacks[0]}" alt="${item.name}" loading="lazy" onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)"></div>`;
+                return `<div class="card-images single"><img src="${fallbacks[0]}" alt="${item.name}" loading="lazy" data-original-url="${firstImage}" data-fallback-size="800" data-tried-index="0"></div>`;
             })()
             : `<div class="card-images"><div class="card-images-placeholder"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div></div>`;
 
         return `
-      <div class="inventory-card" data-id="${item.id}" onclick="InventoryLoad.viewItem('${item.id}')">
+      <div class="inventory-card" data-id="${item.id}">
         ${imagesHtml}
         <div class="card-header"><span class="card-category ${item.category}">${item.category}</span></div>
         <h3 class="card-name">${item.name}</h3>
@@ -102,8 +101,8 @@ const InventoryLoad = {
           <div class="detail-item"><span class="detail-label">Sale Price</span><span class="detail-value price">${InventoryUtils.formatCurrency(item.sale_price)}</span></div>
         </div>
         <div class="card-actions">
-           <button class="btn-card btn-edit" onclick="event.stopPropagation(); InventoryUpdate.openEditModal('${item.id}')">Edit</button>
-           <button class="btn-card btn-delete" onclick="event.stopPropagation(); InventoryDelete.openDeleteModal('${item.id}', '${item.name.replace(/'/g, "\\'")}')">Delete</button>
+           <button class="btn-card btn-edit" data-action="edit">Edit</button>
+           <button class="btn-card btn-delete" data-action="delete">Delete</button>
         </div>
       </div>
     `;
@@ -133,8 +132,7 @@ const InventoryLoad = {
         if (images.length > 1) {
             thumbnailsEl.innerHTML = images.map((url, index) => {
                 const fallbacks = InventoryImage.getFallbackUrls(url, 100);
-                const escapedUrl = url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                return `<div class="view-thumbnail ${index === 0 ? 'active' : ''}" onclick="InventoryLoad.setViewMainImage('${escapedUrl}', ${index})"><img src="${fallbacks[0]}" alt="Thumb"></div>`;
+                return `<div class="view-thumbnail ${index === 0 ? 'active' : ''}" data-image-index="${index}"><img src="${fallbacks[0]}" alt="Thumb" data-original-url="${url}" data-fallback-size="100" data-tried-index="0"></div>`;
             }).join('');
         } else {
             thumbnailsEl.innerHTML = '';

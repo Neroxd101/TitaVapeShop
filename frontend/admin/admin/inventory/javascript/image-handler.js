@@ -92,18 +92,17 @@ const InventoryImage = {
       return;
     }
 
-    let imgSrc, onErrorHandler = '';
+    let imgSrc, fallbackAttributes = '';
     const originalUrl = imgData.url || imgData.preview;
     if (imgData.url) {
       const fallbacks = this.getFallbackUrls(imgData.url, 800);
       imgSrc = fallbacks[0];
-      const escapedUrl = imgData.url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-      onErrorHandler = `onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 800)" data-tried-index="0" data-original-url="${escapedUrl}"`;
+      fallbackAttributes = `data-tried-index="0" data-original-url="${imgData.url}" data-fallback-size="800"`;
     } else {
       imgSrc = imgData.preview;
     }
 
-    mainImageEl.innerHTML = `<img src="${imgSrc}" alt="Product image" ${onErrorHandler}>`;
+    mainImageEl.innerHTML = `<img src="${imgSrc}" alt="Product image" ${fallbackAttributes}>`;
     mainImageEl.classList.remove('no-image');
   },
 
@@ -116,19 +115,18 @@ const InventoryImage = {
     // Build thumbnails
     const tiles = InventoryState.currentImages.map((img, index) => {
       // Use thumbnail for existing images, preview for new uploads
-      let imgSrc, onErrorHandler = '';
+      let imgSrc, fallbackAttributes = '';
       if (img.url) {
         const fallbacks = this.getFallbackUrls(img.url, 200);
         imgSrc = fallbacks[0];
-        const escapedUrl = img.url.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        onErrorHandler = `onerror="InventoryImage.handleImageError(this, '${escapedUrl}', 200)" data-tried-index="0" data-original-url="${escapedUrl}"`;
+        fallbackAttributes = `data-tried-index="0" data-original-url="${img.url}" data-fallback-size="200"`;
       } else {
         imgSrc = img.preview;
       }
       return `
-        <div class="image-item ${img.uploading ? 'uploading' : ''}" data-index="${index}" onclick="InventoryImage.setEditMainImage(${index})">
-          <img src="${imgSrc}" alt="Product image" loading="lazy" ${onErrorHandler}>
-          <button type="button" class="remove-image" onclick="InventoryImage.removeImage(${index})">
+        <div class="image-item ${img.uploading ? 'uploading' : ''}" data-index="${index}">
+          <img src="${imgSrc}" alt="Product image" loading="lazy" ${fallbackAttributes}>
+          <button type="button" class="remove-image">
             <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
           </button>
         </div>
