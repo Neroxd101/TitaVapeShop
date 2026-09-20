@@ -61,14 +61,15 @@
 
             <!-- Filters -->
             <div class="filter-tabs orders-filter-tabs">
-                <div class="search-box orders-search-box">
+                <div class="orders-filter-row orders-filter-row-primary">
+                    <div class="search-box orders-search-box">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
                     </svg>
                     <input type="text" id="orderSearchInput" placeholder="Search orders (ID, customer, contact, item)..." autocomplete="off">
-                </div>
-                <div class="filter-tabs-group orders-filter-group">
+                    </div>
+                    <div class="filter-tabs-group orders-filter-group">
                     <select id="filterStatus" class="filter-tab orders-filter-select">
                         <option value="">All Status</option>
                         <option value="pending">Pending</option>
@@ -77,15 +78,20 @@
                         <option value="voided">Voided</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
-                    <label class="orders-date-field" for="filterStartDate">From
-                        <span class="orders-date-input"><input type="date" id="filterStartDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
-                    </label>
-                    <label class="orders-date-field" for="filterEndDate">To
-                        <span class="orders-date-input"><input type="date" id="filterEndDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
-                    </label>
+                    </div>
                 </div>
-                <div class="filter-tabs-actions orders-filter-actions">
-                    <button id="resetFiltersBtn" class="btn btn-primary">Reset</button>
+                <div class="orders-filter-row orders-filter-row-secondary">
+                    <div class="filter-tabs-group orders-filter-group">
+                        <label class="orders-date-field" for="filterStartDate">From
+                        <span class="orders-date-input"><input type="date" id="filterStartDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
+                        </label>
+                        <label class="orders-date-field" for="filterEndDate">To
+                        <span class="orders-date-input"><input type="date" id="filterEndDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
+                        </label>
+                    </div>
+                    <div class="filter-tabs-actions orders-filter-actions">
+                        <button id="resetFiltersBtn" class="btn btn-primary">Reset</button>
+                    </div>
                 </div>
             </div>
 
