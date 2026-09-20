@@ -18,6 +18,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const googleActionContainer = document.getElementById('googleActionContainer');
     const userSelectorContainer = document.getElementById('userSelectorContainer');
     const userSelector = document.getElementById('userSelector');
+
+    document.querySelectorAll('.password-toggle[data-password-target]').forEach((toggle) => {
+        const passwordInput = document.getElementById(toggle.dataset.passwordTarget);
+        if (!passwordInput) return;
+
+        toggle.addEventListener('click', () => {
+            const showing = passwordInput.type === 'password';
+            passwordInput.type = showing ? 'text' : 'password';
+            passwordInput.classList.toggle('password-visible', showing);
+            toggle.classList.toggle('is-visible', showing);
+            toggle.setAttribute('aria-pressed', showing ? 'true' : 'false');
+            toggle.setAttribute('aria-label', `${showing ? 'Hide' : 'Show'} ${passwordInput.id === 'currentPassword' ? 'current password' : passwordInput.id === 'newPassword' ? 'new password' : 'confirmed password'}`);
+        });
+    });
     
     // Clear password validation errors on input
     const currentPasswordInput = document.getElementById('currentPassword');

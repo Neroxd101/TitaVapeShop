@@ -228,6 +228,57 @@
     margin-bottom: 0;
 }
 
+.profile-form input[type="password"],
+.profile-form input.password-visible {
+    padding-right: 52px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.password-toggle svg {
+    position: static;
+    transform: none;
+    width: 20px;
+    height: 20px;
+    fill: var(--text-secondary);
+    pointer-events: none;
+}
+
+.password-toggle .icon-eye-off,
+.password-toggle.is-visible .icon-eye {
+    display: none;
+}
+
+.password-toggle.is-visible .icon-eye-off {
+    display: block;
+}
+
+.password-toggle:hover svg,
+.password-toggle:focus-visible svg,
+.input-wrapper:focus-within .password-toggle svg {
+    fill: var(--accent);
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
 /* Status Badge */
 .status-badge {
     display: inline-flex;
