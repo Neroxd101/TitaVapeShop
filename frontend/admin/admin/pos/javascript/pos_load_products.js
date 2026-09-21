@@ -27,15 +27,14 @@ const SalesLoad = {
     },
 
     filterProducts(state) {
-        const q = (document.getElementById('productSearch')?.value || '').toLowerCase();
+        const q = (document.getElementById('productSearch')?.value || '').trim().toLowerCase();
         const activeTab = document.querySelector('.filter-tab.active');
         const category = activeTab?.dataset.category || '';
 
         state.filtered = state.products.filter(item => {
             if (category && category !== 'all' && item.category !== category) return false;
             if (!q) return true;
-            const haystack = `${item.name || ''} ${item.category || ''} ${item.description || ''}`.toLowerCase();
-            return haystack.includes(q);
+            return (item.name || '').toLowerCase().includes(q);
         });
 
         this.renderProducts(state);
@@ -165,10 +164,45 @@ const SalesLoad = {
 
         const qtyInput = document.createElement('input');
         qtyInput.type = 'number';
-        qtyInput.min = '1';
         qtyInput.step = '1';
-        qtyInput.value = '1';
         qtyInput.className = 'product-qty-input';
+        qtyInput.setAttribute('aria-label', `Quantity for ${item.name || 'product'}`);
+
+        if (availableQty <= 0) {
+            qtyInput.min = '0';
+            qtyInput.max = '0';
+            qtyInput.value = '0';
+            qtyInput.disabled = true;
+        } else {
+            qtyInput.min = '1';
+            qtyInput.max = String(availableQty);
+            qtyInput.value = '1';
+            qtyInput.disabled = false;
+        }
+
+        qtyInput.addEventListener('input', () => {
+            if (availableQty <= 0) {
+                qtyInput.value = '0';
+                return;
+            }
+            const val = parseInt(qtyInput.value, 10);
+            if (!isNaN(val) && val > availableQty) {
+                qtyInput.value = String(availableQty);
+            }
+        });
+
+        qtyInput.addEventListener('change', () => {
+            if (availableQty <= 0) {
+                qtyInput.value = '0';
+                return;
+            }
+            const val = parseInt(qtyInput.value, 10);
+            if (isNaN(val) || val < 1) {
+                qtyInput.value = '1';
+            } else if (val > availableQty) {
+                qtyInput.value = String(availableQty);
+            }
+        });
 
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
@@ -185,7 +219,9 @@ const SalesLoad = {
         }
 
         addBtn.addEventListener('click', () => {
-            const qtyToAdd = Math.max(1, parseInt(qtyInput.value, 10) || 1);
+            if (availableQty <= 0) return;
+            const parsed = parseInt(qtyInput.value, 10);
+            const qtyToAdd = Math.min(availableQty, Math.max(1, isNaN(parsed) ? 1 : parsed));
             SalesCart.addToCart(state, item, qtyToAdd);
         });
 

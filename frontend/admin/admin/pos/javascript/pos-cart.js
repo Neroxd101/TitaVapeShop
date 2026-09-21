@@ -128,17 +128,31 @@ const SalesCart = {
         main.appendChild(name);
         main.appendChild(price);
 
+        const product = state.products.find(p => p.id === item.id);
+        const max = product ? (product.quantity || 1) : 9999;
+
         const qtyInput = document.createElement('input');
         qtyInput.type = 'number';
         qtyInput.min = '1';
+        qtyInput.max = String(max);
         qtyInput.step = '1';
         qtyInput.value = String(item.qty);
         qtyInput.className = 'cart-qty-input';
+        qtyInput.setAttribute('aria-label', `Quantity for ${item.name || 'product'}`);
         qtyInput.addEventListener('input', () => {
-            const value = Math.max(1, parseInt(qtyInput.value, 10) || 1);
-            const product = state.products.find(p => p.id === item.id);
-            const max = product ? product.quantity : 9999;
-            item.qty = Math.min(value, max);
+            const parsed = parseInt(qtyInput.value, 10);
+            if (!isNaN(parsed)) {
+                item.qty = Math.min(Math.max(1, parsed), max);
+                qtyInput.value = item.qty;
+            }
+
+            this.updateTotals(state);
+            this.renderCartSubtotals(state);
+            SalesLoad.renderProducts(state);
+        });
+        qtyInput.addEventListener('change', () => {
+            const parsed = parseInt(qtyInput.value, 10);
+            item.qty = Math.min(Math.max(1, isNaN(parsed) ? 1 : parsed), max);
             qtyInput.value = item.qty;
 
             this.updateTotals(state);

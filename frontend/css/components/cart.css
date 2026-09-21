@@ -45,13 +45,23 @@
 }
 
 .cart-qty-input {
-  width: 72px;
+  width: 64px;
+  text-align: center;
   padding: 4px 6px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #05050b;
   color: var(--text-primary);
   font-size: 0.85rem;
+  -moz-appearance: textfield;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.cart-qty-input::-webkit-outer-spin-button,
+.cart-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .cart-subtotal {
