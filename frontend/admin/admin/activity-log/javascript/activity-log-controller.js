@@ -301,13 +301,13 @@ class TransactionsUI {
                 <td class="col-time" data-label="Time">${this.formatDate(t.created_at)}</td>
                 <td class="col-action" data-label="Action">${this.getActionBadge(t.action_type)}</td>
                 <td class="col-details" data-label="Details">${this.formatDetails(t)}</td>
-                <td class="col-user" data-label="User" title="${this.escapeHtml(t.user_email || 'System')}">
+                <td class="col-user" data-label="User" title="${this.escapeHtml(t.customer_name || 'System')}">
                     <span class="user-chip">
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="user-icon">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        <span class="user-text">${this.escapeHtml(t.user_email || 'System')}</span>
+                        <span class="user-text">${this.escapeHtml(t.customer_name || 'System')}</span>
                     </span>
                 </td>
                 <td class="col-amount" data-label="Amount">${this.formatAmount(t)}</td>
