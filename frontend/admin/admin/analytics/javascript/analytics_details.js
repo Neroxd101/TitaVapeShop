@@ -13,7 +13,7 @@ const AnalyticsDetails = {
             statAvgSale: window.AnalyticsModalGrossSales
         };
         this.metrics = {
-            statRevenue: ['Total Profit', true],
+            statRevenue: ['Total Sales', true],
             statSalesCount: ['Total Orders', false],
             statItemsSold: ['Items Sold', false],
             statAvgSale: ['Gross Sales', true]
@@ -85,7 +85,7 @@ const AnalyticsDetails = {
         const isProfit = metricId === 'statRevenue';
         return {
             headers: ['Product', isProfit ? 'Profit' : 'Units sold'],
-            note: isProfit ? 'Total profit per product sold in this date range. Voided sales are excluded.'
+            note: isProfit ? 'Total sales per product sold in this date range. Voided sales are excluded.'
                 : 'Total quantity sold per product in this date range. Voided sales are excluded.',
             empty: 'No products sold for this date range.',
             totalValue: rpcData.total,

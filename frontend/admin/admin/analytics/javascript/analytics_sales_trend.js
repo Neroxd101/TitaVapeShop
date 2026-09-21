@@ -52,7 +52,7 @@ const AnalyticsSalesTrend = {
                         pointBorderWidth: 2
                     },
                     {
-                        label: 'Total Profit',
+                        label: 'Total Sales',
                         data: profitValues,
                         borderColor: '#a855f7',
                         backgroundColor: 'rgba(168, 85, 247, 0.08)',

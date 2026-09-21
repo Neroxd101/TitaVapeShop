@@ -18,10 +18,10 @@ router.get('/api/analytics/total-profit-details', isAuthenticated, hasRole(['adm
         const { data, error } = await supabaseAdmin.rpc('analytics_modal_total_profit', rpcParams);
 
         if (error) {
-            console.error('RPC Error in total profit details API:', error);
+            console.error('RPC Error in total sales details API:', error);
             return res.status(400).json({
                 success: false,
-                error: error.message || 'Failed to fetch total profit details'
+                error: error.message || 'Failed to fetch total sales details'
             });
         }
 
@@ -32,7 +32,7 @@ router.get('/api/analytics/total-profit-details', isAuthenticated, hasRole(['adm
         });
 
     } catch (error) {
-        console.error('Error in total profit details API:', error);
+        console.error('Error in total sales details API:', error);
         res.status(500).json({
             success: false,
             error: 'Internal server error',

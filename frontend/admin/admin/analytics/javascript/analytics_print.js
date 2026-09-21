@@ -168,7 +168,7 @@ const AnalyticsPrint = {
     <!-- Summary Statistics -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-label">Total Profit</div>
+            <div class="stat-label">Total Sales</div>
             <div class="stat-value">₱${this.formatNumber(report.totalProfit !== undefined ? report.totalProfit : (report.totalRevenue || 0))}</div>
         </div>
         <div class="stat-card">
@@ -277,7 +277,7 @@ const AnalyticsPrint = {
             return '';
         }
 
-        let html = '<div class="section-header">Daily Sales & Profit Summary</div><table><thead><tr><th>Date</th><th>Gross Sales</th><th>Total Profit</th></tr></thead><tbody>';
+        let html = '<div class="section-header">Daily Sales & Profit Summary</div><table><thead><tr><th>Date</th><th>Gross Sales</th><th>Total Sales</th></tr></thead><tbody>';
         
         salesTrend.forEach(day => {
             const date = new Date(day.date).toLocaleDateString('en-PH', {
