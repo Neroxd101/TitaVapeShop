@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sortSelect) {
         sortSelect.addEventListener('change', (e) => {
             currentSort = e.target.value;
+            sortSelect.closest('.sort-box')?.classList.toggle('is-active', currentSort !== 'default');
             filterAndRender();
         });
     }

@@ -261,6 +261,31 @@
     transform: translateY(0);
 }
 
+#productModal .modal-add-cart-btn.btn-added,
+.modal-add-cart-btn.btn-added {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6) !important;
+    animation: btnAddedPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+#productModal .modal-add-cart-btn.btn-added svg,
+.modal-add-cart-btn.btn-added svg {
+    fill: #ffffff !important;
+}
+
+#productModal .modal-add-cart-btn.btn-added:hover {
+    transform: none !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6) !important;
+}
+
+@keyframes btnAddedPop {
+    0% { transform: scale(0.94); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
+
 /* =========================================================
    Responsive Product Details
    ========================================================= */

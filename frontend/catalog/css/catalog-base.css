@@ -561,11 +561,12 @@ main {
     border-color: var(--accent);
 }
 
-/* Sort Dropdown Component */
+/* Sort Dropdown Component (Matches category filter-tab design) */
 .sort-box {
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -585,19 +586,8 @@ main {
     box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.sort-box .sort-icon {
-    margin-left: 12px;
-    width: 16px;
-    height: 16px;
-    fill: var(--text-secondary);
-    pointer-events: none;
-    transition: fill 0.2s ease;
-    flex-shrink: 0;
-}
-
-.sort-box:focus-within .sort-icon,
-.sort-box:hover .sort-icon {
-    fill: var(--accent);
+.sort-box.is-active {
+    border-color: var(--accent);
 }
 
 .sort-select {
@@ -607,24 +597,31 @@ main {
     background: transparent;
     border: none;
     outline: none;
-    color: var(--text-primary);
+    color: var(--text-secondary);
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
-    padding: 0 30px 0 8px;
+    padding: 0 36px 0 20px;
     height: 100%;
     cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.sort-box:hover .sort-select,
+.sort-box:focus-within .sort-select,
+.sort-box.is-active .sort-select {
+    color: var(--text-primary);
 }
 
 .sort-select option {
     background: #151620;
     color: var(--text-primary);
-    padding: 8px 12px;
+    padding: 10px 14px;
 }
 
 .sort-box .sort-chevron {
     position: absolute;
-    right: 10px;
+    right: 14px;
     top: 50%;
     transform: translateY(-50%);
     width: 16px;
@@ -634,19 +631,26 @@ main {
     transition: fill 0.2s ease;
 }
 
+.sort-box:hover .sort-chevron,
 .sort-box:focus-within .sort-chevron,
-.sort-box:hover .sort-chevron {
+.sort-box.is-active .sort-chevron {
     fill: var(--accent);
 }
 
-/* Responsive Sort Box */
+/* Responsive Sort Box (matches filter-tab responsive styling) */
 @media (max-width: 1024px) {
     .sort-box {
         height: 40px;
+        border-radius: 8px;
     }
     .sort-select {
         font-size: 13px;
-        padding-right: 26px;
+        padding: 0 30px 0 16px;
+    }
+    .sort-box .sort-chevron {
+        right: 10px;
+        width: 14px;
+        height: 14px;
     }
 }
 
@@ -654,10 +658,12 @@ main {
     .sort-box {
         width: 100%;
         height: 38px;
+        border-radius: 8px;
     }
     .sort-select {
         width: 100%;
         font-size: 12px;
+        padding: 0 28px 0 12px;
     }
 }
 

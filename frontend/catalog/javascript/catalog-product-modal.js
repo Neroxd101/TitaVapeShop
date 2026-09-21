@@ -51,6 +51,7 @@ const CatalogProductModal = {
     },
 
     currentProduct: null,
+    isAddingToCart: false,
 
     /**
      * Setup event listeners
@@ -69,11 +70,57 @@ const CatalogProductModal = {
         }
 
         document.addEventListener('cartUpdated', (e) => {
+            // Do not destroy/reset modal while an addition is in progress
+            if (this.isAddingToCart) return;
             if (this.modal && this.modal.classList.contains('show') && this.currentProduct) {
-                const updatedProduct = this.allProducts.find(p => p.id === this.currentProduct.id) || this.currentProduct;
-                this.show(updatedProduct);
+                this.updateModalStock();
             }
         });
+    },
+
+    /**
+     * Update stock indicators inside open modal without destroying carousel view
+     */
+    updateModalStock() {
+        if (!this.currentProduct) return;
+        const availableStock = window.CatalogProducts?.getAvailableStock(this.currentProduct) ?? this.currentProduct.quantity;
+        const stockBadge = document.getElementById('modalStockBadge');
+        const maxQtyText = document.getElementById('modalMaxQtyText');
+        const qtyInput = document.getElementById('modalQtyInput');
+        const addBtn = document.getElementById('modalAddToCartBtn');
+
+        if (stockBadge) {
+            if (availableStock > 0) {
+                stockBadge.className = 'status-badge connected';
+                stockBadge.textContent = `In Stock (${availableStock})`;
+            } else {
+                stockBadge.className = 'status-badge disconnected';
+                stockBadge.textContent = 'Out of Stock';
+            }
+        }
+
+        if (maxQtyText) {
+            maxQtyText.textContent = `(Max ${availableStock})`;
+        }
+
+        if (qtyInput) {
+            qtyInput.max = String(availableStock);
+            const currentVal = parseInt(qtyInput.value, 10) || 1;
+            if (currentVal > availableStock) {
+                qtyInput.value = String(Math.max(1, availableStock));
+            }
+        }
+
+        if (availableStock <= 0 && addBtn) {
+            const actionsContainer = addBtn.closest('.modal-product-actions');
+            if (actionsContainer) {
+                actionsContainer.innerHTML = `
+                    <button type="button" class="btn-card" disabled style="width: 100%; padding: 12px 20px; font-size: 15px; opacity: 0.6; cursor: not-allowed; text-align: center;">
+                        Out of Stock
+                    </button>
+                `;
+            }
+        }
     },
 
     /**
@@ -259,7 +306,7 @@ const CatalogProductModal = {
                                     <input type="number" id="modalQtyInput" class="modal-qty-input" value="1" min="1" max="${availableStock}">
                                     <button type="button" id="modalQtyPlus" class="modal-qty-btn" title="Increase quantity">+</button>
                                 </div>
-                                <span style="font-size: 12px; color: var(--text-muted);">(Max ${availableStock})</span>
+                                <span id="modalMaxQtyText" style="font-size: 12px; color: var(--text-muted);">(Max ${availableStock})</span>
                             </div>
                             <button type="button" id="modalAddToCartBtn" class="modal-add-cart-btn">
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -285,9 +332,10 @@ const CatalogProductModal = {
             const addBtn = document.getElementById('modalAddToCartBtn');
 
             const parseQty = () => {
+                let currentStock = window.CatalogProducts?.getAvailableStock(product) ?? availableStock;
                 let val = parseInt(qtyInput.value, 10);
                 if (isNaN(val) || val < 1) val = 1;
-                if (val > availableStock) val = availableStock;
+                if (val > currentStock) val = currentStock;
                 return val;
             };
 
@@ -299,8 +347,9 @@ const CatalogProductModal = {
             });
 
             qtyPlus?.addEventListener('click', () => {
+                let currentStock = window.CatalogProducts?.getAvailableStock(product) ?? availableStock;
                 let val = parseQty();
-                if (val < availableStock) {
+                if (val < currentStock) {
                     qtyInput.value = val + 1;
                 }
             });
@@ -309,24 +358,79 @@ const CatalogProductModal = {
                 qtyInput.value = parseQty();
             });
 
-            addBtn?.addEventListener('click', () => {
+            addBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.isAddingToCart) return;
+
                 const qtyToAdd = parseQty();
-                if (window.CatalogCart) {
-                    window.CatalogCart.addToCart(product, qtyToAdd);
-                    window.CatalogCart.updateCartBadge(true);
-                    window.CatalogCart.showFloatingBadge(addBtn, `+${qtyToAdd}`);
-                    // Provide feedback button animation / text change
+                if (window.CatalogCart && qtyToAdd > 0) {
+                    this.isAddingToCart = true;
+
+                    // Trigger button animation
+                    addBtn.classList.add('btn-added');
+                    addBtn.disabled = true;
                     addBtn.innerHTML = `
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                         </svg>
                         <span>Added to Cart!</span>
                     `;
-                    addBtn.style.background = '#22c55e';
-                    addBtn.style.color = '#fff';
+
+                    // Add to cart
+                    window.CatalogCart.addToCart(product, qtyToAdd);
+                    window.CatalogCart.updateCartBadge(true);
+                    window.CatalogCart.showFloatingBadge(addBtn, `+${qtyToAdd}`);
+
+                    // Calculate remaining stock
+                    const newAvailableStock = window.CatalogProducts?.getAvailableStock(product) ?? Math.max(0, availableStock - qtyToAdd);
+                    const stockBadge = document.getElementById('modalStockBadge');
+                    const maxQtyText = document.getElementById('modalMaxQtyText');
+
+                    if (stockBadge) {
+                        if (newAvailableStock > 0) {
+                            stockBadge.className = 'status-badge connected';
+                            stockBadge.textContent = `In Stock (${newAvailableStock})`;
+                        } else {
+                            stockBadge.className = 'status-badge disconnected';
+                            stockBadge.textContent = 'Out of Stock';
+                        }
+                    }
+
+                    if (maxQtyText) {
+                        maxQtyText.textContent = `(Max ${newAvailableStock})`;
+                    }
+
+                    if (qtyInput) {
+                        qtyInput.value = '1';
+                        qtyInput.max = String(newAvailableStock);
+                    }
+
+                    // Sync catalog background grid card
+                    document.dispatchEvent(new CustomEvent('cartUpdated', { detail: product.id }));
+
                     setTimeout(() => {
-                        this.show(product);
-                    }, 800);
+                        this.isAddingToCart = false;
+                        addBtn.classList.remove('btn-added');
+                        if (newAvailableStock > 0) {
+                            addBtn.disabled = false;
+                            addBtn.innerHTML = `
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                </svg>
+                                <span>Add to Cart</span>
+                            `;
+                        } else {
+                            const actionsContainer = addBtn.closest('.modal-product-actions');
+                            if (actionsContainer) {
+                                actionsContainer.innerHTML = `
+                                    <button type="button" class="btn-card" disabled style="width: 100%; padding: 12px 20px; font-size: 15px; opacity: 0.6; cursor: not-allowed; text-align: center;">
+                                        Out of Stock
+                                    </button>
+                                `;
+                            }
+                        }
+                    }, 1000);
                 }
             });
         }
