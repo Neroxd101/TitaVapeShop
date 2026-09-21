@@ -46,7 +46,7 @@ BEGIN
     FROM public.inventory i
     WHERE 
         (filter_category IS NULL OR filter_category = 'all' OR LOWER(i.category) = LOWER(filter_category))
-        AND (filter_search IS NULL OR filter_search = '' OR i.name ILIKE '%' || filter_search || '%' OR i.description ILIKE '%' || filter_search || '%')
+        AND (filter_search IS NULL OR filter_search = '' OR i.name ILIKE '%' || filter_search || '%')
     ORDER BY i.created_at DESC;
 END;
 $$ LANGUAGE plpgsql

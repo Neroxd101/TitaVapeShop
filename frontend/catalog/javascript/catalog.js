@@ -98,8 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filtered = allProducts.filter(product => {
             const productCategory = normalizeCategory(product.category);
             const matchesCategory = selectedCategory === 'all' || productCategory === selectedCategory;
-            const matchesSearch = product.name.toLowerCase().includes(searchQuery) ||
-                product.description?.toLowerCase().includes(searchQuery);
+            const matchesSearch = (product.name || '').toLowerCase().includes(searchQuery);
             return matchesCategory && matchesSearch;
         });
 

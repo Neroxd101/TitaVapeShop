@@ -71,8 +71,7 @@ const CatalogGetProducts = {
       const productCategory = String(product.category || '').trim().toLowerCase();
       const matchesCategory = selectedCategory === 'all' || productCategory === selectedCategory;
       const matchesSearch = !query ||
-        (product.name && product.name.toLowerCase().includes(query)) ||
-        (product.description && product.description.toLowerCase().includes(query));
+        Boolean(product.name && product.name.toLowerCase().includes(query));
       return matchesCategory && matchesSearch;
     });
   }
