@@ -301,13 +301,13 @@ class TransactionsUI {
                 <td class="col-time" data-label="Time">${this.formatDate(t.created_at)}</td>
                 <td class="col-action" data-label="Action">${this.getActionBadge(t.action_type)}</td>
                 <td class="col-details" data-label="Details">${this.formatDetails(t)}</td>
-                <td class="col-user" data-label="User" title="${this.escapeHtml(t.customer_name || 'System')}">
+                <td class="col-user" data-label="User" title="${this.escapeHtml(this.getActorLabel(t))}">
                     <span class="user-chip">
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="user-icon">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        <span class="user-text">${this.escapeHtml(t.customer_name || 'System')}</span>
+                        <span class="user-text">${this.escapeHtml(this.getActorLabel(t))}</span>
                     </span>
                 </td>
                 <td class="col-amount" data-label="Amount">${this.formatAmount(t)}</td>
@@ -329,6 +329,23 @@ class TransactionsUI {
     }
 
     // --- Helpers ---
+
+    /**
+     * Returns the display name for the User column.
+     * Customer-triggered actions store the customer email in user_email,
+     * so we show customer_name instead for those.
+     */
+    getActorLabel(t) {
+        const d = t.details || {};
+        const isCustomerAction =
+            (t.action_type === 'order_cancel' && d.cancelled_by === 'customer') ||
+            (t.action_type === 'order_payment_update' && d.submitted_by === 'customer');
+
+        if (isCustomerAction) {
+            return t.customer_name || t.user_email || 'Customer';
+        }
+        return t.user_email || 'System';
+    }
 
     formatDate(dateString) {
         if (!dateString) return '-';
