@@ -313,7 +313,8 @@ const CatalogProductModal = {
                 const qtyToAdd = parseQty();
                 if (window.CatalogCart) {
                     window.CatalogCart.addToCart(product, qtyToAdd);
-                    window.CatalogCart.updateCartBadge();
+                    window.CatalogCart.updateCartBadge(true);
+                    window.CatalogCart.showFloatingBadge(addBtn, `+${qtyToAdd}`);
                     // Provide feedback button animation / text change
                     addBtn.innerHTML = `
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">

@@ -561,3 +561,183 @@ main {
     border-color: var(--accent);
 }
 
+/* Sort Dropdown Component */
+.sort-box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    height: 44px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.sort-box:hover {
+    border-color: var(--accent);
+}
+
+.sort-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.sort-box .sort-icon {
+    margin-left: 12px;
+    width: 16px;
+    height: 16px;
+    fill: var(--text-secondary);
+    pointer-events: none;
+    transition: fill 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sort-box:focus-within .sort-icon,
+.sort-box:hover .sort-icon {
+    fill: var(--accent);
+}
+
+.sort-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0 30px 0 8px;
+    height: 100%;
+    cursor: pointer;
+}
+
+.sort-select option {
+    background: #151620;
+    color: var(--text-primary);
+    padding: 8px 12px;
+}
+
+.sort-box .sort-chevron {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    fill: var(--text-secondary);
+    pointer-events: none;
+    transition: fill 0.2s ease;
+}
+
+.sort-box:focus-within .sort-chevron,
+.sort-box:hover .sort-chevron {
+    fill: var(--accent);
+}
+
+/* Responsive Sort Box */
+@media (max-width: 1024px) {
+    .sort-box {
+        height: 40px;
+    }
+    .sort-select {
+        font-size: 13px;
+        padding-right: 26px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sort-box {
+        width: 100%;
+        height: 38px;
+    }
+    .sort-select {
+        width: 100%;
+        font-size: 12px;
+    }
+}
+
+/* =============================================
+   Add to Cart Animations & Micro-interactions
+   ============================================= */
+
+/* Button active and added state */
+.btn-card.add-cart-btn {
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+    position: relative;
+}
+
+.btn-card.add-cart-btn:active {
+    transform: scale(0.95);
+}
+
+.btn-card.add-cart-btn.btn-added {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.5) !important;
+    animation: btnAddedPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes btnAddedPop {
+    0% { transform: scale(0.92); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+}
+
+/* Cart Badge Bounce Animation */
+@keyframes cartBadgePop {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.4); box-shadow: 0 0 14px var(--accent); }
+    70% { transform: scale(0.88); }
+    100% { transform: scale(1); }
+}
+
+.cart-badge.badge-pop {
+    animation: cartBadgePop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Cart Header Button Pulse */
+@keyframes cartBtnPulse {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.08); border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+    100% { transform: scale(1); }
+}
+
+.cart-button.cart-btn-pulse {
+    animation: cartBtnPulse 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Floating "+1" particle */
+.cart-floating-plus {
+    position: fixed;
+    z-index: 99999;
+    pointer-events: none;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--accent);
+    text-shadow: 0 0 12px var(--accent-glow), 0 2px 4px rgba(0, 0, 0, 0.9);
+    user-select: none;
+    animation: floatingPlusAnim 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes floatingPlusAnim {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(0.7);
+    }
+    40% {
+        opacity: 1;
+        transform: translate(-50%, -26px) scale(1.25);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -52px) scale(0.9);
+    }
+}
+
+

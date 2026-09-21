@@ -163,8 +163,9 @@ const CatalogCart = {
 
     /**
      * Update cart badge
+     * @param {boolean} [animate=false] - Whether to trigger bounce animation
      */
-    updateCartBadge() {
+    updateCartBadge(animate = false) {
         const badge = document.getElementById('cartBadge');
         if (badge) {
             const total = this.getTotalItems();
@@ -172,12 +173,44 @@ const CatalogCart = {
                 badge.textContent = total > 99 ? '99+' : String(total);
                 badge.classList.add('has-items');
                 badge.style.display = 'inline-flex';
+
+                if (animate) {
+                    badge.classList.remove('badge-pop');
+                    void badge.offsetWidth;
+                    badge.classList.add('badge-pop');
+
+                    const cartBtn = document.getElementById('cartBtn');
+                    if (cartBtn) {
+                        cartBtn.classList.remove('cart-btn-pulse');
+                        void cartBtn.offsetWidth;
+                        cartBtn.classList.add('cart-btn-pulse');
+                    }
+                }
             } else {
                 badge.textContent = '0';
                 badge.classList.remove('has-items');
                 badge.style.display = 'none';
             }
         }
+    },
+
+    /**
+     * Spawn floating +1 micro-animation from element
+     * @param {HTMLElement} targetEl - Element to spawn animation from
+     * @param {string} [text='+1'] - Floating text
+     */
+    showFloatingBadge(targetEl, text = '+1') {
+        if (!targetEl) return;
+        const rect = targetEl.getBoundingClientRect();
+        const badge = document.createElement('span');
+        badge.className = 'cart-floating-plus';
+        badge.textContent = text;
+        badge.style.left = `${rect.left + rect.width / 2}px`;
+        badge.style.top = `${rect.top}px`;
+        document.body.appendChild(badge);
+        setTimeout(() => {
+            badge.remove();
+        }, 900);
     },
 
     /**
