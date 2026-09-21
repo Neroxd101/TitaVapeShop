@@ -76,6 +76,7 @@ BEGIN
     SET payment_reference = clean_reference,
         payment_receipt_url = clean_url,
         payment_status = 'pending_verification',
+        payment_status_reason = NULL,
         payment_method = 'gcash',
         updated_at = NOW()
     WHERE id = target.id;

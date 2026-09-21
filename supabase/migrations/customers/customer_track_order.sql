@@ -3,6 +3,8 @@
 -- Allows customers or guest orderers (with verified phone) to view order status & details
 -- =============================================
 
+DROP FUNCTION IF EXISTS public.customer_track_order(UUID, UUID, VARCHAR, VARCHAR);
+
 CREATE OR REPLACE FUNCTION public.customer_track_order(
     p_order_id UUID,
     p_customer_id UUID DEFAULT NULL,
@@ -24,7 +26,8 @@ RETURNS TABLE (
     payment_method VARCHAR(50),
     payment_reference VARCHAR(100),
     payment_receipt_url TEXT,
-    payment_status VARCHAR(50)
+    payment_status VARCHAR(50),
+    payment_status_reason TEXT
 ) AS $$
 DECLARE
     v_order RECORD;
@@ -90,7 +93,8 @@ BEGIN
         v_order.payment_method,
         v_order.payment_reference,
         v_order.payment_receipt_url,
-        COALESCE(v_order.payment_status, 'unpaid') AS payment_status;
+        COALESCE(v_order.payment_status, 'unpaid') AS payment_status,
+        v_order.payment_status_reason;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 

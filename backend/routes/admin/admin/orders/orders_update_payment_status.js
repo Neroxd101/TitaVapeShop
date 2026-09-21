@@ -9,16 +9,20 @@ router.post('/api/orders/update_payment_status', isAuthenticated, hasRole(['admi
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { order_id, payment_status } = req.body;
+        const { order_id, payment_status, reason } = req.body;
         if (!order_id || !payment_status) {
             return res.status(400).json({ success: false, error: 'order_id and payment_status are required' });
+        }
+        if (typeof reason !== 'string' || !reason.trim() || reason.trim().length > 1000) {
+            return res.status(400).json({ success: false, error: 'A payment status reason of 1–1000 characters is required' });
         }
 
         const userEmail = req.user?.username || req.user?.email || req.user?.id || 'system';
         const { data, error } = await supabaseAdmin.rpc('orders_update_payment_status', {
             p_order_id: order_id,
             p_payment_status: payment_status,
-            p_user_email: userEmail
+            p_user_email: userEmail,
+            p_reason: reason.trim()
         });
 
         if (error) {

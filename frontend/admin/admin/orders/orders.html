@@ -241,6 +241,8 @@
             <div class="modal-body">
                 <p>Confirm that payment has been received for this order?</p>
                 <p class="text-muted">The order payment status will be updated to <strong>Paid</strong>.</p>
+                <label for="verifyPaymentReason">Reason <span class="required-star">*</span></label>
+                <textarea id="verifyPaymentReason" class="void-reason-textarea" required maxlength="1000" rows="3" placeholder="Enter the reason for this payment decision"></textarea>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="cancelVerifyPaymentBtn">Cancel</button>
@@ -263,6 +265,8 @@
             <div class="modal-body">
                 <p id="markUnpaidModalMessage">Mark this order payment as unpaid?</p>
                 <p class="text-muted" id="markUnpaidModalSubtext">The order payment status will be reverted to unpaid or rejected.</p>
+                <label for="markUnpaidReason">Reason <span class="required-star">*</span></label>
+                <textarea id="markUnpaidReason" class="void-reason-textarea" required maxlength="1000" rows="3" placeholder="Enter the reason for this payment decision"></textarea>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="cancelMarkUnpaidBtn">Cancel</button>

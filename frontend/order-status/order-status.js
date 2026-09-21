@@ -423,12 +423,20 @@
     const viewReceiptLink = document.getElementById('viewSubmittedReceiptLink');
     const paymentStatusHeading = document.getElementById('paymentStatusHeading');
     const paymentStatusSub = document.getElementById('paymentStatusSub');
+    const paymentStatusReason = document.getElementById('paymentStatusReason');
 
     const status = (order.payment_status || 'unpaid').toLowerCase();
+    const reason = typeof order.payment_status_reason === 'string' ? order.payment_status_reason.trim() : '';
 
     if (status === 'rejected') {
       // Payment proof was rejected: Show rejection message & show form so customer can re-upload
       if (rejectedNotice) rejectedNotice.style.display = 'block';
+      if (paymentStatusReason) {
+        paymentStatusReason.innerHTML = reason
+          ? `<strong style="color: #ef4444;">Reason:</strong> ${escapeHtml(reason)}`
+          : 'Your previous payment proof was rejected by the store staff. Please verify your payment and upload a new receipt below.';
+        paymentStatusReason.style.display = 'block';
+      }
       if (submittedNotice) submittedNotice.style.display = 'none';
       if (paymentForm) {
         paymentForm.style.display = 'block';
@@ -446,6 +454,7 @@
       }
     } else if (status === 'paid' || status === 'pending_verification') {
       if (rejectedNotice) rejectedNotice.style.display = 'none';
+      if (paymentStatusReason) paymentStatusReason.style.display = 'none';
       if (submittedNotice) submittedNotice.style.display = 'flex';
       if (paymentForm) paymentForm.style.display = 'none';
 
@@ -474,6 +483,7 @@
     } else {
       // Unpaid or initial state
       if (rejectedNotice) rejectedNotice.style.display = 'none';
+      if (paymentStatusReason) paymentStatusReason.style.display = 'none';
       if (submittedNotice) submittedNotice.style.display = 'none';
       if (paymentForm) paymentForm.style.display = 'block';
     }

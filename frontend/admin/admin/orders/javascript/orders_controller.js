@@ -239,8 +239,15 @@ class OrdersController {
             confirmVerifyPaymentBtn.addEventListener('click', () => {
                 if (this.pendingPaymentAction) {
                     const { orderId, paymentStatus } = this.pendingPaymentAction;
+                    const reasonInput = document.getElementById('verifyPaymentReason');
+                    const reason = reasonInput?.value.trim() || '';
+                    if (!reason || reason.length > 1000) {
+                        alert('Enter a reason of 1–1000 characters.');
+                        reasonInput?.focus();
+                        return;
+                    }
                     if (confirmVerifyPaymentModal) confirmVerifyPaymentModal.classList.remove('show');
-                    this.executeVerifyPayment(orderId, paymentStatus);
+                    this.executeVerifyPayment(orderId, paymentStatus, reason);
                 }
             });
         }
@@ -275,8 +282,15 @@ class OrdersController {
             confirmMarkUnpaidBtn.addEventListener('click', () => {
                 if (this.pendingPaymentAction) {
                     const { orderId, paymentStatus } = this.pendingPaymentAction;
+                    const reasonInput = document.getElementById('markUnpaidReason');
+                    const reason = reasonInput?.value.trim() || '';
+                    if (!reason || reason.length > 1000) {
+                        alert('Enter a reason of 1–1000 characters.');
+                        reasonInput?.focus();
+                        return;
+                    }
                     if (confirmMarkUnpaidModal) confirmMarkUnpaidModal.classList.remove('show');
-                    this.executeVerifyPayment(orderId, paymentStatus);
+                    this.executeVerifyPayment(orderId, paymentStatus, reason);
                 }
             });
         }
@@ -1126,16 +1140,15 @@ class OrdersController {
 
     verifyPayment(orderId, paymentStatus) {
         this.pendingPaymentAction = { orderId, paymentStatus };
+        const reasonInput = document.getElementById(paymentStatus === 'paid' ? 'verifyPaymentReason' : 'markUnpaidReason');
+        if (reasonInput) reasonInput.value = '';
 
         if (paymentStatus === 'paid') {
             const modal = document.getElementById('confirmVerifyPaymentModal');
             if (modal) {
                 modal.classList.add('show');
             } else {
-                // Fallback if modal DOM element is missing
-                if (confirm('Confirm that payment has been received for this order?')) {
-                    this.executeVerifyPayment(orderId, paymentStatus);
-                }
+                alert('Payment confirmation dialog is unavailable.');
             }
         } else {
             const modal = document.getElementById('confirmMarkUnpaidModal');
@@ -1158,25 +1171,24 @@ class OrdersController {
             if (modal) {
                 modal.classList.add('show');
             } else {
-                // Fallback if modal DOM element is missing
-                if (confirm(paymentStatus === 'rejected' ? 'Reject this payment proof?' : 'Mark this order payment as unpaid?')) {
-                    this.executeVerifyPayment(orderId, paymentStatus);
-                }
+                alert('Payment confirmation dialog is unavailable.');
             }
         }
     }
 
-    async executeVerifyPayment(orderId, paymentStatus) {
+    async executeVerifyPayment(orderId, paymentStatus, reason) {
         try {
             const result = await window.OrdersUpdatePaymentStatus.update({
                     order_id: orderId,
-                    payment_status: paymentStatus
+                    payment_status: paymentStatus,
+                    reason
                 });
             if (result.success) {
                 // Update local order data
                 const existing = this.state.orders.find(o => o.id === orderId);
                 if (existing) {
                     existing.payment_status = paymentStatus;
+                    existing.payment_status_reason = reason;
                 }
                 this.renderOrders();
                 // Refresh modal details
