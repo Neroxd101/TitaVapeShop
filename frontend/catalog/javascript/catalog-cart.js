@@ -54,10 +54,8 @@ const CatalogCart = {
         if (newTotalQuantity > product.quantity) {
             const maxCanAdd = product.quantity - currentCartQuantity;
             if (maxCanAdd <= 0) {
-                alert(`Cannot add more. Only ${availableStock} item(s) available in stock.`);
                 return;
             }
-            alert(`Only ${maxCanAdd} more item(s) can be added. Available stock: ${availableStock}`);
             quantity = maxCanAdd;
         }
 
@@ -117,16 +115,9 @@ const CatalogCart = {
 
         // Get product to check max stock
         const product = window.CatalogProducts?.getProductById(productId);
-        if (product) {
-            // Validate against max stock
-            if (quantity > product.quantity) {
-                alert(`Cannot set quantity to ${quantity}. Maximum available stock is ${product.quantity}.`);
-                quantity = product.quantity;
-            }
-        } else if (item.max_quantity && quantity > item.max_quantity) {
-            // Fallback to stored max_quantity if product not found
-            alert(`Cannot set quantity to ${quantity}. Maximum available stock is ${item.max_quantity}.`);
-            quantity = item.max_quantity;
+        const maxStock = product ? product.quantity : (item.max_quantity || 9999);
+        if (quantity > maxStock) {
+            quantity = maxStock;
         }
 
         item.quantity = quantity;
