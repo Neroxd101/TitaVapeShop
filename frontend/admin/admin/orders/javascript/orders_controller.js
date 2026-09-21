@@ -52,10 +52,11 @@ class OrdersController {
         // Initialize sidebar
         if (typeof initSidebar === 'function') initSidebar('orders');
 
+        this.setupEventListeners();
+
         // Load order details modal
         await this.loadOrderDetailsModal();
 
-        this.setupEventListeners();
         this.setupModalEventListeners();
         await this.loadOrders();
     }
@@ -438,10 +439,9 @@ class OrdersController {
         });
 
         if (this.elements.orderSearchInput) {
-            let debounceTimer;
             this.elements.orderSearchInput.addEventListener('input', (e) => {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
+                if (this.searchDebounceTimer) clearTimeout(this.searchDebounceTimer);
+                this.searchDebounceTimer = setTimeout(() => {
                     this.state.filters.search = e.target.value.trim();
                     this.state.filters.offset = 0;
                     this.loadOrders();
@@ -481,7 +481,8 @@ class OrdersController {
         }
 
         if (this.elements.resetFiltersBtn) {
-            this.elements.resetFiltersBtn.addEventListener('click', () => {
+            this.elements.resetFiltersBtn.addEventListener('click', (e) => {
+                if (e) e.preventDefault();
                 this.resetFilters();
             });
         }
@@ -515,6 +516,11 @@ class OrdersController {
     }
 
     resetFilters() {
+        if (this.searchDebounceTimer) {
+            clearTimeout(this.searchDebounceTimer);
+            this.searchDebounceTimer = null;
+        }
+
         if (this.elements.orderSearchInput) this.elements.orderSearchInput.value = '';
         if (this.elements.filterStatus) this.elements.filterStatus.value = '';
         if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
@@ -1108,19 +1114,6 @@ class OrdersController {
         modal.classList.add('show');
     }
 
-    resetFilters() {
-        this.state.filters.status = '';
-        this.state.filters.search = '';
-        this.state.filters.offset = 0;
-        if (this.elements.filterStatus) {
-            this.elements.filterStatus.value = '';
-        }
-        if (this.elements.orderSearchInput) {
-            this.elements.orderSearchInput.value = '';
-        }
-        this.loadOrders();
-    }
-
     updatePagination() {
         const currentPage = Math.floor(this.state.filters.offset / this.state.filters.limit) + 1;
         const totalPages = Math.ceil(this.state.total / this.state.filters.limit);
@@ -1261,6 +1254,12 @@ OrdersController.completeOrder = function(orderId) {
 OrdersController.cancelOrder = function(orderId) {
     if (window.ordersController) {
         window.ordersController.cancelOrder(orderId);
+    }
+};
+
+OrdersController.resetFilters = function() {
+    if (window.ordersController) {
+        window.ordersController.resetFilters();
     }
 };
 
