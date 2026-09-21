@@ -169,7 +169,7 @@ const TransactionsPrint = {
                 const date = uiController.formatDate(t.created_at);
                 const badge = uiController.getActionBadge(t.action_type);
                 const details = uiController.formatDetails(t);
-                const user = uiController.escapeHtml(t.user_email || 'System');
+                const user = uiController.escapeHtml(uiController.getActorLabel(t));
                 const amount = uiController.formatAmount(t);
 
                 printHTML += `
