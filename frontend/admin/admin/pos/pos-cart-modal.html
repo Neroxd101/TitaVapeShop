@@ -47,15 +47,26 @@
               <label for="customerEmail">Customer Email (optional)</label>
               <input type="email" id="customerEmail" placeholder="customer@example.com">
             </div>
-            <div class="form-row-2">
-              <div class="form-group">
-                <label for="cashInput">Cash</label>
-                <input type="number" id="cashInput" min="0" step="0.01" placeholder="0.00">
+            <div class="form-group cash-input-group">
+              <div class="cash-input-header">
+                <label for="cashInput">Cash Tendered</label>
+                <span class="cash-hint" id="cashShortfallHint"></span>
               </div>
-              <div class="form-group">
-                <label>Change</label>
-                <div id="changeDisplay" class="change-display">₱0.00</div>
+              <input type="number" id="cashInput" min="0" step="0.01" placeholder="0.00" autocomplete="off">
+              
+              <!-- Quick Cash Preset Chips -->
+              <div class="quick-cash-chips" id="quickCashChips">
+                <button type="button" class="cash-chip" data-action="exact">Exact</button>
+                <button type="button" class="cash-chip" data-amount="100">₱100</button>
+                <button type="button" class="cash-chip" data-amount="200">₱200</button>
+                <button type="button" class="cash-chip" data-amount="500">₱500</button>
+                <button type="button" class="cash-chip" data-amount="1000">₱1,000</button>
               </div>
+            </div>
+            
+            <div class="form-group change-group">
+              <label>Change Due</label>
+              <div id="changeDisplay" class="change-display">₱0.00</div>
             </div>
           </div>
 

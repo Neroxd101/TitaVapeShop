@@ -101,10 +101,25 @@
       cashInput.addEventListener('input', () => SalesCart.updateChangeDisplay(state));
     }
 
+    // Delegate click on Quick Cash Chips
+    const quickCashChips = document.getElementById('quickCashChips');
+    if (quickCashChips) {
+      quickCashChips.addEventListener('click', (e) => {
+        const chip = e.target.closest('.cash-chip');
+        if (chip) {
+          SalesCart.handleQuickCash(chip, state);
+        }
+      });
+    }
+
     if (openCartModalBtn && cartModal) {
       openCartModalBtn.addEventListener('click', () => {
         cartModal.classList.add('show');
         SalesCart.updateCartUI(state);
+        setTimeout(() => {
+          const cashEl = document.getElementById('cashInput');
+          if (cashEl && state.cart.length > 0) cashEl.focus();
+        }, 150);
       });
     }
 

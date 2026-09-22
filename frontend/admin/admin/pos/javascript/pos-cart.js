@@ -131,6 +131,16 @@ const SalesCart = {
         const product = state.products.find(p => p.id === item.id);
         const max = product ? (product.quantity || 1) : 9999;
 
+        const qtyWrapper = document.createElement('div');
+        qtyWrapper.className = 'cart-qty-stepper';
+
+        const decBtn = document.createElement('button');
+        decBtn.type = 'button';
+        decBtn.className = 'cart-qty-step-btn dec-btn';
+        decBtn.setAttribute('aria-label', 'Decrease quantity');
+        decBtn.innerHTML = '−';
+        decBtn.disabled = item.qty <= 1;
+
         const qtyInput = document.createElement('input');
         qtyInput.type = 'number';
         qtyInput.min = '1';
@@ -139,26 +149,52 @@ const SalesCart = {
         qtyInput.value = String(item.qty);
         qtyInput.className = 'cart-qty-input';
         qtyInput.setAttribute('aria-label', `Quantity for ${item.name || 'product'}`);
+
+        const incBtn = document.createElement('button');
+        incBtn.type = 'button';
+        incBtn.className = 'cart-qty-step-btn inc-btn';
+        incBtn.setAttribute('aria-label', 'Increase quantity');
+        incBtn.innerHTML = '+';
+        incBtn.disabled = item.qty >= max;
+
+        const updateItemQty = (newVal) => {
+            item.qty = Math.min(Math.max(1, newVal), max);
+            qtyInput.value = item.qty;
+            decBtn.disabled = item.qty <= 1;
+            incBtn.disabled = item.qty >= max;
+
+            this.updateTotals(state);
+            this.renderCartSubtotals(state);
+            SalesLoad.updateProductCardStock(state, item.id);
+        };
+
+        decBtn.addEventListener('click', () => {
+            if (item.qty > 1) {
+                updateItemQty(item.qty - 1);
+            }
+        });
+
+        incBtn.addEventListener('click', () => {
+            if (item.qty < max) {
+                updateItemQty(item.qty + 1);
+            }
+        });
+
         qtyInput.addEventListener('input', () => {
             const parsed = parseInt(qtyInput.value, 10);
             if (!isNaN(parsed)) {
-                item.qty = Math.min(Math.max(1, parsed), max);
-                qtyInput.value = item.qty;
+                updateItemQty(parsed);
             }
-
-            this.updateTotals(state);
-            this.renderCartSubtotals(state);
-            SalesLoad.renderProducts(state);
         });
+
         qtyInput.addEventListener('change', () => {
             const parsed = parseInt(qtyInput.value, 10);
-            item.qty = Math.min(Math.max(1, isNaN(parsed) ? 1 : parsed), max);
-            qtyInput.value = item.qty;
-
-            this.updateTotals(state);
-            this.renderCartSubtotals(state);
-            SalesLoad.renderProducts(state);
+            updateItemQty(isNaN(parsed) ? 1 : parsed);
         });
+
+        qtyWrapper.appendChild(decBtn);
+        qtyWrapper.appendChild(qtyInput);
+        qtyWrapper.appendChild(incBtn);
 
         const subtotalEl = document.createElement('div');
         subtotalEl.className = 'cart-subtotal';
@@ -173,13 +209,14 @@ const SalesCart = {
         </svg>
       `;
         removeBtn.addEventListener('click', () => {
+            const removedId = item.id;
             state.cart = state.cart.filter(c => c.id !== item.id);
             this.updateCartUI(state);
-            SalesLoad.renderProducts(state);
+            SalesLoad.updateProductCardStock(state, removedId);
         });
 
         row.appendChild(main);
-        row.appendChild(qtyInput);
+        row.appendChild(qtyWrapper);
         row.appendChild(subtotalEl);
         row.appendChild(removeBtn);
 
@@ -240,17 +277,71 @@ const SalesCart = {
         }, 900);
     },
 
+    handleQuickCash(btn, state) {
+        const cashInput = document.getElementById('cashInput');
+        if (!cashInput || !state) return;
+
+        const action = btn.dataset.action;
+        const amount = btn.dataset.amount;
+        const total = state.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+
+        if (action === 'exact') {
+            cashInput.value = total > 0 ? total.toFixed(2) : '0';
+        } else if (amount) {
+            const val = parseFloat(amount);
+            cashInput.value = isNaN(val) ? '0' : val.toFixed(2);
+        }
+
+        // Add pop animation effect to chip
+        btn.classList.add('chip-active');
+        setTimeout(() => btn.classList.remove('chip-active'), 200);
+
+        this.updateChangeDisplay(state);
+        cashInput.focus();
+    },
+
     updateChangeDisplay(state) {
         const cashInput = document.getElementById('cashInput');
         const changeEl = document.getElementById('changeDisplay');
+        const hintEl = document.getElementById('cashShortfallHint');
+        const completeBtn = document.getElementById('completeSaleBtn');
         const total = state.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
 
         if (!cashInput || !changeEl) return;
 
-        const cash = parseFloat(cashInput.value || '0') || 0;
-        const change = Math.max(0, cash - total);
+        const rawVal = cashInput.value.trim();
+        if (rawVal === '') {
+            changeEl.textContent = '₱0.00';
+            changeEl.classList.remove('change-positive', 'change-negative');
+            if (hintEl) hintEl.textContent = '';
+            return;
+        }
 
-        changeEl.textContent = this.formatCurrencySafe(change);
+        const cash = parseFloat(rawVal) || 0;
+        const diff = cash - total;
+
+        if (total === 0) {
+            changeEl.textContent = '₱0.00';
+            changeEl.classList.remove('change-positive', 'change-negative');
+            if (hintEl) hintEl.textContent = '';
+        } else if (diff >= 0) {
+            changeEl.textContent = this.formatCurrencySafe(diff);
+            changeEl.classList.add('change-positive');
+            changeEl.classList.remove('change-negative');
+            if (hintEl) {
+                hintEl.textContent = '✓ Sufficient';
+                hintEl.className = 'cash-hint hint-sufficient';
+            }
+        } else {
+            const shortfall = Math.abs(diff);
+            changeEl.textContent = '₱0.00';
+            changeEl.classList.add('change-negative');
+            changeEl.classList.remove('change-positive');
+            if (hintEl) {
+                hintEl.textContent = `Short by ${this.formatCurrencySafe(shortfall)}`;
+                hintEl.className = 'cash-hint hint-shortfall';
+            }
+        }
     },
 
     formatCurrencySafe(amount) {
