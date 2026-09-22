@@ -215,6 +215,145 @@
   z-index: 1;
 }
 
+/* =============================================
+   Inventory Header Live Counters (Integrated KPIs)
+   ============================================= */
+.inventory-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 14px !important;
+  margin-bottom: 22px !important;
+}
+
+.inventory-header .header-left {
+  flex: 1 1 auto;
+}
+
+.inventory-header .header-left h1 {
+  margin: 0 0 4px 0 !important;
+}
+
+.inventory-header .header-left .subtitle {
+  margin: 0 !important;
+  text-align: left !important;
+  max-width: none !important;
+}
+
+.header-counters {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  margin: 0 !important;
+}
+
+.header-counter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.header-counter-pill .counter-label {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.header-counter-pill.clickable.active .counter-label {
+  color: var(--accent);
+}
+
+.header-counter-pill .counter-value {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--text-primary);
+}
+
+/* Status indicator dots */
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-dot.dot-amber {
+  background-color: #ff9f43;
+  box-shadow: 0 0 6px rgba(255, 159, 67, 0.6);
+}
+
+.status-dot.dot-red {
+  background-color: #ff4757;
+  box-shadow: 0 0 6px rgba(255, 71, 87, 0.6);
+}
+
+.header-counter-pill.counter-units {
+  background: transparent;
+  border-style: dashed;
+}
+
+@media (max-width: 600px) {
+  .inventory-header {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .inventory-header .header-left {
+    flex: 0 0 auto !important;
+  }
+
+  .inventory-header .header-left h1 {
+    font-size: 20px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .header-counters {
+    flex: 1 1 auto !important;
+    justify-content: flex-end !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .header-counter-pill {
+    height: 30px;
+    padding: 0 8px;
+    font-size: 11px;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .header-counter-pill .counter-value {
+    font-size: 12px;
+  }
+
+  .header-counter-pill .counter-label {
+    font-size: 10px;
+  }
+}
+
 /* Desktop Toolbar (>= 1025px): Single unified row matching POS page (height: 44px, border-radius: 10px) */
 @media (min-width: 1025px) {
   .filter-tabs {

@@ -42,6 +42,12 @@ const InventoryDOM = {
     pageInfo: null,
     pageSizeSelect: null,
 
+    // KPI Elements (Summary Only)
+    statTotalProducts: null,
+    statTotalStock: null,
+    statLowStock: null,
+    statOutStock: null,
+
     // Modal references (will be set after modals are loaded)
     itemModal: null,
     viewModal: null,
@@ -63,6 +69,12 @@ const InventoryDOM = {
         this.nextPageBtn = document.getElementById('nextPageBtn');
         this.pageInfo = document.getElementById('pageInfo');
         this.pageSizeSelect = document.getElementById('pageSizeSelect');
+
+        // KPI References (Summary Only)
+        this.statTotalProducts = document.getElementById('statTotalProducts');
+        this.statTotalStock = document.getElementById('statTotalStock');
+        this.statLowStock = document.getElementById('statLowStock');
+        this.statOutStock = document.getElementById('statOutStock');
     }
 };
 

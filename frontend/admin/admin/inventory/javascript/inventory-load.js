@@ -50,6 +50,7 @@ const InventoryLoad = {
             InventoryDOM.inventoryGrid.innerHTML = '';
             InventoryDOM.emptyState.style.display = 'block';
             this.updatePaginationControls(0);
+            this.updateSummaryStats();
             return;
         }
 
@@ -77,6 +78,30 @@ const InventoryLoad = {
 
         InventoryDOM.inventoryGrid.innerHTML = pageItems.map(item => this.createCard(item)).join('');
         this.updatePaginationControls(filtered.length);
+        this.updateSummaryStats();
+    },
+
+    updateSummaryStats() {
+        const items = InventoryState.inventoryItems || [];
+        const totalProducts = items.length;
+        let totalStock = 0;
+        let lowStockCount = 0;
+        let outOfStockCount = 0;
+
+        items.forEach(item => {
+            const qty = Number(item.quantity) || 0;
+            totalStock += qty;
+            if (qty === 0) {
+                outOfStockCount++;
+            } else if (qty <= 5) {
+                lowStockCount++;
+            }
+        });
+
+        if (InventoryDOM.statTotalProducts) InventoryDOM.statTotalProducts.textContent = totalProducts.toLocaleString();
+        if (InventoryDOM.statTotalStock) InventoryDOM.statTotalStock.textContent = totalStock.toLocaleString();
+        if (InventoryDOM.statLowStock) InventoryDOM.statLowStock.textContent = lowStockCount.toLocaleString();
+        if (InventoryDOM.statOutStock) InventoryDOM.statOutStock.textContent = outOfStockCount.toLocaleString();
     },
 
     updatePaginationControls(totalItems) {
@@ -128,6 +153,7 @@ const InventoryLoad = {
         const filtered = InventoryState.inventoryItems.filter(item => {
             const matchesCategory = InventoryState.currentFilter === 'all' || item.category === InventoryState.currentFilter;
             const matchesSearch = item.name.toLowerCase().includes(InventoryState.searchQuery.toLowerCase());
+
             // Use the same local calendar date shown in the item details.
             let matchesDate = true;
             if (InventoryState.addedDateFrom || InventoryState.addedDateTo) {
