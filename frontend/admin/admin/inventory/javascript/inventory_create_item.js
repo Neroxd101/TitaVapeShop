@@ -14,10 +14,41 @@ const InventoryCreate = {
                 container.innerHTML = await response.text();
                 InventoryDOM.itemModal = document.getElementById('itemModal');
                 InventoryDOM.itemForm = document.getElementById('itemForm');
+                this.setupEventListeners();
             }
         } catch (error) {
             console.error('Error loading item modal:', error);
         }
+    },
+
+    setupEventListeners() {
+        InventoryDOM.itemForm?.addEventListener('submit', (e) => {
+            if (InventoryState.editingItemId) {
+                if (window.InventoryUpdate?.handleUpdate) InventoryUpdate.handleUpdate(e);
+            } else {
+                this.handleCreate(e);
+            }
+        });
+
+        document.getElementById('modalClose')?.addEventListener('click', () => this.closeModal());
+        document.getElementById('cancelBtn')?.addEventListener('click', () => this.closeModal());
+
+        // Multiple images upload & thumbnail editing
+        document.getElementById('itemImages')?.addEventListener('change', (e) => {
+            if (window.InventoryImage?.handleImagesSelect) InventoryImage.handleImagesSelect(e);
+        });
+
+        document.getElementById('editThumbnails')?.addEventListener('click', (e) => {
+            const imageItem = e.target.closest('.image-item');
+            if (!imageItem || !window.InventoryImage) return;
+            const index = Number(imageItem.dataset.index);
+            if (e.target.closest('.remove-image')) InventoryImage.removeImage(index);
+            else InventoryImage.setEditMainImage(index);
+        });
+
+        InventoryDOM.itemModal?.addEventListener('click', (e) => {
+            if (e.target === InventoryDOM.itemModal) this.closeModal();
+        });
     },
 
     openAddModal() {

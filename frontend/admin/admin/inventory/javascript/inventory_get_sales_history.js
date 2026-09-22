@@ -17,6 +17,10 @@ const InventoryHistory = {
                 document.getElementById('closeHistoryModalBtn')?.addEventListener('click', () => {
                     this.closeHistoryModal();
                 });
+
+                InventoryDOM.historyModal?.addEventListener('click', (e) => {
+                    if (e.target === InventoryDOM.historyModal) this.closeHistoryModal();
+                });
             }
         } catch (error) {
             console.error('Error loading history modal:', error);

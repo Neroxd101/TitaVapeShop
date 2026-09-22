@@ -13,10 +13,19 @@ const InventoryDelete = {
             if (response.ok) {
                 container.innerHTML = await response.text();
                 InventoryDOM.deleteModal = document.getElementById('deleteModal');
+                this.setupEventListeners();
             }
         } catch (error) {
             console.error('Error loading delete modal:', error);
         }
+    },
+
+    setupEventListeners() {
+        document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => this.handleDeleteConfirmed());
+        document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => this.closeModal());
+        InventoryDOM.deleteModal?.addEventListener('click', (e) => {
+            if (e.target === InventoryDOM.deleteModal) this.closeModal();
+        });
     },
 
     openDeleteModal(id, name) {
