@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="/css/components/page-container.css">
     <link rel="stylesheet" href="/css/components/data-table.css">
     <link rel="stylesheet" href="/css/components/utilities.css">
-    <link rel="stylesheet" href="/admin/admin/activity-log/activity-log.css">
+    <link rel="stylesheet" href="/admin/admin/activity-log/activity-log.css?v=2">
 </head>
 
 <body>
@@ -47,9 +47,33 @@
     <!-- Main Content -->
     <main class="main-content">
         <div class="page-container">
-            <div class="page-header">
-                <h1>Activity Log</h1>
-                <p class="subtitle">Monitor system activities</p>
+            <div class="page-header activity-log-header">
+                <div class="header-left">
+                    <h1>Activity Log</h1>
+                </div>
+
+                <!-- KPI Counter Pills -->
+                <div class="header-right header-counters" id="activityCounters">
+                    <div class="header-counter-pill" id="kpiTotal" title="Total log entries">
+                        <span class="counter-label">Total</span>
+                        <span class="counter-value" id="kpiTotalVal">—</span>
+                    </div>
+                    <div class="header-counter-pill counter-sale" id="kpiSales" title="Sales events">
+                        <span class="status-dot dot-green"></span>
+                        <span class="counter-label">Sales</span>
+                        <span class="counter-value" id="kpiSalesVal">—</span>
+                    </div>
+                    <div class="header-counter-pill counter-order" id="kpiOrders" title="Order events">
+                        <span class="status-dot dot-blue"></span>
+                        <span class="counter-label">Orders</span>
+                        <span class="counter-value" id="kpiOrdersVal">—</span>
+                    </div>
+                    <div class="header-counter-pill counter-inv" id="kpiInventory" title="Inventory events">
+                        <span class="status-dot dot-amber"></span>
+                        <span class="counter-label">Inventory</span>
+                        <span class="counter-value" id="kpiInvVal">—</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Filters -->

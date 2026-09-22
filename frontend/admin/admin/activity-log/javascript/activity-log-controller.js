@@ -106,7 +106,12 @@ class TransactionsUI {
             transactionsList: document.getElementById('transactionsList'),
             prevPageBtn: document.getElementById('prevPageBtn'),
             nextPageBtn: document.getElementById('nextPageBtn'),
-            pageInfo: document.getElementById('pageInfo')
+            pageInfo: document.getElementById('pageInfo'),
+            // KPI pill values
+            kpiTotalVal: document.getElementById('kpiTotalVal'),
+            kpiSalesVal: document.getElementById('kpiSalesVal'),
+            kpiOrdersVal: document.getElementById('kpiOrdersVal'),
+            kpiInvVal: document.getElementById('kpiInvVal')
         };
         this.setupDateFilter();
         this.syncDateHints();
@@ -314,6 +319,36 @@ class TransactionsUI {
             `;
             this.elements.transactionsList.appendChild(row);
         });
+    }
+
+    /**
+     * Update KPI counter pills in the page header.
+     * - Total  : grand total log entries from the API (all pages, all types)
+     * - Sales  : completed sales only (sale_complete) on current page
+     * - Orders : all order events (confirm / cancel / payment update) on current page
+     * - Inv    : all inventory events (add / edit / delete) on current page
+     * @param {number} total - Grand total from API response
+     * @param {Array} transactions - Current page transactions
+     */
+    updateKPIs(total, transactions) {
+        const sales = transactions.filter(t =>
+            t.action_type === 'sale_complete'
+        ).length;
+        const orders = transactions.filter(t =>
+            t.action_type === 'order_confirm' ||
+            t.action_type === 'order_cancel' ||
+            t.action_type === 'order_payment_update'
+        ).length;
+        const inv = transactions.filter(t =>
+            t.action_type === 'inventory_add' ||
+            t.action_type === 'inventory_edit' ||
+            t.action_type === 'inventory_delete'
+        ).length;
+
+        if (this.elements.kpiTotalVal) this.elements.kpiTotalVal.textContent = total.toLocaleString();
+        if (this.elements.kpiSalesVal) this.elements.kpiSalesVal.textContent = sales.toLocaleString();
+        if (this.elements.kpiOrdersVal) this.elements.kpiOrdersVal.textContent = orders.toLocaleString();
+        if (this.elements.kpiInvVal) this.elements.kpiInvVal.textContent = inv.toLocaleString();
     }
 
     /**
@@ -542,6 +577,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (result && result.success) {
                 const { transactions, total, limit, offset } = data.getState();
                 ui.renderTransactions(transactions);
+                ui.updateKPIs(data.state.total, data.state.transactions);
 
                 // Use state values or result values
                 ui.updatePagination(data.state.total, data.state.filters.limit, data.state.filters.offset);
