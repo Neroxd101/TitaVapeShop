@@ -8,6 +8,233 @@
   margin: 0 auto;
 }
 
+/* =============================================
+   Page Header with Counter Pills (Matching Inventory & Activity Log)
+   ============================================= */
+.orders-page-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+}
+
+.orders-page-header .header-left h1 {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+/* Counter Pills row */
+.orders-page-header .header-right.header-counters {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.orders-page-header .header-counter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  user-select: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.orders-page-header .header-counter-pill.clickable {
+  cursor: pointer;
+}
+
+.orders-page-header .header-counter-pill.clickable:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  transform: translateY(-1px);
+}
+
+.orders-page-header .header-counter-pill.clickable:active {
+  transform: translateY(0);
+}
+
+.orders-page-header .header-counter-pill.clickable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.orders-page-header .header-counter-pill.is-active {
+  border-color: var(--accent) !important;
+  background: rgba(0, 212, 170, 0.1) !important;
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.orders-page-header .header-counter-pill .counter-label {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.orders-page-header .header-counter-pill .counter-value {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--text-primary);
+}
+
+/* Colored status dots */
+.orders-page-header .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.orders-page-header .status-dot.dot-green {
+  background-color: #00d4aa;
+  box-shadow: 0 0 6px rgba(0, 212, 170, 0.6);
+}
+
+.orders-page-header .status-dot.dot-blue {
+  background-color: #5c7cfa;
+  box-shadow: 0 0 6px rgba(92, 124, 250, 0.6);
+}
+
+.orders-page-header .status-dot.dot-amber {
+  background-color: #ff9f43;
+  box-shadow: 0 0 6px rgba(255, 159, 67, 0.6);
+}
+
+.orders-page-header .status-dot.dot-purple {
+  background-color: #a855f7;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
+}
+
+/* Pill color variants */
+.orders-page-header .header-counter-pill.counter-pending {
+  border-color: rgba(255, 159, 67, 0.3);
+}
+
+.orders-page-header .header-counter-pill.counter-ready {
+  border-color: rgba(92, 124, 250, 0.3);
+}
+
+.orders-page-header .header-counter-pill.counter-pickup {
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.orders-page-header .header-counter-pill.counter-delivery {
+  border-color: rgba(0, 212, 170, 0.3);
+}
+
+/* Pulse on amber dot when pending orders exist */
+.orders-page-header .header-counter-pill#kpiCardPending.has-urgent .status-dot.dot-amber {
+  animation: ordersPulse 1.8s infinite;
+}
+
+@keyframes ordersPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 159, 67, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(255, 159, 67, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 159, 67, 0);
+  }
+}
+
+/* Responsive: tablet & mobile single-row shrink like Activity Log */
+@media (max-width: 768px) {
+  .orders-page-header {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .orders-page-header .header-left {
+    flex: 0 0 auto !important;
+  }
+
+  .orders-page-header .header-left h1 {
+    font-size: 18px !important;
+  }
+
+  .orders-page-header .header-right.header-counters {
+    flex: 1 1 auto !important;
+    justify-content: flex-end !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+  }
+
+  .orders-page-header .header-counter-pill {
+    height: 26px !important;
+    padding: 0 6px !important;
+    gap: 3px !important;
+    flex-shrink: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  .orders-page-header .header-counter-pill .counter-label {
+    font-size: 9px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .orders-page-header .header-counter-pill .counter-value {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+  }
+
+  .orders-page-header .status-dot {
+    width: 5px !important;
+    height: 5px !important;
+  }
+}
+
+/* Very narrow mobile devices (≤ 400px) */
+@media (max-width: 400px) {
+  .orders-page-header .header-left h1 {
+    font-size: 16px !important;
+  }
+
+  .orders-page-header .header-right.header-counters {
+    gap: 2px !important;
+  }
+
+  .orders-page-header .header-counter-pill {
+    height: 24px !important;
+    padding: 0 4px !important;
+    gap: 2.5px !important;
+  }
+
+  .orders-page-header .header-counter-pill .counter-label {
+    font-size: 8px !important;
+  }
+
+  .orders-page-header .header-counter-pill .counter-value {
+    font-size: 9.5px !important;
+  }
+
+  .orders-page-header .status-dot {
+    width: 4px !important;
+    height: 4px !important;
+  }
+}
+
 .orders-filter-tabs {
   margin-bottom: 32px;
   display: flex;

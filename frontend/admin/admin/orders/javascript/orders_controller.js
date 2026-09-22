@@ -27,7 +27,17 @@ class OrdersController {
             ordersList: document.getElementById('ordersList'),
             prevPageBtn: document.getElementById('prevPageBtn'),
             nextPageBtn: document.getElementById('nextPageBtn'),
-            pageInfo: document.getElementById('pageInfo')
+            pageInfo: document.getElementById('pageInfo'),
+
+            // KPI Summary Cards
+            kpiCardPending: document.getElementById('kpiCardPending'),
+            kpiCardReady: document.getElementById('kpiCardReady'),
+            kpiCardPickup: document.getElementById('kpiCardPickup'),
+            kpiCardDelivery: document.getElementById('kpiCardDelivery'),
+            kpiPendingCount: document.getElementById('kpiPendingCount'),
+            kpiReadyCount: document.getElementById('kpiReadyCount'),
+            kpiPickupCount: document.getElementById('kpiPickupCount'),
+            kpiDeliveryCount: document.getElementById('kpiDeliveryCount')
         };
 
         // QR Scanner state
@@ -444,6 +454,10 @@ class OrdersController {
                 this.searchDebounceTimer = setTimeout(() => {
                     this.state.filters.search = e.target.value.trim();
                     this.state.filters.offset = 0;
+                    if (this.activeKpi === 'pickup' || this.activeKpi === 'delivery') {
+                        this.activeKpi = null;
+                        this.updateActiveKpiCards();
+                    }
                     this.loadOrders();
                 }, 300);
             });
@@ -453,6 +467,14 @@ class OrdersController {
             this.elements.filterStatus.addEventListener('change', () => {
                 this.state.filters.status = this.elements.filterStatus.value;
                 this.state.filters.offset = 0;
+                if (this.state.filters.status === 'pending') {
+                    this.activeKpi = 'pending';
+                } else if (this.state.filters.status === 'confirmed') {
+                    this.activeKpi = 'confirmed';
+                } else {
+                    this.activeKpi = null;
+                }
+                this.updateActiveKpiCards();
                 this.loadOrders();
             });
         }
@@ -476,6 +498,10 @@ class OrdersController {
                 this.state.filters.start_date = start && start.value ? new Date(start.value + 'T00:00:00').toISOString() : '';
                 this.state.filters.end_date = end && end.value ? new Date(end.value + 'T23:59:59.999').toISOString() : '';
                 this.state.filters.offset = 0;
+                if (this.activeKpi === 'pickup' || this.activeKpi === 'delivery') {
+                    this.activeKpi = null;
+                    this.updateActiveKpiCards();
+                }
                 this.loadOrders();
             });
         }
@@ -503,6 +529,149 @@ class OrdersController {
                     this.loadOrders();
                 }
             });
+        }
+
+        // KPI Card click & keyboard listeners
+        const kpiBindings = [
+            { el: this.elements.kpiCardPending, action: () => this.filterByStatus('pending') },
+            { el: this.elements.kpiCardReady, action: () => this.filterByStatus('confirmed') },
+            { el: this.elements.kpiCardPickup, action: () => this.filterByOrderType('pickup') },
+            { el: this.elements.kpiCardDelivery, action: () => this.filterByOrderType('delivery') }
+        ];
+
+        kpiBindings.forEach(({ el, action }) => {
+            if (!el) return;
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                action();
+            });
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    action();
+                }
+            });
+        });
+    }
+
+    filterByStatus(status) {
+        if (this.activeKpi === status) {
+            // Toggle off
+            this.activeKpi = null;
+            if (this.elements.filterStatus) this.elements.filterStatus.value = '';
+            this.state.filters.status = '';
+        } else {
+            // Switch to this KPI filter, reset others
+            this.activeKpi = status;
+            if (this.elements.filterStatus) this.elements.filterStatus.value = status;
+            this.state.filters.status = status;
+
+            // Clear search or date filters
+            if (this.elements.orderSearchInput) this.elements.orderSearchInput.value = '';
+            this.state.filters.search = '';
+            if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
+            if (this.elements.filterEndDate) this.elements.filterEndDate.value = '';
+            this.state.filters.start_date = '';
+            this.state.filters.end_date = '';
+            this.syncDateHints();
+        }
+
+        this.state.filters.offset = 0;
+        this.updateActiveKpiCards();
+        this.loadOrders();
+    }
+
+    filterByOrderType(type) {
+        if (this.activeKpi === type) {
+            // Toggle off
+            this.activeKpi = null;
+        } else {
+            // Switch to this KPI filter, clear status and date filters
+            this.activeKpi = type;
+            if (this.elements.filterStatus) this.elements.filterStatus.value = '';
+            this.state.filters.status = '';
+
+            // Ensure no date restriction is applied so all orders are fetched
+            if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
+            if (this.elements.filterEndDate) this.elements.filterEndDate.value = '';
+            this.state.filters.start_date = '';
+            this.state.filters.end_date = '';
+            this.syncDateHints();
+
+            // Clear search input so it does not interfere
+            if (this.elements.orderSearchInput) this.elements.orderSearchInput.value = '';
+            this.state.filters.search = '';
+        }
+
+        this.state.filters.offset = 0;
+        this.updateActiveKpiCards();
+        this.loadOrders();
+    }
+
+    updateActiveKpiCards() {
+        if (this.elements.kpiCardPending) {
+            this.elements.kpiCardPending.classList.toggle('is-active', this.activeKpi === 'pending');
+        }
+        if (this.elements.kpiCardReady) {
+            this.elements.kpiCardReady.classList.toggle('is-active', this.activeKpi === 'confirmed');
+        }
+        if (this.elements.kpiCardPickup) {
+            this.elements.kpiCardPickup.classList.toggle('is-active', this.activeKpi === 'pickup');
+        }
+        if (this.elements.kpiCardDelivery) {
+            this.elements.kpiCardDelivery.classList.toggle('is-active', this.activeKpi === 'delivery');
+        }
+    }
+
+    async refreshKPIs() {
+        try {
+            // Fetch the entire orders list without pagination limit to get accurate counts
+            const result = await OrdersGetAll.get({ limit: 200, offset: 0 });
+            if (!result.success || !Array.isArray(result.orders)) return;
+
+            const allOrders = result.orders;
+
+            let pendingCount = 0;
+            let readyCount = 0;
+            let pickupCount = 0;
+            let deliveryCount = 0;
+
+            allOrders.forEach(order => {
+                const status = String(order.status || '').toLowerCase().trim();
+                const type = String(order.order_type || 'pickup').toLowerCase().trim();
+
+                if (status === 'pending') {
+                    pendingCount++;
+                } else if (status === 'confirmed') {
+                    readyCount++;
+                }
+
+                if (type === 'delivery') {
+                    deliveryCount++;
+                } else {
+                    pickupCount++;
+                }
+            });
+
+            if (this.elements.kpiPendingCount) {
+                this.elements.kpiPendingCount.textContent = pendingCount;
+            }
+            if (this.elements.kpiReadyCount) {
+                this.elements.kpiReadyCount.textContent = readyCount;
+            }
+            if (this.elements.kpiPickupCount) {
+                this.elements.kpiPickupCount.textContent = pickupCount;
+            }
+            if (this.elements.kpiDeliveryCount) {
+                this.elements.kpiDeliveryCount.textContent = deliveryCount;
+            }
+
+            // Pulse effect if pending orders require action
+            if (this.elements.kpiCardPending) {
+                this.elements.kpiCardPending.classList.toggle('has-urgent', pendingCount > 0);
+            }
+        } catch (error) {
+            console.error('Error refreshing KPIs:', error);
         }
     }
 
@@ -539,6 +708,8 @@ class OrdersController {
             offset: 0
         };
 
+        this.activeKpi = null;
+        this.updateActiveKpiCards();
         this.loadOrders();
     }
 
@@ -546,13 +717,38 @@ class OrdersController {
         this.setLoading(true);
 
         try {
-            const result = await OrdersGetAll.get(this.state.filters);
+            const fetchFilters = { ...this.state.filters };
+            // If filtering by order type (pickup/delivery), fetch more records to filter accurately client-side
+            if (this.activeKpi === 'pickup' || this.activeKpi === 'delivery') {
+                fetchFilters.limit = 200;
+                fetchFilters.offset = 0;
+            }
+
+            const result = await OrdersGetAll.get(fetchFilters);
 
             if (result.success) {
-                this.state.orders = result.orders || [];
-                this.state.total = result.total || 0;
+                let orders = result.orders || [];
+
+                if (this.activeKpi === 'pickup' || this.activeKpi === 'delivery') {
+                    orders = orders.filter(order => {
+                        const type = String(order.order_type || 'pickup').toLowerCase().trim();
+                        return type === this.activeKpi;
+                    });
+                    this.state.total = orders.length;
+                    // Slice for local pagination if needed
+                    const pageOffset = this.state.filters.offset || 0;
+                    const pageLimit = this.state.filters.limit || 20;
+                    this.state.orders = orders.slice(pageOffset, pageOffset + pageLimit);
+                } else {
+                    this.state.orders = orders;
+                    this.state.total = result.total || 0;
+                }
+
                 this.renderOrders();
                 this.updatePagination();
+                this.updateActiveKpiCards();
+                // Refresh KPI counts in background
+                this.refreshKPIs();
             } else {
                 this.showError(result.error);
             }
@@ -569,9 +765,14 @@ class OrdersController {
         if (!listEl) return;
 
         if (this.state.orders.length === 0) {
-            const emptyMsg = this.state.filters.search
-                ? `No orders found matching "${this.escapeHtml(this.state.filters.search)}"`
-                : 'No orders found';
+            let emptyMsg = 'No orders found';
+            if (this.state.filters.search) {
+                emptyMsg = `No orders found matching "${this.escapeHtml(this.state.filters.search)}"`;
+            } else if (this.activeKpi === 'pickup') {
+                emptyMsg = 'No pickup orders found';
+            } else if (this.activeKpi === 'delivery') {
+                emptyMsg = 'No delivery orders found';
+            }
             listEl.innerHTML = `<tr class="empty-row"><td colspan="9" style="text-align: center; padding: 40px; color: var(--text-secondary);">${emptyMsg}</td></tr>`;
             return;
         }
