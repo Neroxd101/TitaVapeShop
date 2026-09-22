@@ -159,59 +159,83 @@
 }
 
 /* Cart Stepper (+ / -) styling for rapid touch & click adjustments */
+.cart-row {
+  grid-template-columns: minmax(0, 1.2fr) auto minmax(70px, 0.7fr) auto !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
 .cart-qty-stepper {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  background: #080811;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 2px;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  background: #080811 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  padding: 2px 3px !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
 }
 
 .cart-qty-step-btn {
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary);
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.15s ease;
+  width: 24px !important;
+  height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+  border-radius: 5px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: all 0.15s ease !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .cart-qty-step-btn:hover:not(:disabled) {
-  background: var(--accent);
-  color: #000;
+  background: var(--accent) !important;
+  color: #000 !important;
 }
 
 .cart-qty-step-btn:active:not(:disabled) {
-  transform: scale(0.92);
+  transform: scale(0.92) !important;
 }
 
 .cart-qty-step-btn:disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
-  background: transparent;
+  opacity: 0.25 !important;
+  cursor: not-allowed !important;
+  background: transparent !important;
 }
 
 .cart-qty-stepper .cart-qty-input {
-  width: 44px;
-  height: 26px;
-  padding: 0 4px;
-  border: none;
-  background: transparent;
-  text-align: center;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
+  width: 38px !important;
+  min-width: 32px !important;
+  height: 24px !important;
+  padding: 0 2px !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  text-align: center !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+  -moz-appearance: textfield !important;
+}
+
+.cart-qty-stepper .cart-qty-input::-webkit-outer-spin-button,
+.cart-qty-stepper .cart-qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
 }
 
 /* Sales-specific cart payment section */
@@ -734,6 +758,132 @@
   .product-list {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 12px;
+  }
+}
+
+/* Short Height Desktop (e.g. 1280x720 16:9, laptops):
+   Keep standard single-column layout, compact vertical spacing so everything fits on-screen
+*/
+@media (max-height: 800px) {
+  #cartModal .modal.modal-large {
+    max-width: 580px !important;
+    max-height: 94vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+  }
+
+  #cartModal .modal-header {
+    padding: 12px 18px 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  #cartModal .modal-header h3 {
+    font-size: 17px !important;
+  }
+
+  #cartModal .modal-close {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 8px !important;
+  }
+
+  #cartModal .modal-close svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  #cartModal .modal-body {
+    padding: 10px 18px 14px !important;
+    overflow-y: auto !important;
+    flex: 1 1 auto !important;
+  }
+
+  #cartModal .cart-container {
+    gap: 8px !important;
+  }
+
+  #cartModal .cart-items {
+    max-height: 160px !important;
+    gap: 6px !important;
+    padding-right: 4px !important;
+  }
+
+  #cartModal .cart-row {
+    padding: 6px 8px !important;
+    gap: 8px !important;
+    font-size: 0.8rem !important;
+  }
+
+  #cartModal .cart-name {
+    font-size: 0.8rem !important;
+  }
+
+  #cartModal .cart-price {
+    font-size: 0.72rem !important;
+  }
+
+  #cartModal .cart-summary {
+    padding-top: 6px !important;
+    margin-top: 0 !important;
+    gap: 2px !important;
+    font-size: 0.82rem !important;
+  }
+
+  #cartModal .cart-total-amount {
+    font-size: 1.05rem !important;
+  }
+
+  #cartModal .cart-payment {
+    padding-top: 8px !important;
+    gap: 6px !important;
+  }
+
+  #cartModal .cart-payment .form-group {
+    margin-bottom: 0 !important;
+  }
+
+  #cartModal .cart-payment .form-group label {
+    font-size: 0.72rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  #cartModal .cart-payment input {
+    padding: 6px 10px !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+  }
+
+  #cartModal .quick-cash-chips {
+    gap: 4px !important;
+    margin-top: 4px !important;
+  }
+
+  #cartModal .cash-chip {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    min-width: 48px !important;
+    border-radius: 6px !important;
+  }
+
+  #cartModal .change-display {
+    padding: 6px 10px !important;
+    font-size: 1.05rem !important;
+    min-height: 36px !important;
+    border-radius: 8px !important;
+  }
+
+  #cartModal .cart-actions {
+    margin-top: 8px !important;
+    gap: 8px !important;
+  }
+
+  #cartModal .cart-actions .btn {
+    height: 36px !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
   }
 }
 
