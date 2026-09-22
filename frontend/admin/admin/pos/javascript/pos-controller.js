@@ -54,18 +54,26 @@
     const closeQrModalBtn = document.getElementById('closeQrModalBtn');
     const qrModal = document.getElementById('qrModal');
 
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortBy = document.getElementById('sortBy');
+
     if (searchInput) {
       searchInput.addEventListener('input', () => SalesLoad.filterProducts(state));
     }
 
-    // Handle filter tab clicks
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', () => SalesLoad.filterProducts(state));
+    }
+
+    if (sortBy) {
+      sortBy.addEventListener('change', () => SalesLoad.filterProducts(state));
+    }
+
+    // Handle filter tab clicks (backward compatibility if present)
     filterTabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        // Remove active class from all tabs
         filterTabs.forEach(t => t.classList.remove('active'));
-        // Add active class to clicked tab
         tab.classList.add('active');
-        // Filter products
         SalesLoad.filterProducts(state);
       });
     });
