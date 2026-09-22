@@ -81,27 +81,10 @@ const InventoryLoad = {
         this.updateSummaryStats();
     },
 
-    updateSummaryStats() {
-        const items = InventoryState.inventoryItems || [];
-        const totalProducts = items.length;
-        let totalStock = 0;
-        let lowStockCount = 0;
-        let outOfStockCount = 0;
-
-        items.forEach(item => {
-            const qty = Number(item.quantity) || 0;
-            totalStock += qty;
-            if (qty === 0) {
-                outOfStockCount++;
-            } else if (qty <= 5) {
-                lowStockCount++;
-            }
-        });
-
-        if (InventoryDOM.statTotalProducts) InventoryDOM.statTotalProducts.textContent = totalProducts.toLocaleString();
-        if (InventoryDOM.statTotalStock) InventoryDOM.statTotalStock.textContent = totalStock.toLocaleString();
-        if (InventoryDOM.statLowStock) InventoryDOM.statLowStock.textContent = lowStockCount.toLocaleString();
-        if (InventoryDOM.statOutStock) InventoryDOM.statOutStock.textContent = outOfStockCount.toLocaleString();
+    async updateSummaryStats() {
+        if (window.InventorySummaries?.updateSummaryStats) {
+            return await window.InventorySummaries.updateSummaryStats();
+        }
     },
 
     updatePaginationControls(totalItems) {

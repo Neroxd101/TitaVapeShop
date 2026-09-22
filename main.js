@@ -41,6 +41,7 @@ const keepAliveRoutes = require('./backend/routes/KeepAlive');
 
 // Inventory routes
 const inventoryLoadRoutes = require('./backend/routes/admin/admin/inventory/inventory_get_all');
+const inventorySummariesRoutes = require('./backend/routes/admin/admin/inventory/inventory_summaries');
 const inventoryCreateRoutes = require('./backend/routes/admin/admin/inventory/inventory_create_item');
 const inventoryUpdateRoutes = require('./backend/routes/admin/admin/inventory/inventory_update_item');
 const inventoryDeleteRoutes = require('./backend/routes/admin/admin/inventory/inventory_delete_item');
@@ -122,6 +123,7 @@ app.use('/', ordersUpdatePaymentStatusRoutes);
 app.use('/', ordersVoidRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', inventoryLoadRoutes);
+app.use('/', inventorySummariesRoutes);
 app.use('/', inventoryCreateRoutes);
 app.use('/', inventoryUpdateRoutes);
 app.use('/', inventoryDeleteRoutes);
