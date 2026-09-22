@@ -51,6 +51,22 @@ class OrdersController {
         this.init();
     }
 
+    get activeKpi() {
+        return window.OrdersFilter?.activeKpi || null;
+    }
+
+    set activeKpi(val) {
+        if (window.OrdersFilter) {
+            window.OrdersFilter.activeKpi = val;
+        }
+    }
+
+    async refreshKPIs() {
+        if (window.OrdersSummaries?.updateKPIs) {
+            await window.OrdersSummaries.updateKPIs(this.elements);
+        }
+    }
+
     async init() {
         // Check authentication
         const user = localStorage.getItem('user');
@@ -72,6 +88,11 @@ class OrdersController {
     }
 
     async loadOrderDetailsModal() {
+        if (window.OrdersViewModal?.loadModal) {
+            await window.OrdersViewModal.loadModal();
+            return;
+        }
+
         const container = document.getElementById('order-details-modal-container');
         if (!container) return;
 
@@ -86,348 +107,14 @@ class OrdersController {
     }
 
     setupModalEventListeners() {
-        const orderDetailsModal = document.getElementById('orderDetailsModal');
-        const closeOrderDetailsModal = document.getElementById('closeOrderDetailsModal');
-
-        if (closeOrderDetailsModal) {
-            closeOrderDetailsModal.addEventListener('click', () => {
-                if (orderDetailsModal) {
-                    orderDetailsModal.classList.remove('show');
-                }
-            });
+        if (window.OrdersViewModal?.init) {
+            window.OrdersViewModal.init(this);
         }
-
-        if (orderDetailsModal) {
-            orderDetailsModal.addEventListener('click', (e) => {
-                if (e.target === orderDetailsModal) {
-                    orderDetailsModal.classList.remove('show');
-                }
-            });
+        if (window.OrdersModals?.init) {
+            window.OrdersModals.init(this);
         }
-
-        // Confirm Order Modal
-        const confirmOrderModal = document.getElementById('confirmOrderModal');
-        const closeConfirmOrderModal = document.getElementById('closeConfirmOrderModal');
-        const cancelConfirmOrderBtn = document.getElementById('cancelConfirmOrderBtn');
-        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
-
-        if (closeConfirmOrderModal) {
-            closeConfirmOrderModal.addEventListener('click', () => {
-                if (confirmOrderModal) {
-                    confirmOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        if (cancelConfirmOrderBtn) {
-            cancelConfirmOrderBtn.addEventListener('click', () => {
-                if (confirmOrderModal) {
-                    confirmOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        if (confirmOrderBtn) {
-            confirmOrderBtn.addEventListener('click', () => {
-                if (this.pendingOrderId) {
-                    this.executeConfirmOrder(this.pendingOrderId);
-                }
-            });
-        }
-
-        if (confirmOrderModal) {
-            confirmOrderModal.addEventListener('click', (e) => {
-                if (e.target === confirmOrderModal) {
-                    confirmOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        // Cancel Order Modal
-        const cancelOrderModal = document.getElementById('cancelOrderModal');
-        const closeCancelOrderModal = document.getElementById('closeCancelOrderModal');
-        const cancelCancelOrderBtn = document.getElementById('cancelCancelOrderBtn');
-        const confirmCancelOrderBtn = document.getElementById('confirmCancelOrderBtn');
-
-        if (closeCancelOrderModal) {
-            closeCancelOrderModal.addEventListener('click', () => {
-                if (cancelOrderModal) {
-                    cancelOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        if (cancelCancelOrderBtn) {
-            cancelCancelOrderBtn.addEventListener('click', () => {
-                if (cancelOrderModal) {
-                    cancelOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        if (confirmCancelOrderBtn) {
-            confirmCancelOrderBtn.addEventListener('click', () => {
-                if (this.pendingOrderId) {
-                    this.executeCancelOrder(this.pendingOrderId);
-                }
-            });
-        }
-
-        if (cancelOrderModal) {
-            cancelOrderModal.addEventListener('click', (e) => {
-                if (e.target === cancelOrderModal) {
-                    cancelOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        // Complete Order Modal
-        const completeOrderModal = document.getElementById('completeOrderModal');
-        const closeCompleteOrderModal = document.getElementById('closeCompleteOrderModal');
-        const cancelCompleteOrderBtn = document.getElementById('cancelCompleteOrderBtn');
-        const confirmCompleteOrderBtn = document.getElementById('confirmCompleteOrderBtn');
-
-        if (closeCompleteOrderModal) {
-            closeCompleteOrderModal.addEventListener('click', () => {
-                if (completeOrderModal) {
-                    completeOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        if (cancelCompleteOrderBtn) {
-            cancelCompleteOrderBtn.addEventListener('click', () => {
-                if (completeOrderModal) {
-                    completeOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        if (confirmCompleteOrderBtn) {
-            confirmCompleteOrderBtn.addEventListener('click', () => {
-                if (this.pendingOrderId) {
-                    this.executeCompleteOrder(this.pendingOrderId);
-                }
-            });
-        }
-
-        if (completeOrderModal) {
-            completeOrderModal.addEventListener('click', (e) => {
-                if (e.target === completeOrderModal) {
-                    completeOrderModal.classList.remove('show');
-                    this.pendingOrderId = null;
-                }
-            });
-        }
-
-        // Confirm Verify Payment Modal (Mark Paid)
-        const confirmVerifyPaymentModal = document.getElementById('confirmVerifyPaymentModal');
-        const closeVerifyPaymentModal = document.getElementById('closeVerifyPaymentModal');
-        const cancelVerifyPaymentBtn = document.getElementById('cancelVerifyPaymentBtn');
-        const confirmVerifyPaymentBtn = document.getElementById('confirmVerifyPaymentBtn');
-
-        if (closeVerifyPaymentModal) {
-            closeVerifyPaymentModal.addEventListener('click', () => {
-                if (confirmVerifyPaymentModal) confirmVerifyPaymentModal.classList.remove('show');
-                this.pendingPaymentAction = null;
-            });
-        }
-        if (cancelVerifyPaymentBtn) {
-            cancelVerifyPaymentBtn.addEventListener('click', () => {
-                if (confirmVerifyPaymentModal) confirmVerifyPaymentModal.classList.remove('show');
-                this.pendingPaymentAction = null;
-            });
-        }
-        if (confirmVerifyPaymentBtn) {
-            confirmVerifyPaymentBtn.addEventListener('click', () => {
-                if (this.pendingPaymentAction) {
-                    const { orderId, paymentStatus } = this.pendingPaymentAction;
-                    const reasonInput = document.getElementById('verifyPaymentReason');
-                    const reason = reasonInput?.value.trim() || '';
-                    if (!reason || reason.length > 1000) {
-                        alert('Enter a reason of 1–1000 characters.');
-                        reasonInput?.focus();
-                        return;
-                    }
-                    if (confirmVerifyPaymentModal) confirmVerifyPaymentModal.classList.remove('show');
-                    this.executeVerifyPayment(orderId, paymentStatus, reason);
-                }
-            });
-        }
-        if (confirmVerifyPaymentModal) {
-            confirmVerifyPaymentModal.addEventListener('click', (e) => {
-                if (e.target === confirmVerifyPaymentModal) {
-                    confirmVerifyPaymentModal.classList.remove('show');
-                    this.pendingPaymentAction = null;
-                }
-            });
-        }
-
-        // Confirm Mark Unpaid / Reject Proof Modal
-        const confirmMarkUnpaidModal = document.getElementById('confirmMarkUnpaidModal');
-        const closeMarkUnpaidModal = document.getElementById('closeMarkUnpaidModal');
-        const cancelMarkUnpaidBtn = document.getElementById('cancelMarkUnpaidBtn');
-        const confirmMarkUnpaidBtn = document.getElementById('confirmMarkUnpaidBtn');
-
-        if (closeMarkUnpaidModal) {
-            closeMarkUnpaidModal.addEventListener('click', () => {
-                if (confirmMarkUnpaidModal) confirmMarkUnpaidModal.classList.remove('show');
-                this.pendingPaymentAction = null;
-            });
-        }
-        if (cancelMarkUnpaidBtn) {
-            cancelMarkUnpaidBtn.addEventListener('click', () => {
-                if (confirmMarkUnpaidModal) confirmMarkUnpaidModal.classList.remove('show');
-                this.pendingPaymentAction = null;
-            });
-        }
-        if (confirmMarkUnpaidBtn) {
-            confirmMarkUnpaidBtn.addEventListener('click', () => {
-                if (this.pendingPaymentAction) {
-                    const { orderId, paymentStatus } = this.pendingPaymentAction;
-                    const reasonInput = document.getElementById('markUnpaidReason');
-                    const reason = reasonInput?.value.trim() || '';
-                    if (!reason || reason.length > 1000) {
-                        alert('Enter a reason of 1–1000 characters.');
-                        reasonInput?.focus();
-                        return;
-                    }
-                    if (confirmMarkUnpaidModal) confirmMarkUnpaidModal.classList.remove('show');
-                    this.executeVerifyPayment(orderId, paymentStatus, reason);
-                }
-            });
-        }
-        if (confirmMarkUnpaidModal) {
-            confirmMarkUnpaidModal.addEventListener('click', (e) => {
-                if (e.target === confirmMarkUnpaidModal) {
-                    confirmMarkUnpaidModal.classList.remove('show');
-                    this.pendingPaymentAction = null;
-                }
-            });
-        }
-
-        // Order Confirmed Success Modal
-        const orderConfirmedSuccessModal = document.getElementById('orderConfirmedSuccessModal');
-        const closeOrderConfirmedSuccessModal = document.getElementById('closeOrderConfirmedSuccessModal');
-        const closeOrderConfirmedSuccessBtn = document.getElementById('closeOrderConfirmedSuccessBtn');
-
-        if (closeOrderConfirmedSuccessModal) {
-            closeOrderConfirmedSuccessModal.addEventListener('click', () => {
-                if (orderConfirmedSuccessModal) {
-                    orderConfirmedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (closeOrderConfirmedSuccessBtn) {
-            closeOrderConfirmedSuccessBtn.addEventListener('click', () => {
-                if (orderConfirmedSuccessModal) {
-                    orderConfirmedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (orderConfirmedSuccessModal) {
-            orderConfirmedSuccessModal.addEventListener('click', (e) => {
-                if (e.target === orderConfirmedSuccessModal) {
-                    orderConfirmedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        // Order Completed Success Modal
-        const orderCompletedSuccessModal = document.getElementById('orderCompletedSuccessModal');
-        const closeOrderCompletedSuccessModal = document.getElementById('closeOrderCompletedSuccessModal');
-        const closeOrderCompletedSuccessBtn = document.getElementById('closeOrderCompletedSuccessBtn');
-
-        if (closeOrderCompletedSuccessModal) {
-            closeOrderCompletedSuccessModal.addEventListener('click', () => {
-                if (orderCompletedSuccessModal) {
-                    orderCompletedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (closeOrderCompletedSuccessBtn) {
-            closeOrderCompletedSuccessBtn.addEventListener('click', () => {
-                if (orderCompletedSuccessModal) {
-                    orderCompletedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (orderCompletedSuccessModal) {
-            orderCompletedSuccessModal.addEventListener('click', (e) => {
-                if (e.target === orderCompletedSuccessModal) {
-                    orderCompletedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        // Order Voided Success Modal
-        const orderVoidedSuccessModal = document.getElementById('orderVoidedSuccessModal');
-        const closeOrderVoidedSuccessModal = document.getElementById('closeOrderVoidedSuccessModal');
-        const closeOrderVoidedSuccessBtn = document.getElementById('closeOrderVoidedSuccessBtn');
-
-        if (closeOrderVoidedSuccessModal) {
-            closeOrderVoidedSuccessModal.addEventListener('click', () => {
-                if (orderVoidedSuccessModal) {
-                    orderVoidedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (closeOrderVoidedSuccessBtn) {
-            closeOrderVoidedSuccessBtn.addEventListener('click', () => {
-                if (orderVoidedSuccessModal) {
-                    orderVoidedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (orderVoidedSuccessModal) {
-            orderVoidedSuccessModal.addEventListener('click', (e) => {
-                if (e.target === orderVoidedSuccessModal) {
-                    orderVoidedSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        // Order Cancelled Success Modal
-        const orderCancelledSuccessModal = document.getElementById('orderCancelledSuccessModal');
-        const closeOrderCancelledSuccessModal = document.getElementById('closeOrderCancelledSuccessModal');
-        const closeOrderCancelledSuccessBtn = document.getElementById('closeOrderCancelledSuccessBtn');
-
-        if (closeOrderCancelledSuccessModal) {
-            closeOrderCancelledSuccessModal.addEventListener('click', () => {
-                if (orderCancelledSuccessModal) {
-                    orderCancelledSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (closeOrderCancelledSuccessBtn) {
-            closeOrderCancelledSuccessBtn.addEventListener('click', () => {
-                if (orderCancelledSuccessModal) {
-                    orderCancelledSuccessModal.classList.remove('show');
-                }
-            });
-        }
-
-        if (orderCancelledSuccessModal) {
-            orderCancelledSuccessModal.addEventListener('click', (e) => {
-                if (e.target === orderCancelledSuccessModal) {
-                    orderCancelledSuccessModal.classList.remove('show');
-                }
-            });
+        if (window.OrdersQR?.init) {
+            window.OrdersQR.init(this);
         }
     }
 
@@ -448,69 +135,8 @@ class OrdersController {
             this[action](orderId);
         });
 
-        if (this.elements.orderSearchInput) {
-            this.elements.orderSearchInput.addEventListener('input', (e) => {
-                if (this.searchDebounceTimer) clearTimeout(this.searchDebounceTimer);
-                this.searchDebounceTimer = setTimeout(() => {
-                    this.state.filters.search = e.target.value.trim();
-                    this.state.filters.offset = 0;
-                    if (this.activeKpi === 'pickup' || this.activeKpi === 'delivery') {
-                        this.activeKpi = null;
-                        this.updateActiveKpiCards();
-                    }
-                    this.loadOrders();
-                }, 300);
-            });
-        }
-
-        if (this.elements.filterStatus) {
-            this.elements.filterStatus.addEventListener('change', () => {
-                this.state.filters.status = this.elements.filterStatus.value;
-                this.state.filters.offset = 0;
-                if (this.state.filters.status === 'pending') {
-                    this.activeKpi = 'pending';
-                } else if (this.state.filters.status === 'confirmed') {
-                    this.activeKpi = 'confirmed';
-                } else {
-                    this.activeKpi = null;
-                }
-                this.updateActiveKpiCards();
-                this.loadOrders();
-            });
-        }
-
-        this.syncDateHints();
-
-        const dateInputs = [this.elements.filterStartDate, this.elements.filterEndDate];
-        for (const input of dateInputs) {
-            if (!input) continue;
-            input.addEventListener('input', () => this.syncDateHints());
-            input.addEventListener('change', () => {
-                this.syncDateHints();
-                const start = this.elements.filterStartDate;
-                const end = this.elements.filterEndDate;
-                if (end) end.setCustomValidity('');
-                if (start && end && start.value && end.value && start.value > end.value) {
-                    end.setCustomValidity('End date must be on or after start date.');
-                    end.reportValidity();
-                    return;
-                }
-                this.state.filters.start_date = start && start.value ? new Date(start.value + 'T00:00:00').toISOString() : '';
-                this.state.filters.end_date = end && end.value ? new Date(end.value + 'T23:59:59.999').toISOString() : '';
-                this.state.filters.offset = 0;
-                if (this.activeKpi === 'pickup' || this.activeKpi === 'delivery') {
-                    this.activeKpi = null;
-                    this.updateActiveKpiCards();
-                }
-                this.loadOrders();
-            });
-        }
-
-        if (this.elements.resetFiltersBtn) {
-            this.elements.resetFiltersBtn.addEventListener('click', (e) => {
-                if (e) e.preventDefault();
-                this.resetFilters();
-            });
+        if (window.OrdersFilter?.init) {
+            window.OrdersFilter.init(this);
         }
 
         if (this.elements.prevPageBtn) {
@@ -530,187 +156,30 @@ class OrdersController {
                 }
             });
         }
-
-        // KPI Card click & keyboard listeners
-        const kpiBindings = [
-            { el: this.elements.kpiCardPending, action: () => this.filterByStatus('pending') },
-            { el: this.elements.kpiCardReady, action: () => this.filterByStatus('confirmed') },
-            { el: this.elements.kpiCardPickup, action: () => this.filterByOrderType('pickup') },
-            { el: this.elements.kpiCardDelivery, action: () => this.filterByOrderType('delivery') }
-        ];
-
-        kpiBindings.forEach(({ el, action }) => {
-            if (!el) return;
-            el.addEventListener('click', (e) => {
-                e.preventDefault();
-                action();
-            });
-            el.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    action();
-                }
-            });
-        });
     }
 
     filterByStatus(status) {
-        if (this.activeKpi === status) {
-            // Toggle off
-            this.activeKpi = null;
-            if (this.elements.filterStatus) this.elements.filterStatus.value = '';
-            this.state.filters.status = '';
-        } else {
-            // Switch to this KPI filter, reset others
-            this.activeKpi = status;
-            if (this.elements.filterStatus) this.elements.filterStatus.value = status;
-            this.state.filters.status = status;
-
-            // Clear search or date filters
-            if (this.elements.orderSearchInput) this.elements.orderSearchInput.value = '';
-            this.state.filters.search = '';
-            if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
-            if (this.elements.filterEndDate) this.elements.filterEndDate.value = '';
-            this.state.filters.start_date = '';
-            this.state.filters.end_date = '';
-            this.syncDateHints();
+        if (window.OrdersFilter?.filterByStatus) {
+            window.OrdersFilter.filterByStatus(status);
         }
-
-        this.state.filters.offset = 0;
-        this.updateActiveKpiCards();
-        this.loadOrders();
     }
 
     filterByOrderType(type) {
-        if (this.activeKpi === type) {
-            // Toggle off
-            this.activeKpi = null;
-        } else {
-            // Switch to this KPI filter, clear status and date filters
-            this.activeKpi = type;
-            if (this.elements.filterStatus) this.elements.filterStatus.value = '';
-            this.state.filters.status = '';
-
-            // Ensure no date restriction is applied so all orders are fetched
-            if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
-            if (this.elements.filterEndDate) this.elements.filterEndDate.value = '';
-            this.state.filters.start_date = '';
-            this.state.filters.end_date = '';
-            this.syncDateHints();
-
-            // Clear search input so it does not interfere
-            if (this.elements.orderSearchInput) this.elements.orderSearchInput.value = '';
-            this.state.filters.search = '';
+        if (window.OrdersFilter?.filterByOrderType) {
+            window.OrdersFilter.filterByOrderType(type);
         }
-
-        this.state.filters.offset = 0;
-        this.updateActiveKpiCards();
-        this.loadOrders();
     }
 
     updateActiveKpiCards() {
-        if (this.elements.kpiCardPending) {
-            this.elements.kpiCardPending.classList.toggle('is-active', this.activeKpi === 'pending');
-        }
-        if (this.elements.kpiCardReady) {
-            this.elements.kpiCardReady.classList.toggle('is-active', this.activeKpi === 'confirmed');
-        }
-        if (this.elements.kpiCardPickup) {
-            this.elements.kpiCardPickup.classList.toggle('is-active', this.activeKpi === 'pickup');
-        }
-        if (this.elements.kpiCardDelivery) {
-            this.elements.kpiCardDelivery.classList.toggle('is-active', this.activeKpi === 'delivery');
-        }
-    }
-
-    async refreshKPIs() {
-        try {
-            // Fetch the entire orders list without pagination limit to get accurate counts
-            const result = await OrdersGetAll.get({ limit: 200, offset: 0 });
-            if (!result.success || !Array.isArray(result.orders)) return;
-
-            const allOrders = result.orders;
-
-            let pendingCount = 0;
-            let readyCount = 0;
-            let pickupCount = 0;
-            let deliveryCount = 0;
-
-            allOrders.forEach(order => {
-                const status = String(order.status || '').toLowerCase().trim();
-                const type = String(order.order_type || 'pickup').toLowerCase().trim();
-
-                if (status === 'pending') {
-                    pendingCount++;
-                } else if (status === 'confirmed') {
-                    readyCount++;
-                }
-
-                if (type === 'delivery') {
-                    deliveryCount++;
-                } else {
-                    pickupCount++;
-                }
-            });
-
-            if (this.elements.kpiPendingCount) {
-                this.elements.kpiPendingCount.textContent = pendingCount;
-            }
-            if (this.elements.kpiReadyCount) {
-                this.elements.kpiReadyCount.textContent = readyCount;
-            }
-            if (this.elements.kpiPickupCount) {
-                this.elements.kpiPickupCount.textContent = pickupCount;
-            }
-            if (this.elements.kpiDeliveryCount) {
-                this.elements.kpiDeliveryCount.textContent = deliveryCount;
-            }
-
-            // Pulse effect if pending orders require action
-            if (this.elements.kpiCardPending) {
-                this.elements.kpiCardPending.classList.toggle('has-urgent', pendingCount > 0);
-            }
-        } catch (error) {
-            console.error('Error refreshing KPIs:', error);
-        }
-    }
-
-    syncDateHints() {
-        if (this.elements.filterStartDate) {
-            this.elements.filterStartDate.dataset.empty = String(!this.elements.filterStartDate.value);
-        }
-        if (this.elements.filterEndDate) {
-            this.elements.filterEndDate.dataset.empty = String(!this.elements.filterEndDate.value);
+        if (window.OrdersFilter?.updateActiveKpiCards) {
+            window.OrdersFilter.updateActiveKpiCards();
         }
     }
 
     resetFilters() {
-        if (this.searchDebounceTimer) {
-            clearTimeout(this.searchDebounceTimer);
-            this.searchDebounceTimer = null;
+        if (window.OrdersFilter?.resetFilters) {
+            window.OrdersFilter.resetFilters();
         }
-
-        if (this.elements.orderSearchInput) this.elements.orderSearchInput.value = '';
-        if (this.elements.filterStatus) this.elements.filterStatus.value = '';
-        if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
-        if (this.elements.filterEndDate) {
-            this.elements.filterEndDate.value = '';
-            this.elements.filterEndDate.setCustomValidity('');
-        }
-        this.syncDateHints();
-
-        this.state.filters = {
-            status: '',
-            search: '',
-            start_date: '',
-            end_date: '',
-            limit: 20,
-            offset: 0
-        };
-
-        this.activeKpi = null;
-        this.updateActiveKpiCards();
-        this.loadOrders();
     }
 
     async loadOrders() {
@@ -905,414 +374,39 @@ class OrdersController {
     }
 
     confirmOrder(orderId) {
-        this.pendingOrderId = orderId;
-        const modal = document.getElementById('confirmOrderModal');
-        if (modal) {
-            modal.classList.add('show');
-        }
-    }
-
-    async executeConfirmOrder(orderId) {
-        const modal = document.getElementById('confirmOrderModal');
-        if (modal) {
-            modal.classList.remove('show');
-        }
-
-        try {
-            const result = await window.OrdersUpdateStatus.updateStatus({
-                    order_id: orderId,
-                    status: 'confirmed'
-                });
-
-            if (result.success) {
-                // Show success modal
-                const successModal = document.getElementById('orderConfirmedSuccessModal');
-                if (successModal) {
-                    successModal.classList.add('show');
-                }
-                this.loadOrders();
-            } else {
-                alert('Failed to confirm order: ' + (result.error || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error confirming order:', error);
-            alert('Error confirming order. Please try again.');
-        } finally {
-            this.pendingOrderId = null;
+        if (window.OrdersModals?.confirmOrder) {
+            window.OrdersModals.confirmOrder(orderId);
         }
     }
 
     scanCustomerQR(orderId) {
-        // Store the order ID for validation
-        this.scanningOrderId = orderId;
-        
-        // Open QR scanner modal
-        const qrModal = document.getElementById('qrScannerModal');
-        if (qrModal) {
-            qrModal.classList.add('show');
-            this.startQRScanner();
-        }
-    }
-
-    async startQRScanner() {
-        if (this.qrScanner && this.qrScanning) return;
-
-        if (typeof Html5Qrcode === 'undefined') {
-            alert('QR scanner library not loaded. Please check your internet connection.');
-            return;
-        }
-
-        try {
-            this.qrScanner = new Html5Qrcode('qrScanner');
-            await this.qrScanner.start(
-                { facingMode: 'environment' },
-                { fps: 10, qrbox: 250 },
-                (decodedText) => {
-                    this.handleQRScanned(decodedText);
-                },
-                (errorMessage) => {
-                    // Ignore scan errors, they happen frequently while searching
-                }
-            );
-            this.qrScanning = true;
-        } catch (err) {
-            console.error('Error starting QR scanner:', err);
-            alert('Unable to access camera for QR scanning.');
-            await this.stopQRScanner();
-        }
-    }
-
-    async stopQRScanner() {
-        if (!this.qrScanner || !this.qrScanning) return;
-
-        try {
-            await this.qrScanner.stop();
-            await this.qrScanner.clear();
-        } catch (err) {
-            console.error('Error stopping QR scanner:', err);
-        } finally {
-            this.qrScanner = null;
-            this.qrScanning = false;
-        }
-    }
-
-    async handleQRScanned(decodedText) {
-        if (!decodedText || !this.scanningOrderId) return;
-
-        // Stop scanning immediately
-        await this.stopQRScanner();
-
-        // Close modal
-        const qrModal = document.getElementById('qrScannerModal');
-        if (qrModal) {
-            qrModal.classList.remove('show');
-        }
-
-        // Validate scanned QR code matches the order ID
-        const scannedOrderId = decodedText.trim();
-        
-        if (scannedOrderId === this.scanningOrderId) {
-            // QR code matches - show complete modal
-            this.completeOrder(this.scanningOrderId);
-        } else {
-            alert('QR code does not match this order. Please scan the correct QR code.');
-            this.scanningOrderId = null;
+        if (window.OrdersQR?.scanCustomerQR) {
+            window.OrdersQR.scanCustomerQR(orderId);
         }
     }
 
     completeOrder(orderId) {
-        this.pendingOrderId = orderId;
-        const modal = document.getElementById('completeOrderModal');
-        if (modal) {
-            modal.classList.add('show');
-        }
-    }
-
-    async executeCompleteOrder(orderId) {
-        const modal = document.getElementById('completeOrderModal');
-        if (modal) {
-            modal.classList.remove('show');
-        }
-
-        try {
-            const result = await window.OrdersUpdateStatus.updateStatus({
-                    order_id: orderId,
-                    status: 'completed'
-                });
-
-            if (result.success) {
-                const successModal = document.getElementById('orderCompletedSuccessModal');
-                if (successModal) {
-                    successModal.classList.add('show');
-                }
-                this.loadOrders();
-            } else {
-                alert('Failed to complete order: ' + (result.error || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error completing order:', error);
-            alert('Error completing order. Please try again.');
-        } finally {
-            this.pendingOrderId = null;
+        if (window.OrdersModals?.completeOrder) {
+            window.OrdersModals.completeOrder(orderId);
         }
     }
 
     voidOrder(orderId) {
-        const modal = document.getElementById('voidOrderModal');
-        const form = document.getElementById('voidOrderForm');
-        const button = document.getElementById('submitVoidOrder');
-        const errorBox = document.getElementById('voidOrderError');
-        const reasonInput = document.getElementById('voidReason');
-        const charCount = document.getElementById('voidReasonCharCount');
-        const closeBtn = document.getElementById('closeVoidOrderModal');
-        const dismissBtn = document.getElementById('dismissVoidOrder');
-
-        if (button.disabled) return;
-        form.reset();
-        errorBox.textContent = '';
-        if (charCount) charCount.textContent = '0 / 1000';
-        modal.classList.add('show');
-        if (reasonInput) reasonInput.focus();
-
-        const closeModal = () => {
-            if (!button.disabled) modal.classList.remove('show');
-        };
-
-        if (dismissBtn) dismissBtn.onclick = closeModal;
-        if (closeBtn) closeBtn.onclick = closeModal;
-        modal.onclick = (e) => {
-            if (e.target === modal) closeModal();
-        };
-
-        if (reasonInput) {
-            reasonInput.oninput = () => {
-                if (charCount) {
-                    charCount.textContent = `${reasonInput.value.length} / 1000`;
-                }
-                if (errorBox.textContent) {
-                    errorBox.textContent = '';
-                }
-            };
+        if (window.OrdersModals?.voidOrder) {
+            window.OrdersModals.voidOrder(orderId);
         }
-
-        form.onsubmit = async (event) => {
-            event.preventDefault();
-            if (button.disabled) return;
-            const reason = reasonInput ? reasonInput.value.trim() : '';
-            if (!reason || reason.length > 1000) {
-                errorBox.textContent = 'Please enter a reason for voiding (1–1000 characters).';
-                if (reasonInput) reasonInput.focus();
-                return;
-            }
-            button.disabled = true;
-            errorBox.textContent = '';
-            try {
-                const result = await window.OrdersVoid.voidOrder(orderId, reason);
-
-                if (!result || !result.success) throw new Error(result?.error || 'Unable to void order.');
-                modal.classList.remove('show');
-                await this.loadOrders();
-                const voidedModal = document.getElementById('orderVoidedSuccessModal');
-                if (voidedModal) {
-                    voidedModal.classList.add('show');
-                }
-            } catch (error) {
-                errorBox.textContent = error.message || 'Unable to void order. Please try again.';
-            } finally {
-                button.disabled = false;
-            }
-        };
     }
 
     cancelOrder(orderId) {
-        this.pendingOrderId = orderId;
-        const modal = document.getElementById('cancelOrderModal');
-        if (modal) {
-            modal.classList.add('show');
-        }
-    }
-
-    async executeCancelOrder(orderId) {
-        const modal = document.getElementById('cancelOrderModal');
-        if (modal) {
-            modal.classList.remove('show');
-        }
-
-        try {
-            const result = await window.OrdersUpdateStatus.updateStatus({
-                    order_id: orderId,
-                    status: 'cancelled'
-                });
-
-            if (result.success) {
-                const successModal = document.getElementById('orderCancelledSuccessModal');
-                if (successModal) {
-                    successModal.classList.add('show');
-                }
-                this.loadOrders();
-            } else {
-                alert('Failed to cancel order: ' + (result.error || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error cancelling order:', error);
-            alert('Error cancelling order. Please try again.');
-        } finally {
-            this.pendingOrderId = null;
+        if (window.OrdersModals?.cancelOrder) {
+            window.OrdersModals.cancelOrder(orderId);
         }
     }
 
     viewOrder(orderId) {
-        const order = this.state.orders.find(o => o.id === orderId);
-        if (!order) return;
-
-        const modal = document.getElementById('orderDetailsModal');
-        const content = document.getElementById('orderDetailsContent');
-        if (!modal || !content) return;
-
-        // Render order details
-        const itemsHtml = Array.isArray(order.items) ? order.items.map(item => `
-            <div class="order-item-row">
-                <div class="order-item-info">
-                    <strong>${this.escapeHtml(item.name || 'Item')}</strong>
-                    <span class="order-item-category">${this.escapeHtml(item.category || '')}</span>
-                </div>
-                <div class="order-item-qty">${item.quantity}x</div>
-                <div class="order-item-price">₱${parseFloat(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                <div class="order-item-subtotal">₱${(parseFloat(item.price || 0) * parseInt(item.quantity || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-            </div>
-        `).join('') : '<p>No items</p>';
-
-        // Display order type based on customer's selection
-        // Normalize order_type to lowercase for comparison
-        const orderType = order.order_type ? String(order.order_type).toLowerCase().trim() : null;
-        
-        let orderTypeLabel;
-        let showQrCode;
-        if (orderType === 'pickup') {
-            orderTypeLabel = 'Pickup';
-            showQrCode = true;
-        } else if (orderType === 'delivery') {
-            orderTypeLabel = 'Delivery (3rd Party)';
-            showQrCode = false;
-        } else {
-            // Fallback for orders without order_type (legacy orders)
-            console.warn('Order details - missing or invalid order_type:', {
-                orderId: order.id,
-                order_type: order.order_type
-            });
-            orderTypeLabel = 'Pickup';
-            showQrCode = true;
+        if (window.OrdersViewModal?.viewOrder) {
+            window.OrdersViewModal.viewOrder(orderId);
         }
-
-        const isDelivery = orderType === 'delivery';
-        const paymentStatus = order.payment_status || 'unpaid';
-
-        if (isDelivery) {
-            const hasReceipt = Boolean(order.payment_receipt_url);
-            content.innerHTML = `
-                <div class="order-details">
-                    <div class="order-details-delivery-header ${hasReceipt ? '' : 'no-receipt'}">
-                        <div class="order-details-info-combined">
-                            <div class="order-details-info order-details-info-col">
-                                <h4>Order Information</h4>
-                                <p><strong>Order ID:</strong> <code>${order.id}</code></p>
-                                <p><strong>Customer:</strong> ${this.escapeHtml(order.customer_name)}</p>
-                                <p><strong>Contact:</strong> ${this.escapeHtml(order.contact_number)}</p>
-                                <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
-                                <p><strong>Status:</strong> ${this.getStatusBadge(order.status)}</p>
-                                <p><strong>Date:</strong> ${this.formatDate(order.created_at)}</p>
-                            </div>
-                            <div class="order-details-info order-details-info-col">
-                                <h4>Payment Information</h4>
-                                <p><strong>Payment Method:</strong> GCash / InstaPay</p>
-                                <p><strong>Payment Status:</strong> ${this.getPaymentBadge(paymentStatus)}</p>
-                                <p class="payment-reference-row"><strong>Reference No:</strong> ${order.payment_reference ? `<code class="payment-reference-value">${this.escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
-                                ${paymentStatus === 'pending_verification' && Boolean(order.payment_reference || order.payment_receipt_url) ? `
-                                    <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                                        <button type="button" class="btn btn-small btn-success" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="paid">
-                                            ✓ Mark Paid
-                                        </button>
-                                        <button type="button" class="btn btn-small btn-danger" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="rejected">
-                                            ✕ Reject Proof
-                                        </button>
-                                    </div>
-                                ` : paymentStatus === 'rejected' ? `
-                                    <div style="margin-top: 12px;">
-                                        <small class="text-muted" style="display: block; font-size: 11px; color: var(--error);">Proof rejected. Waiting for customer to re-upload new payment proof.</small>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                        ${hasReceipt ? `
-                        <div class="order-details-receipt-col">
-                            <h4 style="margin: 0 0 16px 0; font-size: 18px; color: var(--text-primary);">Receipt Proof</h4>
-                            <a href="${this.escapeHtml(order.payment_receipt_url)}" target="_blank" rel="noopener noreferrer" class="receipt-proof-link">
-                                <img src="${this.escapeHtml(order.payment_receipt_url)}" alt="Payment Receipt" class="receipt-proof-img" />
-                            </a>
-                            <small class="receipt-proof-hint">Click to view full receipt ↗</small>
-                        </div>
-                        ` : ''}
-                    </div>
-                    <div class="order-items-section" style="margin-top: 24px;">
-                        <h4>Order Items</h4>
-                        <div class="order-items-list">
-                            ${itemsHtml}
-                        </div>
-                        <div class="order-total-section">
-                            <strong>Total: ₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            content.innerHTML = `
-                <div class="order-details">
-                    <div class="order-details-header">
-                        <div class="order-details-info">
-                            <h4>Order Information</h4>
-                            <p><strong>Order ID:</strong> <code>${order.id}</code></p>
-                            <p><strong>Customer:</strong> ${this.escapeHtml(order.customer_name)}</p>
-                            <p><strong>Contact:</strong> ${this.escapeHtml(order.contact_number)}</p>
-                            <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
-                            <p><strong>Status:</strong> ${this.getStatusBadge(order.status)}</p>
-                            <p><strong>Date:</strong> ${this.formatDate(order.created_at)}</p>
-                        </div>
-                        <div class="order-qr-section">
-                            <h4>Order QR Code</h4>
-                            <div id="orderQrCodeDisplay" class="qr-code-display"></div>
-                            <p class="qr-hint">Customer can show this QR code</p>
-                        </div>
-                    </div>
-                    <div class="order-items-section">
-                        <h4>Order Items</h4>
-                        <div class="order-items-list">
-                            ${itemsHtml}
-                        </div>
-                        <div class="order-total-section">
-                            <strong>Total: ₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Generate QR code only for pickup orders
-        if (showQrCode) {
-            const qrContainer = document.getElementById('orderQrCodeDisplay');
-            if (qrContainer && typeof QRCode !== 'undefined') {
-                qrContainer.innerHTML = '';
-                new QRCode(qrContainer, {
-                    text: order.id,
-                    width: 200,
-                    height: 200,
-                    colorDark: '#000000',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            }
-        }
-
-        modal.classList.add('show');
     }
 
     updatePagination() {
@@ -1333,68 +427,8 @@ class OrdersController {
     }
 
     verifyPayment(orderId, paymentStatus) {
-        this.pendingPaymentAction = { orderId, paymentStatus };
-        const reasonInput = document.getElementById(paymentStatus === 'paid' ? 'verifyPaymentReason' : 'markUnpaidReason');
-        if (reasonInput) reasonInput.value = '';
-
-        if (paymentStatus === 'paid') {
-            const modal = document.getElementById('confirmVerifyPaymentModal');
-            if (modal) {
-                modal.classList.add('show');
-            } else {
-                alert('Payment confirmation dialog is unavailable.');
-            }
-        } else {
-            const modal = document.getElementById('confirmMarkUnpaidModal');
-            const titleEl = document.getElementById('markUnpaidModalTitle');
-            const msgEl = document.getElementById('markUnpaidModalMessage');
-            const subtextEl = document.getElementById('markUnpaidModalSubtext');
-
-            if (titleEl && msgEl && subtextEl) {
-                if (paymentStatus === 'rejected') {
-                    titleEl.textContent = 'Reject Payment Proof';
-                    msgEl.textContent = 'Are you sure you want to reject this payment receipt?';
-                    subtextEl.textContent = 'The customer will need to re-upload a valid proof of payment.';
-                } else {
-                    titleEl.textContent = 'Mark Payment as Unpaid';
-                    msgEl.textContent = 'Mark this order payment as unpaid?';
-                    subtextEl.textContent = 'The order payment status will be updated to unpaid.';
-                }
-            }
-
-            if (modal) {
-                modal.classList.add('show');
-            } else {
-                alert('Payment confirmation dialog is unavailable.');
-            }
-        }
-    }
-
-    async executeVerifyPayment(orderId, paymentStatus, reason) {
-        try {
-            const result = await window.OrdersUpdatePaymentStatus.update({
-                    order_id: orderId,
-                    payment_status: paymentStatus,
-                    reason
-                });
-            if (result.success) {
-                // Update local order data
-                const existing = this.state.orders.find(o => o.id === orderId);
-                if (existing) {
-                    existing.payment_status = paymentStatus;
-                    existing.payment_status_reason = reason;
-                }
-                this.renderOrders();
-                // Refresh modal details
-                this.viewOrder(orderId);
-            } else {
-                alert('Failed to update payment status: ' + (result.error || 'Unknown error'));
-            }
-        } catch (err) {
-            console.error('Error updating payment status:', err);
-            alert('Error updating payment status. Please try again.');
-        } finally {
-            this.pendingPaymentAction = null;
+        if (window.OrdersModals?.verifyPayment) {
+            window.OrdersModals.verifyPayment(orderId, paymentStatus);
         }
     }
 
@@ -1467,32 +501,5 @@ OrdersController.resetFilters = function() {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     window.ordersController = new OrdersController();
-
-    // QR Scanner Modal event listeners
-    const qrScannerModal = document.getElementById('qrScannerModal');
-    const closeQrScannerModal = document.getElementById('closeQrScannerModal');
-
-    if (closeQrScannerModal) {
-        closeQrScannerModal.addEventListener('click', async () => {
-            if (window.ordersController) {
-                await window.ordersController.stopQRScanner();
-                window.ordersController.scanningOrderId = null;
-            }
-            if (qrScannerModal) {
-                qrScannerModal.classList.remove('show');
-            }
-        });
-    }
-
-    if (qrScannerModal) {
-        qrScannerModal.addEventListener('click', async (e) => {
-            if (e.target === qrScannerModal) {
-                if (window.ordersController) {
-                    await window.ordersController.stopQRScanner();
-                    window.ordersController.scanningOrderId = null;
-                }
-                qrScannerModal.classList.remove('show');
-            }
-        });
-    }
 });
+

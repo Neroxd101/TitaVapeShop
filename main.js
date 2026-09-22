@@ -75,6 +75,7 @@ const analyticsModalGrossSalesRoutes = require('./backend/routes/admin/admin/ana
 
 // Orders routes
 const ordersControllerRoutes = require('./backend/routes/admin/admin/orders/orders_controller');
+const ordersSummariesRoutes = require('./backend/routes/admin/admin/orders/orders_summaries');
 const ordersGetAllRoutes = require('./backend/routes/admin/admin/orders/orders_get_all');
 const ordersUpdateStatusRoutes = require('./backend/routes/admin/admin/orders/orders_update_status');
 const ordersUpdatePaymentStatusRoutes = require('./backend/routes/admin/admin/orders/orders_update_payment_status');
@@ -118,6 +119,7 @@ app.use('/', userProfileRoutes); // User profile management (authenticated)
 app.use('/', adminLoginRoutes);
 // Register orders routes early to avoid conflicts with other routes
 app.use('/', ordersControllerRoutes);
+app.use('/', ordersSummariesRoutes);
 app.use('/', ordersGetAllRoutes);
 app.use('/', ordersUpdateStatusRoutes);
 app.use('/', ordersUpdatePaymentStatusRoutes);
