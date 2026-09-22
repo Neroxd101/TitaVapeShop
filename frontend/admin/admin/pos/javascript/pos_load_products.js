@@ -218,11 +218,62 @@ const SalesLoad = {
             addBtn.disabled = true;
         }
 
+        card.setAttribute('data-product-id', item.id);
+        const cardAddBtn = addBtn;
+
         addBtn.addEventListener('click', () => {
-            if (availableQty <= 0) return;
+            if (cardAddBtn.disabled) return;
+            const currentCartItem = state.cart.find(c => c.id === item.id);
+            const currentCartQty = currentCartItem ? currentCartItem.qty : 0;
+            const currentAvail = Math.max(0, (item.quantity || 0) - currentCartQty);
+            if (currentAvail <= 0) return;
+
             const parsed = parseInt(qtyInput.value, 10);
-            const qtyToAdd = Math.min(availableQty, Math.max(1, isNaN(parsed) ? 1 : parsed));
+            const qtyToAdd = Math.min(currentAvail, Math.max(1, isNaN(parsed) ? 1 : parsed));
+
+            // Visual feedback on button (matches catalog animation)
+            cardAddBtn.classList.add('btn-added');
+            cardAddBtn.disabled = true;
+            cardAddBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                <span>Added!</span>
+            `;
+
+            // Floating +qty badge
+            if (SalesCart && SalesCart.showFloatingBadge) {
+                SalesCart.showFloatingBadge(cardAddBtn, `+${qtyToAdd}`);
+            }
+
+            // Perform cart addition & state update
             SalesCart.addToCart(state, item, qtyToAdd);
+
+            // Revert button after 1000ms, identical to catalog.js
+            setTimeout(() => {
+                cardAddBtn.classList.remove('btn-added');
+                const postCartItem = state.cart.find(c => c.id === item.id);
+                const postCartQty = postCartItem ? postCartItem.qty : 0;
+                const postAvail = Math.max(0, (item.quantity || 0) - postCartQty);
+
+                if (postAvail > 0) {
+                    cardAddBtn.disabled = false;
+                    cardAddBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                        </svg>
+                        <span>Add</span>
+                    `;
+                } else {
+                    cardAddBtn.disabled = true;
+                    cardAddBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                        </svg>
+                        <span>Add</span>
+                    `;
+                }
+            }, 1000);
         });
 
         actions.appendChild(qtyInput);
@@ -237,6 +288,50 @@ const SalesLoad = {
         card.appendChild(body);
 
         return card;
+    },
+
+    updateProductCardStock(state, productId) {
+        const card = document.querySelector(`.pos-card[data-product-id="${productId}"]`);
+        if (!card) return;
+
+        const product = state.products.find(p => p.id === productId);
+        if (!product) return;
+
+        const totalQty = product.quantity || 0;
+        const cartItem = state.cart.find(c => c.id === productId);
+        const cartQty = cartItem ? cartItem.qty : 0;
+        const availableQty = Math.max(0, totalQty - cartQty);
+
+        // Update stock pill text and classes
+        const stockEl = card.querySelector('.pos-card-stock');
+        if (stockEl) {
+            stockEl.textContent = `Stock: ${availableQty}`;
+            stockEl.classList.remove('out', 'low');
+            if (availableQty <= 0) stockEl.classList.add('out');
+            else if (availableQty <= 3) stockEl.classList.add('low');
+        }
+
+        // Update quantity input
+        const qtyInput = card.querySelector('.product-qty-input');
+        if (qtyInput) {
+            if (availableQty <= 0) {
+                qtyInput.min = '0';
+                qtyInput.max = '0';
+                qtyInput.value = '0';
+                qtyInput.disabled = true;
+            } else {
+                qtyInput.min = '1';
+                qtyInput.max = String(availableQty);
+                qtyInput.value = '1';
+                qtyInput.disabled = false;
+            }
+        }
+
+        // Update button disabled state if not in middle of .btn-added animation
+        const addBtn = card.querySelector('.product-add-btn');
+        if (addBtn && !addBtn.classList.contains('btn-added')) {
+            addBtn.disabled = availableQty <= 0;
+        }
     },
 
     renderSkeletons() {

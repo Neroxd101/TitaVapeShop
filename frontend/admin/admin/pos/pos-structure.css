@@ -74,7 +74,7 @@
   justify-content: center;
   padding: 4px 6px;
   border-radius: 999px;
-  border: none;
+  border: 1px solid transparent;
   background: var(--accent);
   color: #000;
   font-size: 0.72rem;
@@ -85,6 +85,66 @@
   gap: 3px;
   box-sizing: border-box;
   white-space: nowrap;
+  position: relative;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.25s ease;
+}
+
+.product-add-btn:active {
+  transform: scale(0.94);
+}
+
+.product-add-btn.btn-added {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.45) !important;
+  animation: btnAddedPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes btnAddedPop {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Cart Floating "+Qty" micro-animation */
+.cart-floating-plus {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow, rgba(0, 245, 160, 0.5)), 0 2px 4px rgba(0, 0, 0, 0.8);
+  user-select: none;
+  animation: floatingPlusAnim 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes floatingPlusAnim {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(0.7);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-50%, -24px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -46px) scale(0.9);
+  }
+}
+
+/* Checkout Button Badge Bounce */
+@keyframes checkoutBadgePop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); box-shadow: 0 0 12px var(--accent); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+.checkout-badge.badge-pop {
+  animation: checkoutBadgePop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .product-add-btn:disabled {

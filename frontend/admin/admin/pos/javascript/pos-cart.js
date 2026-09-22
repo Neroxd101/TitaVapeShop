@@ -81,7 +81,7 @@ const SalesCart = {
         }
 
         this.updateCartUI(state);
-        SalesLoad.renderProducts(state);
+        SalesLoad.updateProductCardStock(state, item.id);
     },
 
     updateCartUI(state) {
@@ -213,11 +213,31 @@ const SalesCart = {
         const badge = document.getElementById('cartBadge');
         if (badge) {
             badge.textContent = String(totalItems);
-            if (totalItems > 0) badge.classList.add('has-items');
-            else badge.classList.remove('has-items');
+            if (totalItems > 0) {
+                badge.classList.add('has-items');
+                badge.classList.remove('badge-pop');
+                void badge.offsetWidth;
+                badge.classList.add('badge-pop');
+            } else {
+                badge.classList.remove('has-items');
+            }
         }
 
         this.updateChangeDisplay(state);
+    },
+
+    showFloatingBadge(targetEl, text = '+1') {
+        if (!targetEl) return;
+        const rect = targetEl.getBoundingClientRect();
+        const badge = document.createElement('span');
+        badge.className = 'cart-floating-plus';
+        badge.textContent = text;
+        badge.style.left = `${rect.left + rect.width / 2}px`;
+        badge.style.top = `${rect.top}px`;
+        document.body.appendChild(badge);
+        setTimeout(() => {
+            badge.remove();
+        }, 900);
     },
 
     updateChangeDisplay(state) {
