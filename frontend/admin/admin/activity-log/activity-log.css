@@ -168,13 +168,85 @@
   align-items: center;
 }
 
+/* ---- Quick Search Box ---- */
+.transactions-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.transactions-search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.transactions-search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px 0 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.transactions-search-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.transactions-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.12);
+}
+
+/* Row-hidden state for search filtering */
+.transactions-table tbody tr.search-hidden {
+  display: none !important;
+}
+
+/* Date preset dropdown — fixed width, same style as action select */
+.transactions-date-preset {
+  flex: 0 0 145px !important;
+}
+
+/* Custom range fields container — hidden by default, slides in inline */
+.transactions-custom-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 1;
+  min-width: 0;
+  animation: slideInRange 0.18s ease;
+}
+
+.transactions-custom-range[hidden] {
+  display: none !important;
+}
+
+@keyframes slideInRange {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 .transactions-filter-group {
   flex: 1;
-  display: grid;
-  grid-template-columns: minmax(180px, 1.2fr) repeat(2, minmax(160px, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   gap: 8px;
   min-width: 0;
-  flex-wrap: wrap;
+  align-items: center;
 }
 
 .transactions-date-field {
@@ -198,7 +270,8 @@
   display: none;
 }
 
-@media (max-width: 1024px) {
+/* Tablet: show MM/DD/YYYY placeholder hint */
+@media (min-width: 601px) and (max-width: 1024px) {
   .transactions-filter-tabs .transactions-date-input input[data-empty="true"]:not(:focus) {
     color: transparent;
   }
@@ -222,6 +295,17 @@
   }
 }
 
+/* Mobile: hide the hint — fields too narrow, labels (From/To) are enough */
+@media (max-width: 600px) {
+  .transactions-date-input .date-format-hint {
+    display: none !important;
+  }
+  /* Keep the actual date text visible */
+  .transactions-filter-tabs .transactions-date-input input {
+    color: var(--text-secondary) !important;
+  }
+}
+
 .transactions-date-field input {
   text-align: center;
   text-align-last: center;
@@ -234,26 +318,19 @@
   text-align: center;
 }
 
-.transactions-filter-select {
-  appearance: none;
+/* Hide native calendar picker icon */
+.transactions-date-field input::-webkit-calendar-picker-indicator {
+  display: none;
   -webkit-appearance: none;
-  -moz-appearance: none;
+}
+
+.transactions-filter-select {
   display: block;
   min-width: 0;
   width: 100%;
   text-align: center;
   text-align-last: center;
-  padding-right: 34px;
   line-height: 1.25;
-  text-indent: 0;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
-    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
-  background-position:
-    calc(100% - 16px) 52%,
-    calc(100% - 11px) 52%;
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
 }
 
 .transactions-filter-select:focus {
@@ -288,8 +365,15 @@
   }
 }
 
-/* Transactions Table - Specific overrides for data-table */
+/* Desktop (>= 1025px): single row, fixed heights */
 @media (min-width: 1025px) {
+  /* Force entire toolbar to always stay one row */
+  .transactions-filter-tabs {
+    flex-wrap: nowrap !important;
+    align-items: center;
+    gap: 10px;
+  }
+
   .transactions-filter-select,
   .transactions-filter-tabs .filter-tabs-actions .btn {
     height: 44px;
@@ -297,14 +381,47 @@
   }
 
   .transactions-filter-tabs .transactions-filter-group {
-    display: grid;
-    grid-template-columns: minmax(150px, 1.2fr) 95px 125px 95px repeat(2, minmax(175px, 1fr));
-    flex: 1 0 855px;
-    gap: 8px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex: 1 1 auto;
+    gap: 10px;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .transactions-filter-tabs .transactions-filter-group #filterAction {
+    flex: 0 0 175px;
+    flex-shrink: 0;
+  }
+
+  /* Preset dropdown fixed width, no shrink */
+  .transactions-filter-tabs .transactions-date-preset {
+    flex: 0 0 140px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Search shrinks freely to give space to date pickers */
+  .transactions-filter-tabs .transactions-search-wrap {
+    flex: 1 1 auto;
+    min-width: 60px;
+  }
+
+  .transactions-search-input {
+    min-width: 0;
     width: 100%;
   }
 
+  /* Custom range: inline, shrinkable */
+  .transactions-filter-tabs .transactions-custom-range {
+    display: inline-flex;
+    flex-shrink: 1;
+    gap: 8px;
+    min-width: 0;
+  }
+
   .transactions-filter-tabs .transactions-date-field {
+    flex: 0 0 150px;
+    min-width: 0;
     white-space: nowrap;
     margin: 0;
   }
@@ -314,63 +431,106 @@
     box-sizing: border-box;
     height: 44px;
     border-radius: 10px;
+    width: 100%;
+    min-width: 0;
   }
 
+  /* Print/Reset buttons — never shrink, never wrap */
   .transactions-filter-tabs .filter-tabs-actions {
-    margin-left: auto;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    display: flex;
+    gap: 8px;
   }
 }
 
-/* Tablet Toolbar (601px to 1024px): Strictly 2 rows for Activity Log filters and actions (height: 40px, border-radius: 8px) */
+/* Tablet (601px–1024px): 2-row grid layout
+   Row 1: Search (5) | Action (4) | Preset (3)
+   Row 2: [Custom From+To (8) if visible] | Print (2) | Reset (2)
+*/
 @media (min-width: 601px) and (max-width: 1024px) {
   .transactions-filter-tabs {
     display: grid !important;
     grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
-    flex-direction: unset !important;
-    align-items: center !important;
     gap: 8px !important;
     width: 100% !important;
     margin-bottom: 20px !important;
+    align-items: center !important;
   }
 
-  /* Flatten group so its items participate directly in the 12-column grid */
+  /* Flatten group so children join the grid */
   .transactions-filter-tabs .transactions-filter-group {
     display: contents !important;
-    width: auto !important;
-    flex: none !important;
   }
 
-  /* Row 1: 4 select dropdowns fill 12 columns */
+  /* Row 1 Col 1-5: Search */
+  .transactions-filter-tabs .transactions-search-wrap {
+    grid-column: 1 / 6 !important;
+    grid-row: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .transactions-search-input {
+    height: 40px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Row 1 Col 6-9: All Actions */
   .transactions-filter-tabs .transactions-filter-group #filterAction {
-    grid-column: span 4 !important;
-    min-width: 0 !important;
-    width: 100% !important;
+    grid-column: 6 / 10 !important;
+    grid-row: 1 !important;
     height: 40px !important;
     font-size: 13px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
-  .transactions-filter-tabs .transactions-filter-group #filterYear {
-    grid-column: span 2 !important;
-    min-width: 0 !important;
-    width: 100% !important;
+  /* Row 1 Col 10-12: Date Preset — default full 3 cols */
+  .transactions-filter-tabs .transactions-date-preset {
+    grid-column: 10 / 13 !important;
+    grid-row: 1 !important;
     height: 40px !important;
     font-size: 13px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
-  .transactions-filter-tabs .transactions-filter-group #filterMonth {
-    grid-column: span 4 !important;
+  /* Row 2 Col 1-8: Custom Range (From + To) — hidden by default */
+  .transactions-filter-tabs .transactions-custom-range {
+    grid-column: 1 / 9 !important;
+    grid-row: 2 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    align-items: center !important;
     min-width: 0 !important;
-    width: 100% !important;
-    height: 40px !important;
-    font-size: 13px !important;
   }
 
-  .transactions-filter-tabs .transactions-filter-group #filterDay {
-    grid-column: span 2 !important;
-    min-width: 0 !important;
+  .transactions-filter-tabs .transactions-custom-range[hidden] {
+    display: none !important;
+  }
+
+  /* When custom range hidden: print+reset span full row 2 */
+  .transactions-filter-tabs .filter-tabs-actions {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
     width: 100% !important;
-    height: 40px !important;
-    font-size: 13px !important;
+    margin: 0 !important;
+  }
+
+  /* When custom range is visible: print+reset shift to col 9-12 */
+  .transactions-filter-tabs:has(.transactions-custom-range:not([hidden])) .filter-tabs-actions {
+    grid-column: 9 / 13 !important;
+    display: flex !important;
+    gap: 8px !important;
   }
 
   .transactions-filter-select {
@@ -378,20 +538,17 @@
     font-size: 13px !important;
     border-radius: 8px !important;
     border: 1px solid var(--border) !important;
-    padding: 0 24px 0 8px !important;
     box-sizing: border-box !important;
   }
 
-  /* Row 2: Date From (span 4), Date To (span 4), Print + Reset actions (span 4) */
   .transactions-filter-tabs .transactions-date-field {
-    grid-column: span 4 !important;
+    flex: 1 1 0 !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     gap: 6px !important;
     margin: 0 !important;
     min-width: 0 !important;
-    width: 100% !important;
     color: var(--text-secondary);
     font-size: 13px !important;
     font-weight: 500;
@@ -409,52 +566,29 @@
   .transactions-filter-tabs .transactions-date-field input {
     box-sizing: border-box !important;
     height: 40px !important;
-    min-height: 40px !important;
-    max-height: 40px !important;
     padding: 6px 8px !important;
     font-size: 13px !important;
     width: 100% !important;
     min-width: 0 !important;
-    max-width: 100% !important;
     border-radius: 8px !important;
     border: 1px solid var(--border) !important;
     color: var(--text-secondary);
     display: block !important;
     -webkit-appearance: none;
     appearance: none;
-    overflow: hidden;
-  }
-
-  .transactions-date-input {
-    max-width: 100%;
-  }
-
-  .transactions-date-field input::-webkit-date-and-time-value {
-    min-width: 0;
-  }
-
-  .transactions-filter-tabs .filter-tabs-actions {
-    grid-column: span 4 !important;
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-    width: 100% !important;
-    margin: 0 !important;
-    align-items: center !important;
   }
 
   .transactions-filter-tabs .filter-tabs-actions .btn {
     height: 40px !important;
     font-size: 13px !important;
-    padding: 0 10px !important;
-    width: 100% !important;
-    min-width: 0 !important;
+    padding: 0 14px !important;
     border-radius: 8px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 6px !important;
     white-space: nowrap !important;
+    width: 100% !important;
   }
 
   .transactions-filter-tabs .filter-tabs-actions .btn svg {
@@ -789,10 +923,10 @@
 
   /* Subtitle removed — KPI pills used instead */
 
-  /* Activity Log Smaller Screen: Strictly 3 Rows
-     Row 1: All Actions (span 5) + Year (span 2) + Month (span 3) + Day (span 2)
-     Row 2: Date From (span 6) + Date To (span 6)
-     Row 3: Print button (span 6) + Reset button (span 6)
+  /* Mobile filter toolbar: 3-row grid
+     Row 1: Search (7 cols) | All Actions (5 cols)
+     Row 2: Date Preset (5 cols) | Custom From+To (7 cols, only when visible)
+     Row 3: Print (6 cols) | Reset (6 cols)
   */
   .transactions-filter-tabs {
     display: grid !important;
@@ -800,118 +934,86 @@
     gap: 8px !important;
     width: 100% !important;
     margin-bottom: 18px !important;
+    align-items: center !important;
   }
 
-  /* Flatten group so items participate directly in 12-column grid */
+  /* Flatten filter-group so its children join the grid directly */
   .transactions-filter-tabs .transactions-filter-group {
     display: contents !important;
   }
 
-  /* Row 1: 4 Select Dropdowns */
-  .transactions-filter-tabs .transactions-filter-group #filterAction {
-    grid-column: span 5 !important;
-    order: 1 !important;
+  /* Row 1 Col 1-7: Search */
+  .transactions-filter-tabs .transactions-search-wrap {
+    grid-column: 1 / 8 !important;
+    grid-row: 1 !important;
     min-width: 0 !important;
-    width: 100% !important;
+  }
+
+  .transactions-search-input {
     height: 36px !important;
-    font-size: 11.5px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Row 1 Col 8-12: All Actions */
+  .transactions-filter-tabs .transactions-filter-group #filterAction {
+    grid-column: 8 / 13 !important;
+    grid-row: 1 !important;
+    height: 36px !important;
+    font-size: 12px !important;
     padding: 0 20px 0 8px !important;
     border-radius: 8px !important;
     border: 1px solid var(--border) !important;
     box-sizing: border-box !important;
-    background-position:
-      calc(100% - 12px) 51%,
-      calc(100% - 8px) 51% !important;
-    background-size: 4px 4px, 4px 4px !important;
-  }
-
-  .transactions-filter-tabs .transactions-filter-group #filterYear {
-    grid-column: span 2 !important;
-    order: 2 !important;
-    min-width: 0 !important;
     width: 100% !important;
-    height: 36px !important;
-    font-size: 11px !important;
-    padding: 0 12px 0 4px !important;
-    border-radius: 8px !important;
-    border: 1px solid var(--border) !important;
-    text-align: center !important;
-    text-align-last: center !important;
-    box-sizing: border-box !important;
-    background-position:
-      calc(100% - 9px) 51%,
-      calc(100% - 5px) 51% !important;
-    background-size: 3.5px 3.5px, 3.5px 3.5px !important;
-  }
-
-  .transactions-filter-tabs .transactions-filter-group #filterMonth {
-    grid-column: span 3 !important;
-    order: 3 !important;
     min-width: 0 !important;
-    width: 100% !important;
-    height: 36px !important;
-    font-size: 11px !important;
-    padding: 0 14px 0 4px !important;
-    border-radius: 8px !important;
-    border: 1px solid var(--border) !important;
-    text-align: center !important;
-    text-align-last: center !important;
-    box-sizing: border-box !important;
-    background-position:
-      calc(100% - 10px) 51%,
-      calc(100% - 6px) 51% !important;
-    background-size: 3.5px 3.5px, 3.5px 3.5px !important;
   }
 
-  .transactions-filter-tabs .transactions-filter-group #filterDay {
-    grid-column: span 2 !important;
-    order: 4 !important;
+  /* Row 2: Date Preset — full width by default (From/To hidden) */
+  .transactions-filter-tabs .transactions-date-preset {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    height: 36px !important;
+    font-size: 12px !important;
+    width: 100% !important;
     min-width: 0 !important;
-    width: 100% !important;
-    height: 36px !important;
-    font-size: 11px !important;
-    padding: 0 12px 0 4px !important;
-    border-radius: 8px !important;
-    border: 1px solid var(--border) !important;
-    text-align: center !important;
-    text-align-last: center !important;
-    box-sizing: border-box !important;
-    background-position:
-      calc(100% - 9px) 51%,
-      calc(100% - 5px) 51% !important;
-    background-size: 3.5px 3.5px, 3.5px 3.5px !important;
-  }
-
-  .transactions-filter-select {
-    height: 36px !important;
-    min-height: 36px !important;
-    border-radius: 8px !important;
-    border: 1px solid var(--border) !important;
     box-sizing: border-box !important;
   }
 
-  /* Row 2: Date From (span 6) and Date To (span 6) */
+  /* When Custom Range is selected: preset narrows to col 1-4, From+To fills 5-12 */
+  .transactions-filter-tabs:has(.transactions-custom-range:not([hidden])) .transactions-date-preset {
+    grid-column: 1 / 5 !important;
+  }
+
+  /* Row 2 Col 5-12: Custom Range (From + To inline) — hidden by default */
+  .transactions-filter-tabs .transactions-custom-range {
+    grid-column: 5 / 13 !important;
+    grid-row: 2 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    align-items: center !important;
+    min-width: 0 !important;
+  }
+
+  .transactions-filter-tabs .transactions-custom-range[hidden] {
+    display: none !important;
+  }
+
   .transactions-filter-tabs .transactions-date-field {
-    grid-column: span 6 !important;
+    flex: 1 1 0 !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 3px !important;
     margin: 0 !important;
     min-width: 0 !important;
-    width: 100% !important;
     color: var(--text-secondary);
-    font-size: 11px !important;
+    font-size: 10px !important;
     font-weight: 500;
     white-space: nowrap !important;
-  }
-
-  .transactions-filter-tabs .transactions-date-field[for="filterStartDate"] {
-    order: 5 !important;
-  }
-
-  .transactions-filter-tabs .transactions-date-field[for="filterEndDate"] {
-    order: 6 !important;
   }
 
   .transactions-filter-tabs .transactions-date-input {
@@ -925,8 +1027,6 @@
   .transactions-filter-tabs .transactions-date-field input {
     box-sizing: border-box !important;
     height: 36px !important;
-    min-height: 36px !important;
-    max-height: 36px !important;
     padding: 0 4px !important;
     font-size: 10.5px !important;
     width: 100% !important;
@@ -939,25 +1039,30 @@
     appearance: none;
   }
 
-  /* Row 3: Print and Reset actions (span 12, each taking 50%) */
+  .transactions-filter-select {
+    height: 36px !important;
+    min-height: 36px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--border) !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Row 3: Print (col 1-6) + Reset (col 7-12) */
   .transactions-filter-tabs .filter-tabs-actions {
     grid-column: 1 / -1 !important;
-    order: 7 !important;
+    grid-row: 3 !important;
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 8px !important;
     width: 100% !important;
     margin: 0 !important;
-    align-items: center !important;
   }
 
   .transactions-filter-tabs .filter-tabs-actions .btn {
     height: 36px !important;
     min-height: 36px !important;
     font-size: 12px !important;
-    padding: 0 8px !important;
-    width: 100% !important;
-    min-width: 0 !important;
+    padding: 0 12px !important;
     border-radius: 8px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -965,6 +1070,7 @@
     gap: 6px !important;
     white-space: nowrap !important;
     margin: 0 !important;
+    width: 100% !important;
   }
 
   .transactions-filter-tabs .filter-tabs-actions .btn svg {

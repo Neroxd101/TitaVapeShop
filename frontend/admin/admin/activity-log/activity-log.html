@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="/css/components/page-container.css">
     <link rel="stylesheet" href="/css/components/data-table.css">
     <link rel="stylesheet" href="/css/components/utilities.css">
-    <link rel="stylesheet" href="/admin/admin/activity-log/activity-log.css?v=2">
+    <link rel="stylesheet" href="/admin/admin/activity-log/activity-log.css?v=4">
 </head>
 
 <body>
@@ -79,6 +79,13 @@
             <!-- Filters -->
             <div class="filter-tabs transactions-filter-tabs">
                 <div class="filter-tabs-group transactions-filter-group">
+                    <div class="transactions-search-wrap">
+                        <svg class="transactions-search-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="filterSearch" class="transactions-search-input" placeholder="Search cashier, product, customer…" autocomplete="off">
+                    </div>
                     <select id="filterAction" class="filter-tab transactions-filter-select">
                         <option value="">All Actions</option>
                         <option value="sale_void">Voided Sales</option>
@@ -90,33 +97,22 @@
                         <option value="inventory_edit">Inventory Edit</option>
                         <option value="inventory_delete">Inventory Delete</option>
                     </select>
-                    <select id="filterYear" class="filter-tab transactions-filter-select">
-                        <option value="">Year</option>
+                    <select id="filterDatePreset" class="filter-tab transactions-filter-select transactions-date-preset">
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="last7">Last 7 Days</option>
+                        <option value="thismonth">This Month</option>
+                        <option value="custom">Custom Range</option>
                     </select>
-                    <select id="filterMonth" class="filter-tab transactions-filter-select">
-                        <option value="">Month</option>
-                        <option value="01">January</option>
-                        <option value="02">February</option>
-                        <option value="03">March</option>
-                        <option value="04">April</option>
-                        <option value="05">May</option>
-                        <option value="06">June</option>
-                        <option value="07">July</option>
-                        <option value="08">August</option>
-                        <option value="09">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </select>
-                    <select id="filterDay" class="filter-tab transactions-filter-select">
-                        <option value="">Day</option>
-                    </select>
-                    <label class="transactions-date-field" for="filterStartDate">From
-                        <span class="transactions-date-input"><input type="date" id="filterStartDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
-                    </label>
-                    <label class="transactions-date-field" for="filterEndDate">To
-                        <span class="transactions-date-input"><input type="date" id="filterEndDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
-                    </label>
+                    <!-- Custom range fields — shown only when "Custom Range" is selected -->
+                    <div class="transactions-custom-range" id="customRangeFields" hidden>
+                        <label class="transactions-date-field" for="filterStartDate">From
+                            <span class="transactions-date-input"><input type="date" id="filterStartDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
+                        </label>
+                        <label class="transactions-date-field" for="filterEndDate">To
+                            <span class="transactions-date-input"><input type="date" id="filterEndDate" class="filter-tab" data-empty="true"><span class="date-format-hint" aria-hidden="true">MM/DD/YYYY</span></span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="filter-tabs-actions">

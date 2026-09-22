@@ -96,11 +96,11 @@ class TransactionsUI {
     constructor() {
         this.elements = {
             filterAction: document.getElementById('filterAction'),
-            filterYear: document.getElementById('filterYear'),
-            filterMonth: document.getElementById('filterMonth'),
-            filterDay: document.getElementById('filterDay'),
+            filterSearch: document.getElementById('filterSearch'),
+            filterDatePreset: document.getElementById('filterDatePreset'),
             filterStartDate: document.getElementById('filterStartDate'),
             filterEndDate: document.getElementById('filterEndDate'),
+            customRangeFields: document.getElementById('customRangeFields'),
             resetFiltersBtn: document.getElementById('resetFiltersBtn'),
             printTransactionsBtn: document.getElementById('printTransactionsBtn'),
             transactionsList: document.getElementById('transactionsList'),
@@ -113,9 +113,7 @@ class TransactionsUI {
             kpiOrdersVal: document.getElementById('kpiOrdersVal'),
             kpiInvVal: document.getElementById('kpiInvVal')
         };
-        this.setupDateFilter();
         this.syncDateHints();
-
     }
 
     /**
@@ -125,7 +123,7 @@ class TransactionsUI {
     bindEvents(callbacks) {
         const { onApplyFilters, onResetFilters, onPrevPage, onNextPage } = callbacks;
 
-        // Auto-apply filters when inputs change
+        // Action type filter
         if (this.elements.filterAction) {
             this.elements.filterAction.addEventListener('change', () => {
                 const filters = this.getFiltersFromDOM();
@@ -133,24 +131,38 @@ class TransactionsUI {
             });
         }
 
-        for (const input of [this.elements.filterYear, this.elements.filterMonth, this.elements.filterDay]) {
+        // Date preset dropdown
+        if (this.elements.filterDatePreset) {
+            this.elements.filterDatePreset.addEventListener('change', () => {
+                const isCustom = this.elements.filterDatePreset.value === 'custom';
+                if (this.elements.customRangeFields) {
+                    this.elements.customRangeFields.hidden = !isCustom;
+                }
+                if (!isCustom) {
+                    // Clear custom fields when switching away
+                    if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
+                    if (this.elements.filterEndDate) this.elements.filterEndDate.value = '';
+                    this.syncDateHints();
+                    const filters = this.getFiltersFromDOM();
+                    if (filters && onApplyFilters) onApplyFilters(filters);
+                }
+            });
+        }
+
+        // Custom date range inputs (only relevant when Custom Range is selected)
+        for (const input of [this.elements.filterStartDate, this.elements.filterEndDate]) {
+            if (!input) continue;
+            input.addEventListener('input', () => this.syncDateHints());
             input.addEventListener('change', () => {
-                this.elements.filterStartDate.value = '';
-                this.elements.filterEndDate.value = '';
-                this.elements.filterEndDate.setCustomValidity('');
-                if (input !== this.elements.filterDay) this.updateDayDropdown();
                 const filters = this.getFiltersFromDOM();
                 if (filters && onApplyFilters) onApplyFilters(filters);
             });
         }
-        for (const input of [this.elements.filterStartDate, this.elements.filterEndDate]) {
-            input.addEventListener('input', () => this.syncDateHints());
-            input.addEventListener('change', () => {
-                this.elements.filterYear.value = '';
-                this.elements.filterMonth.value = '';
-                this.updateDayDropdown();
-                const filters = this.getFiltersFromDOM();
-                if (filters && onApplyFilters) onApplyFilters(filters);
+
+        // Real-time client-side search (no API call)
+        if (this.elements.filterSearch) {
+            this.elements.filterSearch.addEventListener('input', () => {
+                this.applySearch();
             });
         }
 
@@ -175,90 +187,107 @@ class TransactionsUI {
     }
 
     /**
-     * Get filter values from DOM inputs
+     * Apply client-side search filter on rendered rows.
+     * Matches against: user/cashier name, customer name, details text.
      */
-    setupDateFilter() {
-        const yearSelect = this.elements.filterYear;
-        if (!yearSelect) return;
-
-        // Populate year dropdown (current year and past 10 years)
-        const currentYear = new Date().getFullYear();
-        yearSelect.innerHTML = '<option value="">Year</option>';
-        for (let year = currentYear; year >= currentYear - 10; year--) {
-            yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
-        }
-    }
-
-    /**
-     * Update day dropdown based on selected month and year
-     */
-    updateDayDropdown() {
-        const month = this.elements.filterMonth?.value;
-        const year = this.elements.filterYear?.value;
-        const daySelect = this.elements.filterDay;
-
-        if (!daySelect) return;
-
-        daySelect.innerHTML = '<option value="">Day</option>';
-
-        if (month && year) {
-            const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayStr = day.toString().padStart(2, '0');
-                daySelect.innerHTML += `<option value="${dayStr}">${day}</option>`;
+    applySearch() {
+        const term = (this.elements.filterSearch?.value || '').trim().toLowerCase();
+        const rows = this.elements.transactionsList?.querySelectorAll('tr:not(.empty-row)');
+        if (!rows) return;
+        rows.forEach(row => {
+            if (!term) {
+                row.classList.remove('search-hidden');
+                return;
             }
+            const text = row.textContent.toLowerCase();
+            row.classList.toggle('search-hidden', !text.includes(term));
+        });
+    }
+
+    /**
+     * Resolve a date preset value into { start_date, end_date } ISO strings.
+     * @param {string} preset - 'today' | 'last7' | 'thismonth' | 'custom' | ''
+     */
+    resolvePresetDates(preset) {
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        const todayEnd   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+        switch (preset) {
+            case 'today':
+                return { start_date: todayStart.toISOString(), end_date: todayEnd.toISOString() };
+            case 'last7': {
+                const from = new Date(todayStart);
+                from.setDate(from.getDate() - 6);
+                return { start_date: from.toISOString(), end_date: todayEnd.toISOString() };
+            }
+            case 'thismonth': {
+                const from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+                return { start_date: from.toISOString(), end_date: todayEnd.toISOString() };
+            }
+            case 'custom': {
+                // Use the manual From/To inputs
+                const start = this.elements.filterStartDate;
+                const end   = this.elements.filterEndDate;
+                return {
+                    start_date: start?.value ? new Date(start.value + 'T00:00:00').toISOString() : '',
+                    end_date:   end?.value   ? new Date(end.value   + 'T23:59:59.999').toISOString() : ''
+                };
+            }
+            default:
+                return { start_date: '', end_date: '' };
         }
     }
 
     /**
      * Get filter values from DOM inputs
      */
-    syncDateHints() {
-        for (const input of [this.elements.filterStartDate, this.elements.filterEndDate]) {
-            input.dataset.empty = String(!input.value);
-        }
-    }
-
     getFiltersFromDOM() {
         this.syncDateHints();
-        const start = this.elements.filterStartDate;
-        const end = this.elements.filterEndDate;
-        end.setCustomValidity('');
-        if (start.value && end.value && start.value > end.value) {
-            end.setCustomValidity('End date must be on or after start date.');
-            end.reportValidity();
-            return null;
+        const preset = this.elements.filterDatePreset?.value || '';
+
+        // Validate custom range
+        if (preset === 'custom') {
+            const start = this.elements.filterStartDate;
+            const end   = this.elements.filterEndDate;
+            if (start?.value && end?.value && start.value > end.value) {
+                end.setCustomValidity('End date must be on or after start date.');
+                end.reportValidity();
+                return null;
+            }
+            if (end) end.setCustomValidity('');
         }
-        const year = this.elements.filterYear.value;
-        const month = this.elements.filterMonth.value;
-        const day = this.elements.filterDay.value;
-        if (!start.value && !end.value && year) {
-            const first = new Date(Number(year), month ? Number(month) - 1 : 0, day ? Number(day) : 1);
-            const last = day && month
-                ? new Date(Number(year), Number(month) - 1, Number(day), 23, 59, 59, 999)
-                : new Date(Number(year), month ? Number(month) : 12, 0, 23, 59, 59, 999);
-            return { action_type: this.elements.filterAction.value, start_date: first.toISOString(), end_date: last.toISOString() };
-        }
-        // Explicit empty values clear previously applied filters.
+
+        const { start_date, end_date } = this.resolvePresetDates(preset);
         return {
-            action_type: this.elements.filterAction.value,
-            start_date: start.value ? new Date(start.value + 'T00:00:00').toISOString() : '',
-            end_date: end.value ? new Date(end.value + 'T23:59:59.999').toISOString() : ''
+            action_type: this.elements.filterAction?.value || '',
+            start_date,
+            end_date
         };
     }
 
+    /**
+     * Sync date input hint visibility
+     */
+    syncDateHints() {
+        for (const input of [this.elements.filterStartDate, this.elements.filterEndDate]) {
+            if (input) input.dataset.empty = String(!input.value);
+        }
+    }
 
     /**
      * Reset DOM inputs
      */
     resetDOM() {
-        this.elements.filterYear.value = '';
-        this.elements.filterMonth.value = '';
-        this.updateDayDropdown();
         if (this.elements.filterAction) this.elements.filterAction.value = '';
-        this.elements.filterStartDate.value = '';
-        this.elements.filterEndDate.value = '';
-        this.elements.filterEndDate.setCustomValidity('');
+        if (this.elements.filterSearch) this.elements.filterSearch.value = '';
+        if (this.elements.filterDatePreset) this.elements.filterDatePreset.value = '';
+        if (this.elements.customRangeFields) this.elements.customRangeFields.hidden = true;
+        if (this.elements.filterStartDate) this.elements.filterStartDate.value = '';
+        if (this.elements.filterEndDate) {
+            this.elements.filterEndDate.value = '';
+            this.elements.filterEndDate.setCustomValidity('');
+        }
         this.syncDateHints();
     }
 
@@ -319,6 +348,9 @@ class TransactionsUI {
             `;
             this.elements.transactionsList.appendChild(row);
         });
+
+        // Re-apply search term after new rows are rendered
+        this.applySearch();
     }
 
     /**
