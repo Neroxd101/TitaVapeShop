@@ -106,6 +106,24 @@
         <!-- Cards will be loaded here -->
       </div>
 
+      <!-- Pagination -->
+      <div class="pagination-controls inventory-pagination" id="inventoryPagination" style="display: none;">
+        <div class="pagination-page-size">
+          <label for="pageSizeSelect">Show:</label>
+          <select id="pageSizeSelect" class="stock-filter">
+            <option value="12" selected>12</option>
+            <option value="24">24</option>
+            <option value="48">48</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+        <div class="pagination-nav">
+          <button id="prevPageBtn" class="btn btn-small" disabled>Previous</button>
+          <span id="pageInfo">Page 1 of 1</span>
+          <button id="nextPageBtn" class="btn btn-small" disabled>Next</button>
+        </div>
+      </div>
+
       <!-- Empty State -->
       <div class="empty-state" id="emptyState" style="display: none;">
         <svg viewBox="0 0 24 24">

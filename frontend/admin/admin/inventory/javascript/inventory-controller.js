@@ -44,11 +44,13 @@ const Inventory = {
     // Search input
     InventoryDOM.searchInput?.addEventListener('input', (e) => {
       InventoryState.searchQuery = e.target.value;
+      InventoryState.currentPage = 1;
       InventoryLoad.renderInventory();
     });
 
     document.getElementById('stockFilter')?.addEventListener('change', (e) => {
       InventoryState.stockFilter = e.target.value;
+      InventoryState.currentPage = 1;
       InventoryLoad.renderInventory();
     });
 
@@ -72,6 +74,7 @@ const Inventory = {
       if (!addedDateFrom.reportValidity() || !addedDateTo.reportValidity()) return;
       InventoryState.addedDateFrom = addedDateFrom.value;
       InventoryState.addedDateTo = addedDateTo.value;
+      InventoryState.currentPage = 1;
       InventoryLoad.renderInventory();
     };
     addedDateFrom?.addEventListener('change', updateAddedDates);
@@ -89,8 +92,22 @@ const Inventory = {
         InventoryDOM.filterTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         InventoryState.currentFilter = tab.dataset.category;
+        InventoryState.currentPage = 1;
         InventoryLoad.renderInventory();
       });
+    });
+
+    // Pagination controls
+    InventoryDOM.prevPageBtn?.addEventListener('click', () => {
+      InventoryLoad.goToPage(InventoryState.currentPage - 1);
+    });
+
+    InventoryDOM.nextPageBtn?.addEventListener('click', () => {
+      InventoryLoad.goToPage(InventoryState.currentPage + 1);
+    });
+
+    InventoryDOM.pageSizeSelect?.addEventListener('change', (e) => {
+      InventoryLoad.setPageSize(e.target.value);
     });
 
     // Item form submit - Determine if create or update based on state

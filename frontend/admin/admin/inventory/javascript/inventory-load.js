@@ -49,11 +49,79 @@ const InventoryLoad = {
         if (filtered.length === 0) {
             InventoryDOM.inventoryGrid.innerHTML = '';
             InventoryDOM.emptyState.style.display = 'block';
+            this.updatePaginationControls(0);
             return;
         }
 
         InventoryDOM.emptyState.style.display = 'none';
-        InventoryDOM.inventoryGrid.innerHTML = filtered.map(item => this.createCard(item)).join('');
+
+        // Calculate pagination
+        const pageSize = InventoryState.pageSize === 'all' ? filtered.length : Number(InventoryState.pageSize) || 12;
+        InventoryState.totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        
+        // Ensure currentPage is within valid bounds
+        if (InventoryState.currentPage > InventoryState.totalPages) {
+            InventoryState.currentPage = InventoryState.totalPages;
+        }
+        if (InventoryState.currentPage < 1) {
+            InventoryState.currentPage = 1;
+        }
+
+        // Slice items for current page
+        let pageItems = filtered;
+        if (InventoryState.pageSize !== 'all') {
+            const startIndex = (InventoryState.currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            pageItems = filtered.slice(startIndex, endIndex);
+        }
+
+        InventoryDOM.inventoryGrid.innerHTML = pageItems.map(item => this.createCard(item)).join('');
+        this.updatePaginationControls(filtered.length);
+    },
+
+    updatePaginationControls(totalItems) {
+        if (!InventoryDOM.paginationControls) return;
+
+        if (totalItems <= 0) {
+            InventoryDOM.paginationControls.style.display = 'none';
+            return;
+        }
+
+        InventoryDOM.paginationControls.style.display = 'flex';
+
+        const isAll = InventoryState.pageSize === 'all';
+        const currentPage = InventoryState.currentPage;
+        const totalPages = InventoryState.totalPages;
+
+        if (InventoryDOM.pageInfo) {
+            if (isAll) {
+                InventoryDOM.pageInfo.textContent = `Showing all ${totalItems} items`;
+            } else {
+                InventoryDOM.pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${totalItems} items)`;
+            }
+        }
+
+        if (InventoryDOM.prevPageBtn) {
+            InventoryDOM.prevPageBtn.disabled = isAll || currentPage <= 1;
+        }
+
+        if (InventoryDOM.nextPageBtn) {
+            InventoryDOM.nextPageBtn.disabled = isAll || currentPage >= totalPages;
+        }
+    },
+
+    goToPage(page) {
+        if (page < 1 || page > InventoryState.totalPages) return;
+        InventoryState.currentPage = page;
+        this.renderInventory();
+        // Smooth scroll to top of grid
+        InventoryDOM.inventoryGrid?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+
+    setPageSize(size) {
+        InventoryState.pageSize = size === 'all' ? 'all' : Number(size);
+        InventoryState.currentPage = 1;
+        this.renderInventory();
     },
 
     filterItems() {

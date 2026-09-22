@@ -20,6 +20,9 @@ const InventoryState = {
     historyPage: 1,
     historyPageSize: 6,
     historyTotal: 0,
+    currentPage: 1,
+    pageSize: 12,
+    totalPages: 1,
     MAX_IMAGES: 5
 };
 
@@ -31,6 +34,11 @@ const InventoryDOM = {
     loadingState: null,
     searchInput: null,
     filterTabs: null,
+    paginationControls: null,
+    prevPageBtn: null,
+    nextPageBtn: null,
+    pageInfo: null,
+    pageSizeSelect: null,
 
     // Modal references (will be set after modals are loaded)
     itemModal: null,
@@ -46,6 +54,11 @@ const InventoryDOM = {
         this.loadingState = document.getElementById('loadingState');
         this.searchInput = document.getElementById('searchInput');
         this.filterTabs = document.querySelectorAll('.filter-tab');
+        this.paginationControls = document.getElementById('inventoryPagination');
+        this.prevPageBtn = document.getElementById('prevPageBtn');
+        this.nextPageBtn = document.getElementById('nextPageBtn');
+        this.pageInfo = document.getElementById('pageInfo');
+        this.pageSizeSelect = document.getElementById('pageSizeSelect');
     }
 };
 
