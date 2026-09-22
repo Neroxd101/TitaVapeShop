@@ -92,63 +92,17 @@
   color: var(--text-primary);
 }
 
-/* Colored status dots */
-.orders-page-header .status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-.orders-page-header .status-dot.dot-green {
-  background-color: #00d4aa;
-  box-shadow: 0 0 6px rgba(0, 212, 170, 0.6);
-}
-
-.orders-page-header .status-dot.dot-blue {
-  background-color: #5c7cfa;
-  box-shadow: 0 0 6px rgba(92, 124, 250, 0.6);
-}
-
-.orders-page-header .status-dot.dot-amber {
-  background-color: #ff9f43;
-  box-shadow: 0 0 6px rgba(255, 159, 67, 0.6);
-}
-
-.orders-page-header .status-dot.dot-purple {
-  background-color: #a855f7;
-  box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
-}
-
-/* Pill color variants */
-.orders-page-header .header-counter-pill.counter-pending {
-  border-color: rgba(255, 159, 67, 0.3);
-}
-
-.orders-page-header .header-counter-pill.counter-ready {
-  border-color: rgba(92, 124, 250, 0.3);
-}
-
-.orders-page-header .header-counter-pill.counter-pickup {
-  border-color: rgba(168, 85, 247, 0.3);
-}
-
-.orders-page-header .header-counter-pill.counter-delivery {
-  border-color: rgba(0, 212, 170, 0.3);
-}
-
-/* Pulse on amber dot when pending orders exist */
-.orders-page-header .header-counter-pill#kpiCardPending.has-urgent .status-dot.dot-amber {
+/* Pulse effect on pending pill when pending orders exist */
+.orders-page-header .header-counter-pill#kpiCardPending.has-urgent {
   animation: ordersPulse 1.8s infinite;
 }
 
 @keyframes ordersPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 159, 67, 0.7);
+    box-shadow: 0 0 0 0 rgba(255, 159, 67, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(255, 159, 67, 0);
+    box-shadow: 0 0 0 4px rgba(255, 159, 67, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(255, 159, 67, 0);
@@ -198,11 +152,6 @@
     font-size: 10.5px !important;
     font-weight: 700 !important;
   }
-
-  .orders-page-header .status-dot {
-    width: 5px !important;
-    height: 5px !important;
-  }
 }
 
 /* Very narrow mobile devices (≤ 400px) */
@@ -227,11 +176,6 @@
 
   .orders-page-header .header-counter-pill .counter-value {
     font-size: 9.5px !important;
-  }
-
-  .orders-page-header .status-dot {
-    width: 4px !important;
-    height: 4px !important;
   }
 }
 
