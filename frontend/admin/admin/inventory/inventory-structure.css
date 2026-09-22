@@ -220,19 +220,23 @@
    ============================================= */
 .inventory-header {
   display: flex !important;
+  flex-direction: row !important;
   align-items: center !important;
   justify-content: space-between !important;
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
   gap: 14px !important;
   margin-bottom: 22px !important;
+  width: 100% !important;
 }
 
 .inventory-header .header-left {
-  flex: 1 1 auto;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
 }
 
 .inventory-header .header-left h1 {
-  margin: 0 0 4px 0 !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
 }
 
 .inventory-header .header-left .subtitle {
@@ -241,11 +245,15 @@
   max-width: none !important;
 }
 
+.inventory-header .header-right.header-counters,
 .header-counters {
   display: inline-flex !important;
   align-items: center !important;
+  justify-content: flex-end !important;
   gap: 8px !important;
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
   margin: 0 !important;
 }
 
