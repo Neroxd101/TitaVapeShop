@@ -125,13 +125,9 @@ const InventoryLoad = {
     },
 
     filterItems() {
-        return InventoryState.inventoryItems.filter(item => {
+        const filtered = InventoryState.inventoryItems.filter(item => {
             const matchesCategory = InventoryState.currentFilter === 'all' || item.category === InventoryState.currentFilter;
             const matchesSearch = item.name.toLowerCase().includes(InventoryState.searchQuery.toLowerCase());
-            const quantity = Number(item.quantity);
-            const matchesStock = InventoryState.stockFilter === 'all'
-                || (InventoryState.stockFilter === 'low' && quantity > 0 && quantity <= 5)
-                || (InventoryState.stockFilter === 'none' && quantity === 0);
             // Use the same local calendar date shown in the item details.
             let matchesDate = true;
             if (InventoryState.addedDateFrom || InventoryState.addedDateTo) {
@@ -141,7 +137,40 @@ const InventoryLoad = {
                     && (!InventoryState.addedDateFrom || localDate >= InventoryState.addedDateFrom)
                     && (!InventoryState.addedDateTo || localDate <= InventoryState.addedDateTo);
             }
-            return matchesCategory && matchesSearch && matchesStock && matchesDate;
+            return matchesCategory && matchesSearch && matchesDate;
+        });
+
+        return this.sortItems(filtered);
+    },
+
+    sortItems(items) {
+        const sortType = InventoryState.sortBy || 'date-desc';
+        return [...items].sort((a, b) => {
+            switch (sortType) {
+                case 'name-asc':
+                    return (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
+                case 'name-desc':
+                    return (b.name || '').localeCompare(a.name || '', undefined, { sensitivity: 'base' });
+                case 'price-asc':
+                    return (Number(a.sale_price) || 0) - (Number(b.sale_price) || 0);
+                case 'price-desc':
+                    return (Number(b.sale_price) || 0) - (Number(a.sale_price) || 0);
+                case 'stock-asc':
+                    return (Number(a.quantity) || 0) - (Number(b.quantity) || 0);
+                case 'stock-desc':
+                    return (Number(b.quantity) || 0) - (Number(a.quantity) || 0);
+                case 'date-asc': {
+                    const timeA = new Date(a.created_at).getTime() || 0;
+                    const timeB = new Date(b.created_at).getTime() || 0;
+                    return timeA - timeB;
+                }
+                case 'date-desc':
+                default: {
+                    const timeA = new Date(a.created_at).getTime() || 0;
+                    const timeB = new Date(b.created_at).getTime() || 0;
+                    return timeB - timeA;
+                }
+            }
         });
     },
 

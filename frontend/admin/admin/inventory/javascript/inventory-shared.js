@@ -5,10 +5,10 @@
 const InventoryState = {
     inventoryItems: [],
     currentFilter: 'all',
-    stockFilter: 'all',
     addedDateFrom: '',
     addedDateTo: '',
     searchQuery: '',
+    sortBy: 'date-desc',
     editingItemId: null,
     deletingItemId: null,
     currentImages: [], // Array of { url, file, uploading }
@@ -34,6 +34,8 @@ const InventoryDOM = {
     loadingState: null,
     searchInput: null,
     filterTabs: null,
+    categoryFilter: null,
+    sortBySelect: null,
     paginationControls: null,
     prevPageBtn: null,
     nextPageBtn: null,
@@ -54,6 +56,8 @@ const InventoryDOM = {
         this.loadingState = document.getElementById('loadingState');
         this.searchInput = document.getElementById('searchInput');
         this.filterTabs = document.querySelectorAll('.filter-tab');
+        this.categoryFilter = document.getElementById('categoryFilter');
+        this.sortBySelect = document.getElementById('sortBy');
         this.paginationControls = document.getElementById('inventoryPagination');
         this.prevPageBtn = document.getElementById('prevPageBtn');
         this.nextPageBtn = document.getElementById('nextPageBtn');

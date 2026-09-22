@@ -48,8 +48,8 @@ const Inventory = {
       InventoryLoad.renderInventory();
     });
 
-    document.getElementById('stockFilter')?.addEventListener('change', (e) => {
-      InventoryState.stockFilter = e.target.value;
+    InventoryDOM.sortBySelect?.addEventListener('change', (e) => {
+      InventoryState.sortBy = e.target.value;
       InventoryState.currentPage = 1;
       InventoryLoad.renderInventory();
     });
@@ -86,15 +86,11 @@ const Inventory = {
       addedDateFrom.focus();
     });
 
-    // Filter tabs
-    InventoryDOM.filterTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        InventoryDOM.filterTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        InventoryState.currentFilter = tab.dataset.category;
-        InventoryState.currentPage = 1;
-        InventoryLoad.renderInventory();
-      });
+    // Category filter dropdown
+    InventoryDOM.categoryFilter?.addEventListener('change', (e) => {
+      InventoryState.currentFilter = e.target.value;
+      InventoryState.currentPage = 1;
+      InventoryLoad.renderInventory();
     });
 
     // Pagination controls
