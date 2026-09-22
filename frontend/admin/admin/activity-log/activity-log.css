@@ -617,6 +617,118 @@
   transition: background-color 0.2s;
 }
 
+/* =============================================
+   High-Contrast Action Badges
+   ============================================= */
+
+/* Base badge override for activity log — stronger contrast */
+.transactions-table .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  border-left: 3px solid transparent;
+  white-space: nowrap;
+}
+
+/* Status dot inside badge */
+.transactions-table .badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Sale — vivid green */
+.transactions-table .badge-sale {
+  background: rgba(0, 212, 170, 0.18);
+  color: #00e5b8;
+  border-left-color: #00d4aa;
+  border: 1px solid rgba(0, 212, 170, 0.35);
+}
+.transactions-table .badge-sale::before {
+  background: #00d4aa;
+  box-shadow: 0 0 5px rgba(0, 212, 170, 0.7);
+}
+
+/* Void — muted red */
+.transactions-table .badge-cancel {
+  background: rgba(255, 71, 87, 0.15);
+  color: #ff6b7a;
+  border: 1px solid rgba(255, 71, 87, 0.3);
+}
+.transactions-table .badge-cancel::before {
+  background: #ff4757;
+  box-shadow: 0 0 5px rgba(255, 71, 87, 0.6);
+}
+
+/* Order Confirm — blue */
+.transactions-table .badge-confirm {
+  background: rgba(92, 124, 250, 0.15);
+  color: #7b9bff;
+  border: 1px solid rgba(92, 124, 250, 0.3);
+}
+.transactions-table .badge-confirm::before {
+  background: #5c7cfa;
+  box-shadow: 0 0 5px rgba(92, 124, 250, 0.6);
+}
+
+/* Inventory Add — cyan */
+.transactions-table .badge-add {
+  background: rgba(0, 200, 255, 0.12);
+  color: #33d4f5;
+  border: 1px solid rgba(0, 200, 255, 0.28);
+}
+.transactions-table .badge-add::before {
+  background: #00c8ff;
+  box-shadow: 0 0 5px rgba(0, 200, 255, 0.6);
+}
+
+/* Inventory Edit / Payment — amber */
+.transactions-table .badge-edit {
+  background: rgba(255, 159, 67, 0.14);
+  color: #ffb347;
+  border: 1px solid rgba(255, 159, 67, 0.3);
+}
+.transactions-table .badge-edit::before {
+  background: #ff9f43;
+  box-shadow: 0 0 5px rgba(255, 159, 67, 0.6);
+}
+
+/* Inventory Delete — vivid red */
+.transactions-table .badge-delete {
+  background: rgba(255, 71, 87, 0.18);
+  color: #ff4757;
+  border: 1px solid rgba(255, 71, 87, 0.35);
+}
+.transactions-table .badge-delete::before {
+  background: #ff4757;
+  box-shadow: 0 0 5px rgba(255, 71, 87, 0.7);
+}
+
+/* =============================================
+   Row hover & alternating stripe polish
+   ============================================= */
+.transactions-table tbody tr:not(.empty-row):hover {
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.15s ease;
+}
+
+/* Amount positive — brighter */
+.transactions-table .amount-positive {
+  color: #00e5b8;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.2px;
+}
+
 /* Time column */
 .transactions-table th.col-time,
 .transactions-table td.col-time {
