@@ -19,6 +19,50 @@ const SalesCart = {
         }
     },
 
+    setupEventListeners(state) {
+        const openCartModalBtn = document.getElementById('openCartModalBtn');
+        const closeCartModalBtn = document.getElementById('closeCartModalBtn');
+        const cartModal = document.getElementById('cartModal');
+        const clearCartBtn = document.getElementById('clearCartBtn');
+        const cashInput = document.getElementById('cashInput');
+        const quickCashChips = document.getElementById('quickCashChips');
+
+        openCartModalBtn?.addEventListener('click', () => {
+            cartModal?.classList.add('show');
+            this.updateCartUI(state);
+            setTimeout(() => {
+                const cashEl = document.getElementById('cashInput');
+                if (cashEl && state.cart.length > 0) cashEl.focus();
+            }, 150);
+        });
+
+        closeCartModalBtn?.addEventListener('click', () => {
+            cartModal?.classList.remove('show');
+        });
+
+        cartModal?.addEventListener('click', (e) => {
+            if (e.target === cartModal) {
+                cartModal.classList.remove('show');
+            }
+        });
+
+        clearCartBtn?.addEventListener('click', () => {
+            state.cart = [];
+            this.updateCartUI(state);
+        });
+
+        cashInput?.addEventListener('input', () => {
+            this.updateChangeDisplay(state);
+        });
+
+        quickCashChips?.addEventListener('click', (e) => {
+            const chip = e.target.closest('.cash-chip');
+            if (chip) {
+                this.handleQuickCash(chip, state);
+            }
+        });
+    },
+
     async loadConfirmModal() {
         try {
             const existing = document.getElementById('confirmModal');

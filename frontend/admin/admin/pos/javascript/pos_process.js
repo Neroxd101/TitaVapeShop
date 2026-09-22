@@ -1,5 +1,45 @@
 // Logic for Sales Checkout (Transaction)
 const SalesCreate = {
+    setupEventListeners(state) {
+        const checkoutForm = document.getElementById('checkoutForm');
+        const completeSaleBtn = document.getElementById('completeSaleBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const closeConfirmModalBtn = document.getElementById('closeConfirmModalBtn');
+        const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+        const proceedSaleBtn = document.getElementById('proceedSaleBtn');
+        const successModal = document.getElementById('successModal');
+        const closeSuccessModalBtn = document.getElementById('closeSuccessModalBtn');
+        const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', (e) => this.handleCompleteSale(e, state));
+        } else if (completeSaleBtn) {
+            completeSaleBtn.addEventListener('click', () => this.handleCompleteSale(null, state));
+        }
+
+        const closeConfirm = () => {
+            confirmModal?.classList.remove('show');
+            window._pendingSale = null;
+        };
+        closeConfirmModalBtn?.addEventListener('click', closeConfirm);
+        cancelConfirmBtn?.addEventListener('click', closeConfirm);
+        confirmModal?.addEventListener('click', (e) => {
+            if (e.target === confirmModal) closeConfirm();
+        });
+
+        proceedSaleBtn?.addEventListener('click', () => {
+            this.proceedWithSale();
+        });
+
+        const closeSuccess = () => {
+            successModal?.classList.remove('show');
+        };
+        closeSuccessModalBtn?.addEventListener('click', closeSuccess);
+        closeSuccessBtn?.addEventListener('click', closeSuccess);
+        successModal?.addEventListener('click', (e) => {
+            if (e.target === successModal) closeSuccess();
+        });
+    },
 
     async handleCompleteSale(e, state) {
         if (e) e.preventDefault();
@@ -124,35 +164,18 @@ const SalesCreate = {
         let emailSent = false;
         let emailError = false;
 
-        if (customerEmail) {
-            try {
-                const emailResponse = await fetch(receiptUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        customerEmail: customerEmail,
-                        customerName: customerName,
-                        items: confirmedItems,
-                        total: confirmedTotal,
-                        cash: confirmedCash,
-                        change: confirmedChange,
-                        saleDate: new Date().toLocaleString('en-PH', {
-                            timeZone: 'Asia/Manila',
-                            dateStyle: 'medium',
-                            timeStyle: 'short'
-                        })
-                    })
-                });
-
-                await emailResponse.json();
-                emailSent = emailResponse.ok;
-                emailError = !emailResponse.ok;
-            } catch (error) {
-                console.error('Error sending email:', error);
-                emailError = true;
-            }
+        if (customerEmail && window.SalesReceiptEmail?.sendReceipt) {
+            const emailResult = await SalesReceiptEmail.sendReceipt({
+                receiptUrl,
+                customerEmail,
+                customerName,
+                items: confirmedItems,
+                total: confirmedTotal,
+                cash: confirmedCash,
+                change: confirmedChange
+            });
+            emailSent = emailResult.emailSent;
+            emailError = emailResult.emailError;
         }
 
         // Show success modal

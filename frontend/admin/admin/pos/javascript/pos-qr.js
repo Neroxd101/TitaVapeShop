@@ -3,6 +3,29 @@ const SalesQR = {
     scanner: null,
     scanning: false,
 
+    setupEventListeners(state) {
+        const openQrModalBtn = document.getElementById('openQrModalBtn');
+        const closeQrModalBtn = document.getElementById('closeQrModalBtn');
+        const qrModal = document.getElementById('qrModal');
+
+        openQrModalBtn?.addEventListener('click', () => {
+            qrModal?.classList.add('show');
+            this.start(state);
+        });
+
+        closeQrModalBtn?.addEventListener('click', () => {
+            qrModal?.classList.remove('show');
+            this.stop();
+        });
+
+        qrModal?.addEventListener('click', (e) => {
+            if (e.target === qrModal) {
+                qrModal.classList.remove('show');
+                this.stop();
+            }
+        });
+    },
+
     async start(state) {
         if (this.scanning) return;
 
