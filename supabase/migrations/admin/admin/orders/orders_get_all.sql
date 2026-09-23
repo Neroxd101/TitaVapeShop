@@ -6,6 +6,7 @@
 
 -- Drop obsolete 4-parameter overload if it exists to avoid PostgREST ambiguity error
 DROP FUNCTION IF EXISTS orders_get_all(VARCHAR(50), INTEGER, INTEGER, VARCHAR(255));
+DROP FUNCTION IF EXISTS public.orders_get_all(VARCHAR, INTEGER, INTEGER, VARCHAR, TIMESTAMPTZ, TIMESTAMPTZ);
 
 CREATE OR REPLACE FUNCTION public.orders_get_all(
     p_status VARCHAR(50) DEFAULT NULL,
@@ -30,6 +31,7 @@ RETURNS TABLE (
     payment_reference VARCHAR(100),
     payment_receipt_url TEXT,
     payment_status VARCHAR(50),
+    void_reason TEXT,
     total_count BIGINT
 ) AS $$
 BEGIN
@@ -57,6 +59,15 @@ BEGIN
             o.payment_reference,
             o.payment_receipt_url,
             COALESCE(o.payment_status, 'unpaid') AS payment_status,
+            (
+                SELECT NULLIF(BTRIM(t.details->>'reason'), '')
+                FROM transactions t
+                WHERE t.action_type = 'sale_void'
+                  AND t.entity_type = 'order'
+                  AND t.entity_id = o.id
+                ORDER BY t.created_at DESC
+                LIMIT 1
+            ) AS void_reason,
             COUNT(*) OVER() as total_count
         FROM orders o
         WHERE (p_status IS NULL OR o.status = p_status)
@@ -89,6 +100,7 @@ BEGIN
         fo.payment_reference,
         fo.payment_receipt_url,
         fo.payment_status,
+        fo.void_reason,
         fo.total_count
     FROM filtered_orders fo;
 END;

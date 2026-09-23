@@ -113,6 +113,12 @@ const OrdersViewModal = {
 
         const isDelivery = orderType === 'delivery';
         const paymentStatus = order.payment_status || 'unpaid';
+        const voidReasonHtml = order.status === 'voided' ? `
+            <div class="order-void-reason">
+                <strong>Void Reason</strong>
+                <span>${escapeHtml(order.void_reason || 'No reason recorded.')}</span>
+            </div>
+        ` : '';
 
         if (isDelivery) {
             const hasReceipt = Boolean(order.payment_receipt_url);
@@ -127,6 +133,7 @@ const OrdersViewModal = {
                                 <p><strong>Contact:</strong> ${escapeHtml(order.contact_number)}</p>
                                 <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
                                 <p><strong>Status:</strong> ${getStatusBadge(order.status)}</p>
+                                ${voidReasonHtml}
                                 <p><strong>Date:</strong> ${formatDate(order.created_at)}</p>
                             </div>
                             <div class="order-details-info order-details-info-col">
@@ -182,6 +189,7 @@ const OrdersViewModal = {
                             <p><strong>Contact:</strong> ${escapeHtml(order.contact_number)}</p>
                             <p><strong>Order Type:</strong> ${orderTypeLabel}</p>
                             <p><strong>Status:</strong> ${getStatusBadge(order.status)}</p>
+                                ${voidReasonHtml}
                             <p><strong>Date:</strong> ${formatDate(order.created_at)}</p>
                         </div>
                         <div class="order-qr-section">

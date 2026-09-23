@@ -1705,6 +1705,29 @@
     font-size: 11px !important;
   }
 }
+.order-void-reason {
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--text-primary);
+}
 
+.order-void-reason strong,
+.order-void-reason span {
+  display: block;
+}
 
+.order-void-reason strong {
+  margin-bottom: 4px;
+  color: var(--error);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 
+.order-void-reason span {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
