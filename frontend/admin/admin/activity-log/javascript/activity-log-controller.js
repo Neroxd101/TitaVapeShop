@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const result = await data.fetchTransactions();
 
             if (result && result.success) {
-                const { transactions, total, limit, offset } = data.getState();
+                const { transactions } = data.getState();
                 ui.renderTransactions(transactions);
                 ui.updateKPIs(data.state.total, data.state.transactions);
 

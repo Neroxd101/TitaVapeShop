@@ -40,14 +40,6 @@ class OrdersController {
             kpiDeliveryCount: document.getElementById('kpiDeliveryCount')
         };
 
-        // QR Scanner state
-        this.qrScanner = null;
-        this.qrScanning = false;
-        this.scanningOrderId = null;
-
-        // Modal state
-        this.pendingOrderId = null;
-
         this.init();
     }
 
@@ -86,6 +78,7 @@ class OrdersController {
         this.setupModalEventListeners();
         await this.loadOrders();
     }
+
 
     async loadOrderDetailsModal() {
         if (window.OrdersViewModal?.loadModal) {
@@ -158,17 +151,6 @@ class OrdersController {
         }
     }
 
-    filterByStatus(status) {
-        if (window.OrdersFilter?.filterByStatus) {
-            window.OrdersFilter.filterByStatus(status);
-        }
-    }
-
-    filterByOrderType(type) {
-        if (window.OrdersFilter?.filterByOrderType) {
-            window.OrdersFilter.filterByOrderType(type);
-        }
-    }
 
     updateActiveKpiCards() {
         if (window.OrdersFilter?.updateActiveKpiCards) {
@@ -455,48 +437,6 @@ class OrdersController {
     }
 }
 
-// Static methods for onclick handlers
-OrdersController.viewOrder = function(orderId) {
-    if (window.ordersController) {
-        window.ordersController.viewOrder(orderId);
-    }
-};
-
-OrdersController.verifyPayment = function(orderId, status) {
-    if (window.ordersController) {
-        window.ordersController.verifyPayment(orderId, status);
-    }
-};
-
-OrdersController.confirmOrder = function(orderId) {
-    if (window.ordersController) {
-        window.ordersController.confirmOrder(orderId);
-    }
-};
-
-OrdersController.scanCustomerQR = function(orderId) {
-    if (window.ordersController) {
-        window.ordersController.scanCustomerQR(orderId);
-    }
-};
-
-OrdersController.completeOrder = function(orderId) {
-    if (window.ordersController) {
-        window.ordersController.completeOrder(orderId);
-    }
-};
-
-OrdersController.cancelOrder = function(orderId) {
-    if (window.ordersController) {
-        window.ordersController.cancelOrder(orderId);
-    }
-};
-
-OrdersController.resetFilters = function() {
-    if (window.ordersController) {
-        window.ordersController.resetFilters();
-    }
-};
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {

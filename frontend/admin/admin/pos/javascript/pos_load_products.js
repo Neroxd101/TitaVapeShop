@@ -151,7 +151,7 @@ const SalesLoad = {
         priceLabel.textContent = 'Price';
         const priceValue = document.createElement('span');
         priceValue.className = 'pos-card-price-value';
-        const unitPrice = item.sale_price || item.cost_price || 0;
+        const unitPrice = item.sale_price || 0;
 
         priceValue.textContent = typeof InventoryUtils !== 'undefined'
             ? InventoryUtils.formatCurrency(unitPrice)

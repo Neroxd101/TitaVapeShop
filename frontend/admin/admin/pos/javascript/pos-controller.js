@@ -44,7 +44,6 @@
 
   function wireEvents() {
     const searchInput = document.getElementById('productSearch');
-    const filterTabs = document.querySelectorAll('.filter-tab');
     const categoryFilter = document.getElementById('categoryFilter');
     const sortBy = document.getElementById('sortBy');
 
@@ -59,15 +58,6 @@
     if (sortBy) {
       sortBy.addEventListener('change', () => SalesLoad.filterProducts(state));
     }
-
-    // Handle filter tab clicks (backward compatibility if present)
-    filterTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        filterTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        SalesLoad.filterProducts(state);
-      });
-    });
 
     // Delegate modal and interaction events to their respective modules
     SalesQR.setupEventListeners?.(state);

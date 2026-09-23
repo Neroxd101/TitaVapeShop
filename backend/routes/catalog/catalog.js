@@ -19,9 +19,4 @@ router.get('/order-status', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../frontend/order-status/order-status.html'));
 });
 
-// Public customer auth modal HTML
-router.get('/catalog/customer-auth-modal.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../frontend/customer/customer-auth-modal.html'));
-});
-
 module.exports = router;

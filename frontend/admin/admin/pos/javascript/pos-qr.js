@@ -42,7 +42,7 @@ const SalesQR = {
                 (decodedText) => {
                     this.handleDecoded(decodedText, state);
                 },
-                (errorMessage) => {
+                () => {
                     // ignore scan errors, they happen frequently while searching
                 }
             );
@@ -149,26 +149,18 @@ const SalesQR = {
         if (!normalizedCode) return null;
         const list = Array.isArray(products) ? products : [];
 
-        // 1. Try direct matches on potential code fields
-        let item = list.find(p =>
-            String(p?.product_code || '').toUpperCase() === normalizedCode ||
-            String(p?.code || '').toUpperCase() === normalizedCode ||
-            String(p?.qr_code || '').toUpperCase() === normalizedCode
-        );
-        if (item) return item;
-
-        // 2. Fallback: match generated TVS code format to Product Name
+        // Match generated TVS code format to the product name.
         const match = normalizedCode.match(/^TVS-([A-Z0-9]+)-/);
-        if (match) {
-            const safeName = match[1];
-            item = list.find(p => {
-                if (!p?.name) return false;
-                // Re-create the safe name logic used in generation
-                const normalized = String(p.name).replace(/[^a-zA-Z0-9]/g, '').substring(0, 10).toUpperCase();
-                return normalized === safeName;
-            });
-        }
+        if (!match) return null;
 
-        return item || null;
+        const safeName = match[1];
+        return list.find(product => {
+            if (!product?.name) return false;
+            const normalizedName = String(product.name)
+                .replace(/[^a-zA-Z0-9]/g, '')
+                .substring(0, 10)
+                .toUpperCase();
+            return normalizedName === safeName;
+        }) || null;
     }
 };

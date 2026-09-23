@@ -127,16 +127,6 @@ const AnalyticsSalesTrend = {
                 }
             }
         });
-    },
-
-    /**
-     * Destroy the chart (cleanup)
-     */
-    destroy() {
-        if (this.chart) {
-            this.chart.destroy();
-            this.chart = null;
-        }
     }
 };
 

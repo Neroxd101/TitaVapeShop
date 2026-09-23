@@ -10,31 +10,11 @@ function checkAuth() {
   return JSON.parse(user);
 }
 
-// Logout function
-function logout() {
-  if (typeof handleLogout === 'function') {
-    handleLogout();
-  } else {
-    localStorage.clear();
-    window.location.href = '/';
-  }
-}
-
 // Format currency
 function formatCurrency(amount) {
   return '₱' + Number(amount).toLocaleString('en-PH', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2
-  });
-}
-
-// Format date
-function formatDate(date) {
-  return new Date(date).toLocaleDateString('en-PH', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
   });
 }
 
@@ -520,32 +500,6 @@ function setupQuickActions() {
       // Store flag to open modal after navigation
       sessionStorage.setItem('openAddItemModal', 'true');
       window.location.href = '/inventory';
-    });
-  }
-
-  // New Sale - Navigate to sales page
-  const newSaleBtn = document.getElementById('quickActionNewSale');
-  if (newSaleBtn) {
-    newSaleBtn.addEventListener('click', (e) => {
-      // Let default link behavior work (navigate to /sales)
-      // No preventDefault needed
-    });
-  }
-
-  // View Reports - Navigate to analytics
-  const viewReportsBtn = document.getElementById('quickActionViewReports');
-  if (viewReportsBtn) {
-    viewReportsBtn.addEventListener('click', (e) => {
-      // Let default link behavior work (navigate to /analytics)
-      // No preventDefault needed
-    });
-  }
-
-  // Orders - Navigate to orders page
-  const ordersBtn = document.getElementById('quickActionSearchStock');
-  if (ordersBtn) {
-    ordersBtn.addEventListener('click', (e) => {
-      // Let default link behavior work (navigate to /orders)
     });
   }
 

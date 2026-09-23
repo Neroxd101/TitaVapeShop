@@ -242,12 +242,6 @@ const TransactionsPrint = {
 
         if (start) filters.push('From: ' + start);
         if (end) filters.push('To: ' + end);
-        if (!start && !end) {
-            const year = uiController.elements.filterYear?.value;
-            const month = uiController.elements.filterMonth?.value;
-            const day = uiController.elements.filterDay?.value;
-            if (year) filters.push('Date: ' + [year, month, day].filter(Boolean).join('-'));
-        }
 
         return filters.length > 0 ? `Filters: ${filters.join(' | ')}` : 'All Transactions';
     }

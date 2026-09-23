@@ -4,10 +4,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('productGrid');
-    const searchInput = document.getElementById('searchInput');
-    const categoryFilters = document.getElementById('categoryFilters');
-    const emptyState = document.getElementById('emptyState');
-    const sortSelect = document.getElementById('sortSelect');
 
     let allProducts = [];
 
@@ -85,28 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderProducts(filtered);
     }
-
-    /**
-     * Get available stock for a product (original quantity minus cart quantity)
-     */
-    function getAvailableStock(product) {
-        const cartItem = CatalogCart.cart.find(item => item.id === product.id);
-        const cartQuantity = cartItem ? cartItem.quantity : 0;
-        return Math.max(0, product.quantity - cartQuantity);
-    }
-
-    /**
-     * Get product by ID (exposed for cart validation)
-     */
-    function getProductById(productId) {
-        return allProducts.find(p => p.id === productId);
-    }
-
-    // Expose functions for cart module
-    window.CatalogProducts = {
-        getProductById,
-        getAvailableStock
-    };
 
     function renderProducts(products) {
         if (window.CatalogCard) {

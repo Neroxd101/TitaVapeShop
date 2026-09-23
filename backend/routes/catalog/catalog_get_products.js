@@ -6,11 +6,10 @@ const dbClient = () => supabaseAdmin || supabase;
 
 /**
  * GET /api/catalog/products
- * GET /api/inventory/list (alias for backward-compatibility)
  * Fetch public catalog items with category and search filtering
  * Exclusively calls RPC catalog_get_products (returns public fields only)
  */
-router.get(['/api/catalog/products', '/api/inventory/list'], async (req, res) => {
+router.get('/api/catalog/products', async (req, res) => {
   try {
     const client = dbClient();
     if (!client) {

@@ -111,7 +111,7 @@ const SalesCart = {
 
         if (newQty <= 0 && currentQty === 0) return;
 
-        const unitPrice = item.sale_price || item.cost_price || 0;
+        const unitPrice = item.sale_price || 0;
 
         if (existing) {
             existing.qty = newQty;

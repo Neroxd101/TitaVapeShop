@@ -14,7 +14,6 @@ const InventoryState = {
     currentImages: [], // Array of { url, file, uploading }
     viewingItemId: null,
     viewingHistoryItemId: null,
-    historyFilterDate: null,
     historyStartDate: null,
     historyEndDate: null,
     historyPage: 1,
@@ -33,7 +32,6 @@ const InventoryDOM = {
     emptyState: null,
     loadingState: null,
     searchInput: null,
-    filterTabs: null,
     categoryFilter: null,
     sortBySelect: null,
     paginationControls: null,
@@ -61,7 +59,6 @@ const InventoryDOM = {
         this.emptyState = document.getElementById('emptyState');
         this.loadingState = document.getElementById('loadingState');
         this.searchInput = document.getElementById('searchInput');
-        this.filterTabs = document.querySelectorAll('.filter-tab');
         this.categoryFilter = document.getElementById('categoryFilter');
         this.sortBySelect = document.getElementById('sortBy');
         this.paginationControls = document.getElementById('inventoryPagination');

@@ -55,29 +55,10 @@ const CatalogGetProducts = {
     const cartItem = cart.find(item => item.id === product.id);
     const cartQuantity = cartItem ? (Number(cartItem.quantity) || 0) : 0;
     return Math.max(0, (Number(product.quantity) || 0) - cartQuantity);
-  },
-
-  /**
-   * Filter in-memory products array
-   * @param {string} category
-   * @param {string} search
-   * @returns {Array}
-   */
-  filter(category = 'all', search = '') {
-    const selectedCategory = String(category || '').trim().toLowerCase();
-    const query = String(search || '').trim().toLowerCase();
-
-    return this.allProducts.filter(product => {
-      const productCategory = String(product.category || '').trim().toLowerCase();
-      const matchesCategory = selectedCategory === 'all' || productCategory === selectedCategory;
-      const matchesSearch = !query ||
-        Boolean(product.name && product.name.toLowerCase().includes(query));
-      return matchesCategory && matchesSearch;
-    });
   }
 };
 
 window.CatalogGetProducts = CatalogGetProducts;
 
-// Provide window.CatalogProducts alias for backward-compatibility with catalog-cart.js
+// Shared product access used by cart and card modules.
 window.CatalogProducts = CatalogGetProducts;

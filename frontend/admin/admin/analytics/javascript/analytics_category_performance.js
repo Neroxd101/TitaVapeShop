@@ -52,16 +52,6 @@ const AnalyticsCategoryPerformance = {
                 cutout: '70%'
             }
         });
-    },
-
-    /**
-     * Destroy the chart (cleanup)
-     */
-    destroy() {
-        if (this.chart) {
-            this.chart.destroy();
-            this.chart = null;
-        }
     }
 };
 

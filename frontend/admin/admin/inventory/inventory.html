@@ -58,20 +58,20 @@
         </div>
 
         <!-- Integrated Live Counters (Summary Only) -->
-        <div class="header-right header-counters" id="inventoryCounters">
-          <div class="header-counter-pill" id="statCardTotalProducts" title="Total products">
+        <div class="header-right header-counters">
+          <div class="header-counter-pill" title="Total products">
             <span class="counter-label">All</span>
             <span class="counter-value" id="statTotalProducts">0</span>
           </div>
-          <div class="header-counter-pill counter-units" id="statCardTotalStock" title="Total stock units">
+          <div class="header-counter-pill counter-units" title="Total stock units">
             <span class="counter-label">Units</span>
             <span class="counter-value" id="statTotalStock">0</span>
           </div>
-          <div class="header-counter-pill counter-low" id="statCardLowStock" title="Low stock items (1–5)">
+          <div class="header-counter-pill counter-low" title="Low stock items (1–5)">
             <span class="counter-label">Low</span>
             <span class="counter-value" id="statLowStock">0</span>
           </div>
-          <div class="header-counter-pill counter-out" id="statCardOutStock" title="Out of stock items (0)">
+          <div class="header-counter-pill counter-out" title="Out of stock items (0)">
             <span class="counter-label">Out</span>
             <span class="counter-value" id="statOutStock">0</span>
           </div>
@@ -132,7 +132,7 @@
       </div>
 
       <!-- Inventory Grid -->
-      <!-- 📋 API Route: GET /admin/admin/inventory/load-items - See API-ROUTES.md -->
+      <!-- API Route: GET /inventory/inventory_get_all -->
       <div class="inventory-grid" id="inventoryGrid">
         <!-- Cards will be loaded here -->
       </div>

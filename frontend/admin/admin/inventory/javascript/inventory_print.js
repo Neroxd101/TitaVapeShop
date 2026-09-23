@@ -10,8 +10,7 @@ const InventoryPrint = {
         const escape = value => this.escape(value);
         const stockLabels = { all: 'All Stock', low: 'Low Stock (1–5)', none: 'No Stock (0)' };
         const filters = [
-            `Category: ${InventoryState.currentFilter === 'all' ? 'All' : InventoryState.currentFilter}`,
-            `Stock: ${stockLabels[InventoryState.stockFilter] || 'All Stock'}`
+            `Category: ${InventoryState.currentFilter === 'all' ? 'All' : InventoryState.currentFilter}`
         ];
         if (InventoryState.searchQuery) filters.push(`Search: ${InventoryState.searchQuery}`);
         if (InventoryState.addedDateFrom) filters.push(`Date added from: ${InventoryState.addedDateFrom}`);

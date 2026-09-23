@@ -2,18 +2,8 @@
 const CatalogCard = {
     productGrid: null,
     emptyState: null,
-    controller: null,
-
-    init(controller) {
-        this.controller = controller;
-        this.productGrid = document.getElementById('productGrid');
-        this.emptyState = document.getElementById('emptyState');
-    },
 
     getAvailableStock(product) {
-        if (this.controller?.getAvailableStock) {
-            return this.controller.getAvailableStock(product);
-        }
         const cart = window.CatalogCart?.cart || [];
         const cartItem = cart.find(item => item.id === product.id);
         const cartQuantity = cartItem ? cartItem.quantity : 0;
@@ -105,7 +95,7 @@ const CatalogCard = {
     },
 
     updateProductStock(productId) {
-        const product = this.controller?.getProductById?.(productId) || window.CatalogGetProducts?.getProductById?.(productId);
+        const product = window.CatalogGetProducts?.getProductById?.(productId);
         if (!product) return;
 
         const availableStock = this.getAvailableStock(product);
@@ -158,7 +148,7 @@ const CatalogCard = {
     },
 
     handleAddToCart(btn, productId) {
-        const product = this.controller?.getProductById?.(productId) || window.CatalogGetProducts?.getProductById?.(productId);
+        const product = window.CatalogGetProducts?.getProductById?.(productId);
         if (!product) return;
 
         const available = this.getAvailableStock(product);
@@ -242,7 +232,7 @@ const CatalogCard = {
 
     handleImageError(imgElement, productId) {
         const currentSrc = imgElement.src;
-        const product = this.controller?.getProductById?.(productId) || window.CatalogGetProducts?.getProductById?.(productId);
+        const product = window.CatalogGetProducts?.getProductById?.(productId);
         
         if (!product) {
             imgElement.src = '/img/placeholder-product.png';
@@ -268,6 +258,3 @@ const CatalogCard = {
 };
 
 window.CatalogCard = CatalogCard;
-window.handleImageError = function(imgElement, productId) {
-    CatalogCard.handleImageError(imgElement, productId);
-};

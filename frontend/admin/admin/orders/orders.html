@@ -28,7 +28,6 @@
     <!-- Reusable Components -->
     <link rel="stylesheet" href="/css/components/page-header.css">
     <link rel="stylesheet" href="/css/components/page-content.css">
-    <link rel="stylesheet" href="/css/components/buttons.css">
     <link rel="stylesheet" href="/css/components/filter-tabs.css">
     <link rel="stylesheet" href="/css/components/filters.css">
     <link rel="stylesheet" href="/css/components/action-buttons.css">
@@ -38,7 +37,6 @@
     <link rel="stylesheet" href="/css/components/data-table.css">
     <link rel="stylesheet" href="/css/components/badges.css">
     <link rel="stylesheet" href="/css/components/pagination.css">
-    <link rel="stylesheet" href="/css/components/modal.css">
     <link rel="stylesheet" href="/css/components/qr-scanner.css">
     <link rel="stylesheet" href="/css/components/order-details.css">
     <!-- Orders Structure -->
@@ -61,7 +59,7 @@
                 </div>
 
                 <!-- KPI Counter Pills -->
-                <div class="header-right header-counters" id="ordersCounters">
+                <div class="header-right header-counters">
                     <div class="header-counter-pill counter-pending clickable" id="kpiCardPending" role="button" tabindex="0" title="Pending verification">
                         <span class="counter-label">Pending</span>
                         <span class="counter-value" id="kpiPendingCount">0</span>
@@ -112,7 +110,7 @@
                         </label>
                     </div>
                     <div class="filter-tabs-actions orders-filter-actions">
-                        <button id="resetFiltersBtn" type="button" class="btn btn-primary" onclick="OrdersController.resetFilters()">Reset</button>
+                        <button id="resetFiltersBtn" type="button" class="btn btn-primary">Reset</button>
                     </div>
                 </div>
             </div>

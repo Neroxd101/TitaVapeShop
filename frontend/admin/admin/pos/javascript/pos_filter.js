@@ -26,13 +26,13 @@ const SalesFilter = {
                 case 'name-desc':
                     return (b.name || '').localeCompare(a.name || '', undefined, { sensitivity: 'base' });
                 case 'price-asc': {
-                    const priceA = Number(a.sale_price || a.cost_price || 0);
-                    const priceB = Number(b.sale_price || b.cost_price || 0);
+                    const priceA = Number(a.sale_price || 0);
+                    const priceB = Number(b.sale_price || 0);
                     return priceA - priceB;
                 }
                 case 'price-desc': {
-                    const priceA = Number(a.sale_price || a.cost_price || 0);
-                    const priceB = Number(b.sale_price || b.cost_price || 0);
+                    const priceA = Number(a.sale_price || 0);
+                    const priceB = Number(b.sale_price || 0);
                     return priceB - priceA;
                 }
                 case 'stock-asc': {

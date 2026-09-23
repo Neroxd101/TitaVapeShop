@@ -36,7 +36,6 @@ const InventoryHistory = {
         if (!item) return;
 
         InventoryState.viewingHistoryItemId = itemId;
-        InventoryState.historyFilterDate = null;
         InventoryState.historyStartDate = null;
         InventoryState.historyEndDate = null;
         InventoryState.historyPage = 1;
@@ -285,7 +284,6 @@ const InventoryHistory = {
         
         InventoryState.historyStartDate = startDate;
         InventoryState.historyEndDate = endDate;
-        InventoryState.historyFilterDate = null;
         InventoryState.historyPage = 1; // Reset to first page when filtering
         this.loadSalesHistory(itemId);
     },
@@ -333,7 +331,6 @@ const InventoryHistory = {
     closeHistoryModal() {
         InventoryDOM.historyModal?.classList.remove('show');
         InventoryState.viewingHistoryItemId = null;
-        InventoryState.historyFilterDate = null;
         InventoryState.historyStartDate = null;
         InventoryState.historyEndDate = null;
         InventoryState.historyPage = 1;
