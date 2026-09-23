@@ -114,3 +114,5 @@ const InventoryCreate = {
         InventoryDOM.itemModal.classList.remove('show');
     }
 };
+
+window.InventoryCreate = InventoryCreate;

@@ -340,3 +340,5 @@ const InventoryHistory = {
         InventoryState.historyTotal = 0;
     }
 };
+
+window.InventoryHistory = InventoryHistory;

@@ -70,3 +70,5 @@ const InventoryDelete = {
         InventoryState.deletingItemId = null;
     }
 };
+
+window.InventoryDelete = InventoryDelete;

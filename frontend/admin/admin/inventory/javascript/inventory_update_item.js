@@ -128,3 +128,5 @@ const InventoryUpdate = {
         }
     }
 };
+
+window.InventoryUpdate = InventoryUpdate;
