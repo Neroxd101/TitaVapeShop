@@ -1273,8 +1273,12 @@
   }
 }
 
-/* Fit all order columns within landscape tablet widths. */
-@media (orientation: landscape) and (min-width: 769px) and (max-width: 1400px) {
+/* Fit all order columns within tablet widths without horizontal scrolling. */
+@media (min-width: 769px) and (max-width: 1400px) {
+  .orders-table-card .table-responsive {
+    overflow-x: hidden;
+  }
+
   .orders-table {
     table-layout: fixed;
     width: 100%;
@@ -1362,80 +1366,6 @@
     padding: 6px 4px;
     white-space: nowrap;
     font-size: 11px;
-  }
-}
-
-/* Keep tablet columns readable and let users swipe horizontally for the rest. */
-@media (min-width: 600px) and (max-width: 1280px) {
-  .orders-table-card {
-    display: block !important;
-    overflow: hidden !important;
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 12px !important;
-    box-shadow: none !important;
-  }
-
-  .orders-table-card .table-responsive {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-inline: contain;
-  }
-
-  .orders-table {
-    display: table !important;
-    table-layout: auto !important;
-    width: 100% !important;
-    min-width: 1200px !important;
-  }
-
-  .orders-table thead {
-    display: table-header-group !important;
-  }
-
-  .orders-table tbody {
-    display: table-row-group !important;
-  }
-
-  .orders-table tbody tr,
-  .orders-table tbody tr:not(.empty-row),
-  .orders-table tbody tr.empty-row {
-    display: table-row !important;
-    background: transparent !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .orders-table th,
-  .orders-table td,
-  .orders-table tbody td[class] {
-    display: table-cell !important;
-    width: auto !important;
-    min-width: 0 !important;
-    padding: 12px 14px !important;
-    border-bottom: 1px solid var(--border) !important;
-    white-space: nowrap !important;
-    overflow-wrap: normal !important;
-  }
-
-  .orders-table tbody tr.empty-row td {
-    display: table-cell !important;
-    width: auto !important;
-    padding: 40px 16px !important;
-  }
-
-  .orders-table td.col-items,
-  .orders-table .items-summary {
-    white-space: normal !important;
-  }
-
-  .orders-table .order-actions .btn {
-    min-width: max-content !important;
   }
 }
 
