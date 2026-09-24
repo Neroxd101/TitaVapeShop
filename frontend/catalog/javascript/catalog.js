@@ -5,6 +5,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('productGrid');
 
+    let currentPage = 1;
+    const productsPerPage = 12;
     let allProducts = [];
 
     // Initialize
@@ -79,7 +81,26 @@ document.addEventListener('DOMContentLoaded', () => {
             ? CatalogFilter.filterAndSort(allProducts) 
             : allProducts;
 
-        renderProducts(filtered);
+        const totalPages = Math.max(1, Math.ceil(filtered.length / productsPerPage));
+        currentPage = Math.min(currentPage, totalPages);
+        const start = (currentPage - 1) * productsPerPage;
+        renderProducts(filtered.slice(start, start + productsPerPage));
+        renderPagination(filtered.length, totalPages);
+    }
+
+    function renderPagination(totalProducts, totalPages) {
+        const el = document.getElementById("catalogPagination");
+        if (!el) return;
+        if (totalProducts <= productsPerPage) { el.hidden = true; el.innerHTML = ""; return; }
+        el.hidden = false;
+        el.innerHTML = "";
+        for (let page = 1; page <= totalPages; page++) {
+            const button = document.createElement("button");
+            button.type = "button"; button.className = "pagination-btn" + (page === currentPage ? " is-active" : "");
+            button.textContent = page; button.setAttribute("aria-current", page === currentPage ? "page" : "false");
+            button.addEventListener("click", () => { currentPage = page; filterAndRender(); });
+            el.appendChild(button);
+        }
     }
 
     function renderProducts(products) {

@@ -12,3 +12,5 @@
 @import url("./css/catalog-viewport-overrides.css");
 @import url("./css/catalog-navigation-overrides.css");
 @import url("./css/catalog-cart-dialogs.css");
+
+.catalog-pagination{display:flex;justify-content:center;gap:8px;margin:28px 0 8px}.catalog-pagination[hidden]{display:none}.pagination-btn{min-width:38px;height:38px;border:1px solid var(--border-color,#2a2a3a);border-radius:8px;background:var(--surface,#171722);color:var(--text-primary,#fff);cursor:pointer}.pagination-btn:hover,.pagination-btn.is-active{background:var(--accent);border-color:var(--accent);color:#fff}
