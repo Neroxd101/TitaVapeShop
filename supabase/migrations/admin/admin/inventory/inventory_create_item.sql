@@ -3,9 +3,13 @@
 -- Creates a new inventory item via RPC
 -- =============================================
 
+DROP FUNCTION IF EXISTS public.inventory_create_item(VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB);
+DROP FUNCTION IF EXISTS public.inventory_create_item(VARCHAR, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB);
+
 CREATE OR REPLACE FUNCTION public.inventory_create_item(
     p_category VARCHAR(20),
     p_name VARCHAR(100),
+    p_variations JSONB DEFAULT '[]'::jsonb,
     p_description TEXT DEFAULT NULL,
     p_quantity INTEGER DEFAULT 0,
     p_cost_price DECIMAL(10, 2) DEFAULT 0,
@@ -17,6 +21,7 @@ RETURNS TABLE (
     id UUID,
     category VARCHAR(20),
     name VARCHAR(100),
+    variations JSONB,
     description TEXT,
     quantity INTEGER,
     cost_price DECIMAL(10, 2),
@@ -56,6 +61,7 @@ BEGIN
     INSERT INTO inventory (
         category,
         name,
+        variations,
         description,
         quantity,
         cost_price,
@@ -66,6 +72,7 @@ BEGIN
     ) VALUES (
         p_category,
         p_name,
+        COALESCE(p_variations, '[]'::jsonb),
         p_description,
         COALESCE(p_quantity, 0),
         COALESCE(p_cost_price, 0),
@@ -81,6 +88,7 @@ BEGIN
         new_item.id,
         new_item.category,
         new_item.name,
+        new_item.variations,
         new_item.description,
         new_item.quantity,
         new_item.cost_price,
@@ -97,9 +105,9 @@ SET search_path = public;
 
 -- Only the trusted backend service-role client may create inventory items.
 REVOKE ALL ON FUNCTION public.inventory_create_item(
-    VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+    VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
 ) FROM PUBLIC, anon, authenticated;
 
 GRANT EXECUTE ON FUNCTION public.inventory_create_item(
-    VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+    VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
 ) TO service_role;

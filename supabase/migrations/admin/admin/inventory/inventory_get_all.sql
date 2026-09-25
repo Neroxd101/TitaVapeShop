@@ -4,6 +4,8 @@
 -- Uses stored total_profit column from inventory table
 -- =============================================
 
+DROP FUNCTION IF EXISTS public.inventory_get_all(VARCHAR, VARCHAR);
+
 CREATE OR REPLACE FUNCTION public.inventory_get_all(
     filter_category VARCHAR(20) DEFAULT NULL,
     filter_search VARCHAR(100) DEFAULT NULL
@@ -12,6 +14,7 @@ RETURNS TABLE (
     id UUID,
     category VARCHAR(20),
     name VARCHAR(100),
+    variations JSONB,
     description TEXT,
     quantity INTEGER,
     cost_price DECIMAL(10, 2),
@@ -28,6 +31,7 @@ BEGIN
         i.id,
         i.category,
         i.name,
+        i.variations,
         i.description,
         i.quantity,
         i.cost_price,

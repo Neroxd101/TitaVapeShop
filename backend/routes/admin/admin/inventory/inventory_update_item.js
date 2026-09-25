@@ -11,7 +11,7 @@ router.put('/inventory/inventory_update_item', isAuthenticated, hasRole(['admin'
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { id, category, name, description, quantity, cost_price, sale_price, qr_image_url, images } = req.body;
+        const { id, category, name, variations, description, quantity, cost_price, sale_price, qr_image_url, images } = req.body;
 
         // Validate required fields
         if (!id) {
@@ -22,6 +22,7 @@ router.put('/inventory/inventory_update_item', isAuthenticated, hasRole(['admin'
         const rpcParams = { p_id: id };
         if (category !== undefined) rpcParams.p_category = category || null;
         if (name !== undefined) rpcParams.p_name = name || null;
+        if (variations !== undefined) rpcParams.p_variations = Array.isArray(variations) ? variations : [];
         if (description !== undefined) rpcParams.p_description = description || null;
         if (quantity !== undefined) rpcParams.p_quantity = quantity !== null && quantity !== undefined ? quantity : null;
         if (cost_price !== undefined) rpcParams.p_cost_price = cost_price !== null && cost_price !== undefined ? cost_price : null;

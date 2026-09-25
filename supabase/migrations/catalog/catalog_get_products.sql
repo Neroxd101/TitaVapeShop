@@ -4,6 +4,8 @@
 -- Excludes sensitive cost_price and total_profit columns
 -- =============================================
 
+DROP FUNCTION IF EXISTS public.catalog_get_products(VARCHAR, VARCHAR);
+
 CREATE OR REPLACE FUNCTION public.catalog_get_products(
     filter_category VARCHAR(20) DEFAULT NULL,
     filter_search VARCHAR(100) DEFAULT NULL
@@ -12,6 +14,7 @@ RETURNS TABLE (
     id UUID,
     category VARCHAR(20),
     name VARCHAR(100),
+    variations JSONB,
     description TEXT,
     quantity INTEGER,
     sale_price DECIMAL(10, 2),
@@ -36,6 +39,7 @@ BEGIN
         i.id,
         i.category,
         i.name,
+        i.variations,
         i.description,
         i.quantity,
         i.sale_price,

@@ -272,6 +272,9 @@ const CatalogProductModal = {
 
         const availableStock = window.CatalogProducts?.getAvailableStock(product) ?? product.quantity;
         const isOutOfStock = availableStock <= 0;
+        const variations = Array.isArray(product.variations) ? product.variations.filter(v => v && v.name) : [];
+        const hasVariations = variations.length > 0;
+        const escapeHtml = (value) => String(value).replace(/[&<>]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[char]);
 
         this.modalContent.innerHTML = `
             <div class="modal-product-view">
@@ -286,6 +289,16 @@ const CatalogProductModal = {
                 <div class="modal-details">
                     <span class="product-category">${product.category}</span>
                     <h2>${product.name}</h2>
+                    ${hasVariations ? `
+                        <div class="modal-variation-selector">
+                            <label for="modalVariationSelect">Choose an option <span aria-hidden="true">*</span></label>
+                            <select id="modalVariationSelect" required>
+                                <option value="">Select a variation</option>
+                                ${variations.map((v, index) => `<option value="${index}" ${Number(v.quantity) <= 0 ? 'disabled' : ''}>${escapeHtml(v.name)}${Number(v.quantity) > 0 ? ` (${v.quantity} available)` : ' (Out of stock)'}</option>`).join('')}
+                            </select>
+                            <p id="modalVariationHint" class="modal-variation-hint">Select a variation before adding this item to your cart.</p>
+                        </div>
+                    ` : ''}
                     <span class="product-price">₱${product.sale_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                     
                     <p class="description">${product.description || 'No description available for this product.'}</p>
@@ -308,7 +321,7 @@ const CatalogProductModal = {
                                 </div>
                                 <span id="modalMaxQtyText" style="font-size: 12px; color: var(--text-muted);">(Max ${availableStock})</span>
                             </div>
-                            <button type="button" id="modalAddToCartBtn" class="modal-add-cart-btn">
+                            <button type="button" id="modalAddToCartBtn" class="modal-add-cart-btn" ${hasVariations ? 'disabled aria-disabled="true"' : ''}>
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                                     <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                                 </svg>
@@ -330,9 +343,15 @@ const CatalogProductModal = {
             const qtyMinus = document.getElementById('modalQtyMinus');
             const qtyPlus = document.getElementById('modalQtyPlus');
             const addBtn = document.getElementById('modalAddToCartBtn');
+            const variationSelect = document.getElementById('modalVariationSelect');
+            const variationHint = document.getElementById('modalVariationHint');
+            const getSelectedVariation = () => !hasVariations || !variationSelect || variationSelect.value === '' ? null : variations[Number(variationSelect.value)] || null;
+            const getCurrentStock = () => { const selected = getSelectedVariation(); return selected ? Math.max(0, Number(selected.quantity) || 0) : availableStock; };
+            const refreshVariationState = () => { const selected = getSelectedVariation(); const stock = getCurrentStock(); if (hasVariations && addBtn) { addBtn.disabled = !selected || stock <= 0; addBtn.setAttribute('aria-disabled', String(addBtn.disabled)); } if (qtyInput) { qtyInput.max = String(stock); qtyInput.value = String(Math.min(Math.max(1, Number(qtyInput.value) || 1), Math.max(1, stock))); } const maxText = document.getElementById('modalMaxQtyText'); if (maxText) maxText.textContent = `(Max ${stock})`; if (variationHint && selected) variationHint.textContent = stock > 0 ? `${selected.name} selected.` : `${selected.name} is out of stock.`; };
+            variationSelect?.addEventListener('change', refreshVariationState);
 
             const parseQty = () => {
-                let currentStock = window.CatalogProducts?.getAvailableStock(product) ?? availableStock;
+                let currentStock = hasVariations ? getCurrentStock() : (window.CatalogProducts?.getAvailableStock(product) ?? availableStock);
                 let val = parseInt(qtyInput.value, 10);
                 if (isNaN(val) || val < 1) val = 1;
                 if (val > currentStock) val = currentStock;
@@ -347,7 +366,7 @@ const CatalogProductModal = {
             });
 
             qtyPlus?.addEventListener('click', () => {
-                let currentStock = window.CatalogProducts?.getAvailableStock(product) ?? availableStock;
+                let currentStock = hasVariations ? getCurrentStock() : (window.CatalogProducts?.getAvailableStock(product) ?? availableStock);
                 let val = parseQty();
                 if (val < currentStock) {
                     qtyInput.value = val + 1;
@@ -362,6 +381,13 @@ const CatalogProductModal = {
                 e.preventDefault();
                 e.stopPropagation();
                 if (this.isAddingToCart) return;
+
+                const selectedVariation = getSelectedVariation();
+                if (hasVariations && !selectedVariation) {
+                    variationHint.textContent = 'Please select a variation before adding this item to your cart.';
+                    variationSelect?.focus();
+                    return;
+                }
 
                 const qtyToAdd = parseQty();
                 if (window.CatalogCart && qtyToAdd > 0) {
@@ -378,7 +404,7 @@ const CatalogProductModal = {
                     `;
 
                     // Add to cart
-                    window.CatalogCart.addToCart(product, qtyToAdd);
+                    window.CatalogCart.addToCart({ ...product, selected_variation: selectedVariation?.name }, qtyToAdd);
                     window.CatalogCart.updateCartBadge(true);
                     window.CatalogCart.showFloatingBadge(addBtn, `+${qtyToAdd}`);
 

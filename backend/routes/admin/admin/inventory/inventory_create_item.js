@@ -11,7 +11,7 @@ router.post('/inventory/inventory_create_item', isAuthenticated, hasRole(['admin
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { category, name, description, quantity, cost_price, sale_price, qr_image_url, images } = req.body;
+        const { category, name, variations, description, quantity, cost_price, sale_price, qr_image_url, images } = req.body;
 
         // Validate required fields
         if (!category || !name) {
@@ -22,6 +22,7 @@ router.post('/inventory/inventory_create_item', isAuthenticated, hasRole(['admin
         const { data, error } = await supabaseAdmin.rpc('inventory_create_item', {
             p_category: category,
             p_name: name,
+            p_variations: Array.isArray(variations) ? variations : [],
             p_description: description || null,
             p_quantity: quantity || 0,
             p_cost_price: cost_price || 0,

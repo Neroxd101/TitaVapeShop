@@ -32,6 +32,7 @@ const InventoryCreate = {
 
         document.getElementById('modalClose')?.addEventListener('click', () => this.closeModal());
         document.getElementById('cancelBtn')?.addEventListener('click', () => this.closeModal());
+        document.getElementById('addVariationBtn')?.addEventListener('click', () => this.addVariationField());
 
         // Multiple images upload & thumbnail editing
         document.getElementById('itemImages')?.addEventListener('change', (e) => {
@@ -61,6 +62,7 @@ const InventoryCreate = {
 
         // Set explicit create-data attribute if needed, but we handle logic here
         InventoryDOM.itemForm.reset();
+        this.renderVariationFields();
         InventoryImage.renderImagesGrid();
         InventoryDOM.itemModal.classList.add('show');
     },
@@ -81,6 +83,7 @@ const InventoryCreate = {
             const itemData = {
                 category: document.getElementById('itemCategory').value,
                 name: productName,
+                variations: this.getVariationValue(),
                 description: document.getElementById('itemDescription').value.trim() || null,
                 quantity: parseInt(document.getElementById('itemQuantity').value) || 0,
                 cost_price: parseFloat(document.getElementById('itemCostPrice').value) || 0,
@@ -110,6 +113,39 @@ const InventoryCreate = {
         }
     },
 
+
+    getVariationValue() {
+        return [...document.querySelectorAll('.variation-row')].map(row => ({ name: row.querySelector('.variation-input')?.value.trim(), quantity: Number(row.querySelector('.variation-quantity')?.value) || 0 })).filter(item => item.name).slice(0, 10);
+    },
+
+    renderVariationFields(value = '') {
+        const values = Array.isArray(value) ? value.slice(0, 10) : String(value || '').split('|').map(item => ({ name: item.trim(), quantity: 0 })).filter(item => item.name).slice(0, 10);
+        const list = document.getElementById('variationsList');
+        if (!list) return;
+        list.innerHTML = '';
+        (values.length ? values : ['']).forEach(item => this.addVariationField(item, true));
+    },
+
+    addVariationField(value = '', skipLimitCheck = false) {
+        const list = document.getElementById('variationsList');
+        if (!list || (!skipLimitCheck && list.children.length >= 10)) return;
+        const row = document.createElement('div');
+        row.className = 'variation-row';
+        const input = document.createElement('input');
+        input.type = 'text'; input.className = 'variation-input'; input.placeholder = 'e.g., Blue, 30 ml, 0.8 Ω'; input.maxLength = 100; input.value = typeof value === 'object' ? value.name : value;
+        const resizeVariationInput = () => { input.style.width = `${Math.min(220, Math.max(30, (input.value.length + 1) * 7))}px`; };
+        resizeVariationInput();
+        input.addEventListener('input', resizeVariationInput);
+        const remove = document.createElement('button');
+        remove.type = 'button'; remove.className = 'variation-remove'; remove.textContent = '×'; remove.title = 'Remove variation'; remove.setAttribute('aria-label', 'Remove variation');
+        remove.addEventListener('click', () => { row.remove(); if (!list.children.length) this.addVariationField('', true); });
+        const qty = document.createElement('input');
+        qty.type = 'number'; qty.className = 'variation-quantity'; qty.min = '0'; qty.step = '1'; qty.placeholder = 'Qty'; qty.setAttribute('aria-label', 'Variation quantity'); qty.value = typeof value === 'object' ? (value.quantity || 0) : 0;
+        const nameWrap = document.createElement('div'); nameWrap.className = 'variation-name-field';
+        const qtyWrap = document.createElement('div'); qtyWrap.className = 'variation-qty-field';
+        nameWrap.appendChild(input); qtyWrap.appendChild(qty);
+        row.append(nameWrap, qtyWrap, remove); list.appendChild(row);
+    },
     closeModal() {
         InventoryDOM.itemModal.classList.remove('show');
     }

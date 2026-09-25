@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS inventory (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   category VARCHAR(20) NOT NULL CHECK (category IN ('hardware', 'juices')),
   name VARCHAR(100) NOT NULL,
+  variations JSONB NOT NULL DEFAULT '[]'::jsonb,
   description TEXT,
   quantity INTEGER NOT NULL DEFAULT 0,
   cost_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
@@ -18,6 +19,26 @@ CREATE TABLE IF NOT EXISTS inventory (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Normalize variation storage for both fresh and existing databases.
+ALTER TABLE public.inventory
+ADD COLUMN IF NOT EXISTS variations JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'inventory' AND column_name = 'variation'
+  ) THEN
+    EXECUTE $migration$
+      UPDATE public.inventory
+      SET variations = jsonb_build_array(jsonb_build_object('name', variation, 'quantity', quantity))
+      WHERE (variations IS NULL OR jsonb_array_length(variations) = 0)
+        AND variation IS NOT NULL
+        AND btrim(variation) <> ''
+    $migration$;
+    ALTER TABLE public.inventory DROP COLUMN variation;
+  END IF;
+END $$;
 -- =============================================
 -- Row Level Security (RLS)
 -- =============================================

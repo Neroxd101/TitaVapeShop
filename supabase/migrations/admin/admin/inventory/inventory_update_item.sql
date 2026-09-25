@@ -1,7 +1,11 @@
+DROP FUNCTION IF EXISTS public.inventory_update_item(UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB);
+DROP FUNCTION IF EXISTS public.inventory_update_item(UUID, VARCHAR, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB);
+
 CREATE OR REPLACE FUNCTION public.inventory_update_item(
     p_id UUID,
     p_category VARCHAR(20) DEFAULT NULL,
     p_name VARCHAR(100) DEFAULT NULL,
+    p_variations JSONB DEFAULT NULL,
     p_description TEXT DEFAULT NULL,
     p_quantity INTEGER DEFAULT NULL,
     p_cost_price DECIMAL(10, 2) DEFAULT NULL,
@@ -13,6 +17,7 @@ RETURNS TABLE (
     id UUID,
     category VARCHAR(20),
     name VARCHAR(100),
+    variations JSONB,
     description TEXT,
     quantity INTEGER,
     cost_price DECIMAL(10, 2),
@@ -29,6 +34,7 @@ DECLARE
     cur_profit DECIMAL(10,2);
 
     new_qty INTEGER;
+    new_variations JSONB;
     new_cost DECIMAL(10,2);
     new_profit DECIMAL(10,2);
     diff_qty INTEGER;
@@ -54,6 +60,7 @@ BEGIN
     END IF;
 
     -- Resolve new values
+    new_variations := COALESCE(p_variations, (SELECT inv.variations FROM inventory inv WHERE inv.id = p_id));
     new_qty  := COALESCE(p_quantity, cur_qty);
     new_cost := COALESCE(p_cost_price, cur_cost);
     new_profit := COALESCE(cur_profit, 0);
@@ -76,6 +83,7 @@ BEGIN
     SET
         category = COALESCE(p_category, inv.category),
         name = COALESCE(p_name, inv.name),
+        variations = COALESCE(p_variations, inv.variations),
         description = COALESCE(p_description, inv.description),
         quantity = new_qty,
         cost_price = new_cost,
@@ -88,7 +96,20 @@ BEGIN
 
     -- Return updated row
     RETURN QUERY
-    SELECT *
+    SELECT
+        inv.id,
+        inv.category,
+        inv.name,
+        inv.variations,
+        inv.description,
+        inv.quantity,
+        inv.cost_price,
+        inv.sale_price,
+        inv.qr_image_url,
+        inv.images,
+        inv.total_profit,
+        inv.created_at,
+        inv.updated_at
     FROM inventory AS inv
     WHERE inv.id = p_id;
 END;
@@ -98,9 +119,9 @@ SET search_path = public;
 
 -- Only the trusted backend service-role client may update inventory items.
 REVOKE ALL ON FUNCTION public.inventory_update_item(
-    UUID, VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+    UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
 ) FROM PUBLIC, anon, authenticated;
 
 GRANT EXECUTE ON FUNCTION public.inventory_update_item(
-    UUID, VARCHAR, VARCHAR, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+    UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
 ) TO service_role;

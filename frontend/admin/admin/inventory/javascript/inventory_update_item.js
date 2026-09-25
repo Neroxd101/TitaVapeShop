@@ -17,6 +17,7 @@ const InventoryUpdate = {
         document.getElementById('itemId').value = item.id;
         document.getElementById('itemCategory').value = item.category;
         document.getElementById('itemName').value = item.name;
+        InventoryCreate.renderVariationFields(item.variations || item.variation || '');
         document.getElementById('itemDescription').value = item.description || '';
         document.getElementById('itemQuantity').value = item.quantity;
         document.getElementById('itemCostPrice').value = item.cost_price;
@@ -43,6 +44,7 @@ const InventoryUpdate = {
                 id: InventoryState.editingItemId,
                 category: document.getElementById('itemCategory').value,
                 name: productName,
+                variations: InventoryCreate.getVariationValue(),
                 description: document.getElementById('itemDescription').value.trim() || null,
                 quantity: parseInt(document.getElementById('itemQuantity').value) || 0,
                 cost_price: parseFloat(document.getElementById('itemCostPrice').value) || 0,
