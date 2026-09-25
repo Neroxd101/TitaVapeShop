@@ -102,6 +102,8 @@ const InventoryViewModal = {
         const variations = Array.isArray(item.variations)
             ? item.variations.filter(variation => variation && variation.name)
             : [];
+        InventoryDOM.viewModal.classList.toggle('has-variations', variations.length > 0);
+        InventoryDOM.viewModal.classList.toggle('no-variations', variations.length === 0);
         if (variationsSection && variationsList) {
             variationsSection.hidden = variations.length === 0;
             variationsList.replaceChildren(...variations.map(variation => {

@@ -1754,3 +1754,13 @@
   max-height: 7.5em !important;
   overflow-y: auto !important;
 }
+
+@media (min-width: 1024px) and (min-height: 700px) {
+  #viewModal .view-description {
+    max-height: 10.5em !important;
+  }
+
+  #viewModal.no-variations .view-description {
+    max-height: 15em !important;
+  }
+}
