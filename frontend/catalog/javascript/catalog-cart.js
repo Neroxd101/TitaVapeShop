@@ -45,14 +45,17 @@ const CatalogCart = {
      */
     addToCart(product, quantity = 1) {
         // Get available stock
-        const availableStock = window.CatalogProducts?.getAvailableStock(product) ?? product.quantity;
-        const existingItem = this.cart.find(item => item.id === product.id);
+        const variationName = product.selected_variation || null;
+        const existingItem = this.cart.find(item => item.id === product.id && (item.selected_variation || null) === variationName);
+        const availableStock = variationName
+            ? Math.max(0, (product.variations?.find(v => v.name === variationName)?.quantity || 0) - (existingItem?.quantity || 0))
+            : (window.CatalogProducts?.getAvailableStock(product) ?? product.quantity);
         const currentCartQuantity = existingItem ? existingItem.quantity : 0;
         const newTotalQuantity = currentCartQuantity + quantity;
 
         // Check if adding this quantity would exceed available stock
-        if (newTotalQuantity > product.quantity) {
-            const maxCanAdd = product.quantity - currentCartQuantity;
+        if (newTotalQuantity > (variationName ? availableStock + currentCartQuantity : product.quantity)) {
+            const maxCanAdd = (variationName ? availableStock + currentCartQuantity : product.quantity) - currentCartQuantity;
             if (maxCanAdd <= 0) {
                 return;
             }
@@ -73,7 +76,8 @@ const CatalogCart = {
                 sale_price: product.sale_price,
                 image: product.images && product.images.length > 0 ? product.images[0] : null,
                 quantity: quantity,
-                max_quantity: product.quantity // Store max quantity for validation
+                max_quantity: variationName ? availableStock + currentCartQuantity : product.quantity,
+                selected_variation: variationName
             });
         }
 
@@ -245,7 +249,7 @@ const CatalogCart = {
             return `
                 <div class="cart-row" data-id="${item.id}">
                     <div class="cart-main">
-                        <div class="cart-name">${this.escapeHtml(item.name)}</div>
+                        <div class="cart-name">${this.escapeHtml(item.name)}${item.selected_variation ? ` <span class="cart-variation">(${this.escapeHtml(item.selected_variation)})</span>` : ''}</div>
                         <div class="cart-price">${this.escapeHtml(item.category)} • ₱${parseFloat(item.sale_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                     </div>
                     <input type="number" class="cart-qty-input" data-product-id="${this.escapeHtml(item.id)}"
