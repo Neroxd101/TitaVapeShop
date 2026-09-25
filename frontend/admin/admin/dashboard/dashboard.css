@@ -790,9 +790,9 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: rgba(66, 133, 244, 0.1);
+  background: rgba(66, 133, 244, 0.15);
   color: #4285f4;
-  border: 1px solid rgba(66, 133, 244, 0.2);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
