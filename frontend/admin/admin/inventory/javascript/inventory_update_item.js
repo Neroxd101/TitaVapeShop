@@ -17,9 +17,9 @@ const InventoryUpdate = {
         document.getElementById('itemId').value = item.id;
         document.getElementById('itemCategory').value = item.category;
         document.getElementById('itemName').value = item.name;
+        document.getElementById('itemQuantity').value = item.quantity;
         InventoryCreate.renderVariationFields(item.variations || item.variation || '');
         document.getElementById('itemDescription').value = item.description || '';
-        document.getElementById('itemQuantity').value = item.quantity;
         document.getElementById('itemCostPrice').value = item.cost_price;
         document.getElementById('itemSalePrice').value = item.sale_price;
 
@@ -35,6 +35,7 @@ const InventoryUpdate = {
 
         try {
             const productName = document.getElementById('itemName').value.trim();
+            InventoryCreate.validateVariationQuantities();
             const oldItem = InventoryState.inventoryItems.find(i => i.id === InventoryState.editingItemId);
 
             await InventoryImage.uploadPendingImages(productName);

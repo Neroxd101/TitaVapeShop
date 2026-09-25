@@ -1409,6 +1409,7 @@
 .variation-row:hover .variation-remove,
 .variation-remove:focus-visible {
   opacity: 1;
+  pointer-events: auto;
 }
 
 #addVariationBtn {
@@ -1562,4 +1563,194 @@
 #variationControls .variation-qty-field::before {
   margin-left: 2px;
   margin-right: 1px;
+}
+/* Product variants shown in the inventory item View modal. */
+#viewModal .view-variations {
+  display: grid;
+  gap: 8px;
+}
+
+#viewModal .view-variations h3 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+#viewModal .view-variation-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+#viewModal .view-variation-row {
+  display: inline-flex;
+  align-items: baseline;
+  width: max-content;
+  max-width: 100%;
+  gap: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  line-height: 1.2;
+}
+
+#viewModal .view-variation-name { overflow-wrap: anywhere; }
+#viewModal .view-variation-quantity { color: var(--text-muted); font-size: inherit; line-height: inherit; white-space: nowrap; margin-left: 4px; vertical-align: baseline; }
+#viewModal .view-variation-list { display: flex; flex-wrap: wrap; gap: 6px; }
+/* Keep edit/update variant pills aligned like the View modal. */
+#variationControls .variation-row { align-items: baseline; line-height: 1.2; }
+#variationControls .variation-name-field,
+#variationControls .variation-qty-field { line-height: inherit; }
+#variationControls .variation-row .variation-input,
+#variationControls .variation-row .variation-quantity { height: auto; line-height: inherit; font-size: 15px; }
+#variationControls .variation-row .variation-quantity { width: 42px !important; min-width: 42px; padding: 0 2px; }
+#variationControls .variation-qty-field::before,
+#variationControls .variation-qty-field::after { line-height: inherit; font-size: inherit; }
+/* Compact quantity field so the pill reads: Name ( Qty : 2 ). */
+#variationControls .variation-qty-field { width: auto !important; flex: 0 0 auto !important; }
+#variationControls .variation-row .variation-quantity { width: 24px !important; min-width: 24px !important; max-width: 24px; padding: 0 !important; text-align: center; }
+#variationControls .variation-qty-field::before { margin-left: 4px; margin-right: 2px; }
+#variationControls .variation-qty-field::after { margin-left: 2px; }
+/* Final compact override for edit variant quantity controls. */
+#variationControls .variation-row {
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  border-radius: 12px !important;
+}
+#variationControls .variation-qty-field { display: inline-flex !important; align-items: baseline !important; width: auto !important; gap: 0 !important; }
+#variationControls .variation-row .variation-quantity { box-sizing: content-box !important; display: inline-block !important; width: 18px !important; min-width: 18px !important; max-width: 18px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; text-align: center; appearance: textfield; }
+#variationControls .variation-row .variation-quantity::-webkit-outer-spin-button,
+#variationControls .variation-row .variation-quantity::-webkit-inner-spin-button { margin: 0; appearance: none; }
+#variationControls .variation-qty-field::before { content: '( Qty :'; margin: 0 2px 0 4px; }
+#variationControls .variation-qty-field::after { content: ')'; margin: 0 0 0 2px; }
+/* Let variant names grow with their text without clipping. */
+#variationControls .variation-row .variation-input { max-width: min(360px, 60vw) !important; }
+/* Keep the add control visually aligned with each variant row. */
+#variationControls #addVariationBtn {
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 12px;
+}
+/* Match edit/update variant row height to the compact View modal chips. */
+#variationControls .variation-row {
+  min-height: 0 !important;
+  padding: 5px 10px !important;
+}
+#variationControls .variation-row .variation-input,
+#variationControls .variation-row .variation-quantity {
+  min-height: 0 !important;
+  height: 18px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 18px !important;
+}
+/* Reveal delete as a hover overlay instead of reserving layout space. */
+#variationControls .variation-remove {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  transform: none;
+  opacity: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: rgba(239, 68, 68, 0.92);
+  font-size: 13px;
+  font-weight: 600;
+}
+#variationControls .variation-row.is-delete-confirming .variation-remove,
+#variationControls .variation-remove:focus-visible {
+  opacity: 1;
+}
+/* Two-step delete: hover alone never exposes the delete state. */
+#variationControls .variation-remove { pointer-events: none; }
+#variationControls .variation-row:hover .variation-remove { opacity: 0; pointer-events: none; }
+#variationControls .variation-row.is-delete-confirming .variation-remove,
+#variationControls .variation-remove:focus-visible { opacity: 1; pointer-events: auto; }
+#variationControls .variation-row.is-locked .variation-input,
+#variationControls .variation-row.is-locked .variation-quantity { cursor: default; }
+/* Long variant names expand their chip instead of scrolling inside a capped input. */
+#variationControls .variation-row { max-width: none !important; }
+#variationControls .variation-row .variation-input { max-width: none !important; }
+#variationControls .variation-display { white-space: nowrap; }
+/* Form rules use display:flex, so explicitly hide the retired inputs in locked chips. */
+#variationControls .variation-row.is-locked .variation-name-field[hidden],
+#variationControls .variation-row.is-locked .variation-qty-field[hidden] { display: none !important; }
+@media (max-width: 480px) {
+  #variationControls { align-items: stretch; }
+  #variationControls .variation-row { max-width: 100% !important; }
+  #variationControls .variation-display { white-space: normal; overflow-wrap: anywhere; }
+  #variationControls .variation-row .variation-input {
+    min-width: 0 !important;
+    max-width: calc(100vw - 170px) !important;
+  }
+  #variationControls #addVariationBtn { min-height: 30px; }
+}
+/* Align editable Name text with the locked variant chip text. */
+#variationControls .variation-row .variation-input {
+  margin: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-align: left;
+  text-indent: 0;
+}
+/* Keep the Inventory Add/Edit form usable when variants extend on tablets. */
+@media (max-width: 1024px) {
+  #itemModal .modal.modal-wide {
+    max-height: calc(100dvh - 24px);
+  }
+
+  #itemModal .modal.modal-wide .modal-form-horizontal {
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #itemModal .modal-col,
+  #itemModal .modal-col-fields {
+    min-width: 0;
+  }
+
+  #itemModal .modal-col-fields .view-name {
+    margin-bottom: 18px;
+  }
+}
+/* Use compact thumbnail previews in Add/Edit instead of a large main image. */
+#itemModal .edit-main-image { display: none; }
+/* Keep Add/Edit content in one consistent column, including image thumbnails. */
+#itemModal .modal-form-horizontal { grid-template-columns: 1fr; }
+#itemModal .modal-col-images {
+  order: 1;
+  border-left: 0;
+  border-bottom: 1px solid var(--border);
+}
+#itemModal .modal-col-fields { order: 2; }
+/* Compact single-column editor so all controls fit on tablet viewports. */
+#itemModal .modal.modal-wide { max-height: calc(100dvh - 16px); }
+#itemModal .modal-col { padding: 10px 14px; }
+#itemModal .modal.modal-wide .form-group { margin-bottom: 8px; }
+#itemModal .modal-col-images { padding-bottom: 8px; }
+#itemModal .modal-col-images .form-group { margin: 0; }
+#itemModal .modal-col-images .form-group > label,
+#itemModal .image-hint { display: none; }
+#itemModal .edit-thumbnails { justify-content: center; gap: 8px; }
+#itemModal .edit-thumbnails .image-item,
+#itemModal .edit-thumbnails .image-add-tile {
+  width: 76px;
+  height: 76px;
+  min-height: 76px;
+}
+#itemModal #itemDescription { min-height: 72px; height: 72px; }
+#itemModal .modal-col-fields .view-name { margin-bottom: 10px; }
+#itemModal .modal-col-fields .modal-actions { padding-top: 10px; }
+/* Reserve space for variants in the Inventory View modal. */
+#viewModal .view-description {
+  line-height: 1.5;
+  max-height: 7.5em !important;
+  overflow-y: auto !important;
 }

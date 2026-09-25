@@ -96,6 +96,27 @@ const InventoryViewModal = {
         document.getElementById('viewCategory').className = `view-category ${item.category}`;
         document.getElementById('viewName').textContent = item.name;
         document.getElementById('viewDescription').textContent = item.description || '';
+
+        const variationsSection = document.getElementById('viewVariations');
+        const variationsList = document.getElementById('viewVariationList');
+        const variations = Array.isArray(item.variations)
+            ? item.variations.filter(variation => variation && variation.name)
+            : [];
+        if (variationsSection && variationsList) {
+            variationsSection.hidden = variations.length === 0;
+            variationsList.replaceChildren(...variations.map(variation => {
+                const row = document.createElement('div');
+                row.className = 'view-variation-row';
+                const name = document.createElement('span');
+                name.className = 'view-variation-name';
+                name.textContent = variation.name;
+                const quantity = document.createElement('span');
+                quantity.className = 'view-variation-quantity';
+                quantity.textContent = `( Qty : ${Number(variation.quantity) || 0} )`;
+                row.append(name, quantity);
+                return row;
+            }));
+        }
         document.getElementById('viewQuantity').textContent = item.quantity;
         document.getElementById('viewCostPrice').textContent = InventoryUtils.formatCurrency(item.cost_price);
         document.getElementById('viewSalePrice').textContent = InventoryUtils.formatCurrency(item.sale_price);

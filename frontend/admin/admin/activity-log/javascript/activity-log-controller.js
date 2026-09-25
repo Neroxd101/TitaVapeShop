@@ -480,6 +480,24 @@ class TransactionsUI {
                         to = `₱${toAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                     }
 
+                    if (field === 'variations') {
+                        const formatVariations = (value) => {
+                            let variants = value;
+                            if (typeof variants === 'string') {
+                                try { variants = JSON.parse(variants); } catch { return this.escapeHtml(variants); }
+                            }
+                            if (!Array.isArray(variants) || variants.length === 0) return 'None';
+                            return variants.map(variant => {
+                                if (typeof variant === 'object' && variant) {
+                                    return `${this.escapeHtml(variant.name || 'Unnamed')} (Qty: ${Number(variant.quantity) || 0})`;
+                                }
+                                return this.escapeHtml(String(variant));
+                            }).join(', ');
+                        };
+                        from = formatVariations(from);
+                        to = formatVariations(to);
+                    }
+
                     changeList.push(`${this.formatFieldName(field)}: ${from} → ${to}`);
                 }
 

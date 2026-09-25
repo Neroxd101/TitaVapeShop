@@ -33,6 +33,13 @@ const InventoryCreate = {
         document.getElementById('modalClose')?.addEventListener('click', () => this.closeModal());
         document.getElementById('cancelBtn')?.addEventListener('click', () => this.closeModal());
         document.getElementById('addVariationBtn')?.addEventListener('click', () => this.addVariationField());
+        document.getElementById('itemQuantity')?.addEventListener('input', () => this.updateVariationLimits());
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('#variationControls .variation-row')) {
+                document.querySelectorAll('#variationControls .variation-row.is-delete-confirming')
+                    .forEach(row => row.classList.remove('is-delete-confirming'));
+            }
+        });
 
         // Multiple images upload & thumbnail editing
         document.getElementById('itemImages')?.addEventListener('change', (e) => {
@@ -76,6 +83,7 @@ const InventoryCreate = {
         try {
             const productName = document.getElementById('itemName').value.trim();
             if (!productName) throw new Error('Product name is required');
+            this.validateVariationQuantities();
 
             await InventoryImage.uploadPendingImages(productName);
             const imageUrls = InventoryState.currentImages.filter(img => img.url).map(img => img.url);
@@ -118,6 +126,49 @@ const InventoryCreate = {
         return [...document.querySelectorAll('.variation-row')].map(row => ({ name: row.querySelector('.variation-input')?.value.trim(), quantity: Number(row.querySelector('.variation-quantity')?.value) || 0 })).filter(item => item.name).slice(0, 10);
     },
 
+    updateVariationLimits(changedInput = null) {
+        const totalStock = Math.max(0, Number(document.getElementById('itemQuantity')?.value) || 0);
+        const inputs = [...document.querySelectorAll('#variationsList .variation-quantity')];
+
+        if (changedInput) {
+            const usedByOthers = inputs.reduce((sum, input) => input === changedInput ? sum : sum + (Number(input.value) || 0), 0);
+            const remaining = Math.max(0, totalStock - usedByOthers);
+            changedInput.value = String(Math.min(Math.max(0, Number(changedInput.value) || 0), remaining));
+        }
+
+        inputs.forEach(input => {
+            const usedByOthers = inputs.reduce((sum, other) => other === input ? sum : sum + (Number(other.value) || 0), 0);
+            input.max = String(Math.max(0, totalStock - usedByOthers));
+            input.title = `Maximum available: ${input.max}`;
+        });
+    },
+
+    validateVariationQuantities() {
+        const totalStock = Math.max(0, Number(document.getElementById('itemQuantity')?.value) || 0);
+        const allocated = this.getVariationValue().reduce((sum, variation) => sum + variation.quantity, 0);
+        if (allocated > totalStock) {
+            throw new Error(`Variant quantities cannot exceed the product quantity of ${totalStock}.`);
+        }
+    },
+
+    lockVariationRow(row) {
+        if (row.classList.contains('is-locked')) return;
+        const nameInput = row.querySelector('.variation-input');
+        const quantityInput = row.querySelector('.variation-quantity');
+        const display = document.createElement('span');
+        display.className = 'variation-display';
+        display.textContent = `${nameInput.value} ( Qty : ${Number(quantityInput.value) || 0} )`;
+
+        row.classList.add('is-locked');
+        row.querySelectorAll('.variation-input, .variation-quantity').forEach(input => {
+            input.readOnly = true;
+            input.tabIndex = -1;
+        });
+        row.querySelector('.variation-name-field').hidden = true;
+        row.querySelector('.variation-qty-field').hidden = true;
+        row.insertBefore(display, row.querySelector('.variation-remove'));
+    },
+
     renderVariationFields(value = '') {
         const values = Array.isArray(value) ? value.slice(0, 10) : String(value || '').split('|').map(item => ({ name: item.trim(), quantity: 0 })).filter(item => item.name).slice(0, 10);
         const list = document.getElementById('variationsList');
@@ -131,20 +182,37 @@ const InventoryCreate = {
         if (!list || (!skipLimitCheck && list.children.length >= 10)) return;
         const row = document.createElement('div');
         row.className = 'variation-row';
+        row.addEventListener('click', (event) => {
+            if (!event.target.closest('input') && !row.classList.contains('is-delete-confirming')) {
+                row.classList.add('is-delete-confirming');
+            }
+        });
         const input = document.createElement('input');
-        input.type = 'text'; input.className = 'variation-input'; input.placeholder = 'e.g., Blue, 30 ml, 0.8 Ω'; input.maxLength = 100; input.value = typeof value === 'object' ? value.name : value;
-        const resizeVariationInput = () => { input.style.width = `${Math.min(220, Math.max(30, (input.value.length + 1) * 7))}px`; };
+        input.type = 'text'; input.className = 'variation-input'; input.placeholder = 'Name'; input.maxLength = 100; input.value = typeof value === 'object' ? value.name : value;
+        const resizeVariationInput = () => {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const styles = getComputedStyle(input);
+            context.font = `${styles.fontWeight} ${styles.fontSize} ${styles.fontFamily}`;
+            const text = input.value || input.placeholder;
+            input.style.width = `${Math.max(24, Math.ceil(context.measureText(text).width) + 2)}px`;
+        };
         resizeVariationInput();
         input.addEventListener('input', resizeVariationInput);
         const remove = document.createElement('button');
-        remove.type = 'button'; remove.className = 'variation-remove'; remove.textContent = '×'; remove.title = 'Remove variation'; remove.setAttribute('aria-label', 'Remove variation');
-        remove.addEventListener('click', () => { row.remove(); if (!list.children.length) this.addVariationField('', true); });
+        remove.type = 'button'; remove.className = 'variation-remove'; remove.textContent = 'Delete'; remove.title = 'Remove variation'; remove.setAttribute('aria-label', 'Remove variation');
+        remove.addEventListener('click', (event) => { event.stopPropagation(); row.remove(); if (!list.children.length) this.addVariationField('', true); this.updateVariationLimits(); });
         const qty = document.createElement('input');
-        qty.type = 'number'; qty.className = 'variation-quantity'; qty.min = '0'; qty.step = '1'; qty.placeholder = 'Qty'; qty.setAttribute('aria-label', 'Variation quantity'); qty.value = typeof value === 'object' ? (value.quantity || 0) : 0;
+        qty.type = 'number'; qty.className = 'variation-quantity'; qty.min = '0'; qty.step = '1'; qty.placeholder = 'Qty'; qty.setAttribute('aria-label', 'Variation quantity'); qty.value = typeof value === 'object' ? (value.quantity || 0) : 0; qty.style.width = '24px'; qty.style.minWidth = '24px'; qty.style.maxWidth = '24px'; qty.style.height = 'auto';
+        qty.addEventListener('input', () => this.updateVariationLimits(qty));
+        qty.addEventListener('change', () => {
+            if (input.value.trim()) this.lockVariationRow(row);
+        });
         const nameWrap = document.createElement('div'); nameWrap.className = 'variation-name-field';
         const qtyWrap = document.createElement('div'); qtyWrap.className = 'variation-qty-field';
         nameWrap.appendChild(input); qtyWrap.appendChild(qty);
-        row.append(nameWrap, qtyWrap, remove); list.appendChild(row);
+        row.append(nameWrap, qtyWrap, remove); list.appendChild(row); resizeVariationInput(); this.updateVariationLimits();
+        if (typeof value === 'object' && value.name) this.lockVariationRow(row);
     },
     closeModal() {
         InventoryDOM.itemModal.classList.remove('show');

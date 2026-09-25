@@ -180,8 +180,12 @@
 .modal-variation-selector { display: grid; gap: 7px; margin-top: 14px; }
 .modal-variation-selector label { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
 .modal-variation-selector label span { color: #ef4444; }
-.modal-variation-selector select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font: inherit; }
-.modal-variation-selector select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.modal-variation-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.modal-variation-option { display: inline-flex; align-items: baseline; gap: 5px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-secondary); color: var(--text-primary); font: inherit; cursor: pointer; }
+.modal-variation-option small { color: var(--text-muted); font-size: inherit; }
+.modal-variation-option:hover:not(:disabled), .modal-variation-option.is-selected { border-color: var(--accent); background: var(--accent-glow); }
+.modal-variation-option:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.modal-variation-option:disabled { cursor: not-allowed; opacity: .45; }
 .modal-variation-hint { margin: 0; font-size: 12px; color: var(--text-muted); }
 
 /* Modal Product Details Actions */

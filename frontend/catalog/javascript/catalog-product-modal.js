@@ -292,10 +292,9 @@ const CatalogProductModal = {
                     ${hasVariations ? `
                         <div class="modal-variation-selector">
                             <label for="modalVariationSelect">Choose an option <span aria-hidden="true">*</span></label>
-                            <select id="modalVariationSelect" required>
-                                <option value="">Select a variation</option>
-                                ${variations.map((v, index) => `<option value="${index}" ${Number(v.quantity) <= 0 ? 'disabled' : ''}>${escapeHtml(v.name)}${Number(v.quantity) > 0 ? ` (${v.quantity} available)` : ' (Out of stock)'}</option>`).join('')}
-                            </select>
+                            <div class="modal-variation-options" role="radiogroup" aria-label="Product variations">
+                                ${variations.map((v, index) => `<button type="button" class="modal-variation-option" data-variation-index="${index}" role="radio" aria-checked="false" ${Number(v.quantity) <= 0 ? 'disabled' : ''}><span>${escapeHtml(v.name)}</span><small>Qty: ${Number(v.quantity) || 0}</small></button>`).join('')}
+                            </div>
                             <p id="modalVariationHint" class="modal-variation-hint">Select a variation before adding this item to your cart.</p>
                         </div>
                     ` : ''}
@@ -343,12 +342,29 @@ const CatalogProductModal = {
             const qtyMinus = document.getElementById('modalQtyMinus');
             const qtyPlus = document.getElementById('modalQtyPlus');
             const addBtn = document.getElementById('modalAddToCartBtn');
-            const variationSelect = document.getElementById('modalVariationSelect');
             const variationHint = document.getElementById('modalVariationHint');
-            const getSelectedVariation = () => !hasVariations || !variationSelect || variationSelect.value === '' ? null : variations[Number(variationSelect.value)] || null;
+            const variationOptions = [...document.querySelectorAll('.modal-variation-option')];
+            let selectedVariationIndex = null;
+            const getSelectedVariation = () => selectedVariationIndex === null ? null : variations[selectedVariationIndex] || null;
             const getCurrentStock = () => { const selected = getSelectedVariation(); return selected ? Math.max(0, Number(selected.quantity) || 0) : availableStock; };
-            const refreshVariationState = () => { const selected = getSelectedVariation(); const stock = getCurrentStock(); if (hasVariations && addBtn) { addBtn.disabled = !selected || stock <= 0; addBtn.setAttribute('aria-disabled', String(addBtn.disabled)); } if (qtyInput) { qtyInput.max = String(stock); qtyInput.value = String(Math.min(Math.max(1, Number(qtyInput.value) || 1), Math.max(1, stock))); } const maxText = document.getElementById('modalMaxQtyText'); if (maxText) maxText.textContent = `(Max ${stock})`; if (variationHint && selected) variationHint.textContent = stock > 0 ? `${selected.name} selected.` : `${selected.name} is out of stock.`; };
-            variationSelect?.addEventListener('change', refreshVariationState);
+            const refreshVariationState = () => {
+                const selected = getSelectedVariation();
+                const stock = getCurrentStock();
+                if (hasVariations && addBtn) { addBtn.disabled = !selected || stock <= 0; addBtn.setAttribute('aria-disabled', String(addBtn.disabled)); }
+                if (qtyInput) { qtyInput.max = String(stock); qtyInput.value = String(Math.min(Math.max(1, Number(qtyInput.value) || 1), Math.max(1, stock))); }
+                const maxText = document.getElementById('modalMaxQtyText');
+                if (maxText) maxText.textContent = `(Max ${stock})`;
+                if (variationHint && selected) variationHint.textContent = stock > 0 ? `${selected.name} selected.` : `${selected.name} is out of stock.`;
+                variationOptions.forEach(option => {
+                    const isSelected = Number(option.dataset.variationIndex) === selectedVariationIndex;
+                    option.classList.toggle('is-selected', isSelected);
+                    option.setAttribute('aria-checked', String(isSelected));
+                });
+            };
+            variationOptions.forEach(option => option.addEventListener('click', () => {
+                selectedVariationIndex = Number(option.dataset.variationIndex);
+                refreshVariationState();
+            }));
 
             const parseQty = () => {
                 let currentStock = hasVariations ? getCurrentStock() : (window.CatalogProducts?.getAvailableStock(product) ?? availableStock);
@@ -385,7 +401,7 @@ const CatalogProductModal = {
                 const selectedVariation = getSelectedVariation();
                 if (hasVariations && !selectedVariation) {
                     variationHint.textContent = 'Please select a variation before adding this item to your cart.';
-                    variationSelect?.focus();
+                    variationOptions[0]?.focus();
                     return;
                 }
 
