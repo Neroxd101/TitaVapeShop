@@ -2072,6 +2072,33 @@
   font-size: 13px;
 }
 
+#categoryDeleteModal .category-delete-message,
+#categoryDeleteModal .category-delete-error {
+  margin: 0 24px 12px;
+  text-align: center;
+}
+
+#categoryDeleteModal .modal-header {
+  justify-content: center;
+  padding: 20px 24px 12px;
+}
+
+#categoryDeleteModal .modal-header h3 {
+  margin: 0;
+  text-align: center;
+}
+
+#categoryDeleteModal .category-delete-message {
+  margin-top: 8px;
+}
+
+#categoryDeleteModal .category-delete-error {
+  min-height: 18px;
+  color: var(--error);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .category-select-wrap {
   display: flex;
   align-items: center;

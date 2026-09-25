@@ -60,7 +60,7 @@ const InventoryCategories = {
       const select = document.getElementById('itemCategory');
       const slug = select?.value;
       const category = this.categories.find(item => item.slug === slug);
-      if (!category || !window.confirm(`Delete the category “${category.name}”?`)) return;
+      if (!category || !(await this.confirmDelete(category.name))) return;
       try {
         const response = await fetch(`/inventory/categories/${encodeURIComponent(slug)}`, { method: 'DELETE' });
         const result = await response.json();
@@ -68,7 +68,7 @@ const InventoryCategories = {
         await this.load();
         this.populateItemSelect();
       } catch (error) {
-        alert(error.message);
+        this.showDeleteError(error.message);
       }
     });
   },
@@ -91,6 +91,53 @@ const InventoryCategories = {
           </div>
         </form>
       </div>`);
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="modal-overlay" id="categoryDeleteModal" role="dialog" aria-modal="true" aria-labelledby="categoryDeleteTitle">
+        <div class="modal modal-small category-delete-modal">
+          <div class="modal-header"><h3 id="categoryDeleteTitle">Delete Category</h3></div>
+          <p class="category-delete-message" id="categoryDeleteMessage"></p>
+          <p class="category-delete-error" id="categoryDeleteError" role="alert"></p>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="categoryDeleteCancel">Cancel</button>
+            <button type="button" class="btn btn-danger" id="categoryDeleteConfirm">Delete</button>
+          </div>
+        </div>
+      </div>`);
+  },
+
+  confirmDelete(name) {
+    const modal = document.getElementById('categoryDeleteModal');
+    const message = document.getElementById('categoryDeleteMessage');
+    const error = document.getElementById('categoryDeleteError');
+    message.textContent = `Are you sure you want to delete “${name}”?`;
+    error.textContent = '';
+    document.getElementById('categoryDeleteConfirm').style.display = '';
+    document.getElementById('categoryDeleteCancel').textContent = 'Cancel';
+    modal.classList.add('show');
+    return new Promise(resolve => {
+      const close = value => {
+        modal.classList.remove('show');
+        document.getElementById('categoryDeleteCancel').onclick = null;
+        document.getElementById('categoryDeleteConfirm').onclick = null;
+        resolve(value);
+      };
+      document.getElementById('categoryDeleteCancel').onclick = () => close(false);
+      document.getElementById('categoryDeleteConfirm').onclick = () => close(true);
+    });
+  },
+
+  showDeleteError(message) {
+    const modal = document.getElementById('categoryDeleteModal');
+    const confirmationMessage = document.getElementById('categoryDeleteMessage');
+    const error = document.getElementById('categoryDeleteError');
+    confirmationMessage.textContent = '';
+    error.textContent = message.includes('products')
+      ? 'This category still has products. Move or delete those products before deleting the category.'
+      : message;
+    modal.classList.add('show');
+    document.getElementById('categoryDeleteConfirm').style.display = 'none';
+    document.getElementById('categoryDeleteCancel').textContent = 'Close';
+    document.getElementById('categoryDeleteCancel').onclick = () => modal.classList.remove('show');
   },
 
   openModal() {
