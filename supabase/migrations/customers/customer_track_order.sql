@@ -27,7 +27,8 @@ RETURNS TABLE (
     payment_reference VARCHAR(100),
     payment_receipt_url TEXT,
     payment_status VARCHAR(50),
-    payment_status_reason TEXT
+    payment_status_reason TEXT,
+    delivery_confirmed_at TIMESTAMPTZ
 ) AS $$
 DECLARE
     v_order RECORD;
@@ -94,7 +95,8 @@ BEGIN
         v_order.payment_reference,
         v_order.payment_receipt_url,
         COALESCE(v_order.payment_status, 'unpaid') AS payment_status,
-        v_order.payment_status_reason;
+        v_order.payment_status_reason,
+        v_order.delivery_confirmed_at;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 

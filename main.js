@@ -18,6 +18,7 @@ const customerUpdateProfileRoutes = require('./backend/routes/customer/customer_
 const customerCreateOrderRoutes = require('./backend/routes/customer/customer_create_order');
 const customerGetOrdersRoutes = require('./backend/routes/customer/customer_get_orders');
 const customerCancelOrderRoutes = require('./backend/routes/customer/customer_cancel_order');
+const customerConfirmDeliveryRoutes = require('./backend/routes/customer/customer_confirm_delivery');
 const customerTrackOrderRoutes = require('./backend/routes/customer/customer_track_order');
 const customerSubmitPaymentProofRoutes = require('./backend/routes/customer/customer_submit_payment_proof');
 const customerResetPasswordRoutes = require('./backend/routes/customer/customer_reset_password');
@@ -104,6 +105,7 @@ app.use('/', customerUpdateProfileRoutes);
 app.use('/', customerCreateOrderRoutes);
 app.use('/', customerGetOrdersRoutes);
 app.use('/', customerCancelOrderRoutes);
+app.use('/', customerConfirmDeliveryRoutes);
 app.use('/', customerTrackOrderRoutes);
 app.use('/', customerSubmitPaymentProofRoutes);
 app.use('/', customerResetPasswordRoutes);

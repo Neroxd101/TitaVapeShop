@@ -456,6 +456,52 @@
   border-color: color-mix(in srgb, #3b82f6 86%, #000);
 }
 
+.delivery-confirmation-status {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.delivery-confirmation-mobile {
+  display: none;
+}
+
+.contact-delivery-status {
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.delivery-confirmation-status.is-confirmed {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--success);
+}
+
+.delivery-confirmation-status.is-awaiting {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+@media (max-width: 768px) {
+  .delivery-confirmation-mobile {
+    display: inline-block;
+    width: fit-content;
+    margin-top: 4px;
+  }
+
+  .contact-delivery-status {
+    margin-top: 0;
+  }
+
+  .delivery-confirmation-desktop {
+    display: none;
+  }
+}
+
 /* Pagination overrides */
 .orders-table-card .pagination-controls {
   border-top: 1px solid var(--border);
@@ -920,7 +966,7 @@
   }
 
   .orders-table .order-actions .btn {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-width: 68px;
     justify-content: center;
     text-align: center;
@@ -1265,7 +1311,7 @@
   }
 
   .orders-table .order-actions .btn {
-    flex: 1 1 45%;
+    flex: 1 1 0;
   }
 
   .order-id {
@@ -1381,7 +1427,7 @@
   }
 
   .orders-table .order-actions .btn {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     width: auto;
     min-width: 0;
     min-height: 36px;

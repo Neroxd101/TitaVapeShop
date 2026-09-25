@@ -252,6 +252,12 @@ class OrdersController {
                 ? `<div class="payment-badge-wrap" style="margin-top: 4px;">${this.getPaymentBadge(order.payment_status)}</div>`
                 : '';
 
+            const deliveryConfirmationBadge = orderType === 'delivery' && order.status === 'completed'
+                ? `<span class="delivery-confirmation-status ${order.delivery_confirmed_at ? 'is-confirmed' : 'is-awaiting'}">${order.delivery_confirmed_at ? 'Delivered' : 'Awaiting Delivery'}</span>`
+                : '';
+            const deliveryConfirmationMobileBadge = deliveryConfirmationBadge
+                .replace('delivery-confirmation-status', 'delivery-confirmation-status delivery-confirmation-mobile');
+
             const contactHtml = order.contact_number 
                 ? `<a href="tel:${this.escapeHtml(order.contact_number)}" class="contact-number"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="contact-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><span>${this.escapeHtml(order.contact_number)}</span></a>`
                 : `<span class="contact-number text-muted">-</span>`;
@@ -260,7 +266,7 @@ class OrdersController {
                 <tr class="order-row" data-order-id="${order.id}">
                     <td class="col-order-id" data-label="Order ID"><code class="order-id" title="${order.id}">#${order.id.substring(0, 8)}</code></td>
                     <td class="col-customer" data-label="Customer"><span class="customer-name">${this.escapeHtml(order.customer_name || 'Guest')}</span></td>
-                    <td class="col-contact" data-label="Contact">${contactHtml}</td>
+                    <td class="col-contact" data-label="Contact"><span class="contact-delivery-status">${deliveryConfirmationMobileBadge}</span>${contactHtml}</td>
                     <td class="col-items" data-label="Items">
                         <div class="items-cell">
                             <span class="items-count">${itemsCount} item(s)</span>
@@ -269,7 +275,7 @@ class OrdersController {
                     </td>
                     <td class="col-total" data-label="Total"><strong class="total-amount">₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong></td>
                     <td class="col-type" data-label="Type">${orderTypeBadge}${paymentBadge}</td>
-                    <td class="col-status" data-label="Status">${statusBadge}</td>
+                    <td class="col-status" data-label="Status">${statusBadge}${deliveryConfirmationBadge ? deliveryConfirmationBadge.replace('delivery-confirmation-status', 'delivery-confirmation-status delivery-confirmation-desktop') : ''}</td>
                     <td class="col-date" data-label="Date">
                         <div class="order-date-cell">
                             <span class="order-date-main">${dateParts.date}</span>

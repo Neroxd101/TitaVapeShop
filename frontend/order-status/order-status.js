@@ -51,6 +51,10 @@
 
   let currentOrder = null;
   let pollInterval = null;
+  let verifiedPhone = null;
+  const confirmDeliveredBtn = document.getElementById('confirmDeliveredBtn');
+  const deliveryConfirmationSection = document.getElementById('deliveryConfirmationSection');
+  const deliveryConfirmationMessage = document.getElementById('deliveryConfirmationMessage');
 
 
 
@@ -100,6 +104,10 @@
         if (!currentOrder || !currentOrder.id) return;
         saveQRCodeImage(currentOrder.id);
       });
+    }
+
+    if (confirmDeliveredBtn) {
+      confirmDeliveredBtn.addEventListener('click', confirmDelivery);
     }
 
     // GCash Account Number 1-Click Copy
@@ -319,6 +327,7 @@
 
       if (result && result.success && result.order) {
         currentOrder = result.order;
+        if (phoneInput) verifiedPhone = phoneInput;
 
         // Save order to localStorage for recent orders modal
 
@@ -375,6 +384,18 @@
 
     // Status Badge & Stepper
     renderStatus(order.status, isPickup);
+    const isCompletedDelivery = !isPickup && order.status === 'completed';
+    const canConfirmDelivery = isCompletedDelivery && !order.delivery_confirmed_at;
+    if (deliveryConfirmationSection) deliveryConfirmationSection.style.display = isCompletedDelivery ? 'block' : 'none';
+    if (confirmDeliveredBtn) {
+      confirmDeliveredBtn.style.display = canConfirmDelivery ? 'inline-flex' : 'none';
+      confirmDeliveredBtn.disabled = false;
+      confirmDeliveredBtn.textContent = 'Confirm Delivered';
+    }
+    if (deliveryConfirmationMessage) {
+      deliveryConfirmationMessage.hidden = !order.delivery_confirmed_at;
+      deliveryConfirmationMessage.textContent = order.delivery_confirmed_at ? 'Delivery confirmed. Thank you!' : '';
+    }
     cancelOrderBtn.hidden = order.status !== 'pending';
     document.querySelector('.order-layout-grid').classList.toggle('is-cancelled', ['cancelled', 'voided'].includes(order.status));
 
@@ -405,6 +426,30 @@
 
     // Items List
     renderItems(order.items, order.total_amount);
+  }
+
+  async function confirmDelivery() {
+    if (!currentOrder?.id || currentOrder.order_type !== 'delivery' || currentOrder.status !== 'completed') return;
+    confirmDeliveredBtn.disabled = true;
+    confirmDeliveredBtn.textContent = 'Confirming...';
+    try {
+      const response = await fetch('/api/customer/orders/confirm-delivery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: currentOrder.id, phone: verifiedPhone })
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.error || 'Unable to confirm delivery.');
+      currentOrder = result.order;
+      renderOrder(currentOrder);
+    } catch (error) {
+      confirmDeliveredBtn.disabled = false;
+      confirmDeliveredBtn.textContent = 'Confirm Delivered';
+      if (deliveryConfirmationMessage) {
+        deliveryConfirmationMessage.hidden = false;
+        deliveryConfirmationMessage.textContent = error.message;
+      }
+    }
   }
 
   /**
