@@ -320,7 +320,11 @@ class OrdersController {
         if (!Array.isArray(items) || items.length === 0) return 'No items';
         const firstItem = items[0];
         const remaining = items.length - 1;
+        const variation = firstItem.selected_variation || firstItem.variation;
         let summary = `${firstItem.quantity}x ${this.escapeHtml(firstItem.name || 'Item')}`;
+        if (variation) {
+            summary += ` (${this.escapeHtml(variation)})`;
+        }
         if (remaining > 0) {
             summary += ` +${remaining} more`;
         }

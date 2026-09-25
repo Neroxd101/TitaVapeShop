@@ -84,7 +84,10 @@ const OrdersViewModal = {
             <div class="order-item-row">
                 <div class="order-item-info">
                     <strong>${escapeHtml(item.name || 'Item')}</strong>
-                    <span class="order-item-category">${escapeHtml(item.category || '')}</span>
+                    <div class="order-item-meta-row">
+                        <span class="order-item-category">${escapeHtml(item.category || '')}</span>
+                        ${(item.selected_variation || item.variation) ? `<span class="order-item-variation">Variation: ${escapeHtml(item.selected_variation || item.variation)}</span>` : ''}
+                    </div>
                 </div>
                 <div class="order-item-qty">${item.quantity}x</div>
                 <div class="order-item-price">₱${parseFloat(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
