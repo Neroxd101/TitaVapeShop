@@ -1,5 +1,10 @@
 // Logic for Item Details View Modal
 const InventoryViewModal = {
+    THUMBNAILS_PER_PAGE: 3,
+    thumbnailPage: 0,
+    currentImages: [],
+    activeImageIndex: 0,
+
     async init() {
         await this.loadViewModal();
     },
@@ -25,11 +30,10 @@ const InventoryViewModal = {
             const thumbnail = e.target.closest('.view-thumbnail');
             if (!thumbnail) return;
             const index = Number(thumbnail.dataset.imageIndex);
-            const item = InventoryState.inventoryItems.find(i => i.id === InventoryState.viewingItemId);
-            const images = item ? InventoryImage.parseImages(item) : [];
-            if (item?.qr_image_url && !images.includes(item.qr_image_url)) images.push(item.qr_image_url);
-            if (images[index]) this.setViewMainImage(images[index], index);
+            if (this.currentImages[index]) this.setViewMainImage(this.currentImages[index], index);
         });
+        document.getElementById('viewThumbnailPrevBtn')?.addEventListener('click', () => this.changeThumbnailPage(-1));
+        document.getElementById('viewThumbnailNextBtn')?.addEventListener('click', () => this.changeThumbnailPage(1));
 
         document.getElementById('viewEditBtn')?.addEventListener('click', () => {
             const id = InventoryState.viewingItemId;
@@ -69,6 +73,9 @@ const InventoryViewModal = {
         InventoryState.viewingItemId = id;
         const images = InventoryImage.parseImages(item);
         if (item.qr_image_url && !images.includes(item.qr_image_url)) images.push(item.qr_image_url);
+        this.currentImages = images;
+        this.thumbnailPage = 0;
+        this.activeImageIndex = 0;
 
         // Populate View Modal DOM
         const mainImageEl = document.getElementById('viewMainImage');
@@ -82,15 +89,7 @@ const InventoryViewModal = {
             mainImageEl.classList.add('no-image');
         }
 
-        const thumbnailsEl = document.getElementById('viewThumbnails');
-        if (images.length > 1) {
-            thumbnailsEl.innerHTML = images.map((url, index) => {
-                const fallbacks = InventoryImage.getFallbackUrls(url, 100);
-                return `<div class="view-thumbnail ${index === 0 ? 'active' : ''}" data-image-index="${index}"><img src="${fallbacks[0]}" alt="Thumb" data-original-url="${url}" data-fallback-size="100" data-tried-index="0"></div>`;
-            }).join('');
-        } else {
-            thumbnailsEl.innerHTML = '';
-        }
+        this.renderThumbnails();
 
         document.getElementById('viewCategory').textContent = item.category;
         document.getElementById('viewCategory').className = `view-category ${item.category}`;
@@ -164,15 +163,52 @@ const InventoryViewModal = {
     },
 
     setViewMainImage(url, activeIndex) {
+        this.activeImageIndex = activeIndex;
         const mainImageEl = document.getElementById('viewMainImage');
         const fallbacks = InventoryImage.getFallbackUrls(url, 800);
         mainImageEl.innerHTML = `<img src="${fallbacks[0]}">`;
-        document.querySelectorAll('.view-thumbnail').forEach((t, i) => t.classList.toggle('active', i === activeIndex));
+        document.querySelectorAll('#viewThumbnails .view-thumbnail').forEach(thumbnail => {
+            thumbnail.classList.toggle('active', Number(thumbnail.dataset.imageIndex) === activeIndex);
+        });
+    },
+
+    renderThumbnails() {
+        const thumbnailsEl = document.getElementById('viewThumbnails');
+        const carousel = document.getElementById('viewThumbnailCarousel');
+        if (!thumbnailsEl || !carousel) return;
+
+        const pageCount = this.currentImages.length > 5 ? 2 : 1;
+        this.thumbnailPage = Math.min(Math.max(0, this.thumbnailPage), pageCount - 1);
+
+        const start = this.thumbnailPage === 0 ? 0 : 5;
+        const pageSize = this.thumbnailPage === 0 ? 5 : 6;
+        const slotCount = 6;
+        const tiles = this.currentImages.slice(start, start + pageSize).map((url, offset) => {
+            const index = start + offset;
+            const fallbacks = InventoryImage.getFallbackUrls(url, 100);
+            return `<div class="view-thumbnail ${index === this.activeImageIndex ? 'active' : ''}" data-image-index="${index}"><img src="${fallbacks[0]}" alt="Product thumbnail ${index + 1}" data-original-url="${url}" data-fallback-size="100" data-tried-index="0"></div>`;
+        });
+        thumbnailsEl.innerHTML = tiles.join('');
+        carousel.style.setProperty('--view-thumbnail-columns', String(slotCount));
+        carousel.hidden = this.currentImages.length <= 1;
+
+        const previousButton = document.getElementById('viewThumbnailPrevBtn');
+        const nextButton = document.getElementById('viewThumbnailNextBtn');
+        if (previousButton) previousButton.disabled = this.thumbnailPage === 0;
+        if (nextButton) nextButton.disabled = this.thumbnailPage >= pageCount - 1;
+    },
+
+    changeThumbnailPage(direction) {
+        this.thumbnailPage += direction;
+        this.renderThumbnails();
     },
 
     closeViewModal() {
         InventoryDOM.viewModal?.classList.remove('show');
         InventoryState.viewingItemId = null;
+        this.currentImages = [];
+        this.thumbnailPage = 0;
+        this.activeImageIndex = 0;
     }
 };
 

@@ -2,23 +2,29 @@
 <div class="modal-overlay" id="viewModal">
   <div class="modal modal-wide">
     <div class="view-modal-content">
-      <!-- Right Column - Images Gallery -->
+      <!-- Left Column - Images Gallery -->
       <div class="view-col view-col-images">
         <div class="view-main-image" id="viewMainImage">
           <img src="" alt="Product Image">
         </div>
-        <div class="view-thumbnails" id="viewThumbnails">
-          <!-- Thumbnails will be added here -->
+        <div class="view-thumbnail-carousel" id="viewThumbnailCarousel">
+          <button type="button" class="view-thumbnail-nav" id="viewThumbnailPrevBtn" aria-label="Previous images">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="view-thumbnails" id="viewThumbnails"></div>
+          <button type="button" class="view-thumbnail-nav" id="viewThumbnailNextBtn" aria-label="Next images">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
         </div>
       </div>
 
-      <!-- Let Column - Details -->
+      <!-- Right Column - Details -->
       <div class="view-col view-col-details">
         <div class="view-category" id="viewCategory">Hardware</div>
         <h2 class="view-name" id="viewName">Product Name</h2>
         <p class="view-description" id="viewDescription"></p>
         <section class="view-variations" id="viewVariations" hidden>
-          <h3>Variants</h3>
+          <h3>Variations</h3>
           <div class="view-variation-list" id="viewVariationList"></div>
         </section>
 

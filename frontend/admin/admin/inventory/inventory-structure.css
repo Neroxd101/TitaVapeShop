@@ -2154,3 +2154,163 @@
     box-sizing: border-box;
   }
 }
+
+/* Inventory view gallery uses the same fixed three-slot navigation. */
+#viewModal .view-thumbnail-carousel {
+  --view-thumbnail-size: 48px;
+  --view-thumbnail-columns: 6;
+  --view-thumbnail-track-width: 318px;
+  display: grid;
+  grid-template-columns: 28px auto 28px;
+  align-items: center;
+  justify-content: center;
+  column-gap: 6px;
+  width: 100%;
+  height: var(--view-thumbnail-size);
+}
+
+#viewModal .view-thumbnail-carousel[hidden] {
+  display: none !important;
+}
+
+#viewModal .view-thumbnail-carousel .view-thumbnails {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px !important;
+  width: var(--view-thumbnail-track-width) !important;
+  height: var(--view-thumbnail-size) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+#viewModal .view-thumbnail-carousel .view-thumbnail,
+#viewModal .view-thumbnail-placeholder {
+  display: block;
+  width: var(--view-thumbnail-size) !important;
+  height: var(--view-thumbnail-size) !important;
+  min-width: var(--view-thumbnail-size) !important;
+  min-height: var(--view-thumbnail-size) !important;
+  max-width: var(--view-thumbnail-size) !important;
+  max-height: var(--view-thumbnail-size) !important;
+  box-sizing: border-box;
+}
+
+#viewModal .view-thumbnail-nav {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: var(--view-thumbnail-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transform: none !important;
+}
+
+#viewModal .view-thumbnail-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+#viewModal .view-thumbnail-nav:disabled {
+  opacity: .3;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  #viewModal .view-thumbnail-carousel {
+    --view-thumbnail-size: 36px;
+    --view-thumbnail-track-width: 236px;
+    column-gap: 4px;
+  }
+
+  #viewModal .view-thumbnail-carousel .view-thumbnails {
+    gap: 4px !important;
+    width: var(--view-thumbnail-track-width) !important;
+  }
+}
+
+/* Keep the inventory image gallery left and product details right. */
+#viewModal .view-col-images {
+  order: 1 !important;
+}
+
+#viewModal .view-col-details {
+  order: 2 !important;
+}
+
+@media (min-width: 1025px) {
+  #viewModal .view-thumbnail-carousel {
+    --view-thumbnail-size: 58px;
+    --view-thumbnail-track-width: 388px;
+  }
+
+  #viewModal .view-thumbnail-carousel .view-thumbnails {
+    gap: 8px !important;
+    width: var(--view-thumbnail-track-width) !important;
+  }
+}
+
+/* Compact variation chips in the inventory view modal. */
+#viewModal .view-variation-list {
+  gap: 8px;
+}
+
+#viewModal .view-variation-row {
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+#viewModal .view-variation-quantity {
+  margin-left: 4px;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+@media (min-width: 481px) and (max-width: 1024px) {
+  #viewModal .view-variation-list {
+    gap: 6px;
+  }
+
+  #viewModal .view-variation-row {
+    padding: 5px 9px;
+    font-size: 13px;
+    line-height: 17px;
+  }
+
+  #viewModal .view-variation-quantity {
+    font-size: 13px;
+    line-height: 17px;
+  }
+}
+
+@media (max-width: 480px) {
+  #viewModal .view-variation-list {
+    gap: 4px;
+  }
+
+  #viewModal .view-variation-row {
+    padding: 3px 6px;
+    border-radius: 7px;
+    font-size: 10px;
+    line-height: 14px;
+  }
+
+  #viewModal .view-variation-quantity {
+    margin-left: 2px;
+    font-size: 10px;
+    line-height: 14px;
+  }
+}
