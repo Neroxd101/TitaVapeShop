@@ -26,7 +26,10 @@ RETURNS TABLE (
 BEGIN
     IF filter_category IS NOT NULL
        AND filter_category <> ''
-       AND LOWER(filter_category) NOT IN ('all', 'hardware', 'juices') THEN
+       AND NOT EXISTS (
+           SELECT 1 FROM public.inventory_categories AS c
+           WHERE c.slug = LOWER(TRIM(filter_category)) AND c.is_active
+       ) THEN
         RAISE EXCEPTION 'Invalid catalog category';
     END IF;
 

@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     onFilterChange: () => filterAndRender()
                 });
             }
+            if (window.CatalogCategories) await CatalogCategories.init();
             
             // Fetch products (always try to fetch, even if modal failed)
             await fetchProducts();

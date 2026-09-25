@@ -107,10 +107,13 @@
                 </svg>
                 <input type="text" id="searchInput" placeholder="Search products by name...">
             </div>
-            <div class="filter-tabs-group" id="categoryFilters">
-                <button class="filter-tab active" data-category="all">All Items</button>
-                <button class="filter-tab" data-category="Hardware">Hardware</button>
-                <button class="filter-tab" data-category="Juices">Juices</button>
+            <div class="sort-box category-filter-box" id="categoryFilters">
+                <select id="categoryFilter" class="sort-select category-filter-select" aria-label="Filter by category">
+                    <option value="all">All Items</option>
+                </select>
+                <svg viewBox="0 0 24 24" class="sort-chevron" aria-hidden="true">
+                    <path d="M7 10l5 5 5-5z" />
+                </svg>
             </div>
             <div class="sort-box">
                 <select id="sortSelect" class="sort-select" aria-label="Sort products">
@@ -193,6 +196,7 @@
     <!-- Main modules -->
     <script src="/catalog/javascript/catalog_get_products.js"></script>
     <script src="/catalog/javascript/catalog_filter.js"></script>
+    <script src="/catalog/javascript/catalog-categories.js"></script>
     <script src="/catalog/javascript/catalog_card.js?v=2"></script>
     <script src="/catalog/javascript/catalog-cart.js"></script>
     <script src="/catalog/javascript/catalog.js"></script>

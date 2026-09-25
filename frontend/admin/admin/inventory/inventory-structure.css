@@ -2038,6 +2038,69 @@
   justify-content: center;
 }
 
+#categoryModal .category-modal-error {
+  display: block;
+  min-height: 18px;
+  margin-top: 6px;
+  color: var(--error);
+  font-size: 12px;
+}
+
+#categoryModal .form-group {
+  padding: 8px 24px 0;
+  margin-bottom: 12px;
+}
+
+#categoryModal .modal-header {
+  justify-content: center;
+  padding: 20px 24px 8px;
+}
+
+#categoryModal .modal-header h3 {
+  margin: 0;
+  text-align: center;
+}
+
+#categoryModal .modal-actions {
+  align-items: center;
+  padding-top: 8px;
+  padding-bottom: 20px;
+}
+
+#categoryModal .modal-actions .btn {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.category-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-select-wrap select {
+  flex: 1;
+  min-width: 0;
+}
+
+.category-delete-btn {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border: 1px solid rgba(255, 71, 87, 0.35);
+  border-radius: 9px;
+  background: rgba(255, 71, 87, 0.12);
+  color: var(--error);
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.category-delete-btn:hover {
+  background: var(--error);
+  color: #fff;
+}
+
 #itemModal .edit-thumbnail-carousel .image-item,
 #itemModal .edit-thumbnail-carousel .image-add-tile,
 #itemModal .thumbnail-slot-placeholder {

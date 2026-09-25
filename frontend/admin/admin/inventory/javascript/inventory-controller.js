@@ -22,6 +22,8 @@ const Inventory = {
       // InventoryUpdate doesn't need explicit init as it shares the Create modal
     ]);
 
+    await InventoryCategories.init();
+
     // Setup event listeners
     this.setupEventListeners();
 

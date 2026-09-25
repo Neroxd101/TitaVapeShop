@@ -45,8 +45,11 @@ BEGIN
     END IF;
 
     -- Validate category
-    IF p_category IS NOT NULL AND p_category NOT IN ('hardware', 'juices') THEN
-        RAISE EXCEPTION 'Category must be either "hardware" or "juices"';
+    IF p_category IS NOT NULL AND NOT EXISTS (
+        SELECT 1 FROM public.inventory_categories AS c
+        WHERE c.slug = LOWER(BTRIM(p_category)) AND c.is_active
+    ) THEN
+        RAISE EXCEPTION 'Selected category is not available';
     END IF;
 
     -- Fetch current inventory

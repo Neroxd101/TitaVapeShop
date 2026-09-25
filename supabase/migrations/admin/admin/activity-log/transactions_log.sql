@@ -13,6 +13,8 @@ CHECK (action_type IN (
     'inventory_add',
     'inventory_edit',
     'inventory_delete',
+    'category_add',
+    'category_delete',
     'sale_complete',
     'sale_void',
     'order_confirm',
@@ -53,7 +55,7 @@ BEGIN
     END IF;
 
     -- Validate action_type
-    IF p_action_type NOT IN ('inventory_add', 'inventory_edit', 'inventory_delete', 'sale_complete', 'sale_void', 'order_confirm', 'order_cancel', 'order_payment_update') THEN
+    IF p_action_type NOT IN ('inventory_add', 'inventory_edit', 'inventory_delete', 'category_add', 'category_delete', 'sale_complete', 'sale_void', 'order_confirm', 'order_cancel', 'order_payment_update') THEN
         RAISE EXCEPTION 'Invalid action_type: %', p_action_type;
     END IF;
 

@@ -33,11 +33,13 @@
             </div>
             <div class="form-group">
               <label for="itemCategory">Category</label>
-              <select id="itemCategory" required>
-                <option value="">Select category</option>
-                <option value="hardware">Hardware</option>
-                <option value="juices">Juices</option>
-              </select>
+              <div class="category-select-wrap">
+                <select id="itemCategory" required>
+                  <option value="">Select category</option>
+                  <option value="__new__">+ Add New Category</option>
+                </select>
+                <button type="button" id="deleteCategoryBtn" class="category-delete-btn" title="Delete selected category" aria-label="Delete selected category">&times;</button>
+              </div>
             </div>
           </div>
           <div class="form-group">

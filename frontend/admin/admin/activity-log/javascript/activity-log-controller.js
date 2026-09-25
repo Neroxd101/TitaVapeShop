@@ -437,6 +437,8 @@ class TransactionsUI {
             'inventory_add': '<span class="badge badge-add">Add</span>',
             'inventory_edit': '<span class="badge badge-edit">Edit</span>',
             'inventory_delete': '<span class="badge badge-delete">Delete</span>',
+            'category_add': '<span class="badge badge-add">Category Added</span>',
+            'category_delete': '<span class="badge badge-delete">Category Deleted</span>',
             'order_confirm': '<span class="badge badge-confirm">Confirm</span>',
             'order_cancel': '<span class="badge badge-cancel">Cancel</span>',
             'order_payment_update': '<span class="badge badge-payment">Payment</span>'
@@ -524,6 +526,14 @@ class TransactionsUI {
 
         if (t.action_type === 'inventory_delete') {
             return `Deleted "${this.escapeHtml(d.name)}"`;
+        }
+
+        if (t.action_type === 'category_add') {
+            return `Added category "${this.escapeHtml(d.category_name || d.category_slug || 'Unknown')}"`;
+        }
+
+        if (t.action_type === 'category_delete') {
+            return `Deleted category "${this.escapeHtml(d.category_name || d.category_slug || 'Unknown')}"`;
         }
 
         if (t.action_type === 'order_confirm') {

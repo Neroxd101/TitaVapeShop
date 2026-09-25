@@ -16,7 +16,7 @@ const CatalogFilter = {
 
     setupEventListeners() {
         const searchInput = document.getElementById('searchInput');
-        const categoryFilters = document.getElementById('categoryFilters');
+        const categoryFilter = document.getElementById('categoryFilter');
         const sortSelect = document.getElementById('sortSelect');
 
         if (searchInput) {
@@ -26,15 +26,10 @@ const CatalogFilter = {
             });
         }
 
-        if (categoryFilters) {
-            categoryFilters.addEventListener('click', (e) => {
-                const tab = e.target.closest('.filter-tab');
-                if (tab) {
-                    categoryFilters.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active'));
-                    tab.classList.add('active');
-                    this.currentCategory = tab.getAttribute('data-category') || 'all';
-                    this.notify();
-                }
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', (e) => {
+                this.currentCategory = e.target.value || 'all';
+                this.notify();
             });
         }
 

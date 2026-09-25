@@ -454,6 +454,72 @@
     }
 }
 
+/* Mobile catalog filters: category + sort on row one, search on row two. */
+@media (max-width: 600px) {
+    .filter-tabs {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        align-items: stretch;
+    }
+
+    .filter-tabs #categoryFilters,
+    .filter-tabs .sort-box {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 40px !important;
+        box-sizing: border-box !important;
+        flex: none !important;
+    }
+
+    .filter-tabs .search-box {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        width: 100%;
+        order: 2;
+    }
+
+    .filter-tabs .filter-tabs-group {
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        order: 1;
+    }
+
+    .filter-tabs .category-filter-box {
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        order: 1;
+        height: 40px;
+    }
+
+    .filter-tabs .sort-box {
+        grid-column: 2;
+        grid-row: 1;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        order: 1;
+    }
+
+    .filter-tabs .category-filter-box {
+        grid-column: 1;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .filter-tabs .category-filter-select,
+    .filter-tabs .sort-select {
+        width: 100%;
+        min-width: 0;
+        padding-left: 12px;
+        padding-right: 28px;
+        text-align: left;
+    }
+}
+
 /* Large Desktop (1920x951 and similar) - show everything without scrolling */
 @media (min-width: 1920px) and (min-height: 900px) and (orientation: landscape),
 (min-width: 1900px) and (min-height: 900px) {

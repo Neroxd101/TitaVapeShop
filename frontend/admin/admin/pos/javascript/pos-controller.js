@@ -19,6 +19,7 @@
     await SalesCart.loadCartModal();
     await SalesCart.loadConfirmModal();
     await SalesCart.loadSuccessModal();
+    if (window.InventoryCategories) await InventoryCategories.load();
     wireEvents();
 
     // Initialize Data - ensure modules are loaded
