@@ -64,10 +64,9 @@ const CatalogCart = {
 
         if (existingItem) {
             existingItem.quantity += quantity;
-            // Update max_quantity if not set or if product data is available
-            if (!existingItem.max_quantity || (product && product.quantity)) {
-                existingItem.max_quantity = product.quantity;
-            }
+            existingItem.max_quantity = variationName
+                ? Number(product.variations?.find(v => v.name === variationName)?.quantity) || existingItem.max_quantity
+                : product.quantity;
         } else {
             this.cart.push({
                 id: product.id,
@@ -91,8 +90,8 @@ const CatalogCart = {
      * Remove product from cart
      * @param {string} productId - Product ID
      */
-    removeFromCart(productId) {
-        this.cart = this.cart.filter(item => item.id !== productId);
+    removeFromCart(productId, variationName = null) {
+        this.cart = this.cart.filter(item => item.id !== productId || (item.selected_variation || null) !== variationName);
         this.saveCart();
         this.updateCartBadge();
         // Re-render cart if modal is open
@@ -108,18 +107,23 @@ const CatalogCart = {
      * @param {string} productId - Product ID
      * @param {number} quantity - New quantity
      */
-    updateQuantity(productId, quantity, renderCart = true) {
-        const item = this.cart.find(item => item.id === productId);
+    updateQuantity(productId, quantity, renderCart = true, variationName = null) {
+        const item = this.cart.find(item => item.id === productId && (item.selected_variation || null) === variationName);
         if (!item) return;
 
         if (quantity <= 0) {
-            this.removeFromCart(productId);
+            this.removeFromCart(productId, variationName);
             return;
         }
 
         // Get product to check max stock
         const product = window.CatalogProducts?.getProductById(productId);
-        const maxStock = product ? product.quantity : (item.max_quantity || 9999);
+        const selectedVariation = item.selected_variation
+            ? product?.variations?.find(variation => variation.name === item.selected_variation)
+            : null;
+        const maxStock = selectedVariation
+            ? Number(selectedVariation.quantity) || 0
+            : (product ? product.quantity : (item.max_quantity || 9999));
         if (quantity > maxStock) {
             quantity = maxStock;
         }
@@ -241,21 +245,26 @@ const CatalogCart = {
             return;
         }
 
-        cartItems.innerHTML = this.cart.map(item => {
+        cartItems.innerHTML = this.cart.map((item, cartIndex) => {
             const imageUrl = this.getImageUrl(item.image);
             // Get max quantity from product or stored value
             const product = window.CatalogProducts?.getProductById(item.id);
-            const maxQuantity = product ? product.quantity : (item.max_quantity || 999);
+            const selectedVariation = item.selected_variation
+                ? product?.variations?.find(variation => variation.name === item.selected_variation)
+                : null;
+            const maxQuantity = selectedVariation
+                ? Number(selectedVariation.quantity) || 0
+                : (product ? product.quantity : (item.max_quantity || 999));
             return `
                 <div class="cart-row" data-id="${item.id}">
                     <div class="cart-main">
                         <div class="cart-name">${this.escapeHtml(item.name)}${item.selected_variation ? ` <span class="cart-variation">(${this.escapeHtml(item.selected_variation)})</span>` : ''}</div>
                         <div class="cart-price">${this.escapeHtml(item.category)} • ₱${parseFloat(item.sale_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                     </div>
-                    <input type="number" class="cart-qty-input" data-product-id="${this.escapeHtml(item.id)}"
+                    <input type="number" class="cart-qty-input" data-cart-index="${cartIndex}"
                            value="${item.quantity}" min="1" max="${maxQuantity}">
                     <div class="cart-subtotal">₱${(parseFloat(item.sale_price) * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                    <button type="button" class="cart-remove-btn" data-product-id="${this.escapeHtml(item.id)}" title="Remove">
+                    <button type="button" class="cart-remove-btn" data-cart-index="${cartIndex}" title="Remove">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                         </svg>
@@ -269,11 +278,9 @@ const CatalogCart = {
                 const quantity = parseInt(input.value, 10);
                 if (!Number.isInteger(quantity) || quantity < 1) return;
 
-                const productId = input.dataset.productId;
-                this.updateQuantity(productId, quantity, false);
-
-                const item = this.cart.find(cartItem => cartItem.id === productId);
+                const item = this.cart[Number(input.dataset.cartIndex)];
                 if (!item) return;
+                this.updateQuantity(item.id, quantity, false, item.selected_variation || null);
 
                 // Reflect stock clamping immediately without rebuilding the row and
                 // interrupting keyboard input.
@@ -289,13 +296,15 @@ const CatalogCart = {
 
             input.addEventListener('change', () => {
                 const quantity = parseInt(input.value, 10) || 1;
-                this.updateQuantity(input.dataset.productId, quantity);
+                const item = this.cart[Number(input.dataset.cartIndex)];
+                if (item) this.updateQuantity(item.id, quantity, true, item.selected_variation || null);
             });
         });
 
         cartItems.querySelectorAll('.cart-remove-btn').forEach(button => {
             button.addEventListener('click', () => {
-                this.removeFromCart(button.dataset.productId);
+                const item = this.cart[Number(button.dataset.cartIndex)];
+                if (item) this.removeFromCart(item.id, item.selected_variation || null);
             });
         });
     },

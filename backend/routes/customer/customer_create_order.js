@@ -33,7 +33,11 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
       return res.status(400).json({ success: false, error: 'Order must contain at least one item.' });
     }
 
-    const requestedItems = items.map(item => ({ id: item?.id, quantity: Number(item?.quantity) }));
+    const requestedItems = items.map(item => ({
+      id: item?.id,
+      quantity: Number(item?.quantity),
+      selected_variation: typeof item?.selected_variation === 'string' ? item.selected_variation.trim() : null
+    }));
     if (requestedItems.some(item => !item.id || !Number.isInteger(item.quantity) || item.quantity <= 0)) {
       return res.status(400).json({ success: false, error: 'Invalid items in cart.' });
     }

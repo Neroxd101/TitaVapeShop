@@ -52,8 +52,9 @@ const CatalogGetProducts = {
   getAvailableStock(product) {
     if (!product) return 0;
     const cart = window.CatalogCart?.cart || [];
-    const cartItem = cart.find(item => item.id === product.id);
-    const cartQuantity = cartItem ? (Number(cartItem.quantity) || 0) : 0;
+    const cartQuantity = cart
+      .filter(item => item.id === product.id)
+      .reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
     return Math.max(0, (Number(product.quantity) || 0) - cartQuantity);
   }
 };

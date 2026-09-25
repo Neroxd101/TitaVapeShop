@@ -5,8 +5,9 @@ const CatalogCard = {
 
     getAvailableStock(product) {
         const cart = window.CatalogCart?.cart || [];
-        const cartItem = cart.find(item => item.id === product.id);
-        const cartQuantity = cartItem ? cartItem.quantity : 0;
+        const cartQuantity = cart
+            .filter(item => item.id === product.id)
+            .reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
         return Math.max(0, product.quantity - cartQuantity);
     },
 

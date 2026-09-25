@@ -17,6 +17,7 @@ DECLARE
     customer_record public.customers%ROWTYPE;
     requested RECORD;
     product public.inventory%ROWTYPE;
+    variation_stock INTEGER;
     official_items JSONB := '[]'::jsonb;
     official_total DECIMAL(10,2) := 0;
 BEGIN
@@ -40,10 +41,11 @@ BEGIN
 
     FOR requested IN
         SELECT (value->>'id')::UUID AS id,
+               NULLIF(BTRIM(value->>'selected_variation'), '') AS selected_variation,
                SUM((value->>'quantity')::INTEGER)::INTEGER AS quantity
         FROM jsonb_array_elements(p_items)
-        GROUP BY (value->>'id')::UUID
-        ORDER BY (value->>'id')::UUID
+        GROUP BY (value->>'id')::UUID, NULLIF(BTRIM(value->>'selected_variation'), '')
+        ORDER BY (value->>'id')::UUID, NULLIF(BTRIM(value->>'selected_variation'), '')
     LOOP
         IF requested.id IS NULL OR requested.quantity IS NULL OR requested.quantity <= 0 THEN
             RAISE EXCEPTION 'Every order item requires a valid id and positive quantity';
@@ -56,7 +58,24 @@ BEGIN
         IF NOT FOUND THEN
             RAISE EXCEPTION 'Product % was not found', requested.id;
         END IF;
-        IF product.quantity < requested.quantity THEN
+        IF jsonb_array_length(COALESCE(product.variations, '[]'::jsonb)) > 0 THEN
+            IF requested.selected_variation IS NULL THEN
+                RAISE EXCEPTION 'A variation is required for %', product.name;
+            END IF;
+
+            SELECT (variation->>'quantity')::INTEGER
+            INTO variation_stock
+            FROM jsonb_array_elements(product.variations) AS variation
+            WHERE variation->>'name' = requested.selected_variation
+            LIMIT 1;
+
+            IF variation_stock IS NULL THEN
+                RAISE EXCEPTION 'Variation % was not found for %', requested.selected_variation, product.name;
+            END IF;
+            IF variation_stock < requested.quantity THEN
+                RAISE EXCEPTION 'Not enough stock for % (%). Available: %', product.name, requested.selected_variation, variation_stock;
+            END IF;
+        ELSIF product.quantity < requested.quantity THEN
             RAISE EXCEPTION 'Not enough stock for %. Available: %', product.name, product.quantity;
         END IF;
 
@@ -64,6 +83,7 @@ BEGIN
             'id', product.id,
             'name', product.name,
             'quantity', requested.quantity,
+            'selected_variation', requested.selected_variation,
             'price', product.sale_price,
             'category', product.category,
             'images', COALESCE(product.images, '[]'::jsonb)

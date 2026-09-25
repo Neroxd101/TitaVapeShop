@@ -19,7 +19,8 @@ const CustomerCreateOrder = {
           order_type: orderData.order_type,
           items: (orderData.items || []).map(item => ({
             id: item.id,
-            quantity: item.quantity
+            quantity: item.quantity,
+            selected_variation: item.selected_variation || null
           }))
         })
       });

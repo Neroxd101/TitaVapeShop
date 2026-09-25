@@ -145,7 +145,8 @@ const CatalogCheckoutModal = {
             name: item.name,
             category: item.category,
             price: item.sale_price,
-            quantity: item.quantity
+            quantity: item.quantity,
+            selected_variation: item.selected_variation || null
         }));
 
         const totalAmount = window.CatalogCart.getTotalAmount();
