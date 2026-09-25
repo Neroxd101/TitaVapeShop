@@ -18,6 +18,8 @@ DECLARE
     item_id UUID;
     item_qty INTEGER;
     item_price DECIMAL(10,2);
+    item_variation TEXT;
+    variation_stock INTEGER;
     inventory_item public.inventory%ROWTYPE;
     logged_items JSONB := '[]'::jsonb;
 BEGIN
@@ -64,6 +66,10 @@ BEGIN
             item_id := (item->>'id')::UUID;
             item_qty := (item->>'quantity')::INTEGER;
             item_price := (item->>'price')::DECIMAL(10,2);
+            item_variation := COALESCE(
+                NULLIF(BTRIM(item->>'selected_variation'), ''),
+                NULLIF(BTRIM(item->>'variation'), '')
+            );
 
             IF item_id IS NULL OR item_qty IS NULL OR item_qty <= 0 OR item_price IS NULL OR item_price <= 0 THEN
                 RAISE EXCEPTION 'Order contains invalid item data';
@@ -81,8 +87,49 @@ BEGIN
                 RAISE EXCEPTION 'Not enough stock for %. Available: %', inventory_item.name, inventory_item.quantity;
             END IF;
 
+            IF item_variation IS NOT NULL THEN
+                IF inventory_item.variations IS NULL
+                    OR jsonb_typeof(inventory_item.variations) <> 'array' THEN
+                    RAISE EXCEPTION 'Variation % was not found for %', item_variation, inventory_item.name;
+                END IF;
+
+                SELECT (variation->>'quantity')::INTEGER
+                INTO variation_stock
+                FROM jsonb_array_elements(inventory_item.variations) AS variation
+                WHERE variation->>'name' = item_variation
+                LIMIT 1;
+
+                IF NOT FOUND THEN
+                    RAISE EXCEPTION 'Variation % was not found for %', item_variation, inventory_item.name;
+                END IF;
+                IF COALESCE(variation_stock, 0) < item_qty THEN
+                    RAISE EXCEPTION 'Not enough stock for % (%). Available: %',
+                        inventory_item.name, item_variation, COALESCE(variation_stock, 0);
+                END IF;
+            END IF;
+
             UPDATE public.inventory
             SET quantity = quantity - item_qty,
+                variations = CASE
+                    WHEN item_variation IS NULL THEN variations
+                    ELSE (
+                        SELECT jsonb_agg(
+                            CASE
+                                WHEN variation->>'name' = item_variation THEN
+                                    jsonb_set(
+                                        variation,
+                                        '{quantity}',
+                                        to_jsonb(((variation->>'quantity')::INTEGER - item_qty)),
+                                        true
+                                    )
+                                ELSE variation
+                            END
+                            ORDER BY position
+                        )
+                        FROM jsonb_array_elements(inventory_item.variations)
+                            WITH ORDINALITY AS entries(variation, position)
+                    )
+                END,
                 total_profit = COALESCE(total_profit, 0) + (item_price * item_qty),
                 updated_at = NOW()
             WHERE id = item_id;
@@ -93,7 +140,8 @@ BEGIN
                 'category', COALESCE(NULLIF(BTRIM(item->>'category'), ''), inventory_item.category),
                 'qty', item_qty,
                 'price', item_price,
-                'cost_price', inventory_item.cost_price
+                'cost_price', inventory_item.cost_price,
+                'selected_variation', item_variation
             ));
         END LOOP;
     END IF;

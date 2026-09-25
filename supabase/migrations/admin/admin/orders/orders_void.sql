@@ -14,6 +14,8 @@ DECLARE
     item_id UUID;
     qty INTEGER;
     price NUMERIC;
+    item_variation TEXT;
+    inventory_item public.inventory%ROWTYPE;
     logged_items JSONB := '[]'::jsonb;
 BEGIN
     IF p_reason IS NULL OR length(btrim(p_reason)) NOT BETWEEN 1 AND 1000 THEN
@@ -29,16 +31,65 @@ BEGIN
         item_id := (item->>'id')::UUID;
         qty := (item->>'quantity')::INTEGER;
         price := (item->>'price')::NUMERIC;
+        item_variation := COALESCE(
+            NULLIF(BTRIM(item->>'selected_variation'), ''),
+            NULLIF(BTRIM(item->>'variation'), '')
+        );
         IF item_id IS NULL OR qty IS NULL OR qty <= 0 OR price IS NULL OR price <= 0 THEN
             RAISE EXCEPTION 'Invalid original item data; cannot safely reverse this order';
         END IF;
+
+        SELECT * INTO inventory_item
+        FROM public.inventory
+        WHERE id = item_id
+        FOR UPDATE;
+
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Cannot restore missing inventory item %', item_id;
+        END IF;
+
+        IF item_variation IS NOT NULL AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(COALESCE(inventory_item.variations, '[]'::jsonb)) AS variation
+            WHERE variation->>'name' = item_variation
+        ) THEN
+            RAISE EXCEPTION 'Cannot restore missing variation % for %', item_variation, inventory_item.name;
+        END IF;
+
         UPDATE public.inventory
         SET quantity = quantity + qty,
+            variations = CASE
+                WHEN item_variation IS NULL THEN variations
+                ELSE (
+                    SELECT jsonb_agg(
+                        CASE
+                            WHEN variation->>'name' = item_variation THEN
+                                jsonb_set(
+                                    variation,
+                                    '{quantity}',
+                                    to_jsonb((COALESCE((variation->>'quantity')::INTEGER, 0) + qty)),
+                                    true
+                                )
+                            ELSE variation
+                        END
+                        ORDER BY position
+                    )
+                    FROM jsonb_array_elements(inventory_item.variations)
+                        WITH ORDINALITY AS entries(variation, position)
+                )
+            END,
             total_profit = COALESCE(total_profit, 0) - price * qty,
             updated_at = NOW()
         WHERE id = item_id;
-        IF NOT FOUND THEN RAISE EXCEPTION 'Cannot restore missing inventory item %', item_id; END IF;
-        logged_items := logged_items || jsonb_build_array(jsonb_build_object('id', item_id, 'qty', qty, 'price', price));
+        logged_items := logged_items || jsonb_build_array(jsonb_build_object(
+            'id', item_id,
+            'name', COALESCE(item->>'name', inventory_item.name),
+            'category', COALESCE(NULLIF(BTRIM(item->>'category'), ''), inventory_item.category),
+            'qty', qty,
+            'price', price,
+            'cost_price', inventory_item.cost_price,
+            'selected_variation', item_variation
+        ));
     END LOOP;
     PERFORM public.transactions_log(
         p_action_type => 'sale_void', p_user_email => p_user_email,
