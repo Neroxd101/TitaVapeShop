@@ -2033,6 +2033,11 @@
   overflow: hidden !important;
 }
 
+#itemModal .edit-thumbnail-carousel .edit-thumbnails.is-empty {
+  grid-template-columns: var(--thumbnail-size);
+  justify-content: center;
+}
+
 #itemModal .edit-thumbnail-carousel .image-item,
 #itemModal .edit-thumbnail-carousel .image-add-tile,
 #itemModal .thumbnail-slot-placeholder {

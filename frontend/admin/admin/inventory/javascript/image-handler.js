@@ -136,6 +136,8 @@ const InventoryImage = {
       `;
     });
 
+    thumbs.classList.toggle('is-empty', InventoryState.currentImages.length === 0);
+
     // Show add tile if under max images
     if (InventoryState.currentImages.length < InventoryState.MAX_IMAGES) {
       tiles.push(`
@@ -151,8 +153,10 @@ const InventoryImage = {
     this.thumbnailPage = Math.min(Math.max(0, this.thumbnailPage), pageCount - 1);
     const pageStart = this.thumbnailPage * this.THUMBNAILS_PER_PAGE;
     const pageTiles = tiles.slice(pageStart, pageStart + this.THUMBNAILS_PER_PAGE);
-    while (pageTiles.length < this.THUMBNAILS_PER_PAGE) {
-      pageTiles.push('<span class="thumbnail-slot-placeholder" aria-hidden="true"></span>');
+    if (InventoryState.currentImages.length > 0) {
+      while (pageTiles.length < this.THUMBNAILS_PER_PAGE) {
+        pageTiles.push('<span class="thumbnail-slot-placeholder" aria-hidden="true"></span>');
+      }
     }
     thumbs.innerHTML = pageTiles.join('');
 

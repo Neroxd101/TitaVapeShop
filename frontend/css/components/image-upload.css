@@ -202,6 +202,10 @@
   flex-wrap: wrap;
 }
 
+.edit-thumbnails.is-empty {
+  justify-content: center;
+}
+
 /* Thumbnail sizing inside the edit modal */
 .edit-thumbnails .image-item {
   width: 80px;
