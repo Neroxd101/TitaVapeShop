@@ -5,11 +5,11 @@ LANGUAGE sql STABLE SECURITY INVOKER
 SET search_path = public
 AS $$
   SELECT jsonb_build_object(
-    'count', (SELECT count(*) FROM public.inventory WHERE quantity <= 10 OR quantity IS NULL),
+    'count', (SELECT count(*) FROM public.inventory WHERE quantity <= 5 OR quantity IS NULL),
     'items', (SELECT coalesce(jsonb_agg(to_jsonb(i) ORDER BY i.created_at DESC, i.id), '[]'::jsonb)
       FROM (SELECT id, name, quantity, created_at FROM public.inventory
-        WHERE quantity <= 10 OR quantity IS NULL
-        ORDER BY created_at DESC, id LIMIT 4) i)
+        WHERE quantity <= 5 OR quantity IS NULL
+        ORDER BY created_at DESC, id LIMIT 5) i)
   );
 $$;
 

@@ -150,7 +150,7 @@ async function loadDashboardData() {
       const totalProducts = summary.inventory.total;
       if (totalProductsEl) totalProductsEl.textContent = totalProducts;
 
-      // Low stock items (quantity <= 10)
+      // Low stock items use the same threshold as the Inventory page (quantity <= 5)
       const lowStockItems = products;
       const lowStockCount = summary.inventory.low_stock_count;
       if (lowStockEl) lowStockEl.textContent = lowStockCount;
@@ -164,7 +164,7 @@ async function loadDashboardData() {
 
         // Render low stock watchlist in sidebar
         if (lowStockWatchList) {
-          lowStockWatchList.innerHTML = lowStockItems.slice(0, 4).map(item => `
+          lowStockWatchList.innerHTML = lowStockItems.slice(0, 5).map(item => `
             <div class="low-stock-row">
               <span class="low-stock-name" title="${escapeHtml(item.name || 'Product')}">${escapeHtml(item.name || 'Product')}</span>
               <span class="low-stock-qty">${item.quantity || 0} in stock</span>
@@ -240,7 +240,7 @@ async function loadDashboardData() {
   }
 }
 
-// Load recent activity (limited to 8 items)
+// Load recent activity (limited to 14 items)
 function loadRecentActivity(result) {
   try {
 
@@ -266,8 +266,8 @@ function loadRecentActivity(result) {
     // Clear existing content
     activityList.innerHTML = '';
 
-    // Render at most 8 activity items
-    const recentTransactions = (result.transactions || []).slice(0, 8);
+    // Render at most 14 activity items to fill the desktop activity panel
+    const recentTransactions = (result.transactions || []).slice(0, 14);
     recentTransactions.forEach(transaction => {
       const activityItem = createActivityItem(transaction);
       activityList.appendChild(activityItem);
@@ -291,21 +291,18 @@ function createActivityItem(transaction) {
   const meta = getActivityMeta(transaction);
   const time = formatActivityTime(transaction.created_at);
 
-  let badgeTag = 'LOG';
-  let badgeClass = 'tag-inventory';
-  if (actionType === 'sale_complete') {
-    badgeTag = 'SALE';
-    badgeClass = 'tag-sale';
-  } else if (actionType.startsWith('inventory')) {
-    badgeTag = 'STOCK';
-    badgeClass = 'tag-inventory';
-  } else if (actionType.startsWith('order')) {
-    badgeTag = 'ORDER';
-    badgeClass = 'tag-order';
-  } else if (actionType.includes('void') || actionType.includes('cancel')) {
-    badgeTag = 'VOID';
-    badgeClass = 'tag-void';
-  }
+  const actionBadges = {
+    sale_complete: ['SALE', 'tag-sale'],
+    sale_void: ['VOID', 'tag-void'],
+    inventory_add: ['ADD', 'tag-add'],
+    inventory_edit: ['EDIT', 'tag-edit'],
+    inventory_delete: ['DELETE', 'tag-delete'],
+    category_add: ['CATEGORY ADDED', 'tag-add'],
+    category_delete: ['CATEGORY DELETED', 'tag-delete'],
+    order_confirm: ['CONFIRM', 'tag-confirm'],
+    order_cancel: ['CANCEL', 'tag-cancel']
+  };
+  const [badgeTag, badgeClass] = actionBadges[actionType] || ['LOG', 'tag-inventory'];
 
   item.innerHTML = `
     <span class="activity-badge-tag ${badgeClass}">${badgeTag}</span>
@@ -361,6 +358,14 @@ function getActivityTitle(transaction) {
   if (actionType === 'inventory_delete') {
     const name = escapeHtml(d.name || 'Item');
     return `Deleted "${name}"`;
+  }
+
+  if (actionType === 'category_add') {
+    return `Added category "${escapeHtml(d.category_name || 'Category')}"`;
+  }
+
+  if (actionType === 'category_delete') {
+    return `Deleted category "${escapeHtml(d.category_name || 'Category')}"`;
   }
 
   if (actionType === 'sale_void') {

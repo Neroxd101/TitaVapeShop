@@ -242,9 +242,9 @@ body {
 }
 
 .pill-blue {
-  background: var(--dash-blue-bg);
-  color: var(--dash-blue);
-  border: 1px solid var(--dash-blue-border);
+  background: rgba(92, 124, 250, 0.15);
+  color: #7b9bff;
+  border: none;
 }
 
 .pill-red {
@@ -254,9 +254,9 @@ body {
 }
 
 .pill-neutral {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--dash-text-muted);
-  border: 1px solid var(--dash-border);
+  background: rgba(92, 124, 250, 0.15);
+  color: #7b9bff;
+  border: none;
 }
 
 .metric-value-row {
@@ -518,27 +518,47 @@ body {
 }
 
 .tag-sale {
-  background: var(--dash-emerald-bg);
-  color: var(--dash-emerald);
-  border: 1px solid var(--dash-emerald-border);
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(0, 212, 170, 0.3);
 }
 
 .tag-inventory {
-  background: var(--dash-blue-bg);
-  color: var(--dash-blue);
-  border: 1px solid var(--dash-blue-border);
+  background: rgba(0, 200, 255, 0.12);
+  color: #33d4f5;
+  border: 1px solid rgba(0, 200, 255, 0.28);
 }
 
 .tag-order {
-  background: var(--dash-amber-bg);
-  color: var(--dash-amber);
-  border: 1px solid var(--dash-amber-border);
+  background: rgba(92, 124, 250, 0.15);
+  color: #7b9bff;
+  border: 1px solid rgba(92, 124, 250, 0.3);
 }
 
 .tag-void {
-  background: var(--dash-red-bg);
-  color: var(--dash-red);
-  border: 1px solid var(--dash-red-border);
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--error);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+.tag-add { background: rgba(0, 200, 255, 0.12); color: #33d4f5; border: 1px solid rgba(0, 200, 255, 0.28); }
+.tag-edit { background: rgba(255, 159, 67, 0.14); color: #ffb347; border: 1px solid rgba(255, 159, 67, 0.3); }
+.tag-delete, .tag-cancel { background: rgba(255, 71, 87, 0.15); color: var(--error); border: 1px solid rgba(255, 71, 87, 0.3); }
+.tag-confirm { background: rgba(92, 124, 250, 0.15); color: #7b9bff; border: 1px solid rgba(92, 124, 250, 0.3); }
+
+/* Match Activity Log action badges: translucent fill without an outline. */
+.activity-badge-tag {
+  padding: 4px 10px;
+  border: none !important;
+  border-radius: 6px;
+}
+
+/* Keep quick-action icons consistent with the borderless activity badges. */
+.op-icon-green,
+.op-icon-blue,
+.op-icon-amber,
+.op-icon-purple {
+  border: none;
 }
 
 .activity-details {
@@ -814,14 +834,14 @@ body {
   }
 
   .op-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
     padding: 14px;
   }
 
   .op-details {
-    width: 100%;
+    width: auto;
     overflow-wrap: anywhere;
   }
 }

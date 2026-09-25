@@ -6,7 +6,7 @@ SET search_path = public
 AS $$
   SELECT coalesce(jsonb_agg(to_jsonb(t) ORDER BY t.created_at DESC, t.id), '[]'::jsonb)
   FROM (SELECT id, action_type, details, sale_total, sale_items, customer_name, created_at
-    FROM public.transactions ORDER BY created_at DESC, id LIMIT 8) t;
+    FROM public.transactions ORDER BY created_at DESC, id LIMIT 11) t;
 $$;
 
 REVOKE ALL ON FUNCTION public.dashboard_recent_activity() FROM PUBLIC, anon, authenticated;
