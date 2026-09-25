@@ -75,7 +75,7 @@ const CustomerLogin = {
 
     const ordersBtn = document.getElementById('ordersBtn');
     if (ordersBtn) {
-      ordersBtn.style.display = currentUser ? 'none' : '';
+      ordersBtn.style.display = '';
     }
     document.body.classList.toggle('customer-logged-in', Boolean(currentUser));
 

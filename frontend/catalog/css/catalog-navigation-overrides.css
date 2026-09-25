@@ -189,6 +189,83 @@
     }
 }
 
+/* Keep the five compact navigation actions on one row on small screens. */
+@media (max-width: 600px) {
+    .nav .nav-links {
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+        width: 100% !important;
+    }
+
+    .nav .header-hours {
+        grid-column: 1 / -1 !important;
+    }
+
+    /* Keep My Orders visible beside Cart and the customer sign-in/profile action. */
+    .nav #ordersBtn {
+        display: flex !important;
+        grid-column: auto !important;
+    }
+
+    .nav #customerNavContainer {
+        grid-column: auto !important;
+        display: flex !important;
+    }
+
+    .nav .social-link,
+    .nav .cart-button,
+    .nav #customerNavContainer,
+    .nav #customerNavContainer .customer-nav-btn,
+    .nav #customerNavContainer .customer-profile-pill {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 6px 2px !important;
+        gap: 3px !important;
+        font-size: 9px !important;
+        border-radius: 7px !important;
+        overflow: hidden;
+    }
+
+    .nav .cart-button {
+        overflow: visible !important;
+    }
+
+    .nav .cart-button .cart-badge {
+        z-index: 2;
+    }
+
+    .nav .social-link span,
+    .nav .cart-button span:not(.cart-badge),
+    .nav #customerNavContainer span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Use the avatar initial instead of the full customer name in the compact nav. */
+    .nav #customerNavContainer .customer-profile-name {
+        display: none !important;
+    }
+
+    .nav #customerNavContainer .customer-profile-pill > svg {
+        display: none !important;
+    }
+
+    .nav #customerNavContainer .customer-avatar {
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 10px !important;
+        flex-shrink: 0;
+    }
+
+    .nav .social-link svg,
+    .nav .cart-button svg,
+    .nav #customerNavContainer svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+}
+
 /* Tablets and desktops share a left logo and right navigation layout. */
 @media (min-width: 768px) {
     .nav .nav-container {

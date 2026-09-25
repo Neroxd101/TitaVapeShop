@@ -2,11 +2,6 @@
    Customer Authentication & Verification Styles
    ============================================= */
 
-/* Hide standalone orders button beside cart when customer is logged in */
-body.customer-logged-in #ordersBtn {
-  display: none !important;
-}
-
 /* On smaller screens, pair Cart and Profile Pill side-by-side in balanced 2-column row */
 @media (max-width: 767px) {
   body.customer-logged-in .nav #cartBtn {
