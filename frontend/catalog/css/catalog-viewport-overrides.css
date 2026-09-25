@@ -455,7 +455,7 @@
 }
 
 /* Mobile catalog filters: category + sort on row one, search on row two. */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
     .filter-tabs {
         display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;

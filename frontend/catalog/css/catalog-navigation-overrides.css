@@ -190,7 +190,7 @@
 }
 
 /* Keep the five compact navigation actions on one row on small screens. */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
     .nav .nav-links {
         grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
         gap: 4px !important;
