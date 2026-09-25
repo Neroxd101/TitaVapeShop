@@ -65,6 +65,7 @@ BEGIN
         sale_items := sale_items || jsonb_build_array(jsonb_build_object(
             'id', inventory_item.id,
             'name', inventory_item.name,
+            'category', inventory_item.category,
             'qty', cart_item.qty,
             'price', inventory_item.sale_price,
             'cost_price', inventory_item.cost_price

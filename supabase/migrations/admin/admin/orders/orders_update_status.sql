@@ -90,6 +90,7 @@ BEGIN
             logged_items := logged_items || jsonb_build_array(jsonb_build_object(
                 'id', item_id,
                 'name', COALESCE(item->>'name', inventory_item.name),
+                'category', COALESCE(NULLIF(BTRIM(item->>'category'), ''), inventory_item.category),
                 'qty', item_qty,
                 'price', item_price,
                 'cost_price', inventory_item.cost_price

@@ -33,13 +33,19 @@ BEGIN
         SELECT 
             (sale_item->>'id')::UUID as item_id,
             COALESCE(sale_item->>'name', inv.name, 'Unknown Product') as item_name,
-            COALESCE(inv.category, sale_item->>'category', 'Uncategorized') as item_category,
+            COALESCE(
+                NULLIF(BTRIM(inv.category), ''),
+                NULLIF(BTRIM(sale_item->>'category'), ''),
+                'Uncategorized'
+            ) as item_category,
             SUM(COALESCE((sale_item->>'qty')::INTEGER, 0)) as units_sold,
             SUM(COALESCE((sale_item->>'qty')::INTEGER, 0) * COALESCE((sale_item->>'price')::DECIMAL(10, 2), 0)) as revenue
         FROM filtered_transactions t,
         LATERAL jsonb_array_elements(t.sale_items) as sale_item
         LEFT JOIN inventory inv ON inv.id = (sale_item->>'id')::UUID
-        GROUP BY (sale_item->>'id')::UUID, COALESCE(sale_item->>'name', inv.name, 'Unknown Product'), COALESCE(inv.category, sale_item->>'category', 'Uncategorized')
+        GROUP BY (sale_item->>'id')::UUID,
+            COALESCE(sale_item->>'name', inv.name, 'Unknown Product'),
+            COALESCE(NULLIF(BTRIM(inv.category), ''), NULLIF(BTRIM(sale_item->>'category'), ''), 'Uncategorized')
     ),
     products_with_stock AS (
         SELECT 
