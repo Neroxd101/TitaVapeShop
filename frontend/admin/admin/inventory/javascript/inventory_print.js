@@ -6,6 +6,13 @@ const InventoryPrint = {
         })[char]);
     },
 
+    getPrintableImageUrl(url) {
+        if (!url) return '';
+        const match = String(url).match(/[?&]id=([a-zA-Z0-9_-]+)|\/d\/([a-zA-Z0-9_-]+)/);
+        const fileId = match?.[1] || match?.[2];
+        return fileId ? `/api/catalog/image/${encodeURIComponent(fileId)}` : String(url);
+    },
+
     buildReport(items) {
         const escape = value => this.escape(value);
         const stockLabels = { all: 'All Stock', low: 'Low Stock (1–5)', none: 'No Stock (0)' };
@@ -73,7 +80,7 @@ const InventoryPrint = {
         const products = items.filter(item => item.qr_image_url);
         const cards = products.map(item => `
             <article class="qr-card">
-                <img src="${this.escape(item.qr_image_url)}" alt="QR code for ${this.escape(item.name)}">
+                <img src="${this.escape(this.getPrintableImageUrl(item.qr_image_url))}" alt="QR code for ${this.escape(item.name)}">
                 <strong>${this.escape(item.name)}</strong>
             </article>`).join('');
         return `<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -82,9 +89,10 @@ const InventoryPrint = {
             body { font: 14px Arial, sans-serif; color: #111; margin: 20px; }
             h1 { font-size: 22px; margin: 0 0 6px; }
             p { margin: 0 0 18px; }
-            .qr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-            .qr-card { border: 1px solid #bbb; padding: 12px; min-height: 190px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; break-inside: avoid; }
-            .qr-card img { width: 140px; height: 140px; object-fit: contain; margin-bottom: 10px; }
+            .qr-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+            .qr-card { border: 1px solid #bbb; padding: 8px 5px; min-height: 135px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; break-inside: avoid; }
+            .qr-card img { width: 92px; height: 92px; object-fit: contain; margin-bottom: 7px; }
+            .qr-card strong { font-size: 10px; line-height: 1.2; }
             .qr-card strong { overflow-wrap: anywhere; }
             button { padding: 8px 16px; margin-bottom: 16px; }
             @media print { button { display: none; } }
