@@ -680,6 +680,7 @@
       }
 
       const imageFallbacks = getItemImageFallbacks(imgSrc);
+      const selectedVariation = item.selected_variation || item.variation || null;
       const imgHtml = imageFallbacks.length
         ? `<div class="item-thumb"><img alt="${escapeHtml(item.name || 'Product')}"></div>`
         : `<div class="item-thumb">📦</div>`;
@@ -689,6 +690,7 @@
           ${imgHtml}
           <div class="item-meta">
             <span class="item-name">${escapeHtml(item.name || 'Item')}</span>
+            ${selectedVariation ? `<span class="item-variation">Variation: ${escapeHtml(selectedVariation)}</span>` : ''}
             <span class="item-qty-price">${qty} × ${formatMoney(price)}</span>
           </div>
         </div>

@@ -773,7 +773,7 @@
     }
 }
 
-/* The anchored tablet gallery follows the details, including variant rows.
+/* The anchored tablet gallery follows the details, including variation rows.
    Reset both dimensions after all portrait and landscape height limits. */
 @media (min-width: 481px) and (max-width: 1024px) {
     #productModal .modal-image-container {
