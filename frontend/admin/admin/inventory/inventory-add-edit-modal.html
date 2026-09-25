@@ -1,74 +1,72 @@
-<!-- Add/Edit Modal -->
+<!-- Add/Edit Item Modal -->
 <div class="modal-overlay" id="itemModal">
   <div class="modal modal-wide">
-    <!-- 📋 API Route: POST /inventory/create-item | PUT /inventory/update-item -->
-    <!-- See API-ROUTES.md for details -->
-    <form id="itemForm" class="modal-form-horizontal" action="/inventory/create-item" method="POST"
-      data-api-route-create="/inventory/create-item" data-api-route-update="/inventory/update-item">
+    <form id="itemForm" class="modal-form-horizontal">
       <input type="hidden" id="itemId" name="id">
 
-      <!-- Left Column - Images -->
       <div class="modal-col modal-col-images">
         <div class="form-group">
-          <label>Product Images <span class="label-hint">(up to 5)</span></label>
-
-          <div class="edit-main-image" id="editMainImage"></div>
-
-          <div class="edit-thumbnails" id="editThumbnails">
-            <!-- Thumbnails + add tile rendered here -->
-          </div>
-
-          <input type="file" id="itemImages" accept="image/*" multiple style="display: none;">
-          <p class="image-hint" id="imageHint">JPG, PNG up to 5MB</p>
+          <label>Product Images <span class="label-hint">(up to 10)</span></label>
+          <div class="edit-main-image no-image" id="editMainImage"></div>
+          <div class="edit-thumbnails" id="editThumbnails"></div>
+          <input type="file" id="itemImages" accept="image/jpeg,image/png,image/webp" multiple hidden>
+          <p class="image-hint" id="imageHint">JPG, PNG, or WebP up to 5MB each</p>
         </div>
-
       </div>
 
-      <!-- Right Column - Form Fields -->
       <div class="modal-col modal-col-fields">
         <h2 class="view-name" id="modalTitle">Add New Item</h2>
-        <div class="form-row-2">
-          <div class="form-group">
-            <label for="itemCategory">Category</label>
-            <select id="itemCategory" required>
-              <option value="">Select category</option>
-              <option value="hardware">Hardware</option>
-              <option value="juices">Juices</option>
-            </select>
+
+        <section class="inventory-form-section">
+          <h3 class="inventory-form-section-title">Basic Information</h3>
+          <div class="form-row-2 inventory-basic-row">
+            <div class="form-group">
+              <label for="itemName">Product Name</label>
+              <input type="text" id="itemName" placeholder="Enter product name" required>
+            </div>
+            <div class="form-group">
+              <label for="itemCategory">Category</label>
+              <select id="itemCategory" required>
+                <option value="">Select category</option>
+                <option value="hardware">Hardware</option>
+                <option value="juices">Juices</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
-            <label for="itemQuantity">Quantity</label>
-            <input type="number" id="itemQuantity" placeholder="0" min="0" required>
+            <label for="itemDescription">Description <span class="label-hint">(optional)</span></label>
+            <textarea id="itemDescription" placeholder="Enter product description..." rows="3"></textarea>
           </div>
-        </div>
+        </section>
 
-        <div class="form-group">
-          <label for="itemName">Product Name</label>
-          <input type="text" id="itemName" placeholder="Enter product name" required>
-        </div>
+        <section class="inventory-form-section">
+          <h3 class="inventory-form-section-title">Inventory &amp; Pricing</h3>
+          <div class="form-row-3">
+            <div class="form-group">
+              <label for="itemQuantity">Quantity</label>
+              <input type="number" id="itemQuantity" placeholder="0" min="0" required>
+            </div>
+            <div class="form-group">
+              <label for="itemCostPrice">Cost Price (₱)</label>
+              <input type="number" id="itemCostPrice" placeholder="0.00" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label for="itemSalePrice">Sale Price (₱)</label>
+              <input type="number" id="itemSalePrice" placeholder="0.00" min="0" step="0.01" required>
+            </div>
+          </div>
+        </section>
 
-        <div class="form-group">
-          <label>Variations <span class="label-hint">(optional, up to 10)</span></label>
+        <section class="inventory-form-section inventory-variations-section">
+          <div class="inventory-form-section-heading">
+            <h3 class="inventory-form-section-title">Variations</h3>
+            <span class="label-hint">Optional · up to 10</span>
+          </div>
           <div id="variationControls">
             <div id="variationsList"></div>
             <button type="button" class="btn btn-secondary" id="addVariationBtn">+ Add variation</button>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="itemDescription">Description <span class="label-hint">(optional)</span></label>
-          <textarea id="itemDescription" placeholder="Enter product description..." rows="7"></textarea>
-        </div>
-
-        <div class="form-row-2">
-          <div class="form-group">
-            <label for="itemCostPrice">Cost Price (₱)</label>
-            <input type="number" id="itemCostPrice" placeholder="0.00" min="0" step="0.01" required>
-          </div>
-          <div class="form-group">
-            <label for="itemSalePrice">Sale Price (₱)</label>
-            <input type="number" id="itemSalePrice" placeholder="0.00" min="0" step="0.01" required>
-          </div>
-        </div>
+        </section>
 
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
