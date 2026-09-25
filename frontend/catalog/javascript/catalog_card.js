@@ -105,7 +105,6 @@ const CatalogCard = {
     updateProductStock(productId) {
         const product = window.CatalogGetProducts?.getProductById?.(productId);
         if (!product) return;
-        if (Array.isArray(product.variations) && product.variations.length) { document.dispatchEvent(new CustomEvent('viewProduct', { detail: productId })); return; }
 
         const availableStock = this.getAvailableStock(product);
         const productCard = document.querySelector(`[data-id="${productId}"]`);
