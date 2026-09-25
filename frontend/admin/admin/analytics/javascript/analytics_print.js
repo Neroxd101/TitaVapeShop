@@ -59,6 +59,31 @@ const AnalyticsPrint = {
             font-family: Arial, sans-serif;
             margin: 20px;
             color: #000;
+            position: relative;
+        }
+        body > :not(.print-watermark) {
+            position: relative;
+            z-index: 1;
+        }
+        .print-watermark {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            align-items: center;
+            justify-items: center;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .print-watermark span {
+            color: rgba(0, 0, 0, 0.055);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            transform: rotate(-32deg);
         }
         .print-header {
             text-align: center;
@@ -159,6 +184,9 @@ const AnalyticsPrint = {
     </style>
 </head>
 <body>
+    <div class="print-watermark" aria-hidden="true">
+        ${Array.from({ length: 12 }, () => '<span>TitaVapeShop™</span>').join('')}
+    </div>
     <div class="print-header">
         <h1>Tita\'s Vape Shop</h1>
         <p>Business Analytics Report</p>

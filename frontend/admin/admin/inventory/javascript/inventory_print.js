@@ -25,7 +25,13 @@ const InventoryPrint = {
         return `<!doctype html><html lang="en"><head><meta charset="utf-8">
             <title>Inventory Stock Report</title><style>
             @page { size: A4; margin: 12mm; }
-            body { font: 12px Arial, sans-serif; color: #111; margin: 20px; }
+            body { font: 12px Arial, sans-serif; color: #111; margin: 20px; position: relative; }
+            body > :not(.print-watermark) { position: relative; z-index: 1; }
+            .print-watermark { position: fixed; inset: 0; z-index: 0; display: grid;
+                grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);
+                align-items: center; justify-items: center; overflow: hidden; pointer-events: none; }
+            .print-watermark span { color: rgba(0,0,0,.055); font-size: 18px; font-weight: 700;
+                letter-spacing: 1px; white-space: nowrap; transform: rotate(-32deg); }
             h1 { font-size: 22px; margin-bottom: 6px; }
             p { line-height: 1.5; overflow-wrap: anywhere; }
             table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -34,7 +40,9 @@ const InventoryPrint = {
             .number { text-align: right; } thead { display: table-header-group; }
             tr { break-inside: avoid; } button { padding: 8px 16px; margin-bottom: 16px; }
             @media print { body { margin: 0; } button { display: none; } }
-            </style></head><body><button id="printReport">Print / Save PDF</button>
+            </style></head><body>
+            <div class="print-watermark" aria-hidden="true">${Array.from({ length: 12 }, () => '<span>TitaVapeShop™</span>').join('')}</div>
+            <button id="printReport">Print / Save PDF</button>
             <h1>Tita's Vape Shop — Stock Report</h1>
             <p>Generated: ${escape(new Date().toLocaleString('en-PH'))}</p>
             <p>${escape(filters.join(' | '))}</p>
