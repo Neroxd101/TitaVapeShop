@@ -53,6 +53,8 @@ const InventoryCreate = {
             if (e.target.closest('.remove-image')) InventoryImage.removeImage(index);
             else InventoryImage.setEditMainImage(index);
         });
+        document.getElementById('thumbnailPrevBtn')?.addEventListener('click', () => InventoryImage.changeThumbnailPage(-1));
+        document.getElementById('thumbnailNextBtn')?.addEventListener('click', () => InventoryImage.changeThumbnailPage(1));
 
         InventoryDOM.itemModal?.addEventListener('click', (e) => {
             if (e.target === InventoryDOM.itemModal) this.closeModal();
@@ -62,6 +64,7 @@ const InventoryCreate = {
     openAddModal() {
         InventoryState.editingItemId = null;
         InventoryState.currentImages = [];
+        InventoryImage.thumbnailPage = 0;
 
         document.getElementById('modalTitle').textContent = 'Add New Item';
         const saveBtn = document.getElementById('saveBtn');

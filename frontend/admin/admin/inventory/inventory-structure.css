@@ -1997,3 +1997,90 @@
   -webkit-text-fill-color: var(--text-muted);
   opacity: 1;
 }
+
+/* Fixed carousel: arrow + three permanent slots + arrow. */
+#itemModal .edit-thumbnail-carousel {
+  --thumbnail-size: 76px;
+  display: grid;
+  grid-template-columns: 28px auto 28px;
+  align-items: center;
+  justify-content: center;
+  column-gap: 8px;
+  width: 100%;
+  height: var(--thumbnail-size);
+  min-width: 0;
+}
+
+#itemModal .edit-thumbnail-carousel .edit-thumbnails {
+  display: grid !important;
+  grid-template-columns: repeat(3, var(--thumbnail-size));
+  grid-template-rows: var(--thumbnail-size);
+  gap: 8px !important;
+  width: auto !important;
+  height: var(--thumbnail-size) !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#itemModal .edit-thumbnail-carousel .image-item,
+#itemModal .edit-thumbnail-carousel .image-add-tile,
+#itemModal .thumbnail-slot-placeholder {
+  display: block;
+  width: var(--thumbnail-size) !important;
+  height: var(--thumbnail-size) !important;
+  min-width: var(--thumbnail-size) !important;
+  min-height: var(--thumbnail-size) !important;
+  max-width: var(--thumbnail-size) !important;
+  max-height: var(--thumbnail-size) !important;
+  box-sizing: border-box;
+}
+
+#itemModal .thumbnail-nav {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: var(--thumbnail-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transform: none !important;
+}
+
+#itemModal .thumbnail-nav svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+#itemModal .thumbnail-nav:hover,
+#itemModal .thumbnail-nav:focus,
+#itemModal .thumbnail-nav:active,
+#itemModal .thumbnail-nav:disabled {
+  margin: 0;
+  transform: none !important;
+}
+
+#itemModal .thumbnail-nav:disabled {
+  opacity: .3;
+  cursor: default;
+}
+
+@media (max-width: 400px) {
+  #itemModal .edit-thumbnail-carousel {
+    --thumbnail-size: 58px;
+    column-gap: 6px;
+  }
+
+  #itemModal .edit-thumbnail-carousel .edit-thumbnails {
+    gap: 6px !important;
+  }
+}

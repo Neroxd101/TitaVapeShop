@@ -8,9 +8,16 @@
         <div class="form-group">
           <label>Product Images <span class="label-hint">(up to 10)</span></label>
           <div class="edit-main-image no-image" id="editMainImage"></div>
-          <div class="edit-thumbnails" id="editThumbnails"></div>
+          <div class="edit-thumbnail-carousel">
+            <button type="button" class="thumbnail-nav thumbnail-nav-prev" id="thumbnailPrevBtn" aria-label="Previous images">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="edit-thumbnails" id="editThumbnails"></div>
+            <button type="button" class="thumbnail-nav thumbnail-nav-next" id="thumbnailNextBtn" aria-label="Next images">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </div>
           <input type="file" id="itemImages" accept="image/jpeg,image/png,image/webp" multiple hidden>
-          <p class="image-hint" id="imageHint">JPG, PNG, or WebP up to 5MB each</p>
         </div>
       </div>
 

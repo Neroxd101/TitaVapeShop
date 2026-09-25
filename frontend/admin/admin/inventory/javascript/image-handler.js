@@ -1,5 +1,8 @@
 // Image handling namespace
 const InventoryImage = {
+  THUMBNAILS_PER_PAGE: 3,
+  thumbnailPage: 0,
+
   // Parse images from item (can be JSON array or single URL)
   parseImages(item) {
     if (!item.images && !item.image_url) return [];
@@ -107,7 +110,7 @@ const InventoryImage = {
   },
 
   // Render images grid in modal
-  renderImagesGrid() {
+  renderImagesGrid(updateMainImage = true) {
     const thumbs = document.getElementById('editThumbnails');
     const mainImageEl = document.getElementById('editMainImage');
     if (!thumbs || !mainImageEl) return;
@@ -144,15 +147,34 @@ const InventoryImage = {
       `);
     }
 
-    thumbs.innerHTML = tiles.join('');
+    const pageCount = Math.max(1, Math.ceil(tiles.length / this.THUMBNAILS_PER_PAGE));
+    this.thumbnailPage = Math.min(Math.max(0, this.thumbnailPage), pageCount - 1);
+    const pageStart = this.thumbnailPage * this.THUMBNAILS_PER_PAGE;
+    const pageTiles = tiles.slice(pageStart, pageStart + this.THUMBNAILS_PER_PAGE);
+    while (pageTiles.length < this.THUMBNAILS_PER_PAGE) {
+      pageTiles.push('<span class="thumbnail-slot-placeholder" aria-hidden="true"></span>');
+    }
+    thumbs.innerHTML = pageTiles.join('');
+
+    const previousButton = document.getElementById('thumbnailPrevBtn');
+    const nextButton = document.getElementById('thumbnailNextBtn');
+    if (previousButton) previousButton.disabled = this.thumbnailPage === 0;
+    if (nextButton) nextButton.disabled = this.thumbnailPage >= pageCount - 1;
 
     // Update main preview
-    if (InventoryState.currentImages.length > 0) {
-      this.setEditMainImage(0);
-    } else {
-      mainImageEl.innerHTML = '';
-      mainImageEl.classList.add('no-image');
+    if (updateMainImage) {
+      if (InventoryState.currentImages.length > 0) {
+        this.setEditMainImage(0);
+      } else {
+        mainImageEl.innerHTML = '';
+        mainImageEl.classList.add('no-image');
+      }
     }
+  },
+
+  changeThumbnailPage(direction) {
+    this.thumbnailPage += direction;
+    this.renderImagesGrid(false);
   },
 
   // Handle image files selection
@@ -197,6 +219,7 @@ const InventoryImage = {
       });
     }
 
+    this.thumbnailPage = Math.floor(InventoryState.currentImages.length / this.THUMBNAILS_PER_PAGE);
     this.renderImagesGrid();
     e.target.value = ''; // Reset input
   },
@@ -317,3 +340,6 @@ const InventoryImage = {
     }
   }
 };
+
+// Modal event listeners access this handler through window.
+window.InventoryImage = InventoryImage;

@@ -9,6 +9,7 @@ const InventoryUpdate = {
         InventoryState.editingItemId = id;
         const images = InventoryImage.parseImages(item);
         InventoryState.currentImages = images.map(url => ({ url, file: null, uploading: false }));
+        InventoryImage.thumbnailPage = 0;
 
         document.getElementById('modalTitle').textContent = 'Edit Item';
         const saveBtn = document.getElementById('saveBtn');
