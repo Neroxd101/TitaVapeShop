@@ -472,6 +472,19 @@ class TransactionsUI {
                     let from = change.from;
                     let to = change.to;
 
+                    if (field === 'variations' && Array.isArray(change.items)) {
+                        const variationChanges = change.items.map(item => {
+                            const name = this.escapeHtml(item.name || 'Unnamed');
+                            if (item.type === 'added') return `Added ${name} (Qty: ${Number(item.quantity) || 0})`;
+                            if (item.type === 'removed') return `Removed ${name} (Qty: ${Number(item.quantity) || 0})`;
+                            return `${name} (Qty: ${Number(item.from) || 0} → ${Number(item.to) || 0})`;
+                        });
+                        if (variationChanges.length > 0) {
+                            changeList.push(`Variations: ${variationChanges.join('; ')}`);
+                        }
+                        continue;
+                    }
+
                     // Format based on field type
                     if (field.includes('price')) {
                         const fromAmount = parseFloat(from || 0);

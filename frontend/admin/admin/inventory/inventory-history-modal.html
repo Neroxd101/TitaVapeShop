@@ -4,7 +4,6 @@
     <!-- Modal Header -->
     <div class="history-modal-header">
       <div class="history-header-left">
-        <span class="history-badge">Sales Log</span>
         <h3 class="history-product-name" id="historyProductName">Product Name</h3>
       </div>
       <button type="button" class="modal-close" id="closeHistoryModalBtn" title="Close" aria-label="Close modal">
@@ -47,11 +46,6 @@
       <!-- Stats Cards -->
       <div class="history-stats-grid">
         <div class="history-stat-card">
-          <div class="history-stat-icon blue">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-            </svg>
-          </div>
           <div class="history-stat-info">
             <span class="history-stat-label">Units Sold</span>
             <span class="history-stat-value" id="historyTotalSales">0</span>
@@ -59,9 +53,6 @@
         </div>
 
         <div class="history-stat-card">
-          <div class="history-stat-icon green">
-            <span aria-hidden="true" style="font-size: 20px; font-weight: 700; line-height: 1;">₱</span>
-          </div>
           <div class="history-stat-info">
             <span class="history-stat-label">Total Sales</span>
             <span class="history-stat-value highlight-green" id="historyTotalProfit">₱0.00</span>
@@ -77,7 +68,7 @@
               <tr>
                 <th class="col-date">Date</th>
                 <th class="col-qty">Quantity</th>
-                <th class="col-price">Price</th>
+                <th class="col-price">Costing</th>
                 <th class="col-subtotal">Subtotal</th>
                 <th class="col-customer">Customer</th>
                 <th class="col-staff">Sold By</th>

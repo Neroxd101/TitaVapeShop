@@ -97,13 +97,62 @@ const TransactionsLog = {
     getChanges(oldData, newData) {
         const changes = {};
         for (const key in newData) {
-            if (oldData[key] !== newData[key]) {
+            if (key === 'variations') {
+                const variationChanges = this.getVariationChanges(oldData[key], newData[key]);
+                if (variationChanges.length > 0) {
+                    changes[key] = { items: variationChanges };
+                }
+                continue;
+            }
+
+            const oldValue = oldData[key];
+            const newValue = newData[key];
+            const valuesMatch = (oldValue && typeof oldValue === 'object') || (newValue && typeof newValue === 'object')
+                ? JSON.stringify(oldValue ?? null) === JSON.stringify(newValue ?? null)
+                : oldValue === newValue;
+            if (!valuesMatch) {
                 changes[key] = {
-                    from: oldData[key],
-                    to: newData[key]
+                    from: oldValue,
+                    to: newValue
                 };
             }
         }
+        return changes;
+    },
+
+    getVariationChanges(oldValue, newValue) {
+        const parse = (value) => {
+            if (Array.isArray(value)) return value;
+            if (typeof value !== 'string' || !value.trim()) return [];
+            try {
+                const parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return value.split('|').map(name => ({ name: name.trim(), quantity: 0 })).filter(item => item.name);
+            }
+        };
+        const normalize = (value) => parse(value)
+            .filter(item => item && String(item.name || '').trim())
+            .map(item => ({ name: String(item.name).trim(), quantity: Number(item.quantity) || 0 }));
+        const oldVariations = normalize(oldValue);
+        const newVariations = normalize(newValue);
+        const oldByName = new Map(oldVariations.map(item => [item.name.toLowerCase(), item]));
+        const newByName = new Map(newVariations.map(item => [item.name.toLowerCase(), item]));
+        const changes = [];
+
+        newVariations.forEach(item => {
+            const previous = oldByName.get(item.name.toLowerCase());
+            if (!previous) {
+                changes.push({ type: 'added', name: item.name, quantity: item.quantity });
+            } else if (previous.quantity !== item.quantity) {
+                changes.push({ type: 'quantity', name: item.name, from: previous.quantity, to: item.quantity });
+            }
+        });
+        oldVariations.forEach(item => {
+            if (!newByName.has(item.name.toLowerCase())) {
+                changes.push({ type: 'removed', name: item.name, quantity: item.quantity });
+            }
+        });
         return changes;
     }
 };

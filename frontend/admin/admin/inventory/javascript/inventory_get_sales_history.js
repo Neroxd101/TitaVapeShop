@@ -195,9 +195,11 @@ const InventoryHistory = {
 
     createSaleRow(sale) {
         const saleDate = InventoryUtils.formatDate(sale.sale_date);
-        const quantity = sale.quantity_sold || 0;
-        const price = InventoryUtils.formatCurrency(sale.sale_price || 0);
-        const subtotal = InventoryUtils.formatCurrency(sale.subtotal || 0);
+        const quantity = Number(sale.quantity_sold) || 0;
+        const unitCost = Number(sale.cost_price) || 0;
+        const price = InventoryUtils.formatCurrency(unitCost);
+        const subtotalAmount = unitCost * quantity;
+        const subtotal = InventoryUtils.formatCurrency(Number.isFinite(subtotalAmount) ? subtotalAmount : 0);
         const customer = sale.customer_name || sale.customer_email || '-';
         const soldBy = sale.user_email || '-';
 
@@ -207,15 +209,15 @@ const InventoryHistory = {
                     <span class="history-date-text">${saleDate}</span>
                 </td>
                 <td class="col-qty" data-label="Quantity">
-                    <span class="mobile-cell-label">Qty:</span>
+                    <span class="mobile-cell-label">Qty</span>
                     <span class="history-qty-pill">${quantity}</span>
                 </td>
                 <td class="col-price" data-label="Price">
-                    <span class="mobile-cell-label">Unit:</span>
+                    <span class="mobile-cell-label">Costing</span>
                     <span class="history-price-text">${price}</span>
                 </td>
                 <td class="col-subtotal" data-label="Subtotal">
-                    <span class="mobile-cell-label">Total:</span>
+                    <span class="mobile-cell-label">Total</span>
                     <span class="history-subtotal-text">${subtotal}</span>
                 </td>
                 <td class="col-customer" data-label="Customer" title="${customer}">
