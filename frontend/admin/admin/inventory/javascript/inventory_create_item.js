@@ -230,6 +230,7 @@ const InventoryCreate = {
         const qtyWrap = document.createElement('div'); qtyWrap.className = 'variation-qty-field';
         nameWrap.appendChild(input); qtyWrap.appendChild(qty);
         row.append(nameWrap, qtyWrap, remove); list.appendChild(row); resizeVariationInput(); this.updateVariationLimits(); this.updateAddVariationButton();
+        if (!skipLimitCheck) input.focus();
         if (typeof value === 'object' && value.name) this.lockVariationRow(row);
     },
     closeModal() {

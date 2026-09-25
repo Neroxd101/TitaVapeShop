@@ -2104,3 +2104,53 @@
     padding-inline: 8px;
   }
 }
+
+@media (max-width: 480px) {
+  #itemModal #variationControls {
+    gap: 5px;
+  }
+
+  #itemModal #variationControls .variation-row {
+    padding: 3px 6px !important;
+    border-radius: 8px !important;
+    font-size: 11px;
+  }
+
+  #itemModal #variationControls .variation-display,
+  #itemModal #variationControls .variation-input,
+  #itemModal #variationControls .variation-quantity,
+  #itemModal #variationControls .variation-qty-field::before,
+  #itemModal #variationControls .variation-qty-field::after {
+    height: 15px !important;
+    font-size: 11px !important;
+    line-height: 15px !important;
+  }
+
+  #itemModal #variationControls .variation-row .variation-quantity {
+    width: 14px !important;
+    min-width: 14px !important;
+    max-width: 14px !important;
+  }
+
+  #itemModal #variationControls .variation-qty-field::before {
+    margin-left: 3px;
+    margin-right: 1px;
+  }
+
+  #itemModal #variationControls .variation-qty-field::after {
+    margin-left: 1px;
+  }
+
+  #itemModal #variationControls #addVariationBtn {
+    flex: 0 0 auto;
+    width: auto !important;
+    align-self: center;
+    height: 23px !important;
+    min-height: 23px !important;
+    padding: 3px 6px !important;
+    border-radius: 8px !important;
+    font-size: 10px !important;
+    line-height: 15px !important;
+    box-sizing: border-box;
+  }
+}
