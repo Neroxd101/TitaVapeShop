@@ -62,16 +62,10 @@ const CatalogCard = {
                         </div>
                         <div class="card-actions">
                             <button class="btn-card btn-edit view-btn" data-product-id="${product.id}">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                                </svg>
                                 <span>Details</span>
                             </button>
                             ${availableStock > 0 
                                     ? `<button class="btn-card add-cart-btn" data-product-id="${product.id}">
-                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                                        </svg>
                                         <span>Add to Cart</span>
                                     </button>`
                                     : `<button class="btn-card" disabled>Out of Stock</button>`}
@@ -175,9 +169,6 @@ const CatalogCard = {
         // Visual feedback on button
         btn.classList.add('btn-added');
         btn.innerHTML = `
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
             <span>Added!</span>
         `;
         btn.disabled = true;
@@ -188,9 +179,6 @@ const CatalogCard = {
             const remaining = this.getAvailableStock(product);
             if (remaining > 0) {
                 btn.innerHTML = `
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                    </svg>
                     <span>Add to Cart</span>
                 `;
             } else {
@@ -204,9 +192,6 @@ const CatalogCard = {
         btn.className = 'btn-card add-cart-btn';
         btn.setAttribute('data-product-id', productId);
         btn.innerHTML = `
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-            </svg>
             <span>Add to Cart</span>
         `;
         btn.addEventListener('click', (e) => {

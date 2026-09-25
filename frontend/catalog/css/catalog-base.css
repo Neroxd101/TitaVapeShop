@@ -561,6 +561,11 @@ main {
     border-color: var(--accent);
 }
 
+.card-actions .add-cart-btn {
+    justify-content: center;
+    text-align: center;
+}
+
 /* Sort Dropdown Component (Matches category filter-tab design) */
 .sort-box {
     position: relative;
