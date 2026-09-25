@@ -230,6 +230,15 @@
         overflow: visible !important;
     }
 
+    .nav #customerNavContainer,
+    .nav #customerNavContainer .customer-profile-pill {
+        overflow: visible !important;
+    }
+
+    .nav #customerNavContainer .customer-dropdown-menu {
+        overflow: visible !important;
+    }
+
     .nav .cart-button .cart-badge {
         z-index: 2;
     }
