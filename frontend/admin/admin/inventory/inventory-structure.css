@@ -772,6 +772,48 @@
   }
 }
 
+.inventory-print-menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.inventory-print-trigger {
+  gap: 8px;
+}
+
+.inventory-print-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  display: none;
+  min-width: 145px;
+  padding: 5px;
+  background: var(--surface, #171923);
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  border-radius: 9px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.3);
+}
+
+.inventory-print-dropdown.is-open {
+  display: grid;
+}
+
+.inventory-print-dropdown button {
+  border: 0;
+  background: transparent;
+  color: var(--text, #f8fafc);
+  padding: 9px 10px;
+  border-radius: 6px;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.inventory-print-dropdown button:hover {
+  background: rgba(255,255,255,.08);
+}
+
 /* Mobile Screens (<= 600px): Strictly 3 rows
    Row 1: Category
    Row 2: Sort + Date Range (From, To)

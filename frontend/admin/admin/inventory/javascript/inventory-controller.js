@@ -39,7 +39,25 @@ const Inventory = {
 
   // Setup event listeners
   setupEventListeners() {
-    document.getElementById('printStocksBtn')?.addEventListener('click', () => InventoryPrint.print());
+    const printTrigger = document.getElementById('printStocksBtn');
+    const printMenu = document.getElementById('inventoryPrintDropdown');
+    printTrigger?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = printMenu?.classList.toggle('is-open');
+      printTrigger.setAttribute('aria-expanded', String(Boolean(isOpen)));
+    });
+    printMenu?.querySelectorAll('[data-print-action]').forEach((button) => {
+      button.addEventListener('click', () => {
+        printMenu.classList.remove('is-open');
+        printTrigger?.setAttribute('aria-expanded', 'false');
+        if (button.dataset.printAction === 'qr') InventoryPrint.printQr();
+        else InventoryPrint.print();
+      });
+    });
+    document.addEventListener('click', () => {
+      printMenu?.classList.remove('is-open');
+      printTrigger?.setAttribute('aria-expanded', 'false');
+    });
     // Add item button
     document.getElementById('addItemBtn')?.addEventListener('click', () => InventoryCreate.openAddModal());
 

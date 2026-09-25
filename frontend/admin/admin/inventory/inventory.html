@@ -121,7 +121,15 @@
             </div>
             <button type="button" id="clearAddedDateBtn" class="stock-filter" aria-label="Clear date added filter" disabled>Clear</button>
           </div>
-          <button type="button" class="btn btn-primary" id="printStocksBtn"><span>Print Stocks</span></button>
+          <div class="inventory-print-menu">
+            <button type="button" class="btn btn-primary inventory-print-trigger" id="printStocksBtn" aria-haspopup="true" aria-expanded="false">
+              <span>Print</span><span aria-hidden="true">▾</span>
+            </button>
+            <div class="inventory-print-dropdown" id="inventoryPrintDropdown" role="menu">
+              <button type="button" role="menuitem" data-print-action="stock">Print Stock</button>
+              <button type="button" role="menuitem" data-print-action="qr">Print All QR</button>
+            </div>
+          </div>
           <button class="btn btn-primary" id="addItemBtn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
