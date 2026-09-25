@@ -1049,6 +1049,19 @@
   width: 100%;
 }
 
+/* Keep the destructive action clearly visible on every product card. */
+.inventory-card .btn-delete {
+  background: var(--error);
+  color: #fff;
+  border-color: var(--error);
+}
+
+.inventory-card .btn-delete:hover,
+.inventory-card .btn-delete:focus-visible {
+  background: color-mix(in srgb, var(--error) 86%, #000);
+  border-color: color-mix(in srgb, var(--error) 86%, #000);
+}
+
 /* Card QR styles moved to /css/components/qr-preview.css */
 
 /* View category styles moved to /css/components/badges.css */

@@ -422,16 +422,38 @@
   color: var(--accent);
 }
 
-/* Override button danger to use translucent style for orders */
+/* Use filled action buttons for the order state changes. */
 .orders-container .btn-danger {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: color-mix(in srgb, var(--error) 82%, #000);
+  color: #fff;
+  border: 1px solid var(--error);
 }
 
 .orders-container .btn-danger:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: #ef4444;
+  background: color-mix(in srgb, var(--error) 86%, #000);
+  border-color: color-mix(in srgb, var(--error) 86%, #000);
+}
+
+.orders-container .btn-success {
+  background: color-mix(in srgb, var(--success) 82%, #000);
+  color: var(--bg-primary);
+  border: 1px solid var(--success);
+}
+
+.orders-container .btn-success:hover {
+  background: color-mix(in srgb, var(--success) 86%, #000);
+  border-color: color-mix(in srgb, var(--success) 86%, #000);
+}
+
+.orders-container .btn-info {
+  background: color-mix(in srgb, #3b82f6 82%, #000);
+  color: #fff;
+  border: 1px solid #3b82f6;
+}
+
+.orders-container .btn-info:hover {
+  background: color-mix(in srgb, #3b82f6 86%, #000);
+  border-color: color-mix(in srgb, #3b82f6 86%, #000);
 }
 
 /* Pagination overrides */

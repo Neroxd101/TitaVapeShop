@@ -108,6 +108,7 @@
 
 .pos-card-price-value {
   font-weight: 600;
+  color: var(--success);
 }
 
 .pos-card-actions {

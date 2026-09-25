@@ -678,6 +678,62 @@
   box-shadow: 0 0 5px rgba(255, 71, 87, 0.7);
 }
 
+/* Action badges use solid fills and text labels instead of status dots. */
+.transactions-table .badge::before {
+  display: none;
+}
+
+.transactions-table .badge {
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+.transactions-table .badge-sale {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent);
+  border-color: rgba(0, 212, 170, 0.3);
+}
+
+.transactions-table .badge-confirm {
+  background: rgba(92, 124, 250, 0.15);
+  color: #7b9bff;
+  border-color: transparent;
+}
+
+.transactions-table .badge-cancel,
+.transactions-table .badge-delete {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--error);
+  border-color: transparent;
+}
+
+.transactions-table .badge-void {
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--error);
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+.transactions-table .badge-add {
+  background: rgba(0, 200, 255, 0.12);
+  color: #33d4f5;
+  border-color: transparent;
+}
+
+.transactions-table .badge-edit {
+  background: rgba(255, 159, 67, 0.14);
+  color: #ffb347;
+  border-color: transparent;
+}
+
+.transactions-table .badge-payment {
+  background: rgba(124, 58, 237, 0.15);
+  color: #a78bfa;
+  border-color: transparent;
+}
+
 /* =============================================
    Row hover & alternating stripe polish
    ============================================= */
