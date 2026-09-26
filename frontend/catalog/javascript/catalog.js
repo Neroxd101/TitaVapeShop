@@ -4,7 +4,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('productGrid');
-    fetch('/api/catalog/store-hours').then(response => response.json()).then(result => { if (result.success) { document.getElementById('catalogOperatingHours').textContent = result.data.label; ['catalogLocationLink', 'catalogFooterLocationLink'].forEach(id => { const el = document.getElementById(id); if (el) el.href = result.data.location_url; }); ['catalogFacebookLink', 'catalogFooterFacebookLink'].forEach(id => { const el = document.getElementById(id); if (el) el.href = result.data.facebook_url; }); } }).catch(() => {});
 
     let currentPage = 1;
     const productsPerPage = 12;
