@@ -99,62 +99,6 @@ const InventoryUpdate = {
         modal.classList.add('show');
     },
 
-    async generateQrForItem(itemId) {
-        const item = InventoryState.inventoryItems.find(i => i.id === itemId);
-        if (!item) return;
-
-        if (!InventoryUtils.isGoogleConnected()) {
-            this.showGoogleQrConnectModal();
-            return;
-        }
-
-        try {
-            const btn = document.getElementById('viewGenerateQrBtn');
-            if (btn) { btn.classList.add('loading'); btn.disabled = true; }
-
-            // Note: InventoryModal is being deleted. I need to move generateProductCode to utils.js! 
-            // For now, I'll assume it's moved to Utils or implement here.
-
-            // Let's implement here for safety
-            const generateCode = (name) => {
-                const timestamp = Date.now().toString(36);
-                const random = Math.random().toString(36).substring(2, 6);
-                const safeName = name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10).toUpperCase();
-                return `TVS-${safeName}-${timestamp}${random}`.toUpperCase();
-            };
-
-            const qrImageUrl = await InventoryImage.uploadQrCode(generateCode(item.name), item.name);
-            if (!qrImageUrl) throw new Error('Failed to generate QR code. Please connect Google Drive first.');
-
-            const images = InventoryImage.parseImages(item);
-            const updatePayload = {
-                id: itemId,
-                ...item,
-                images,
-                qr_image_url: qrImageUrl
-            };
-
-            const response = await fetch('/inventory/inventory_update_item', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatePayload)
-            });
-
-            const result = await response.json();
-            if (result.success) {
-                await InventoryLoad.initialLoad();
-                if (InventoryState.viewingItemId === itemId) {
-                    InventoryLoad.viewItem(itemId);
-                }
-            }
-        } catch (error) {
-            console.error(error);
-            alert(error.message || 'Failed to generate QR code');
-        } finally {
-            const btn = document.getElementById('viewGenerateQrBtn');
-            if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
-        }
-    }
 };
 
 window.InventoryUpdate = InventoryUpdate;

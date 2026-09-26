@@ -42,8 +42,8 @@ const InventoryViewModal = {
         });
 
         document.getElementById('viewGenerateQrBtn')?.addEventListener('click', () => {
-            if (InventoryState.viewingItemId && window.InventoryUpdate?.generateQrForItem) {
-                InventoryUpdate.generateQrForItem(InventoryState.viewingItemId);
+            if (InventoryState.viewingItemId && window.InventoryGenerateQr?.forItem) {
+                InventoryGenerateQr.forItem(InventoryState.viewingItemId);
             }
         });
 
