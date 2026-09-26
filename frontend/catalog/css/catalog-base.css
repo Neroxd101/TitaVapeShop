@@ -478,6 +478,12 @@ main {
     border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
+.card-category.category-generated {
+    background: hsl(var(--category-hue, 220) 75% 52% / 0.16);
+    color: hsl(var(--category-hue, 220) 90% 72%);
+    border: 1px solid hsl(var(--category-hue, 220) 75% 52% / 0.28);
+}
+
 .card-name {
     font-size: 18px;
     font-weight: 600;

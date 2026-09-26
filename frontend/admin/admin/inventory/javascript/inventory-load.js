@@ -133,9 +133,34 @@ const InventoryLoad = {
         return items;
     },
 
+    getCategoryBadge(category) {
+        const label = String(category || 'General').trim() || 'General';
+        const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'general';
+
+        // Keep the existing colors for the original categories.
+        if (key === 'hardware' || key === 'juices') {
+            return { className: key, style: '' };
+        }
+
+        // Use the category name as a seed so the same category keeps the same color.
+        let hash = 0;
+        for (let index = 0; index < label.length; index += 1) {
+            hash = ((hash << 5) - hash) + label.charCodeAt(index);
+            hash |= 0;
+        }
+
+        const hue = Math.abs(hash) % 360;
+        return {
+            className: 'category-generated',
+            style: ` style="--category-hue: ${hue}"`
+        };
+    },
+
     createCard(item) {
         const isLowStock = item.quantity <= 5;
         const stockLabel = Number(item.quantity) === 0 ? '(No Stock)' : (isLowStock ? '(Low)' : '');
+        const category = String(item.category || 'General').trim() || 'General';
+        const categoryBadge = this.getCategoryBadge(category);
         const images = InventoryImage.parseImages(item);
         const nonQrImages = images.filter(url => url && url !== item.qr_image_url);
         const firstImage = nonQrImages.length > 0 ? nonQrImages[0] : (images.length > 0 ? images[0] : null);
@@ -150,7 +175,7 @@ const InventoryLoad = {
         return `
       <div class="inventory-card" data-id="${item.id}">
         ${imagesHtml}
-        <div class="card-header"><span class="card-category ${item.category}">${item.category}</span></div>
+        <div class="card-header"><span class="card-category ${categoryBadge.className}"${categoryBadge.style}>${category}</span></div>
         <h3 class="card-name">${item.name}</h3>
         <div class="card-details">
           <div class="detail-item"><span class="detail-label">Quantity</span><span class="detail-value ${isLowStock ? 'low-stock' : ''}">${item.quantity} ${stockLabel}</span></div>

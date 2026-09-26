@@ -51,6 +51,13 @@
   color: #ff9f43;
 }
 
+/* Give newly-created categories their own stable color. */
+.card-category.category-generated {
+  background: hsl(var(--category-hue, 220) 75% 52% / 0.16);
+  color: hsl(var(--category-hue, 220) 90% 72%);
+  border: 1px solid hsl(var(--category-hue, 220) 75% 52% / 0.28);
+}
+
 .card-name {
   font-size: 16px;
   font-weight: 600;

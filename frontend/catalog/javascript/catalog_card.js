@@ -11,6 +11,26 @@ const CatalogCard = {
         return Math.max(0, product.quantity - cartQuantity);
     },
 
+    getCategoryBadge(category) {
+        const label = String(category || 'General').trim() || 'General';
+        const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'general';
+
+        if (key === 'hardware' || key === 'juices') {
+            return { className: key, style: '' };
+        }
+
+        let hash = 0;
+        for (let index = 0; index < label.length; index += 1) {
+            hash = ((hash << 5) - hash) + label.charCodeAt(index);
+            hash |= 0;
+        }
+
+        return {
+            className: 'category-generated',
+            style: ` style="--category-hue: ${Math.abs(hash) % 360}"`
+        };
+    },
+
     formatVariations(product) {
         if (Array.isArray(product?.variations) && product.variations.length) {
             return product.variations.map(v => `${v.name} (${v.quantity})`).join(' • ');
@@ -35,6 +55,8 @@ const CatalogCard = {
             this.productGrid.style.display = 'grid';
             this.productGrid.innerHTML = products.map(product => {
                 const availableStock = this.getAvailableStock(product);
+                const category = String(product.category || 'General').trim() || 'General';
+                const categoryBadge = this.getCategoryBadge(category);
                 return `
                 <div class="product-card" data-id="${product.id}">
                     <div class="product-image-container">
@@ -47,7 +69,7 @@ const CatalogCard = {
                     </div>
                     <div class="product-info">
                         <div class="card-header">
-                            <span class="card-category ${(product.category || '').toLowerCase()}">${product.category || 'General'}</span>
+                            <span class="card-category ${categoryBadge.className}"${categoryBadge.style}>${category}</span>
                         </div>
                         <h3 class="card-name">${product.name || 'Product'}</h3>
                         <div class="card-details">
