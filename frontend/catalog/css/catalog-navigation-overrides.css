@@ -305,15 +305,31 @@
         margin-left: auto !important;
     }
 
-    .nav .header-hours {
+    .nav .header-hours,
+    .nav .social-link,
+    .nav .cart-button,
+    .nav #customerNavContainer .customer-profile-pill {
+        min-height: 38px !important;
+        height: 38px !important;
         padding: 8px 10px !important;
+        box-sizing: border-box;
+        font-size: 14px !important;
+        line-height: 1;
+        align-items: center;
+    }
+
+    .nav .header-hours {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid var(--border);
         white-space: nowrap;
     }
 
-    .nav .social-link {
-        padding: 8px 10px !important;
+    .nav .header-hours svg,
+    .nav .social-link svg,
+    .nav .cart-button svg,
+    .nav #customerNavContainer .customer-profile-pill > svg {
+        width: 18px !important;
+        height: 18px !important;
     }
 }
 
