@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     renderProfileSettings();
     setupProfileForms();
+    setupSettingsAccordions();
 
     // Listen for storage changes (external updates)
     window.addEventListener('storage', (e) => {
@@ -171,8 +172,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="google-account-details">
                         <p class="google-account-name">${accountName}</p>
                         ${accountEmail ? `<p class="google-account-email">${accountEmail}</p>` : ''}
-                        <span class="status-badge connected">Connected</span>
                     </div>
+                    <span class="status-badge connected">Connected</span>
                 </div>
             `;
 
@@ -187,9 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } else {
             // Disconnected State
-            googleStatusContainer.innerHTML = `
-                <span class="status-badge disconnected">Not connected</span>
-            `;
+            googleStatusContainer.innerHTML = '';
 
             googleActionContainer.innerHTML = `
                  <button id="connectBtn" class="btn btn-google btn-full">
@@ -944,6 +943,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save operating hours');
                 showSuccessModal('Success', 'Operating hours saved successfully!');
             } catch (error) { alert(error.message); } finally { setLoading(btn, false); }
+        });
+    }
+
+    function setupSettingsAccordions() {
+        document.querySelectorAll('.settings-section').forEach((section) => {
+            const header = section.querySelector('.section-header');
+            const content = section.querySelector('.section-content');
+            if (!header || !content || header.dataset.accordionReady) return;
+            header.dataset.accordionReady = 'true';
+            header.setAttribute('role', 'button');
+            header.setAttribute('tabindex', '0');
+            header.setAttribute('aria-expanded', 'false');
+            section.classList.add('is-collapsed');
+            const toggle = () => {
+                const expanded = section.classList.toggle('is-expanded');
+                section.classList.toggle('is-collapsed', !expanded);
+                header.setAttribute('aria-expanded', String(expanded));
+                if (expanded) content.style.removeProperty('display');
+                else content.style.setProperty('display', 'none', 'important');
+            };
+            content.style.setProperty('display', 'none', 'important');
+            header.addEventListener('click', toggle);
+            header.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
+            });
         });
     }
 
