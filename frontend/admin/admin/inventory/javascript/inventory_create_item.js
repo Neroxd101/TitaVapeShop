@@ -1,5 +1,6 @@
 // Logic for Create Item (Write)
 const InventoryCreate = {
+    selectedVariationRow: null,
     async init() {
         await this.loadItemModal();
     },
@@ -33,14 +34,8 @@ const InventoryCreate = {
         document.getElementById('modalClose')?.addEventListener('click', () => this.closeModal());
         document.getElementById('cancelBtn')?.addEventListener('click', () => this.closeModal());
         document.getElementById('addVariationBtn')?.addEventListener('click', () => this.addVariationField());
+        document.getElementById('deleteVariationBtn')?.addEventListener('click', () => this.deleteSelectedVariation());
         document.getElementById('itemQuantity')?.addEventListener('input', () => this.updateVariationLimits());
-        document.addEventListener('click', (event) => {
-            if (!event.target.closest('#variationControls .variation-row')) {
-                document.querySelectorAll('#variationControls .variation-row.is-delete-confirming')
-                    .forEach(row => row.classList.remove('is-delete-confirming'));
-            }
-        });
-
         // Multiple images upload & thumbnail editing
         document.getElementById('itemImages')?.addEventListener('change', (e) => {
             if (window.InventoryImage?.handleImagesSelect) InventoryImage.handleImagesSelect(e);
@@ -63,6 +58,7 @@ const InventoryCreate = {
 
     openAddModal() {
         InventoryState.editingItemId = null;
+        this.selectedVariationRow = null;
         InventoryState.currentImages = [];
         InventoryImage.thumbnailPage = 0;
 
@@ -154,31 +150,15 @@ const InventoryCreate = {
         }
     },
 
-    lockVariationRow(row) {
-        if (row.classList.contains('is-locked')) return;
-        const nameInput = row.querySelector('.variation-input');
-        const quantityInput = row.querySelector('.variation-quantity');
-        const display = document.createElement('span');
-        display.className = 'variation-display';
-        display.textContent = `${nameInput.value} ( Qty : ${Number(quantityInput.value) || 0})`;
-
-        row.classList.add('is-locked');
-        row.querySelectorAll('.variation-input, .variation-quantity').forEach(input => {
-            input.readOnly = true;
-            input.tabIndex = -1;
-        });
-        row.querySelector('.variation-name-field').hidden = true;
-        row.querySelector('.variation-qty-field').hidden = true;
-        row.insertBefore(display, row.querySelector('.variation-remove'));
-    },
-
     renderVariationFields(value = '') {
         const values = Array.isArray(value) ? value.slice(0, 10) : String(value || '').split('|').map(item => ({ name: item.trim(), quantity: 0 })).filter(item => item.name).slice(0, 10);
         const list = document.getElementById('variationsList');
         if (!list) return;
         list.innerHTML = '';
+        this.selectedVariationRow = null;
         values.forEach(item => this.addVariationField(item, true));
         this.updateAddVariationButton();
+        this.updateDeleteVariationButton();
     },
 
     updateAddVariationButton() {
@@ -190,14 +170,38 @@ const InventoryCreate = {
         button.disabled = reachedLimit;
     },
 
+    updateDeleteVariationButton() {
+        const button = document.getElementById('deleteVariationBtn');
+        if (button) button.disabled = !this.selectedVariationRow || !this.selectedVariationRow.isConnected;
+    },
+
+    deleteSelectedVariation() {
+        if (!this.selectedVariationRow) return;
+        this.selectedVariationRow.remove();
+        this.selectedVariationRow = null;
+        this.updateVariationLimits();
+        this.updateAddVariationButton();
+        this.updateDeleteVariationButton();
+    },
+
     addVariationField(value = '', skipLimitCheck = false) {
         const list = document.getElementById('variationsList');
         if (!list || (!skipLimitCheck && list.children.length >= 10)) return;
         const row = document.createElement('div');
         row.className = 'variation-row';
-        row.addEventListener('click', (event) => {
-            if (!event.target.closest('input') && !row.classList.contains('is-delete-confirming')) {
-                row.classList.add('is-delete-confirming');
+        row.tabIndex = 0;
+        row.setAttribute('role', 'button');
+        const selectVariation = () => {
+            document.querySelectorAll('#variationsList .variation-row.is-selected').forEach(item => item.classList.remove('is-selected'));
+            row.classList.add('is-selected');
+            this.selectedVariationRow = row;
+            this.updateDeleteVariationButton();
+        };
+        row.addEventListener('click', selectVariation);
+        row.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                selectVariation();
             }
         });
         const input = document.createElement('input');
@@ -212,26 +216,15 @@ const InventoryCreate = {
         };
         resizeVariationInput();
         input.addEventListener('input', resizeVariationInput);
-        const remove = document.createElement('button');
-        remove.type = 'button'; remove.className = 'variation-remove'; remove.textContent = 'Delete'; remove.title = 'Remove variation'; remove.setAttribute('aria-label', 'Remove variation');
-        remove.addEventListener('click', (event) => {
-            event.stopPropagation();
-            row.remove();
-            this.updateVariationLimits();
-            this.updateAddVariationButton();
-        });
         const qty = document.createElement('input');
         qty.type = 'number'; qty.className = 'variation-quantity'; qty.min = '0'; qty.step = '1'; qty.placeholder = 'Qty'; qty.setAttribute('aria-label', 'Variation quantity'); qty.value = typeof value === 'object' ? (value.quantity || 0) : 0; qty.style.width = '24px'; qty.style.minWidth = '24px'; qty.style.maxWidth = '24px'; qty.style.height = 'auto';
         qty.addEventListener('input', () => this.updateVariationLimits(qty));
-        qty.addEventListener('change', () => {
-            if (input.value.trim()) this.lockVariationRow(row);
-        });
         const nameWrap = document.createElement('div'); nameWrap.className = 'variation-name-field';
         const qtyWrap = document.createElement('div'); qtyWrap.className = 'variation-qty-field';
         nameWrap.appendChild(input); qtyWrap.appendChild(qty);
-        row.append(nameWrap, qtyWrap, remove); list.appendChild(row); resizeVariationInput(); this.updateVariationLimits(); this.updateAddVariationButton();
+        row.append(nameWrap, qtyWrap); list.appendChild(row); resizeVariationInput(); this.updateVariationLimits(); this.updateAddVariationButton();
+        this.updateDeleteVariationButton();
         if (!skipLimitCheck) input.focus();
-        if (typeof value === 'object' && value.name) this.lockVariationRow(row);
     },
     closeModal() {
         InventoryDOM.itemModal.classList.remove('show');

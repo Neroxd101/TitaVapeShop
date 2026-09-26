@@ -1841,6 +1841,55 @@
 #variationControls .variation-row { max-width: none !important; }
 #variationControls .variation-row .variation-input { max-width: none !important; }
 #variationControls .variation-display { white-space: nowrap; }
+
+#variationControls .variation-row.is-selected {
+  border-color: var(--primary-color, #8b5cf6);
+  background: var(--surface-hover, rgba(255,255,255,.08));
+}
+#variationControls #deleteVariationBtn {
+  align-self: stretch;
+  white-space: nowrap;
+}
+.inventory-variations-heading-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.inventory-variations-heading-actions #deleteVariationBtn {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Keep variations editable and show a dedicated delete button beside each row. */
+#variationControls .variation-remove {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  flex: 0 0 auto;
+  width: auto;
+  height: 28px;
+  min-width: 52px;
+  padding: 0 8px;
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+  border-radius: 7px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+}
+#variationControls .variation-remove:hover,
+#variationControls .variation-remove:focus-visible {
+  background: rgba(239, 68, 68, 0.22);
+  color: #dc2626;
+}
+#variationControls .variation-row.is-locked .variation-input,
+#variationControls .variation-row.is-locked .variation-quantity {
+  cursor: text;
+}
 /* Form rules use display:flex, so explicitly hide the retired inputs in locked chips. */
 #variationControls .variation-row.is-locked .variation-name-field[hidden],
 #variationControls .variation-row.is-locked .variation-qty-field[hidden] { display: none !important; }
