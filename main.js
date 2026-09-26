@@ -30,6 +30,7 @@ const settingsRoutes = require('./backend/routes/admin/admin/setting/settings');
 
 // Catalog routes
 const catalogGetProductsRoutes = require('./backend/routes/catalog/catalog_get_products');
+const catalogCategoriesRoutes = require('./backend/routes/catalog/catalog_categories');
 const catalogImageProxyRoutes = require('./backend/routes/catalog/catalog_image_proxy');
 const catalogStoreHoursRoutes = require('./backend/routes/catalog/catalog_store_hours_link');
 const catalogRoutes = require('./backend/routes/catalog/catalog');
@@ -113,6 +114,7 @@ app.use('/', customerSubmitPaymentProofRoutes);
 app.use('/', customerResetPasswordRoutes);
 app.use('/', customerChangePasswordRoutes);
 app.use('/', catalogGetProductsRoutes); // Public product listing
+app.use('/', catalogCategoriesRoutes); // Public catalog categories
 app.use('/', catalogImageProxyRoutes); // Public product image proxy
 app.use('/', catalogStoreHoursRoutes); // Public store hours
 app.use('/', catalogRoutes); // Public catalog for customers

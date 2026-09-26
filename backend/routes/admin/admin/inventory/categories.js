@@ -3,12 +3,6 @@ const router = express.Router();
 const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-router.get('/catalog/categories', async (_req, res) => {
-  const { data, error } = await supabaseAdmin.rpc('categories_get_all');
-  if (error) return res.status(400).json({ success: false, error: error.message });
-  res.json({ success: true, categories: data || [] });
-});
-
 router.get('/inventory/categories', isAuthenticated, hasRole(['admin', 'staff']), async (_req, res) => {
   const { data, error } = await supabaseAdmin.rpc('categories_get_all');
   if (error) return res.status(400).json({ success: false, error: error.message });
