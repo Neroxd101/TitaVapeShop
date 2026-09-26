@@ -156,6 +156,23 @@
   }
 }
 
+@media (max-width: 390px) {
+  .orders-page-header .header-counter-pill {
+    height: 28px !important;
+    padding: 0 5px !important;
+    gap: 3px !important;
+  }
+
+  .orders-page-header .header-counter-pill .counter-label {
+    font-size: 8px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .orders-page-header .header-counter-pill .counter-value {
+    font-size: 10px !important;
+  }
+}
+
 .orders-filter-tabs {
   margin-bottom: 32px;
   display: flex;
