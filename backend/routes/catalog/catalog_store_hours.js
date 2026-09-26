@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { supabaseAdmin, supabase } = require('../../database/supabase');
+const { supabaseAdmin } = require('../../database/supabase');
 
 router.get('/api/catalog/store-hours', async (_req, res) => {
     try {
-        const { data, error } = await (supabaseAdmin || supabase).from('settings').select('key, value').in('key', ['operating_open_time', 'operating_close_time', 'store_location_url', 'store_facebook_url']);
+        const { data, error } = await supabaseAdmin.from('settings').select('key, value').in('key', ['operating_open_time', 'operating_close_time', 'store_location_url', 'store_facebook_url']);
         if (error) throw error;
         const values = Object.fromEntries((data || []).map(item => [item.key, item.value]));
         const open = values.operating_open_time || '08:00';

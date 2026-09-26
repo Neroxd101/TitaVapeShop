@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const { supabaseAdmin, supabase } = require('../../../../database/supabase');
+const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-const dbAdmin = () => supabaseAdmin || supabase;
+const dbAdmin = () => supabaseAdmin;
 
 // Serve settings page - Admin only
 const serveSettings = (req, res) => {

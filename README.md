@@ -46,7 +46,7 @@ Create a `.env` file:
 
 ```
 SUPABASE_URL=your_supabase_project_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ### 4. Run Locally
@@ -62,7 +62,7 @@ Visit `http://localhost:3000`
 1. Push this project to GitHub and import the repository into Netlify.
 2. Use the repository root as the base directory. Leave the build command empty; `netlify.toml` sets the publish directory to `frontend` and functions directory to `netlify/functions`.
 3. Add these environment variables in Netlify with the Functions scope (or all scopes):
-   - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
    - `JWT_SECRET` (keep the existing secret)
    - `SMTP_USER`, `SMTP_PASS` for email
    - `APP_URL=https://your-site.netlify.app` (or your custom domain)

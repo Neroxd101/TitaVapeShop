@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { supabase, supabaseAdmin } = require('../../database/supabase');
+const { supabaseAdmin } = require('../../database/supabase');
 
-const dbClient = () => supabaseAdmin || supabase;
+const dbClient = () => supabaseAdmin;
 
 /**
  * GET /api/catalog/products
