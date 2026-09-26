@@ -355,35 +355,4 @@ router.get('/api/upload/drive-image/:fileId', async (req, res) => {
   }
 });
 
-// DELETE /api/upload/:fileId - Delete image from Google Drive
-router.delete('/api/upload/:fileId', async (req, res) => {
-  try {
-    const { fileId } = req.params;
-    const googleToken = req.cookies?.google_access_token;
-
-    if (!googleToken) {
-      return res.status(401).json({ error: 'Google account not connected' });
-    }
-
-    const deleteResponse = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${fileId}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${googleToken}`,
-        },
-      }
-    );
-
-    if (!deleteResponse.ok && deleteResponse.status !== 204) {
-      return res.status(400).json({ error: 'Failed to delete file' });
-    }
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Delete error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 module.exports = router;
