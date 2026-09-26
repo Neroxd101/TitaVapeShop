@@ -337,13 +337,23 @@ body {
 
 /* Section Header */
 .dash-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "title link"
+    "sub sub";
+  column-gap: 16px;
+  row-gap: 2px;
+  align-items: start;
   margin-bottom: 14px;
 }
 
+.dash-section-header > div {
+  display: contents;
+}
+
 .dash-section-title {
+  grid-area: title;
   font-family: 'Outfit', sans-serif;
   font-size: 17px;
   font-weight: 600;
@@ -352,12 +362,14 @@ body {
 }
 
 .dash-section-sub {
+  grid-area: sub;
   font-size: 13px;
   color: var(--dash-text-dim);
   margin: 0;
 }
 
 .dash-header-link {
+  grid-area: link;
   font-size: 13px;
   color: var(--dash-emerald);
   text-decoration: none;
@@ -679,6 +691,11 @@ body {
   gap: 12px;
 }
 
+/* Store profile details no longer use decorative location, clock, or payment icons. */
+.store-detail-row .detail-icon {
+  display: none;
+}
+
 .detail-icon {
   font-size: 16px;
   line-height: 1.2;
@@ -889,6 +906,29 @@ body {
 
   .operations-grid {
     grid-template-columns: 1fr;
+  }
+
+  .dash-section-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+  }
+
+  .dash-section-header > div {
+    display: contents;
+  }
+
+  .dash-section-sub {
+    line-height: 1.4;
+    max-width: 32rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .dash-header-link {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    line-height: 1.3;
   }
 }
 
