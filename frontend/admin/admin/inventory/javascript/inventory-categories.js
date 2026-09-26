@@ -9,10 +9,7 @@ const InventoryCategories = {
   },
 
   async load() {
-    const response = await fetch('/inventory/categories');
-    const result = await response.json();
-    if (!response.ok || !result.success) throw new Error(result.error || 'Unable to load categories');
-    this.categories = result.categories || [];
+    this.categories = await window.InventoryCategoryGet.load();
     this.populateFilter();
     this.populateItemSelect();
   },
@@ -39,15 +36,9 @@ const InventoryCategories = {
       const name = await this.openModal();
       if (!name) { event.target.value = ''; return; }
       try {
-        const response = await fetch('/inventory/categories', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name.trim() })
-        });
-        const result = await response.json();
-        if (!response.ok || !result.success) throw new Error(result.error || 'Unable to create category');
+        const category = await window.InventoryCategoryCreate.create(name);
         await this.load();
-        this.populateItemSelect(result.category.slug);
+        this.populateItemSelect(category.slug);
       } catch (error) {
         alert(error.message);
         event.target.value = '';
@@ -62,9 +53,7 @@ const InventoryCategories = {
       const category = this.categories.find(item => item.slug === slug);
       if (!category || !(await this.confirmDelete(category.name))) return;
       try {
-        const response = await fetch(`/inventory/categories/${encodeURIComponent(slug)}`, { method: 'DELETE' });
-        const result = await response.json();
-        if (!response.ok || !result.success) throw new Error(result.error || 'Unable to delete category');
+        await window.InventoryCategoryDelete.remove(slug);
         await this.load();
         this.populateItemSelect();
       } catch (error) {
