@@ -311,5 +311,9 @@
         border: 1px solid var(--border);
         white-space: nowrap;
     }
+
+    .nav .social-link {
+        padding: 8px 10px !important;
+    }
 }
 
