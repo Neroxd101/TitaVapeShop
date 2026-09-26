@@ -22,7 +22,7 @@
 .settings-section input[type="time"] { color-scheme: dark; }
 .form-help-text { color: var(--text-secondary); font-size: 12px; line-height: 1.6; margin: 8px 0 0; }
 .operating-hours-time-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
-#operatingHoursSection .operating-hours-time-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+#operatingHoursSection .operating-hours-time-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 16px; }
 .settings-section .btn { min-height: 44px; border-radius: 9px; font-size: 13px; text-transform: none; letter-spacing: 0; gap: 8px; }
 .profile-form > .btn { justify-self: start; width: auto; max-width: 100%; padding: 12px 20px; margin-top: 4px; }
 .google-integration-section .section-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
@@ -63,6 +63,21 @@
 .settings-section .section-title-group h2 { font-size: clamp(12px,3.6vw,16px); }
 .settings-section .section-subtitle { font-size: 11px; line-height: 1.4; }
 .operating-hours-time-grid { gap: 12px; }
+#operatingHoursSection .operating-hours-time-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 16px; }
+#operatingHoursSection .form-group { min-width: 0; overflow: hidden; }
+#operatingHoursSection input[type="time"] {
+  display: block;
+  width: calc(100% - 4px);
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 2px;
+  padding: 8px 4px;
+  font-size: 13px;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+}
+#operatingHoursSection input[type="time"]::-webkit-calendar-picker-indicator { display: none; -webkit-appearance: none; }
 .google-integration-section > .section-content { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 14px; }
 .integration-status, .integration-action { flex: none; width: 100%; }
 .integration-status:empty { display: none; }
