@@ -20,6 +20,66 @@
 }
 
 /* Add/Edit modal information hierarchy. */
+.inventory-confirm-modal {
+  overflow: hidden;
+}
+
+.inventory-confirm-modal .modal-header {
+  padding: 24px 24px 0;
+  justify-content: center;
+}
+
+.inventory-confirm-modal .modal-header h3 {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+}
+
+#googleQrConnectTitle {
+  text-align: center;
+}
+
+.inventory-confirm-modal .modal-close {
+  display: none;
+}
+
+.inventory-confirm-modal .modal-body {
+  padding: 14px 24px 16px;
+}
+
+.inventory-confirm-modal .modal-body p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.inventory-confirm-modal .modal-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 0 24px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.inventory-confirm-modal .modal-actions .btn {
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .inventory-confirm-modal .modal-header,
+  .inventory-confirm-modal .modal-body,
+  .inventory-confirm-modal .modal-actions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .inventory-confirm-modal .modal-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
 #itemModal .modal-col-fields {
   gap: 12px;
 }

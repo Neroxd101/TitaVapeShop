@@ -193,6 +193,23 @@
   <!-- Sales History Modal - Loaded dynamically -->
   <div id="history-modal-container"></div>
 
+  <!-- Google connection prompt for QR generation -->
+  <div class="modal-overlay" id="googleQrConnectModal" role="dialog" aria-modal="true" aria-labelledby="googleQrConnectTitle">
+    <div class="modal modal-small inventory-confirm-modal">
+      <div class="modal-header">
+        <h3 id="googleQrConnectTitle">Connect Google Account</h3>
+      </div>
+      <div class="modal-body">
+        <p><strong>Google Drive is not connected.</strong></p>
+        <p class="text-muted">Connect your Google account to generate and save QR codes.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="cancelGoogleQrConnect">Cancel</button>
+        <button type="button" class="btn btn-primary" id="connectGoogleForQr">Connect</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/navigation/javascript/navigation.js"></script>
   <!-- Inventory modules - load in dependency order -->
 

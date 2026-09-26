@@ -73,6 +73,10 @@ const InventoryUpdate = {
                 throw new Error(result.error || 'Failed to update item');
             }
         } catch (error) {
+            if (error.message === 'Please connect your Google account first') {
+                this.showGoogleQrConnectModal();
+                return;
+            }
             alert(error.message);
         } finally {
             saveBtn.classList.remove('loading');
@@ -80,9 +84,29 @@ const InventoryUpdate = {
         }
     },
 
+    showGoogleQrConnectModal() {
+        const modal = document.getElementById('googleQrConnectModal');
+        if (!modal) return;
+
+        const close = () => modal.classList.remove('show');
+        document.getElementById('cancelGoogleQrConnect').onclick = close;
+        document.getElementById('connectGoogleForQr').onclick = () => {
+            window.location.href = '/settings';
+        };
+        modal.onclick = (event) => {
+            if (event.target === modal) close();
+        };
+        modal.classList.add('show');
+    },
+
     async generateQrForItem(itemId) {
         const item = InventoryState.inventoryItems.find(i => i.id === itemId);
         if (!item) return;
+
+        if (!InventoryUtils.isGoogleConnected()) {
+            this.showGoogleQrConnectModal();
+            return;
+        }
 
         try {
             const btn = document.getElementById('viewGenerateQrBtn');
@@ -100,7 +124,7 @@ const InventoryUpdate = {
             };
 
             const qrImageUrl = await InventoryImage.uploadQrCode(generateCode(item.name), item.name);
-            if (!qrImageUrl) throw new Error('Failed to generate QR /n Please Connect with Google Drive first');
+            if (!qrImageUrl) throw new Error('Failed to generate QR code. Please connect Google Drive first.');
 
             const images = InventoryImage.parseImages(item);
             const updatePayload = {
@@ -125,7 +149,7 @@ const InventoryUpdate = {
             }
         } catch (error) {
             console.error(error);
-            alert('Failed to generate QR');
+            alert(error.message || 'Failed to generate QR code');
         } finally {
             const btn = document.getElementById('viewGenerateQrBtn');
             if (btn) { btn.classList.remove('loading'); btn.disabled = false; }

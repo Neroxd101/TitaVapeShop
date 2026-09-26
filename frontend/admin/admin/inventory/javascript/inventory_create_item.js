@@ -113,6 +113,10 @@ const InventoryCreate = {
                 throw new Error(result.error || 'Failed to create item');
             }
         } catch (error) {
+            if (error.message === 'Please connect your Google account first') {
+                window.InventoryUpdate?.showGoogleQrConnectModal();
+                return;
+            }
             alert(error.message);
         } finally {
             saveBtn.classList.remove('loading');
