@@ -452,6 +452,7 @@ body {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 .op-title-wrap {
@@ -480,9 +481,10 @@ body {
 .op-desc {
   font-size: 12px;
   color: var(--dash-text-dim);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
 }
 
 /* =============================================
