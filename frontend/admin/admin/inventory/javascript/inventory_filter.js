@@ -1,5 +1,55 @@
-// Logic for Inventory Filtering and Sorting
+﻿// Inventory filter controls and filtering/sorting logic.
 const InventoryFilter = {
+    init() {
+        InventoryDOM.sortBySelect?.addEventListener('change', event => {
+            InventoryState.sortBy = event.target.value;
+            InventoryState.currentPage = 1;
+            InventoryDisplay.renderInventory();
+        });
+
+        this.setupDateFilter();
+
+        InventoryDOM.categoryFilter?.addEventListener('change', event => {
+            InventoryState.currentFilter = event.target.value;
+            InventoryState.currentPage = 1;
+            InventoryDisplay.renderInventory();
+        });
+    },
+
+    setupDateFilter() {
+        const dateFrom = document.getElementById('addedDateFrom');
+        const dateTo = document.getElementById('addedDateTo');
+        const clearButton = document.getElementById('clearAddedDateBtn');
+        const syncPlaceholders = () => {
+            [dateFrom, dateTo].forEach(input => {
+                input?.parentElement.classList.toggle('is-empty', !input.value);
+            });
+        };
+        syncPlaceholders();
+        dateFrom?.addEventListener('input', syncPlaceholders);
+        dateTo?.addEventListener('input', syncPlaceholders);
+
+        const updateDates = () => {
+            syncPlaceholders();
+            dateFrom.max = dateTo.value;
+            dateTo.min = dateFrom.value;
+            clearButton.disabled = !dateFrom.value && !dateTo.value;
+            if (!dateFrom.reportValidity() || !dateTo.reportValidity()) return;
+            InventoryState.addedDateFrom = dateFrom.value;
+            InventoryState.addedDateTo = dateTo.value;
+            InventoryState.currentPage = 1;
+            InventoryDisplay.renderInventory();
+        };
+        dateFrom?.addEventListener('change', updateDates);
+        dateTo?.addEventListener('change', updateDates);
+        clearButton?.addEventListener('click', () => {
+            dateFrom.value = '';
+            dateTo.value = '';
+            updateDates();
+            dateFrom.focus();
+        });
+    },
+
     filterItems(items = InventoryState.inventoryItems || []) {
         const filtered = items.filter(item => {
             const matchesCategory = InventoryState.currentFilter === 'all' || item.category === InventoryState.currentFilter;

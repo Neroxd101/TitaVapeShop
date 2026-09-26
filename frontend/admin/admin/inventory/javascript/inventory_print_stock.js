@@ -59,7 +59,7 @@ const InventoryPrint = {
     },
 
     print() {
-        const items = InventoryLoad.filterItems();
+        const items = InventoryFilter.filterItems(InventoryState.inventoryItems);
         if (!items.length) {
             alert('No stocks match the current filters.');
             return;

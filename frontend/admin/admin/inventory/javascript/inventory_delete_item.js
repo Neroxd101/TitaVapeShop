@@ -1,4 +1,4 @@
-// Logic for Delete Item (Write)
+﻿// Logic for Delete Item (Write)
 const InventoryDelete = {
     async init() {
         await this.loadDeleteModal();
@@ -53,7 +53,7 @@ const InventoryDelete = {
             if (result.success) {
                 InventoryDOM.deleteModal.classList.remove('show');
                 if (window.TransactionLogger && deletingItem) TransactionLogger.logInventoryDelete(deletingItem);
-                InventoryLoad.initialLoad();
+                InventoryDisplay.initialLoad();
             } else {
                 throw new Error(result.error || 'Failed to delete item');
             }

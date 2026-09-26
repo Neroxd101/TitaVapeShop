@@ -1,8 +1,9 @@
-// Logic for Create Item (Write)
+﻿// Logic for Create Item (Write)
 const InventoryCreate = {
     selectedVariationRow: null,
     async init() {
         await this.loadItemModal();
+        document.getElementById('addItemBtn')?.addEventListener('click', () => this.openAddModal());
     },
 
     async loadItemModal() {
@@ -108,7 +109,7 @@ const InventoryCreate = {
             if (result.success) {
                 InventoryDOM.itemModal.classList.remove('show');
                 if (window.TransactionLogger) TransactionLogger.logInventoryAdd(result.data || itemData);
-                InventoryLoad.initialLoad();
+                InventoryDisplay.initialLoad();
             } else {
                 throw new Error(result.error || 'Failed to create item');
             }

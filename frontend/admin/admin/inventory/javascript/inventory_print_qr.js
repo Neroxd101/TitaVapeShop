@@ -38,7 +38,7 @@ const InventoryQrPrint = {
     },
 
     print() {
-        const products = InventoryLoad.filterItems().filter(item => item.qr_image_url);
+        const products = InventoryFilter.filterItems(InventoryState.inventoryItems).filter(item => item.qr_image_url);
         if (!products.length) {
             alert('No products with QR codes match the current filters.');
             return;

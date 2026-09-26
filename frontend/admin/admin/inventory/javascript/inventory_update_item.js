@@ -1,4 +1,4 @@
-// Logic for Update Item (Write)
+﻿// Logic for Update Item (Write)
 const InventoryUpdate = {
     // Uses the same modal as create, so we assume InventoryCreate logic has loaded the DOM
 
@@ -64,10 +64,10 @@ const InventoryUpdate = {
             if (result.success) {
                 InventoryDOM.itemModal.classList.remove('show');
                 if (window.TransactionLogger) TransactionLogger.logInventoryEdit(itemData.id, oldItem, itemData);
-                await InventoryLoad.initialLoad();
+                await InventoryDisplay.initialLoad();
                 // Refresh view modal if it's currently open for this item
                 if (InventoryState.viewingItemId === itemData.id) {
-                    InventoryLoad.viewItem(itemData.id);
+                    InventoryViewModal.viewItem(itemData.id);
                 }
             } else {
                 throw new Error(result.error || 'Failed to update item');

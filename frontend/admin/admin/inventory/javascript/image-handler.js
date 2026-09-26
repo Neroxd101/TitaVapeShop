@@ -3,6 +3,14 @@ const InventoryImage = {
   THUMBNAILS_PER_PAGE: 3,
   thumbnailPage: 0,
 
+  init() {
+    document.addEventListener('error', (event) => {
+      const image = event.target;
+      if (!(image instanceof HTMLImageElement) || !image.dataset.originalUrl) return;
+      this.handleImageError(image, image.dataset.originalUrl, Number(image.dataset.fallbackSize) || 800);
+    }, true);
+  },
+
   // Parse images from item (can be JSON array or single URL)
   parseImages(item) {
     if (!item.images && !item.image_url) return [];

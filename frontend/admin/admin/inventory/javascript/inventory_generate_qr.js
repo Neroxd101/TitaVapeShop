@@ -54,8 +54,8 @@ const InventoryGenerateQr = {
             const result = await response.json();
             if (!result.success) throw new Error(result.error || 'Failed to save QR code');
 
-            await InventoryLoad.initialLoad();
-            if (InventoryState.viewingItemId === itemId) InventoryLoad.viewItem(itemId);
+            await InventoryDisplay.initialLoad();
+            if (InventoryState.viewingItemId === itemId) InventoryViewModal.viewItem(itemId);
         } catch (error) {
             console.error(error);
             alert(error.message || 'Failed to generate QR code');
