@@ -50,7 +50,6 @@ const CatalogCard = {
                             <span class="card-category ${(product.category || '').toLowerCase()}">${product.category || 'General'}</span>
                         </div>
                         <h3 class="card-name">${product.name || 'Product'}</h3>
-                        ${this.formatVariations(product) ? `<p class="card-variation">${this.formatVariations(product)}</p>` : ''}
                         <div class="card-details">
                             <div class="detail-item">
                                 <span class="detail-label">Price</span>
