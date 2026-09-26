@@ -1,8 +1,8 @@
 /* One shared header layout for every settings accordion. */
 .settings-layout { display: grid; grid-template-columns: minmax(0,1fr); align-items: start; gap: 22px; width: 100%; max-width: 1240px; margin: 0 auto; }
 .settings-layout > .settings-section { flex-direction: column; width: 100%; min-width: 0; padding: 0; box-sizing: border-box; border-radius: 18px; }
-.settings-section > .section-header { display: block; width: 100%; box-sizing: border-box; padding: 28px; cursor: pointer; background: rgba(255,255,255,.018); border-radius: 18px; }
-.settings-section.is-expanded > .section-header { border-bottom: 1px solid var(--border); }
+.settings-section > .section-header { display: block; width: 100%; box-sizing: border-box; padding: 28px; cursor: pointer; background: var(--bg-card); border-radius: 18px; }
+.settings-section.is-expanded > .section-header { border-bottom: 0; }
 .settings-section > .section-header:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .settings-section .section-icon { display: none; }
 .settings-section .section-title-group { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,3fr); align-items: center; gap: 24px; width: 100%; min-width: 0; }
