@@ -126,6 +126,13 @@ body {
   gap: 12px;
 }
 
+/* Align the actions with the greeting row on wider screens. */
+@media (min-width: 769px) {
+  .dash-actions {
+    margin-top: 38px;
+  }
+}
+
 .dash-btn-sale {
   display: inline-flex;
   align-items: center;
@@ -879,6 +886,7 @@ body {
 
   .dash-actions {
     width: 100%;
+    margin-top: 0;
   }
 
   .dash-btn-sale,
