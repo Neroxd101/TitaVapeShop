@@ -750,6 +750,11 @@
   letter-spacing: -0.2px;
 }
 
+/* Voided sales represent money removed from the totals, so keep their amount red. */
+.transactions-table tbody tr:has(.badge-void) .amount-positive {
+  color: #ef4444;
+}
+
 /* Time column */
 .transactions-table th.col-time,
 .transactions-table td.col-time {
