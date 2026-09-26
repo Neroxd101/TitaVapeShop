@@ -951,9 +951,14 @@
     border-radius: 8px !important;
   }
 
-  .filter-tabs-actions #printStocksBtn {
+  .filter-tabs-actions .inventory-print-menu {
     order: 5 !important;
     grid-column: span 3 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .filter-tabs-actions #printStocksBtn {
     height: 36px !important;
     min-height: 36px !important;
     padding: 0 4px !important;
@@ -966,6 +971,10 @@
     align-items: center !important;
     justify-content: center !important;
     margin: 0 !important;
+  }
+
+  .filter-tabs-actions .inventory-print-menu .inventory-print-trigger {
+    width: 100% !important;
   }
 
   .filter-tabs-actions #addItemBtn {
