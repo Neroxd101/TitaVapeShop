@@ -89,6 +89,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Show notification settings card and load data
         const notifSection = document.getElementById('notificationSettingsSection');
+        const hoursSection = document.getElementById('operatingHoursSection');
+        if (hoursSection) { hoursSection.style.display = 'flex'; loadOperatingHours(); setupOperatingHoursForm(); }
+        const linksSection = document.getElementById('storeLinksSection');
+        if (linksSection) { linksSection.style.display = 'flex'; setupStoreLinksForm(); }
         if (notifSection) {
             notifSection.style.display = 'flex';
             loadNotificationSettings();
@@ -184,12 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             // Disconnected State
             googleStatusContainer.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
-                    <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--border);">
-                         <svg width="32" height="32" viewBox="0 0 24 24" style="opacity: 0.4;"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
-                    </div>
-                    <span class="status-badge disconnected">Not Connected</span>
-                </div>
+                <span class="status-badge disconnected">Not connected</span>
             `;
 
             googleActionContainer.innerHTML = `
@@ -911,6 +910,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Error loading notification settings:', error);
         }
+    }
+
+    async function loadOperatingHours() {
+        try {
+            const response = await fetch('/api/settings/operating-hours');
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('operatingOpenTime').value = result.data.open_time;
+                document.getElementById('operatingCloseTime').value = result.data.close_time;
+                document.getElementById('storeLocationUrl').value = result.data.location_url;
+                document.getElementById('storeFacebookUrl').value = result.data.facebook_url;
+            }
+        } catch (error) { console.error('Error loading operating hours:', error); }
+    }
+
+    function setupOperatingHoursForm() {
+        document.getElementById('operatingHoursForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveOperatingHoursBtn');
+            setLoading(btn, true);
+            try {
+                const response = await fetch('/api/settings/operating-hours', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        open_time: document.getElementById('operatingOpenTime').value,
+                        close_time: document.getElementById('operatingCloseTime').value,
+                        location_url: document.getElementById('storeLocationUrl').value.trim(),
+                        facebook_url: document.getElementById('storeFacebookUrl').value.trim()
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save operating hours');
+                showSuccessModal('Success', 'Operating hours saved successfully!');
+            } catch (error) { alert(error.message); } finally { setLoading(btn, false); }
+        });
+    }
+
+    function setupStoreLinksForm() {
+        document.getElementById('storeLinksForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveStoreLinksBtn'); setLoading(btn, true);
+            try {
+                const response = await fetch('/api/settings/operating-hours', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+                    open_time: document.getElementById('operatingOpenTime').value,
+                    close_time: document.getElementById('operatingCloseTime').value,
+                    location_url: document.getElementById('storeLocationUrl').value.trim(),
+                    facebook_url: document.getElementById('storeFacebookUrl').value.trim()
+                }) });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save store links');
+                showSuccessModal('Success', 'Store links saved successfully!');
+            } catch (error) { alert(error.message); } finally { setLoading(btn, false); }
+        });
     }
 
     /**

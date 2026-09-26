@@ -1,638 +1,240 @@
-/* =============================================
-   Settings Page - New Vertical Layout Design
-   ============================================= */
-
-/* Settings Layout - Columns */
-.settings-layout {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    width: 100%;
-    align-items: start;
+/* Settings: four ordered panels, with section context beside its controls. */
+.settings-layout { display: grid; gap: 22px; width: 100%; max-width: 1240px; margin: 0 auto; }
+.settings-section { display: flex; align-items: stretch; padding: 0; border-radius: 18px; min-width: 0; }
+.settings-section .section-header { flex: 0 0 30%; display: flex; align-items: flex-start; gap: 14px; padding: 28px; border-right: 1px solid var(--border); background: rgba(255,255,255,.018); border-radius: 18px 0 0 18px; box-sizing: border-box; }
+.section-title-group { min-width: 0; }
+.section-title-group h2 { margin: 0 0 10px; font-size: 19px; line-height: 1.3; color: var(--text-primary); }
+.section-subtitle { margin: 0; font-size: 13px; line-height: 1.65; color: var(--text-secondary); }
+.section-icon { flex: 0 0 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; color: var(--accent); background: var(--accent-glow); }
+.settings-section .section-icon { display: none; }
+.section-icon svg { width: 21px; height: 21px; fill: currentColor; }
+.google-icon { color: #8ab4f8; background: rgba(66,133,244,.12); }
+.notification-icon { color: #ffc678; background: rgba(255,175,65,.12); }
+.settings-section .section-content { flex: 1; min-width: 0; padding: 28px; }
+.profile-forms-container { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 28px; }
+.profile-form-section { min-width: 0; }
+.profile-form-section + .profile-form-section { padding-left: 28px; border-left: 1px solid var(--border); }
+.form-section-title { font-size: 16px; margin: 0 0 20px; color: var(--text-primary); }
+.user-selector-container { padding: 0; margin: 0 0 24px; background: transparent; border: 0; border-radius: 0; }
+.profile-form { display: grid; gap: 18px; }
+.settings-section .form-group { min-width: 0; margin: 0; }
+.settings-section label { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.settings-section input:not([type="checkbox"]), .settings-section select { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 9px; height: 46px; }
+.settings-section input[type="time"] { color-scheme: dark; }
+.form-help-text { color: var(--text-secondary); font-size: 12px; line-height: 1.6; margin: 8px 0 0; }
+.operating-hours-time-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.settings-section .btn { min-height: 44px; border-radius: 9px; font-size: 13px; text-transform: none; letter-spacing: 0; gap: 8px; }
+.profile-form > .btn { justify-self: start; width: auto; max-width: 100%; padding: 12px 20px; margin-top: 4px; }
+.google-integration-section { align-items: center; }
+.google-integration-section .section-header { align-self: stretch; align-items: center; }
+.google-integration-section .section-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+.integration-status { min-width: 0; flex: 1 1 180px; }
+.integration-action { flex: 0 1 auto; max-width: 100%; }
+.btn-google { background: #fff; color: #202124; border: 1px solid #dadce0; }
+.btn-google:hover { background: #e9eef6; }
+.btn-disconnect { color: #ff8989; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.3); }
+.google-account-row { display: flex; align-items: center; gap: 12px; }
+.google-account-details { min-width: 0; }
+.google-account-name { font-weight: 600; margin: 0 0 4px; }
+.google-account-email { font-size: 12px; color: var(--text-secondary); overflow-wrap: anywhere; margin: 0 0 8px; }
+.user-avatar-large, .google-avatar-fallback { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+.google-avatar-fallback { display: grid; place-items: center; color: var(--accent); background: var(--accent-glow); }
+.status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 9px; border-radius: 20px; }
+.status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.status-badge.connected { color: var(--accent); background: var(--accent-glow); }
+.status-badge.disconnected { color: var(--text-secondary); background: rgba(255,255,255,.06); }
+.input-wrapper { position: relative; }
+.settings-section input[type="password"], .settings-section input.password-visible { padding-right: 46px; }
+.password-toggle { position: absolute; right: 4px; top: 4px; display: grid; place-items: center; width: 38px; height: 38px; border: 0; background: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 7px; }
+.password-toggle svg { position: static; transform: none; width: 19px; height: 19px; fill: currentColor; }
+.password-toggle .icon-eye-off, .password-toggle.is-visible .icon-eye { display: none; }
+.password-toggle.is-visible .icon-eye-off { display: block; }
+.password-toggle:focus-visible { outline: 2px solid var(--accent); }
+.form-error-text { color: #ff8989; font-size: 12px; margin-top: 7px; }
+.settings-section input.input-error { border-color: #ff8989; }
+@media (max-width: 1100px) {
+    .settings-section .section-header { flex-basis: 32%; padding: 22px; flex-direction: column; }
+    .settings-section .section-content { padding: 22px; }
+    .profile-forms-container { grid-template-columns: minmax(0,1fr); }
+    .profile-form-section + .profile-form-section { padding: 24px 0 0; border-left: 0; border-top: 1px solid var(--border); }
+    .google-integration-section .section-header { align-items: flex-start; }
+}
+@media (max-width: 720px) {
+    .settings-section { flex-direction: column; }
+    .settings-section .section-header { flex-basis: auto; flex-direction: row; border-right: 0; border-bottom: 1px solid var(--border); border-radius: 18px 18px 0 0; padding: 20px; }
+    .settings-section .section-content { width: 100%; box-sizing: border-box; padding: 20px; }
+    .google-integration-section { align-items: stretch; }
 }
 
-/* Settings Section - Uses card-wrapper */
-.settings-section {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+/* Notification Settings uses the same split header layout. */
+#notificationSettingsSection {
+    display: block !important;
 }
 
-/* Section Header */
-.section-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-}
+.store-links-section { display: block !important; }
+.store-links-section .section-header { display: flex; align-items: center; justify-content: space-between; border-right: 0; border-bottom: 1px solid var(--border); border-radius: 18px 18px 0 0; }
+.store-links-section .section-title-group { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex: 1; }
+.store-links-section .section-subtitle { max-width: 520px; margin-left: auto; text-align: right; }
+@media (max-width: 720px) { .store-links-section .section-header, .store-links-section .section-title-group { align-items: flex-start; flex-direction: column; gap: 8px; } .store-links-section .section-subtitle { margin-left: 0; text-align: left; } }
 
-.section-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
+#notificationSettingsSection .section-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-    transition: transform 0.3s ease;
+    justify-content: space-between;
+    gap: 28px;
+    width: 100%;
+    box-sizing: border-box;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
 }
 
-.section-icon:hover {
-    transform: scale(1.05);
-}
-
-.section-icon svg {
-    width: 28px;
-    height: 28px;
-    fill: white;
-}
-
-.section-icon.google-icon {
-    background: linear-gradient(135deg, #4285F4, #00d4aa);
-    box-shadow: 0 4px 20px rgba(66, 133, 244, 0.35);
-}
-
-.section-icon.profile-icon {
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.35);
-}
-
-.section-icon.notification-icon {
-    background: linear-gradient(135deg, #ff9f43, #ff5252);
-    box-shadow: 0 4px 20px rgba(255, 159, 67, 0.35);
-}
-
-.section-title-group {
+#notificationSettingsSection .section-title-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
     flex: 1;
 }
 
-.section-title-group h2 {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 6px 0;
-    letter-spacing: 0.2px;
+#notificationSettingsSection .section-title-group h2 {
+    flex: 0 0 auto;
 }
 
-.section-subtitle {
-    color: var(--text-secondary);
-    font-size: 14px;
-    margin: 0;
-    line-height: 1.5;
+#notificationSettingsSection .section-subtitle {
+    flex: 1 1 auto;
+    max-width: 520px;
+    margin-left: auto;
+    text-align: right;
 }
 
-/* Section Content */
-.section-content {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
-
-/* Integration Status */
-.integration-status {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
-    min-height: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Integration Action */
-.integration-action {
+#notificationSettingsSection .section-content {
     width: 100%;
+    box-sizing: border-box;
 }
 
-.integration-action .btn {
-    width: 100%;
-}
-
-/* User Selector Container */
-.user-selector-container {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 24px;
-}
-
-.user-selector-container .form-group {
-    margin-bottom: 0;
-}
-
-.form-select {
-    width: 100%;
-    padding: 12px 16px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text-primary);
-    font-size: 14px;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.form-select:hover {
-    border-color: var(--accent);
-}
-
-.form-select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
-}
-
-.form-help-text {
-    margin: 8px 0 0 0;
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-style: italic;
-}
-
-/* User Info Display */
-.user-info-display {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-}
-
-.user-info-display p {
-    margin: 8px 0;
-    color: var(--text-secondary);
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.user-info-display strong {
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-right: 8px;
-}
-
-/* Profile Form Section */
-.profile-form-section {
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-}
-
-.profile-form-section:first-of-type {
-    border-top: none;
-    padding-top: 0;
-}
-
-.form-section-title {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 16px 0;
-    letter-spacing: 0.2px;
-}
-
-/* Profile Forms Container */
-.profile-forms-container {
-    display: none;
-    opacity: 0;
-}
-
-.profile-forms-container.show {
-    display: block;
-    animation: slideDownFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes slideDownFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Profile Form */
-.profile-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.profile-form .form-group {
-    margin-bottom: 0;
-}
-
-.profile-form input[type="password"],
-.profile-form input.password-visible {
-    padding-right: 52px;
-}
-
-.password-toggle {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    border: none;
-    border-radius: 8px;
-    background: transparent;
-    cursor: pointer;
-}
-
-.password-toggle svg {
-    position: static;
-    transform: none;
-    width: 20px;
-    height: 20px;
-    fill: var(--text-secondary);
-    pointer-events: none;
-}
-
-.password-toggle .icon-eye-off,
-.password-toggle.is-visible .icon-eye {
-    display: none;
-}
-
-.password-toggle.is-visible .icon-eye-off {
-    display: block;
-}
-
-.password-toggle:hover svg,
-.password-toggle:focus-visible svg,
-.input-wrapper:focus-within .password-toggle svg {
-    fill: var(--accent);
-}
-
-.password-toggle:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 1px;
-}
-
-/* Status Badge */
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-}
-
-.status-badge.connected {
-    background: rgba(0, 212, 170, 0.15);
-    color: #00d4aa;
-    border: 1px solid rgba(0, 212, 170, 0.3);
-}
-
-.status-badge.connected::before {
-    background: #00d4aa;
-    box-shadow: 0 0 6px #00d4aa;
-}
-
-.status-badge.disconnected {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.status-badge.disconnected::before {
-    background: #8b8b9e;
-}
-
-/* Google Connect Button */
-.btn-google {
-    background: white;
-    color: #1f1f1f;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 700;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.btn-google:hover {
-    background: #f8f9fa;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.btn-google svg {
-    flex-shrink: 0;
-}
-
-/* Disconnect Button */
-.btn-disconnect {
-    background: rgba(255, 71, 87, 0.1);
-    color: #ff4757;
-    border: 1px solid rgba(255, 71, 87, 0.2);
-    font-weight: 600;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.btn-disconnect:hover {
-    background: rgba(255, 71, 87, 0.15);
-    border-color: #ff4757;
-    color: #ff4757;
-    transform: translateY(-2px);
-}
-
-.btn-disconnect svg {
-    margin-right: 6px;
-}
-
-/* Avatar Wrapper */
-.avatar-wrapper {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    flex: 0 0 80px;
-}
-
-.user-avatar-large {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--bg-card);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.google-account-row {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 16px;
-    text-align: left;
-}
-
-.google-account-details {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-}
-
-.google-account-name {
-    max-width: 100%;
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 15px;
-    font-weight: 600;
-    overflow-wrap: anywhere;
-}
-
-.google-account-email {
-    max-width: 100%;
-    margin: 0 0 3px;
-    color: var(--text-secondary);
-    font-size: 13px;
-    overflow-wrap: anywhere;
-}
-
-.google-avatar-fallback {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(66, 133, 244, 0.18);
-    color: #8ab4f8;
-    border: 3px solid var(--bg-card);
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.status-indicator {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid var(--bg-card);
-}
-
-.status-indicator.online {
-    background: #00d4aa;
-    box-shadow: 0 0 8px #00d4aa;
-}
-
-/* Spinner */
-.spinner-small {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    border-top-color: currentColor;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    display: inline-block;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* =============================================
-   Responsive Design
-   ============================================= */
-
-/* Tablet (768px and below) */
-@media (max-width: 768px) {
-    .settings-layout {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .settings-section {
-        gap: 20px;
-    }
-
-    .section-header {
-        gap: 14px;
-        padding-bottom: 16px;
-    }
-
-    .section-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-    }
-
-    .section-icon svg {
-        width: 24px;
-        height: 24px;
-    }
-
-    .section-title-group h2 {
-        font-size: 20px;
-    }
-
-    .section-subtitle {
-        font-size: 13px;
-    }
-
-    .section-content {
-        gap: 20px;
-    }
-
-    .integration-status {
-        padding: 20px;
-        min-height: 120px;
-    }
-
-    .form-section-title {
-        font-size: 16px;
-        margin-bottom: 14px;
-    }
-
-    .profile-form {
-        gap: 14px;
-    }
-}
-
-/* Medium screens (769px - 1023px) */
-@media (min-width: 769px) and (max-width: 1023px) {
-    .settings-layout {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 22px;
-    }
-}
-
-/* Tablet landscape (1024x505) - compact settings */
-@media (width: 1024px) and (height: 505px) and (orientation: landscape),
-       (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
-    .settings-layout {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px !important;
-    }
-
-    .settings-section {
-        gap: 14px !important;
-    }
-
-    .section-header {
-        gap: 10px !important;
-        padding-bottom: 12px !important;
-    }
-
-    .section-icon {
-        width: 40px !important;
-        height: 40px !important;
-        border-radius: 10px !important;
-    }
-
-    .section-icon svg {
-        width: 20px !important;
-        height: 20px !important;
-    }
-
-    .section-title-group h2 {
-        font-size: 16px !important;
-        margin-bottom: 4px !important;
-    }
-
-    .section-subtitle {
-        font-size: 11px !important;
-    }
-
-    .section-content {
-        gap: 12px !important;
-    }
-
-    .integration-status {
-        padding: 12px !important;
-        min-height: 90px !important;
-    }
-
-    .user-info-display {
-        padding: 12px !important;
-    }
-
-    .user-info-display p {
-        font-size: 11px !important;
-        margin: 4px 0 !important;
-    }
-
-    .profile-form-section {
-        padding-top: 12px !important;
-    }
-
-    .form-section-title {
-        font-size: 14px !important;
-        margin-bottom: 10px !important;
-    }
-
-    .profile-form {
-        gap: 10px !important;
-    }
-}
-
-/* Small phones (480px and below) */
-@media (max-width: 480px) {
-    .settings-layout {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-
-    .section-header {
+@media (max-width: 720px) {
+    #notificationSettingsSection .section-header,
+    #notificationSettingsSection .section-title-group {
+        align-items: flex-start;
         flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 12px;
+        gap: 8px;
     }
 
-    .section-title-group {
-        text-align: center;
-    }
-
-    .section-icon {
-        width: 52px;
-        height: 52px;
+    #notificationSettingsSection .section-subtitle {
+        margin-left: 0;
+        text-align: left;
     }
 }
 
-/* Inline form validation error styling */
-.form-group input.input-error {
-    border-color: var(--error) !important;
-    box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.15) !important;
+/* Operating Hours uses the same title and right-aligned description treatment. */
+#operatingHoursSection {
+    display: block !important;
 }
 
-.form-error-text {
+#operatingHoursSection .section-header {
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: var(--error);
-    font-size: 13px;
-    margin-top: 6px;
-    font-weight: 500;
-    animation: fadeIn 0.2s ease;
+    justify-content: space-between;
+    gap: 28px;
+    width: 100%;
+    box-sizing: border-box;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+}
+
+#operatingHoursSection .section-title-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex: 1;
+}
+
+#operatingHoursSection .section-title-group h2 {
+    flex: 0 0 auto;
+}
+
+#operatingHoursSection .section-subtitle {
+    flex: 1 1 auto;
+    max-width: 520px;
+    margin-left: auto;
+    text-align: right;
+}
+
+#operatingHoursSection .section-content {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+    #operatingHoursSection .section-header,
+    #operatingHoursSection .section-title-group {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    #operatingHoursSection .section-subtitle {
+        margin-left: 0;
+        text-align: left;
+    }
+}
+@media (max-width: 380px) {
+    .operating-hours-time-grid { grid-template-columns: minmax(0,1fr); }
+    .integration-action, .profile-form > .btn { width: 100%; }
+}
+
+/* Profile Management uses a full-width header, with the forms underneath. */
+.profile-management-section {
+    display: block;
+}
+
+.profile-management-section .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+}
+
+.profile-management-section .section-title-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex: 1;
+}
+
+.profile-management-section .section-header h2 {
+    flex: 0 0 auto;
+}
+
+.profile-management-section .section-header .section-subtitle {
+    flex: 1 1 auto;
+    max-width: 520px;
+    margin-left: auto;
+    text-align: right;
+}
+
+.profile-management-section .section-content {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+    .profile-management-section .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .profile-management-section .section-header .section-subtitle {
+        margin-left: 0;
+        text-align: left;
+    }
 }

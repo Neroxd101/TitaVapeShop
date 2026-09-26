@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="/css/components/card-wrapper.css">
     <link rel="stylesheet" href="/navigation/navigation.css">
     <link rel="stylesheet" href="/css/components/main-layout.css">
-    <link rel="stylesheet" href="/admin/admin/setting/settings.css">
+    <link rel="stylesheet" href="/admin/admin/setting/settings.css?v=6">
 </head>
 
 <body>
@@ -45,7 +45,7 @@
 
             <div class="settings-layout">
                 <!-- Google Integration Section -->
-                <div class="card-wrapper settings-section">
+                <div class="card-wrapper settings-section google-integration-section">
                     <div class="section-header">
                         <div class="section-icon google-icon">
                             <svg viewBox="0 0 24 24">
@@ -69,7 +69,7 @@
                 </div>
 
                 <!-- Profile Management Section -->
-                <div class="card-wrapper settings-section">
+                <div class="card-wrapper settings-section profile-management-section">
                     <div class="section-header">
                         <div class="section-icon profile-icon">
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -166,6 +166,27 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Operating Hours Section (Admin Only) -->
+                <div class="card-wrapper settings-section" id="operatingHoursSection" style="display: none;">
+                    <div class="section-header"><div class="section-title-group"><h2>Operating Hours</h2><p class="section-subtitle">Set the hours displayed on the public catalog.</p></div></div>
+                    <div class="section-content"><form id="operatingHoursForm" class="profile-form">
+                        <div class="operating-hours-time-grid">
+                            <div class="form-group"><label for="operatingOpenTime">Opening time</label><input type="time" id="operatingOpenTime" required></div>
+                            <div class="form-group"><label for="operatingCloseTime">Closing time</label><input type="time" id="operatingCloseTime" required></div>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-full" id="saveOperatingHoursBtn"><span class="btn-text">Save Operating Hours</span><div class="spinner"></div></button>
+                    </form></div>
+                </div>
+
+                <div class="card-wrapper settings-section store-links-section" id="storeLinksSection" style="display: none;">
+                    <div class="section-header"><div class="section-title-group"><h2>Store Links</h2><p class="section-subtitle">Manage the location and Facebook links shown in the catalog.</p></div></div>
+                    <div class="section-content"><form id="storeLinksForm" class="profile-form">
+                        <div class="form-group"><label for="storeLocationUrl">Store Location</label><input type="url" id="storeLocationUrl" placeholder="https://maps.google.com/..." required></div>
+                        <div class="form-group"><label for="storeFacebookUrl">Facebook / Follow Us</label><input type="url" id="storeFacebookUrl" placeholder="https://www.facebook.com/..." required></div>
+                        <button type="submit" class="btn btn-secondary" id="saveStoreLinksBtn"><span class="btn-text">Save Store Links</span><div class="spinner"></div></button>
+                    </form></div>
                 </div>
 
                 <!-- Notification Settings Section (Admin Only) -->

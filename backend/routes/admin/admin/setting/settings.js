@@ -93,4 +93,23 @@ router.post('/api/settings/notifications', isAuthenticated, hasRole(['admin']), 
     }
 });
 
+router.get('/api/settings/operating-hours', isAuthenticated, hasRole(['admin']), async (req, res) => {
+    const { data } = await dbAdmin().from('settings').select('key, value').in('key', ['operating_open_time', 'operating_close_time', 'store_location_url', 'store_facebook_url']);
+    const values = Object.fromEntries((data || []).map(item => [item.key, item.value]));
+    res.json({ success: true, data: { open_time: values.operating_open_time || '08:00', close_time: values.operating_close_time || '20:30', location_url: values.store_location_url || 'https://maps.app.goo.gl/GzssH9xZQUN94pU38', facebook_url: values.store_facebook_url || 'https://www.facebook.com/TitasVShopNaic' } });
+});
+
+router.post('/api/settings/operating-hours', isAuthenticated, hasRole(['admin']), async (req, res) => {
+    const { open_time, close_time, location_url, facebook_url } = req.body || {};
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(open_time) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(close_time) || !/^https?:\/\/\S+$/i.test(location_url) || !/^https?:\/\/\S+$/i.test(facebook_url)) return res.status(400).json({ success: false, error: 'Invalid operating hours or store links' });
+    const { error } = await dbAdmin().from('settings').upsert([
+        { key: 'operating_open_time', value: open_time, updated_at: new Date().toISOString() },
+        { key: 'operating_close_time', value: close_time, updated_at: new Date().toISOString() }
+        , { key: 'store_location_url', value: location_url, updated_at: new Date().toISOString() }
+        , { key: 'store_facebook_url', value: facebook_url, updated_at: new Date().toISOString() }
+    ]);
+    if (error) return res.status(500).json({ success: false, error: error.message });
+    res.json({ success: true });
+});
+
 module.exports = router;
