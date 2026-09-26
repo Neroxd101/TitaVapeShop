@@ -31,7 +31,7 @@ const settingsRoutes = require('./backend/routes/admin/admin/setting/settings');
 // Catalog routes
 const catalogGetProductsRoutes = require('./backend/routes/catalog/catalog_get_products');
 const catalogImageProxyRoutes = require('./backend/routes/catalog/catalog_image_proxy');
-const catalogStoreHoursRoutes = require('./backend/routes/catalog/catalog_store_hours');
+const catalogStoreHoursRoutes = require('./backend/routes/catalog/catalog_store_hours_link');
 const catalogRoutes = require('./backend/routes/catalog/catalog');
 
 // Dashboard routes
