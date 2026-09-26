@@ -1,5 +1,11 @@
 /* One shared header layout for every settings accordion. */
 .settings-layout { display: grid; grid-template-columns: minmax(0,1fr); align-items: start; gap: 22px; width: 100%; max-width: 1240px; margin: 0 auto; }
+.settings-page-heading { min-width: 0; }
+.settings-header-actions { display: flex; flex: 0 0 auto; align-items: center; margin-left: auto; }
+.settings-header-actions .settings-logout-button { display: inline-flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 40px; max-width: none; padding: 8px 14px; border: 0; border-radius: 10px; background: rgba(239,68,68,.08); color: #ff8989; }
+.settings-header-actions .settings-logout-button .nav-icon { width: 18px; height: 18px; }
+.settings-header-actions .settings-logout-button .nav-icon svg { width: 18px; height: 18px; stroke: currentColor; }
+.settings-header-actions .settings-logout-button .nav-label { max-width: none; color: inherit; font-size: 13px; }
 .settings-layout > .settings-section { flex-direction: column; width: 100%; min-width: 0; padding: 0; box-sizing: border-box; border-radius: 18px; }
 .settings-section > .section-header { display: block; width: 100%; box-sizing: border-box; padding: 28px; cursor: pointer; background: var(--bg-card); border-radius: 18px; }
 .settings-section.is-expanded > .section-header { border-bottom: 0; }
@@ -58,6 +64,8 @@
 }
 @media (max-width: 720px) {
 .settings-layout { gap: 14px; }
+.settings-header-actions .settings-logout-button { min-height: 36px; padding: 6px 10px; }
+.settings-header-actions .settings-logout-button .nav-label { font-size: 12px; }
 .settings-section > .section-header, .settings-section > .section-content { padding: 18px 16px; }
 .settings-section .section-title-group { grid-template-columns: minmax(0,46fr) minmax(0,54fr); gap: 12px; }
 .settings-section .section-title-group h2 { font-size: clamp(12px,3.6vw,16px); }

@@ -11,7 +11,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Initialize sidebar
-    if (typeof initSidebar === 'function') initSidebar('settings');
+    if (typeof initSidebar === 'function') {
+        await initSidebar('settings');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const headerActions = document.getElementById('settingsHeaderActions');
+        if (logoutBtn && headerActions) {
+            logoutBtn.classList.add('settings-logout-button');
+            logoutBtn.title = 'Log out';
+            headerActions.appendChild(logoutBtn);
+        }
+    }
 
     // Elements
     const googleStatusContainer = document.getElementById('googleStatusContainer');
