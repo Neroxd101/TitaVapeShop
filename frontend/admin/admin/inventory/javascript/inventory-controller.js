@@ -50,7 +50,7 @@ const Inventory = {
       button.addEventListener('click', () => {
         printMenu.classList.remove('is-open');
         printTrigger?.setAttribute('aria-expanded', 'false');
-        if (button.dataset.printAction === 'qr') InventoryPrint.printQr();
+        if (button.dataset.printAction === 'qr') InventoryQrPrint.print();
         else InventoryPrint.print();
       });
     });
