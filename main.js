@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 require('dotenv').config();
 
 const setupMiddleware = require('./backend/middleware/middlewareSetup');
@@ -27,6 +27,9 @@ const customerChangePasswordRoutes = require('./backend/routes/customer/customer
 // Setting routes
 const userProfileRoutes = require('./backend/routes/admin/admin/setting/user_profile');
 const settingsRoutes = require('./backend/routes/admin/admin/setting/settings');
+const settingNotificationRoutes = require('./backend/routes/admin/admin/setting/setting_notification');
+const settingStoreLinkRoutes = require('./backend/routes/admin/admin/setting/setting_store_link');
+const settingOperatingHoursRoutes = require('./backend/routes/admin/admin/setting/setting_operating_hours');
 
 // Catalog routes
 const catalogGetProductsRoutes = require('./backend/routes/catalog/catalog_get_products');
@@ -165,6 +168,9 @@ app.use('/', analyticsModalTotalOrdersRoutes);
 app.use('/', analyticsModalItemsSoldRoutes);
 app.use('/', analyticsModalGrossSalesRoutes);
 app.use('/', settingsRoutes);
+app.use('/', settingNotificationRoutes);
+app.use('/', settingStoreLinkRoutes);
+app.use('/', settingOperatingHoursRoutes);
 // Staff routes
 app.use('/', staffPosRoutes);
 app.use('/', staffOrdersRoutes);
@@ -184,3 +190,4 @@ app.use((req, res) => {
 
 // Shared Express app for local development and Netlify Functions.
 module.exports = app;
+
