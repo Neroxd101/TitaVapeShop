@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Settings Page Logic
  */
 
@@ -99,13 +99,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Show notification settings card and load data
         const notifSection = document.getElementById('notificationSettingsSection');
         const hoursSection = document.getElementById('operatingHoursSection');
-        if (hoursSection) { hoursSection.style.display = 'flex'; loadOperatingHours(); setupOperatingHoursForm(); }
+        if (hoursSection) { hoursSection.style.display = 'flex'; window.settingOperatingHours.load(); window.settingOperatingHours.setup(); }
         const linksSection = document.getElementById('storeLinksSection');
-        if (linksSection) { linksSection.style.display = 'flex'; setupStoreLinksForm(); }
+        if (linksSection) { linksSection.style.display = 'flex'; window.settingStoreLink.load(); window.settingStoreLink.setup(); }
         if (notifSection) {
             notifSection.style.display = 'flex';
-            loadNotificationSettings();
-            setupNotificationSettingsForm();
+            window.settingNotification.load();
+            window.settingNotification.setup();
         }
     } else {
         userSelectorContainer.style.display = 'none';
@@ -901,146 +901,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     /**
-     * Load Notification Settings (Admin Only)
-     */
-    async function loadNotificationSettings() {
-        try {
-            const response = await fetch('/api/settings/notifications');
-            const result = await response.json();
-            
-            if (result.success && result.data) {
-                document.getElementById('lowStockNotificationsEnabled').checked = result.data.low_stock_notifications_enabled;
-                document.getElementById('lowStockThreshold').value = result.data.low_stock_threshold;
-                document.getElementById('lowStockEmail').value = result.data.low_stock_notification_email;
-            } else {
-                console.error('Failed to load notification settings:', result.error);
-            }
-        } catch (error) {
-            console.error('Error loading notification settings:', error);
-        }
-    }
-
-    async function loadOperatingHours() {
-        try {
-            const response = await fetch('/api/settings/operating-hours');
-            const result = await response.json();
-            if (result.success) {
-                document.getElementById('operatingOpenTime').value = result.data.open_time;
-                document.getElementById('operatingCloseTime').value = result.data.close_time;
-                document.getElementById('storeLocationUrl').value = result.data.location_url;
-                document.getElementById('storeFacebookUrl').value = result.data.facebook_url;
-            }
-        } catch (error) { console.error('Error loading operating hours:', error); }
-    }
-
-    function setupOperatingHoursForm() {
-        document.getElementById('operatingHoursForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('saveOperatingHoursBtn');
-            setLoading(btn, true);
-            try {
-                const response = await fetch('/api/settings/operating-hours', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        open_time: document.getElementById('operatingOpenTime').value,
-                        close_time: document.getElementById('operatingCloseTime').value,
-                        location_url: document.getElementById('storeLocationUrl').value.trim(),
-                        facebook_url: document.getElementById('storeFacebookUrl').value.trim()
-                    })
-                });
-                const result = await response.json();
-                if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save operating hours');
-                showSuccessModal('Success', 'Operating hours saved successfully!');
-            } catch (error) { alert(error.message); } finally { setLoading(btn, false); }
-        });
-    }
-
-    function setupSettingsAccordions() {
-        document.querySelectorAll('.settings-section').forEach((section) => {
-            const header = section.querySelector('.section-header');
-            const content = section.querySelector('.section-content');
-            if (!header || !content || header.dataset.accordionReady) return;
-            header.dataset.accordionReady = 'true';
-            header.setAttribute('role', 'button');
-            header.setAttribute('tabindex', '0');
-            header.setAttribute('aria-expanded', 'false');
-            section.classList.add('is-collapsed');
-            const toggle = () => {
-                const expanded = section.classList.toggle('is-expanded');
-                section.classList.toggle('is-collapsed', !expanded);
-                header.setAttribute('aria-expanded', String(expanded));
-                if (expanded) content.style.removeProperty('display');
-                else content.style.setProperty('display', 'none', 'important');
-            };
-            content.style.setProperty('display', 'none', 'important');
-            header.addEventListener('click', toggle);
-            header.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(); }
-            });
-        });
-    }
-
-    function setupStoreLinksForm() {
-        document.getElementById('storeLinksForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('saveStoreLinksBtn'); setLoading(btn, true);
-            try {
-                const response = await fetch('/api/settings/operating-hours', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-                    open_time: document.getElementById('operatingOpenTime').value,
-                    close_time: document.getElementById('operatingCloseTime').value,
-                    location_url: document.getElementById('storeLocationUrl').value.trim(),
-                    facebook_url: document.getElementById('storeFacebookUrl').value.trim()
-                }) });
-                const result = await response.json();
-                if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save store links');
-                showSuccessModal('Success', 'Store links saved successfully!');
-            } catch (error) { alert(error.message); } finally { setLoading(btn, false); }
-        });
-    }
-
-    /**
-     * Setup Notification Settings Form Submit Handler (Admin Only)
-     */
-    function setupNotificationSettingsForm() {
-        const form = document.getElementById('notificationSettingsForm');
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('saveNotificationSettingsBtn');
-                setLoading(btn, true);
-
-                const enabled = document.getElementById('lowStockNotificationsEnabled').checked;
-                const threshold = parseInt(document.getElementById('lowStockThreshold').value, 10);
-                const email = document.getElementById('lowStockEmail').value.trim();
-
-                try {
-                    const response = await fetch('/api/settings/notifications', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            low_stock_threshold: threshold,
-                            low_stock_notifications_enabled: enabled,
-                            low_stock_notification_email: email
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok || !data.success) {
-                        throw new Error(data.error || 'Failed to save notification settings');
-                    }
-
-                    showSuccessModal('Success', 'Notification settings saved successfully!');
-                } catch (error) {
-                    alert(error.message || 'Failed to save notification settings');
-                } finally {
-                    setLoading(btn, false);
-                }
-            });
-        }
-    }
-
-    /**
      * Set Loading State
      */
     function setLoading(button, isLoading) {
@@ -1060,4 +920,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (spinner) spinner.style.display = 'none';
         }
     }
+
+    window.settingsPage = { setLoading };
+    window.showSuccessModal = showSuccessModal;
 });
+
