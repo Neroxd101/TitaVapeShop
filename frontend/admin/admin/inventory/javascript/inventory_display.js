@@ -5,7 +5,7 @@ const InventoryDisplay = {
         if (window.InventoryViewModal?.init) {
             await window.InventoryViewModal.init();
         }
-        this.initialLoad();
+        await this.initialLoad();
     },
 
     async initialLoad() {
@@ -27,6 +27,7 @@ const InventoryDisplay = {
         } finally {
             this.showLoading(false);
         }
+        await InventorySummaries.updateSummaryStats();
     },
 
     renderInventory() {
@@ -37,7 +38,6 @@ const InventoryDisplay = {
             InventoryDOM.inventoryGrid.innerHTML = '';
             InventoryDOM.emptyState.style.display = 'block';
             InventoryPagination.updateControls(0);
-            InventorySummaries.updateSummaryStats();
             return;
         }
 
@@ -65,7 +65,6 @@ const InventoryDisplay = {
 
         InventoryDOM.inventoryGrid.innerHTML = pageItems.map(item => InventoryProductCardRenderer.create(item)).join('');
         InventoryPagination.updateControls(filtered.length);
-        InventorySummaries.updateSummaryStats();
     },
 
     showLoading(show) {
