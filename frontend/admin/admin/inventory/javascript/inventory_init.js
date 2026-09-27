@@ -23,7 +23,15 @@ const Inventory = {
       // InventoryUpdate doesn't need explicit init as it shares the Create modal
     ]);
 
-    await InventoryCategories.init();
+    await InventoryCategoryGet.init();
+    InventoryCategoryCreate.init({
+      onCreated: category => InventoryCategoryGet.add(category),
+      showError: message => alert(message)
+    });
+    InventoryCategoryDelete.init({
+      categories: () => InventoryCategoryGet.categories,
+      onDeleted: () => InventoryCategoryGet.refresh()
+    });
     InventorySearch.init();
     InventoryFilter.init();
     InventoryPagination.init();
