@@ -19,7 +19,13 @@
     await SalesCart.loadCartModal();
     await SalesCart.loadConfirmModal();
     await SalesCart.loadSuccessModal();
-    if (window.InventoryCategories) await InventoryCategories.load();
+    if (window.PosCategories) {
+      try {
+        await window.PosCategories.init(() => SalesLoad.filterProducts(state));
+      } catch (error) {
+        console.error('Failed to load POS categories:', error);
+      }
+    }
     wireEvents();
 
     // Initialize Data - ensure modules are loaded
@@ -45,15 +51,10 @@
 
   function wireEvents() {
     const searchInput = document.getElementById('productSearch');
-    const categoryFilter = document.getElementById('categoryFilter');
     const sortBy = document.getElementById('sortBy');
 
     if (searchInput) {
       searchInput.addEventListener('input', () => SalesLoad.filterProducts(state));
-    }
-
-    if (categoryFilter) {
-      categoryFilter.addEventListener('change', () => SalesLoad.filterProducts(state));
     }
 
     if (sortBy) {
