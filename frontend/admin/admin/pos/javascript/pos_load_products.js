@@ -34,13 +34,6 @@ const SalesLoad = {
         this.renderProducts(state);
     },
 
-    sortProducts(items) {
-        if (window.SalesFilter?.sortProducts) {
-            return window.SalesFilter.sortProducts(items);
-        }
-        return items;
-    },
-
     renderProducts(state) {
         if (!state) return;
         const listEl = document.getElementById('productList');

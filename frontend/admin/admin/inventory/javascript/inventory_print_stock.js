@@ -6,16 +6,8 @@ const InventoryPrint = {
         })[char]);
     },
 
-    getPrintableImageUrl(url) {
-        if (!url) return '';
-        const match = String(url).match(/[?&]id=([a-zA-Z0-9_-]+)|\/d\/([a-zA-Z0-9_-]+)/);
-        const fileId = match?.[1] || match?.[2];
-        return fileId ? `/api/catalog/image/${encodeURIComponent(fileId)}` : String(url);
-    },
-
     buildReport(items) {
         const escape = value => this.escape(value);
-        const stockLabels = { all: 'All Stock', low: 'Low Stock (1–5)', none: 'No Stock (0)' };
         const filters = [
             `Category: ${InventoryState.currentFilter === 'all' ? 'All' : InventoryState.currentFilter}`
         ];
