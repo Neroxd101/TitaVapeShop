@@ -117,6 +117,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupSettingsAccordions();
 
     // Listen for storage changes (external updates)
+    function setupSettingsAccordions() {
+        document.querySelectorAll('.settings-section').forEach((section) => {
+            const header = section.querySelector('.section-header');
+            const content = section.querySelector('.section-content');
+            if (!header || !content || header.dataset.accordionReady) return;
+
+            header.dataset.accordionReady = 'true';
+            header.setAttribute('role', 'button');
+            header.setAttribute('tabindex', '0');
+            header.setAttribute('aria-expanded', 'false');
+            section.classList.add('is-collapsed');
+
+            const toggle = () => {
+                const expanded = section.classList.toggle('is-expanded');
+                section.classList.toggle('is-collapsed', !expanded);
+                header.setAttribute('aria-expanded', String(expanded));
+                if (expanded) content.style.removeProperty('display');
+                else content.style.setProperty('display', 'none', 'important');
+            };
+
+            content.style.setProperty('display', 'none', 'important');
+            header.addEventListener('click', toggle);
+            header.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggle();
+                }
+            });
+        });
+    }
     window.addEventListener('storage', (e) => {
         if (e.key === 'google_connected' || e.key === 'google_user') {
             renderGoogleSettings();
@@ -924,4 +954,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.settingsPage = { setLoading };
     window.showSuccessModal = showSuccessModal;
 });
+
 
