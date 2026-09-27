@@ -23,8 +23,16 @@ const InventoryCategoryGet = {
   populateFilter(categories) {
     const select = document.getElementById('categoryFilter');
     if (!select) return;
+    const previous = InventoryState.currentFilter;
+    const selected = categories.some(category => category.slug === previous) ? previous : 'all';
     select.innerHTML = '<option value="all">All Categories</option>' + categories
       .map(category => `<option value="${this.escape(category.slug)}">${this.escape(category.name)}</option>`).join('');
+    select.value = selected;
+    InventoryState.currentFilter = selected;
+    if (previous !== selected) {
+      InventoryState.currentPage = 1;
+      InventoryDisplay.renderInventory();
+    }
   },
 
   populateItemSelect(categories, selected = '') {
