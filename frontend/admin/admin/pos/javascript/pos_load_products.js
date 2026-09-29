@@ -133,6 +133,12 @@ const SalesLoad = {
         if (variationSelect) {
             variationSelect.className = 'pos-variation-select';
             variationSelect.setAttribute('aria-label', `Choose variation for ${item.name || 'product'}`);
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Select Variation';
+            placeholder.disabled = true;
+            placeholder.selected = true;
+            variationSelect.appendChild(placeholder);
             item.variations.forEach(variation => {
                 const option = document.createElement('option');
                 option.value = variation.name;
@@ -140,8 +146,6 @@ const SalesLoad = {
                 option.disabled = (Number(variation.quantity) || 0) <= 0;
                 variationSelect.appendChild(option);
             });
-            const firstAvailable = item.variations.find(v => (Number(v.quantity) || 0) > 0);
-            if (firstAvailable) variationSelect.value = firstAvailable.name;
         }
         const getAvailableQty = () => {
             const selectedVariation = variationSelect?.value || null;
