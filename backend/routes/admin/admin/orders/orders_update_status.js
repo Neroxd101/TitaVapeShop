@@ -78,8 +78,9 @@ router.post('/api/orders/update_status', isAuthenticated, hasRole(['admin', 'sta
             }
         }
 
-        // Trigger low stock check if order is completed
-        if (updatedOrder && status === 'completed' && updatedOrder.items && Array.isArray(updatedOrder.items)) {
+        // Confirmation reserves stock and can trigger a low stock alert.
+        if (updatedOrder && (status === 'confirmed' || (status === 'completed' && !updatedOrder.stock_reserved))
+            && updatedOrder.items && Array.isArray(updatedOrder.items)) {
             try {
                 const { checkAndSendLowStockAlerts } = require('../setting/lowStockAlert');
                 const alertItems = updatedOrder.items.map(item => ({
@@ -88,10 +89,10 @@ router.post('/api/orders/update_status', isAuthenticated, hasRole(['admin', 'sta
                     deducted: parseInt(item.quantity, 10) || 0
                 }));
                 checkAndSendLowStockAlerts(alertItems).catch(err => {
-                    console.error('[Low Stock Alert API] Background alert error for completed order:', err);
+                    console.error('[Low Stock Alert API] Background alert error for confirmed order:', err);
                 });
             } catch (alertError) {
-                console.error('[Low Stock Alert API] Failed to initiate alert check for completed order:', alertError);
+                console.error('[Low Stock Alert API] Failed to initiate alert check for confirmed order:', alertError);
             }
         }
 

@@ -1,5 +1,5 @@
--- Customer checkout. The database owns customer identity, product prices,
--- order lines, totals, and initial payment state.
+-- Customer checkout. Pending orders are availability requests. Stock is
+-- reserved atomically when an admin confirms the order.
 DROP FUNCTION IF EXISTS public.customer_create_order(UUID, VARCHAR, VARCHAR, JSONB, DECIMAL, VARCHAR, VARCHAR);
 DROP FUNCTION IF EXISTS public.customer_create_order(UUID, JSONB, VARCHAR);
 

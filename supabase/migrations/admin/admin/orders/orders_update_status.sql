@@ -1,5 +1,8 @@
--- Normal admin order workflow. Completion, inventory deduction, profit update,
--- and audit logging are committed together or rolled back together.
+-- Normal admin order workflow. Confirmation reserves inventory; cancellation
+-- releases it; completion records profit without deducting stock again.
+-- Existing confirmed orders retain false and use the old completion deduction.
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS stock_reserved BOOLEAN NOT NULL DEFAULT FALSE;
+
 DROP FUNCTION IF EXISTS public.orders_update_status(UUID, VARCHAR, VARCHAR);
 
 CREATE FUNCTION public.orders_update_status(
@@ -55,7 +58,8 @@ BEGIN
         RAISE EXCEPTION 'Only pending or confirmed orders can be cancelled';
     END IF;
 
-    IF p_status = 'completed' THEN
+    IF p_status = 'confirmed' OR p_status = 'completed'
+        OR (p_status = 'cancelled' AND target.status = 'confirmed' AND target.stock_reserved) THEN
         IF target.items IS NULL OR jsonb_typeof(target.items) <> 'array' OR jsonb_array_length(target.items) = 0 THEN
             RAISE EXCEPTION 'Order has no valid items';
         END IF;
@@ -83,7 +87,8 @@ BEGIN
             IF NOT FOUND THEN
                 RAISE EXCEPTION 'Inventory item % was not found', item_id;
             END IF;
-            IF inventory_item.quantity < item_qty THEN
+            IF (p_status = 'confirmed' OR (p_status = 'completed' AND NOT target.stock_reserved))
+                AND inventory_item.quantity < item_qty THEN
                 RAISE EXCEPTION 'Not enough stock for %. Available: %', inventory_item.name, inventory_item.quantity;
             END IF;
 
@@ -102,16 +107,20 @@ BEGIN
                 IF NOT FOUND THEN
                     RAISE EXCEPTION 'Variation % was not found for %', item_variation, inventory_item.name;
                 END IF;
-                IF COALESCE(variation_stock, 0) < item_qty THEN
+                IF (p_status = 'confirmed' OR (p_status = 'completed' AND NOT target.stock_reserved))
+                    AND COALESCE(variation_stock, 0) < item_qty THEN
                     RAISE EXCEPTION 'Not enough stock for % (%). Available: %',
                         inventory_item.name, item_variation, COALESCE(variation_stock, 0);
                 END IF;
             END IF;
 
             UPDATE public.inventory
-            SET quantity = quantity - item_qty,
+            SET quantity = quantity + CASE
+                    WHEN p_status = 'confirmed' OR (p_status = 'completed' AND NOT target.stock_reserved) THEN -item_qty
+                    WHEN p_status = 'cancelled' THEN item_qty
+                    ELSE 0 END,
                 variations = CASE
-                    WHEN item_variation IS NULL THEN variations
+                    WHEN item_variation IS NULL OR (p_status = 'completed' AND target.stock_reserved) THEN variations
                     ELSE (
                         SELECT jsonb_agg(
                             CASE
@@ -119,7 +128,8 @@ BEGIN
                                     jsonb_set(
                                         variation,
                                         '{quantity}',
-                                        to_jsonb(((variation->>'quantity')::INTEGER - item_qty)),
+                                        to_jsonb(((variation->>'quantity')::INTEGER +
+                                            CASE WHEN p_status = 'cancelled' THEN item_qty ELSE -item_qty END)),
                                         true
                                     )
                                 ELSE variation
@@ -130,7 +140,8 @@ BEGIN
                             WITH ORDINALITY AS entries(variation, position)
                     )
                 END,
-                total_profit = COALESCE(total_profit, 0) + (item_price * item_qty),
+                total_profit = COALESCE(total_profit, 0) +
+                    CASE WHEN p_status = 'completed' THEN item_price * item_qty ELSE 0 END,
                 updated_at = NOW()
             WHERE id = item_id;
 
@@ -164,6 +175,8 @@ BEGIN
             'order_type', target.order_type,
             'previous_status', target.status,
             'new_status', p_status,
+            'stock_reserved', p_status = 'confirmed',
+            'stock_released', p_status = 'cancelled' AND target.status = 'confirmed' AND target.stock_reserved,
             'items_count', jsonb_array_length(target.items)
         )
     );
@@ -171,6 +184,7 @@ BEGIN
     RETURN QUERY
     UPDATE public.orders
     SET status = p_status,
+        stock_reserved = CASE WHEN p_status = 'confirmed' THEN TRUE ELSE stock_reserved END,
         updated_at = NOW()
     WHERE id = target.id
     RETURNING *;
