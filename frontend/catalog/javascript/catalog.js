@@ -61,6 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (result.success) {
                 allProducts = result.data;
+                if (window.CatalogCategories) {
+                    CatalogCategories.populateFromProducts(allProducts);
+                }
                 if (window.CatalogProductModal) {
                     CatalogProductModal.allProducts = allProducts;
                 }
