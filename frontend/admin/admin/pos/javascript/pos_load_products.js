@@ -185,6 +185,9 @@ const SalesLoad = {
         const actions = document.createElement('div');
         actions.className = 'pos-card-actions';
 
+        const variationRow = document.createElement('div');
+        variationRow.className = 'pos-card-variation-row';
+
         const actionControls = document.createElement('div');
         actionControls.className = 'pos-card-action-controls';
 
@@ -207,7 +210,7 @@ const SalesLoad = {
             if (currentAddBtn) currentAddBtn.disabled = availableQty <= 0;
         };
         variationSelect?.addEventListener('change', updateAvailability);
-        if (variationSelect) actions.appendChild(variationSelect);
+        if (variationSelect) variationRow.appendChild(variationSelect);
 
         if (availableQty <= 0) {
             qtyInput.min = '0';
@@ -319,6 +322,7 @@ const SalesLoad = {
 
         actionControls.appendChild(qtyInput);
         actionControls.appendChild(addBtn);
+        actions.appendChild(variationRow);
         actions.appendChild(actionControls);
 
         body.appendChild(header);
