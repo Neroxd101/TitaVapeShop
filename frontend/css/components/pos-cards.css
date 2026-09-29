@@ -113,8 +113,41 @@
 
 .pos-card-actions {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 6px;
   margin-top: 4px;
   width: 100%;
+  box-sizing: border-box;
+}
+
+.pos-card-action-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pos-card-action-controls .product-qty-input {
+  flex: 0 0 52px;
+  width: 52px;
+  min-width: 0;
+}
+
+.pos-card-action-controls .product-add-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pos-variation-select {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 11px;
 }

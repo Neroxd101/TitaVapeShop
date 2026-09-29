@@ -119,7 +119,7 @@ const SalesCreate = {
                 },
                 credentials: 'include', // Include cookies for authentication
                 body: JSON.stringify({ 
-                    items: state.cart.map(item => ({ id: item.id, qty: item.qty })),
+                    items: state.cart.map(item => ({ id: item.id, qty: item.qty, selected_variation: item.selected_variation || null })),
                     cash,
                     customer_name: customerName,
                     customer_email: customerEmail

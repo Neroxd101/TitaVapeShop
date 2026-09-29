@@ -20,11 +20,7 @@
     await SalesCart.loadConfirmModal();
     await SalesCart.loadSuccessModal();
     if (window.PosCategories) {
-      try {
-        await window.PosCategories.init(() => SalesLoad.filterProducts(state));
-      } catch (error) {
-        console.error('Failed to load POS categories:', error);
-      }
+      await PosCategories.init(() => SalesLoad.filterProducts(state));
     }
     wireEvents();
 
@@ -51,6 +47,7 @@
 
   function wireEvents() {
     const searchInput = document.getElementById('productSearch');
+    const categoryFilter = document.getElementById('categoryFilter');
     const sortBy = document.getElementById('sortBy');
 
     if (searchInput) {

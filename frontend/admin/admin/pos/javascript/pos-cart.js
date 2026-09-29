@@ -104,8 +104,11 @@ const SalesCart = {
     addToCart(state, item, quantity) {
         if (!state || !item || quantity <= 0) return;
 
-        const existing = state.cart.find(c => c.id === item.id);
-        const maxQty = item.quantity || 0;
+        const variation = item.selected_variation || null;
+        const existing = state.cart.find(c => c.id === item.id && c.selected_variation === variation);
+        const maxQty = variation
+            ? Number(item.variations?.find(v => v.name === variation)?.quantity) || 0
+            : Number(item.quantity) || 0;
         const currentQty = existing ? existing.qty : 0;
         const newQty = Math.min(maxQty, currentQty + quantity);
 
@@ -120,7 +123,8 @@ const SalesCart = {
                 id: item.id,
                 name: item.name,
                 price: unitPrice,
-                qty: Math.min(quantity, maxQty)
+                qty: Math.min(quantity, maxQty),
+                selected_variation: variation
             });
         }
 
@@ -164,7 +168,9 @@ const SalesCart = {
         main.className = 'cart-main';
         const name = document.createElement('div');
         name.className = 'cart-name';
-        name.textContent = item.name || 'Unnamed';
+        name.textContent = item.selected_variation
+            ? `${item.name || 'Unnamed'} — ${item.selected_variation}`
+            : (item.name || 'Unnamed');
         const price = document.createElement('div');
         price.className = 'cart-price';
         price.textContent = this.formatCurrencySafe(item.price);
@@ -173,7 +179,10 @@ const SalesCart = {
         main.appendChild(price);
 
         const product = state.products.find(p => p.id === item.id);
-        const max = product ? (product.quantity || 1) : 9999;
+        const variation = item.selected_variation || null;
+        const selectedVariation = product?.variations?.find(v => v.name === variation);
+        const max = product ? (selectedVariation ? Number(selectedVariation.quantity) || 0 : Number(product.quantity) || 1) : 9999;
+        const cartKey = candidate => candidate.id === item.id && (candidate.selected_variation || null) === variation;
 
         const qtyWrapper = document.createElement('div');
         qtyWrapper.className = 'cart-qty-stepper';
@@ -254,7 +263,7 @@ const SalesCart = {
       `;
         removeBtn.addEventListener('click', () => {
             const removedId = item.id;
-            state.cart = state.cart.filter(c => c.id !== item.id);
+            state.cart = state.cart.filter(c => !cartKey(c));
             this.updateCartUI(state);
             SalesLoad.updateProductCardStock(state, removedId);
         });
@@ -348,6 +357,7 @@ const SalesCart = {
         const cashInput = document.getElementById('cashInput');
         const changeEl = document.getElementById('changeDisplay');
         const hintEl = document.getElementById('cashShortfallHint');
+        const completeBtn = document.getElementById('completeSaleBtn');
         const total = state.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
 
         if (!cashInput || !changeEl) return;

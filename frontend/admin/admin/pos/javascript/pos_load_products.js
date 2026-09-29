@@ -34,6 +34,13 @@ const SalesLoad = {
         this.renderProducts(state);
     },
 
+    sortProducts(items) {
+        if (window.SalesFilter?.sortProducts) {
+            return window.SalesFilter.sortProducts(items);
+        }
+        return items;
+    },
+
     renderProducts(state) {
         if (!state) return;
         const listEl = document.getElementById('productList');
@@ -121,10 +128,32 @@ const SalesLoad = {
 
         const stock = document.createElement('span');
         stock.className = 'pos-card-stock';
-        const originalQty = item.quantity || 0;
-        const cartItem = state.cart.find(c => c.id === item.id);
-        const cartQty = cartItem ? cartItem.qty : 0;
-        const availableQty = Math.max(0, originalQty - cartQty);
+        const hasVariations = Array.isArray(item.variations) && item.variations.length > 0;
+        const variationSelect = hasVariations ? document.createElement('select') : null;
+        if (variationSelect) {
+            variationSelect.className = 'pos-variation-select';
+            variationSelect.setAttribute('aria-label', `Choose variation for ${item.name || 'product'}`);
+            item.variations.forEach(variation => {
+                const option = document.createElement('option');
+                option.value = variation.name;
+                option.textContent = `${variation.name} (${Number(variation.quantity) || 0} in stock)`;
+                option.disabled = (Number(variation.quantity) || 0) <= 0;
+                variationSelect.appendChild(option);
+            });
+            const firstAvailable = item.variations.find(v => (Number(v.quantity) || 0) > 0);
+            if (firstAvailable) variationSelect.value = firstAvailable.name;
+        }
+        const getAvailableQty = () => {
+            const selectedVariation = variationSelect?.value || null;
+            const stockQty = hasVariations
+                ? (selectedVariation ? Number(item.variations.find(v => v.name === selectedVariation)?.quantity) || 0 : 0)
+                : Number(item.quantity) || 0;
+            const cartQty = state.cart
+                .filter(c => c.id === item.id && (c.selected_variation || null) === selectedVariation)
+                .reduce((sum, c) => sum + c.qty, 0);
+            return Math.max(0, stockQty - cartQty);
+        };
+        let availableQty = getAvailableQty();
         stock.textContent = `Stock: ${availableQty}`;
 
         if (availableQty <= 0) stock.classList.add('out');
@@ -156,11 +185,29 @@ const SalesLoad = {
         const actions = document.createElement('div');
         actions.className = 'pos-card-actions';
 
+        const actionControls = document.createElement('div');
+        actionControls.className = 'pos-card-action-controls';
+
         const qtyInput = document.createElement('input');
         qtyInput.type = 'number';
         qtyInput.step = '1';
         qtyInput.className = 'product-qty-input';
         qtyInput.setAttribute('aria-label', `Quantity for ${item.name || 'product'}`);
+
+        const updateAvailability = () => {
+            availableQty = getAvailableQty();
+            stock.textContent = `Stock: ${availableQty}`;
+            stock.classList.toggle('out', availableQty <= 0);
+            stock.classList.toggle('low', availableQty > 0 && availableQty <= 3);
+            qtyInput.min = availableQty > 0 ? '1' : '0';
+            qtyInput.max = String(availableQty);
+            qtyInput.value = availableQty > 0 ? '1' : '0';
+            qtyInput.disabled = availableQty <= 0;
+            const currentAddBtn = actions.querySelector('.product-add-btn');
+            if (currentAddBtn) currentAddBtn.disabled = availableQty <= 0;
+        };
+        variationSelect?.addEventListener('change', updateAvailability);
+        if (variationSelect) actions.appendChild(variationSelect);
 
         if (availableQty <= 0) {
             qtyInput.min = '0';
@@ -217,9 +264,7 @@ const SalesLoad = {
 
         addBtn.addEventListener('click', () => {
             if (cardAddBtn.disabled) return;
-            const currentCartItem = state.cart.find(c => c.id === item.id);
-            const currentCartQty = currentCartItem ? currentCartItem.qty : 0;
-            const currentAvail = Math.max(0, (item.quantity || 0) - currentCartQty);
+            const currentAvail = getAvailableQty();
             if (currentAvail <= 0) return;
 
             const parsed = parseInt(qtyInput.value, 10);
@@ -241,14 +286,16 @@ const SalesLoad = {
             }
 
             // Perform cart addition & state update
-            SalesCart.addToCart(state, item, qtyToAdd);
+            SalesCart.addToCart(state, {
+                ...item,
+                quantity: (Number(item.quantity) || 0),
+                selected_variation: variationSelect?.value || null
+            }, qtyToAdd);
 
             // Revert button after 1000ms, identical to catalog.js
             setTimeout(() => {
                 cardAddBtn.classList.remove('btn-added');
-                const postCartItem = state.cart.find(c => c.id === item.id);
-                const postCartQty = postCartItem ? postCartItem.qty : 0;
-                const postAvail = Math.max(0, (item.quantity || 0) - postCartQty);
+                const postAvail = getAvailableQty();
 
                 if (postAvail > 0) {
                     cardAddBtn.disabled = false;
@@ -270,8 +317,9 @@ const SalesLoad = {
             }, 1000);
         });
 
-        actions.appendChild(qtyInput);
-        actions.appendChild(addBtn);
+        actionControls.appendChild(qtyInput);
+        actionControls.appendChild(addBtn);
+        actions.appendChild(actionControls);
 
         body.appendChild(header);
         body.appendChild(nameEl);
@@ -291,9 +339,15 @@ const SalesLoad = {
         const product = state.products.find(p => p.id === productId);
         if (!product) return;
 
-        const totalQty = product.quantity || 0;
-        const cartItem = state.cart.find(c => c.id === productId);
-        const cartQty = cartItem ? cartItem.qty : 0;
+        const variationSelect = card.querySelector('.pos-variation-select');
+        const selectedVariation = variationSelect?.value || null;
+        const hasVariations = Array.isArray(product.variations) && product.variations.length > 0;
+        const totalQty = hasVariations
+            ? (selectedVariation ? Number(product.variations.find(v => v.name === selectedVariation)?.quantity) || 0 : 0)
+            : Number(product.quantity) || 0;
+        const cartQty = state.cart
+            .filter(c => c.id === productId && (c.selected_variation || null) === selectedVariation)
+            .reduce((sum, c) => sum + c.qty, 0);
         const availableQty = Math.max(0, totalQty - cartQty);
 
         // Update stock pill text and classes

@@ -51,6 +51,12 @@
   box-sizing: border-box;
 }
 
+.pos-card-action-controls .product-qty-input {
+  width: 52px;
+  min-width: 0;
+  flex: 0 0 52px;
+}
+
 .product-qty-input::-webkit-outer-spin-button,
 .product-qty-input::-webkit-inner-spin-button {
   -webkit-appearance: none;

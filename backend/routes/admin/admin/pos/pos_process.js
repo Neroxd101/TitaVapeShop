@@ -21,7 +21,11 @@ const handleSalesProcess = async (req, res) => {
             user_email = req.user.username || req.user.email || req.user.id || 'system';
         }
 
-        const cartItems = items.map(item => ({ id: item.id, qty: item.qty }));
+        const cartItems = items.map(item => ({
+            id: item.id,
+            qty: item.qty,
+            selected_variation: typeof item.selected_variation === 'string' ? item.selected_variation.trim() : null
+        }));
         const { data, error } = await supabaseAdmin.rpc('pos_process_sale', {
             p_items: cartItems,
             p_cash: cash,
