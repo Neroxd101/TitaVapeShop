@@ -8,9 +8,15 @@ router.get('/api/dashboard/dashboard_recent_activity', isAuthenticated, hasRole(
   if (!supabaseAdmin) return res.status(503).json({ success: false, error: 'Database not configured' });
 
   try {
-    const { data, error } = await supabaseAdmin.rpc('dashboard_recent_activity');
+    // Use the activity log reader so older cancellation entries get the same
+    // recovered order ID, item count and order type on both pages.
+    const { data, error } = await supabaseAdmin.rpc('transactions_get_all', {
+      p_limit: 14,
+      p_offset: 0
+    });
     if (error) throw error;
-    return res.json({ success: true, data });
+    if (!data?.success || !Array.isArray(data.transactions)) throw new Error('Invalid activity response');
+    return res.json({ success: true, data: data.transactions });
   } catch (error) {
     console.error('dashboard_recent_activity error:', error.message);
     return res.status(503).json({ success: false, error: 'Unable to load dashboard data' });

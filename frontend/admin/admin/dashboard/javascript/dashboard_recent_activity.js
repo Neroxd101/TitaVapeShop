@@ -141,13 +141,15 @@ function getActivityTitle(transaction) {
   }
 
   if (actionType === 'order_confirm') {
-    const orderId = d.order_id ? escapeHtml(String(d.order_id).substring(0, 8)) : 'N/A';
+    const orderId = escapeHtml(String(d.order_id || transaction.entity_id || 'N/A').substring(0, 8));
     return `Confirmed order ${orderId}`;
   }
 
   if (actionType === 'order_cancel') {
-    const orderId = d.order_id ? escapeHtml(String(d.order_id).substring(0, 8)) : 'N/A';
-    return `Cancelled order ${orderId}`;
+    const orderId = escapeHtml(String(d.order_id || transaction.entity_id || 'N/A').substring(0, 8));
+    const action = d.cancelled_by === 'product_deletion' ? 'Automatically cancelled order'
+      : d.cancelled_by === 'customer' ? 'Customer cancelled order' : 'Cancelled order';
+    return `${action} ${orderId}`;
   }
 
   return humanizeActionType(actionType);
@@ -156,6 +158,15 @@ function getActivityTitle(transaction) {
 function getActivityMeta(transaction) {
   const actionType = normalizeActionType(transaction.action_type);
   const d = transaction.details || {};
+
+  if (actionType === 'order_cancel') {
+    const parts = [];
+    const itemsCount = d.items_count ?? (Array.isArray(transaction.sale_items) ? transaction.sale_items.length : null);
+    if (itemsCount !== null) parts.push(`${escapeHtml(String(itemsCount))} ${Number(itemsCount) === 1 ? 'item' : 'items'}`);
+    if (d.order_type) parts.push(escapeHtml(String(d.order_type)));
+    if (d.reason) parts.push(escapeHtml(String(d.reason)));
+    return parts.join(' · ');
+  }
 
   if (actionType === 'sale_complete') {
     const items = transaction.sale_items || [];

@@ -129,6 +129,16 @@
   white-space: normal;
 }
 
+.btn[data-order-action="markRefunded"] {
+  background: #16382c;
+  color: var(--success);
+  border: none;
+}
+
+.btn[data-order-action="markRefunded"]:hover {
+  background: #1b4637;
+}
+
 .order-item-availability {
   display: block;
   background: #3b202c;
