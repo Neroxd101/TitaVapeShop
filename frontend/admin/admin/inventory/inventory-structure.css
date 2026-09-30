@@ -2582,3 +2582,22 @@
     line-height: 14px;
   }
 }
+#confirmItemUpdateModal {
+  margin: auto !important;
+  padding: 0;
+  color: var(--text-primary);
+  width: min(400px, calc(100% - 32px));
+}
+
+#confirmItemUpdateModal:not([open]) {
+  display: none;
+}
+
+#confirmItemUpdateModal > form {
+  padding: 0;
+}
+
+#confirmItemUpdateModal::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}

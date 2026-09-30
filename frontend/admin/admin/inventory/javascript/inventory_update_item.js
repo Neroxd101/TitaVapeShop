@@ -30,14 +30,20 @@ const InventoryUpdate = {
 
     async handleUpdate(e) {
         e.preventDefault();
+        if (this.isUpdating) return;
+        this.isUpdating = true;
         const saveBtn = document.getElementById('saveBtn');
-        saveBtn.classList.add('loading');
         saveBtn.disabled = true;
 
         try {
             const productName = document.getElementById('itemName').value.trim();
+            if (!InventoryDOM.itemForm.reportValidity()) return;
+            if (!productName) throw new Error('Product name is required');
             InventoryCreate.validateVariationQuantities();
             const oldItem = InventoryState.inventoryItems.find(i => i.id === InventoryState.editingItemId);
+            if (!oldItem) throw new Error('Item not found. Please reload the inventory.');
+            if (!await this.confirmUpdate(productName)) return;
+            saveBtn.classList.add('loading');
 
             await InventoryImage.uploadPendingImages(productName);
             const imageUrls = InventoryState.currentImages.filter(img => img.url).map(img => img.url);
@@ -89,9 +95,24 @@ const InventoryUpdate = {
             }
             alert(error.message);
         } finally {
+            this.isUpdating = false;
             saveBtn.classList.remove('loading');
             saveBtn.disabled = false;
         }
+    },
+
+    confirmUpdate(productName) {
+        const dialog = document.getElementById('confirmItemUpdateModal');
+        document.getElementById('confirmItemUpdateName').textContent = productName;
+        dialog.returnValue = 'cancel';
+        return new Promise(resolve => {
+            dialog.addEventListener('close', () => {
+                resolve(dialog.returnValue === 'confirm');
+                // The submit button was disabled while awaiting confirmation.
+                queueMicrotask(() => document.getElementById('saveBtn')?.focus());
+            }, { once: true });
+            dialog.showModal();
+        });
     },
 
     showGoogleQrConnectModal() {
