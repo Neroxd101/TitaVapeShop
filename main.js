@@ -26,6 +26,10 @@ const customerChangePasswordRoutes = require('./backend/routes/customer/customer
 
 // Setting routes
 const userProfileRoutes = require('./backend/routes/admin/admin/setting/user_profile');
+const userProfileGenerateOtpRoutes = require('./backend/routes/admin/admin/setting/user_profile_generate_otp');
+const userProfileVerifyOtpRoutes = require('./backend/routes/admin/admin/setting/user_profile_verify_otp');
+const userUpdateUsernameRoutes = require('./backend/routes/admin/admin/setting/user_update_username');
+const userAdminUpdatePasswordRoutes = require('./backend/routes/admin/admin/setting/user_admin_update_password');
 const settingsRoutes = require('./backend/routes/admin/admin/setting/settings');
 const settingNotificationRoutes = require('./backend/routes/admin/admin/setting/setting_notification');
 const settingStoreLinkRoutes = require('./backend/routes/admin/admin/setting/setting_store_link');
@@ -127,6 +131,10 @@ app.use('/', catalogRoutes); // Public catalog for customers
 app.use('/', passwordResetRoutes); // Password reset (public)
 app.use('/keep-alive', keepAliveRoutes); // Public keep-alive endpoint (token-protected)
 app.use('/', userProfileRoutes); // User profile management (authenticated)
+app.use('/', userProfileGenerateOtpRoutes);
+app.use('/', userProfileVerifyOtpRoutes);
+app.use('/', userUpdateUsernameRoutes);
+app.use('/', userAdminUpdatePasswordRoutes);
 
 // Admin / Staff Auth routes
 app.use('/', adminLoginRoutes);
