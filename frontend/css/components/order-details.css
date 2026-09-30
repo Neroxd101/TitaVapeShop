@@ -129,13 +129,17 @@
   white-space: normal;
 }
 
-.btn[data-order-action="markRefunded"] {
+.btn[data-order-action="markRefunded"],
+.btn[data-order-action="verifyPayment"][data-payment-status="paid"],
+#confirmVerifyPaymentBtn {
   background: #16382c;
   color: var(--success);
   border: none;
 }
 
-.btn[data-order-action="markRefunded"]:hover {
+.btn[data-order-action="markRefunded"]:hover,
+.btn[data-order-action="verifyPayment"][data-payment-status="paid"]:hover,
+#confirmVerifyPaymentBtn:hover {
   background: #1b4637;
 }
 
@@ -209,44 +213,6 @@
   color: var(--accent);
 }
 
-/* Order Success Modal (Catalog) */
-.order-success-content {
-  text-align: center;
-  padding: 20px;
-}
-
-.success-message {
-  font-size: 16px;
-  color: var(--text-primary);
-  margin-bottom: 24px;
-}
-
-.qr-code-container {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  display: inline-block;
-  margin-bottom: 24px;
-}
-
-.order-info {
-  text-align: left;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-}
-
-.order-info p {
-  margin: 8px 0;
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.order-info strong {
-  color: var(--text-primary);
-}
-
 /* Responsive - Compact for small screens */
 @media (max-width: 1024px) {
   .order-details-header {
@@ -259,8 +225,7 @@
     font-size: 16px;
   }
 
-  .order-details-info p,
-  .order-info p {
+  .order-details-info p {
     font-size: 13px;
   }
 
@@ -423,29 +388,6 @@
     font-size: 15px;
   }
 
-  .order-info {
-    padding: 12px;
-    margin-bottom: 16px;
-  }
-
-  .order-info p {
-    margin: 4px 0;
-    font-size: 12px;
-  }
-
-  .qr-code-container {
-    padding: 12px;
-    margin-bottom: 16px;
-  }
-
-  .order-success-content {
-    padding: 16px;
-  }
-
-  .success-message {
-    font-size: 14px;
-    margin-bottom: 16px;
-  }
 }
 
 @media (max-width: 360px) {
@@ -509,29 +451,6 @@
     font-size: 14px;
   }
 
-  .order-info {
-    padding: 10px;
-    margin-bottom: 12px;
-  }
-
-  .order-info p {
-    margin: 3px 0;
-    font-size: 11px;
-  }
-
-  .qr-code-container {
-    padding: 10px;
-    margin-bottom: 12px;
-  }
-
-  .order-success-content {
-    padding: 12px;
-  }
-
-  .success-message {
-    font-size: 13px;
-    margin-bottom: 12px;
-  }
 }
 
 /* Small phones landscape (short height) */
@@ -592,19 +511,6 @@
     padding: 6px;
   }
 
-  .qr-code-container {
-    padding: 8px;
-    margin-bottom: 12px;
-  }
-
-  .order-success-content {
-    padding: 12px;
-  }
-
-  .success-message {
-    font-size: 12px;
-    margin-bottom: 12px;
-  }
 }
 
 @media (orientation: landscape) and (max-height: 320px) {
@@ -654,17 +560,4 @@
     padding: 4px;
   }
 
-  .qr-code-container {
-    padding: 6px;
-    margin-bottom: 8px;
-  }
-
-  .order-success-content {
-    padding: 8px;
-  }
-
-  .success-message {
-    font-size: 11px;
-    margin-bottom: 8px;
-  }
 }

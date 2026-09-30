@@ -1,5 +1,30 @@
 # Inventory deletion verification and rollout
 
+## Source and browser verification
+
+Run the source checks and all JavaScript regression tests from the repository root:
+
+```powershell
+node tests/verify-source.js
+node --test tests/*.test.js
+```
+
+The source checker parses production JavaScript, checks CSS delimiters and local
+asset references, traces backend imports, and validates dependency manifests. It
+uses Acorn bundled in Node (verified with Node 24), without loading configuration
+or calling application APIs.
+
+For browser smoke checks, start `node tests/preview-inventory-deletion.js` in one
+terminal and run `node tests/verify-ui.js` in another. The browser script uses the
+existing bundled Playwright runtime and installed Brave browser; other machines
+can set `PLAYWRIGHT_MODULE` and `BROWSER_EXECUTABLE_PATH` to their installed paths.
+It checks 14 pages at desktop, tablet and phone sizes, with local API fixtures and
+stubs for external chart, QR and scanner libraries. It never connects to the live
+database, sends email or changes real orders. It fails on browser errors or
+missing local assets. JSON artifacts and screenshots go to the temporary folder
+(or `VERIFICATION_DIR`). Optional `baseline` and `after` arguments also compare
+rendered style snapshots around a CSS change.
+
 Deleting an inventory product marks its lines in pending/confirmed orders as
 unavailable, preserves their original details, recalculates totals, and cancels
 orders with no available lines. Surviving lines keep existing reservations;

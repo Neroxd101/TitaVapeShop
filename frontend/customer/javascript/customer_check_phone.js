@@ -6,10 +6,9 @@ const CustomerCheckPhone = {
   /**
    * Check if phone number is already registered
    * @param {string} phone
-   * @param {string|null} excludeUserId
    * @returns {Promise<{success: boolean, exists: boolean}>}
    */
-  async check(phone, excludeUserId = null) {
+  async check(phone) {
     const cleanPhone = (phone || '').replace(/\D/g, '');
     if (!cleanPhone || cleanPhone.length < 10) return { success: false, exists: false };
 
@@ -32,16 +31,15 @@ const CustomerCheckPhone = {
    * @param {HTMLInputElement} inputEl
    * @param {HTMLElement} errorEl
    * @param {Function} [onExisting]
-   * @param {string|null} [excludeUserId]
    */
-  attachLiveValidation(inputEl, errorEl, onExisting = null, excludeUserId = null) {
+  attachLiveValidation(inputEl, errorEl, onExisting = null) {
     if (!inputEl) return;
 
     inputEl.addEventListener('blur', async () => {
       const val = inputEl.value.replace(/\D/g, '');
       if (!val || val.length !== 11) return;
 
-      const data = await this.check(val, excludeUserId);
+      const data = await this.check(val);
       if (data.success && data.exists) {
         if (errorEl) {
           errorEl.textContent = 'This mobile number already exists. Please use another number or sign in.';

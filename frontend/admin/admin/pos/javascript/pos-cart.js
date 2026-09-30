@@ -357,7 +357,6 @@ const SalesCart = {
         const cashInput = document.getElementById('cashInput');
         const changeEl = document.getElementById('changeDisplay');
         const hintEl = document.getElementById('cashShortfallHint');
-        const completeBtn = document.getElementById('completeSaleBtn');
         const total = state.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
 
         if (!cashInput || !changeEl) return;

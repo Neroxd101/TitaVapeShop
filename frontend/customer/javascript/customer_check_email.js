@@ -6,10 +6,9 @@ const CustomerCheckEmail = {
   /**
    * Check if email is already registered
    * @param {string} email
-   * @param {string|null} excludeUserId
    * @returns {Promise<{success: boolean, exists: boolean}>}
    */
-  async check(email, excludeUserId = null) {
+  async check(email) {
     const cleanEmail = (email || '').trim().toLowerCase();
     if (!cleanEmail) return { success: false, exists: false };
 
@@ -32,9 +31,8 @@ const CustomerCheckEmail = {
    * @param {HTMLInputElement} inputEl
    * @param {HTMLElement} errorEl
    * @param {Function} [onExisting]
-   * @param {string|null} [excludeUserId]
    */
-  attachLiveValidation(inputEl, errorEl, onExisting = null, excludeUserId = null) {
+  attachLiveValidation(inputEl, errorEl, onExisting = null) {
     if (!inputEl) return;
 
     inputEl.addEventListener('blur', async () => {
@@ -42,7 +40,7 @@ const CustomerCheckEmail = {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!val || !emailRegex.test(val)) return;
 
-      const data = await this.check(val, excludeUserId);
+      const data = await this.check(val);
       if (data.success && data.exists) {
         if (errorEl) {
           errorEl.textContent = 'This email already exists. Please sign in or use another email.';

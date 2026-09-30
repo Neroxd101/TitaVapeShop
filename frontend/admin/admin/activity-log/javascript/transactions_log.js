@@ -76,22 +76,6 @@ const TransactionsLog = {
     },
 
     /**
-     * Log an inventory delete action
-     */
-    async logInventoryDelete(item) {
-        return this.log({
-            action_type: 'inventory_delete',
-            entity_id: item.id,
-            entity_type: 'inventory',
-            details: {
-                name: item.name,
-                category: item.category,
-                quantity: item.quantity
-            }
-        });
-    },
-
-    /**
      * Helper: Get changes between old and new data
      */
     getChanges(oldData, newData) {

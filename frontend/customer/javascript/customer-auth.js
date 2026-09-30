@@ -430,10 +430,10 @@ const CustomerAuth = {
     const profileErrorEl = document.getElementById('customerProfileError');
 
     if (window.CustomerCheckPhone && profilePhoneInput) {
-      window.CustomerCheckPhone.attachLiveValidation(profilePhoneInput, profileErrorEl, null, () => this.currentUser?.id);
+      window.CustomerCheckPhone.attachLiveValidation(profilePhoneInput, profileErrorEl);
     }
     if (window.CustomerCheckEmail && profileEmailInput) {
-      window.CustomerCheckEmail.attachLiveValidation(profileEmailInput, profileErrorEl, null, () => this.currentUser?.id);
+      window.CustomerCheckEmail.attachLiveValidation(profileEmailInput, profileErrorEl);
     }
 
     // Setup single-row collapsible edit toggles for Name, Phone, Email
@@ -1365,12 +1365,6 @@ const CustomerAuth = {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Update Password';
       }
-    }
-  },
-
-  handleLogout() {
-    if (window.CustomerLogin) {
-      window.CustomerLogin.logout();
     }
   }
 };

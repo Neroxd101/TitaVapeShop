@@ -69,7 +69,7 @@ const CatalogProductModal = {
             });
         }
 
-        document.addEventListener('cartUpdated', (e) => {
+        document.addEventListener('cartUpdated', () => {
             // Do not destroy/reset modal while an addition is in progress
             if (this.isAddingToCart) return;
             if (this.modal && this.modal.classList.contains('show') && this.currentProduct) {

@@ -246,7 +246,6 @@ const CatalogCart = {
         }
 
         cartItems.innerHTML = this.cart.map((item, cartIndex) => {
-            const imageUrl = this.getImageUrl(item.image);
             // Get max quantity from product or stored value
             const product = window.CatalogProducts?.getProductById(item.id);
             const selectedVariation = item.selected_variation
@@ -310,18 +309,6 @@ const CatalogCart = {
     },
 
     /**
-     * Get image URL (handling drive proxy)
-     */
-    getImageUrl(imageUrl) {
-        if (!imageUrl) return '/img/placeholder-product.png';
-        if (imageUrl.includes('drive.google.com')) {
-            const fileId = imageUrl.match(/id=([^&]+)/)?.[1];
-            return fileId ? `/api/upload/drive-image/${fileId}` : imageUrl;
-        }
-        return imageUrl;
-    },
-
-    /**
      * Escape HTML
      */
     escapeHtml(text) {
@@ -350,9 +337,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (window.CatalogCheckoutModal) {
         await CatalogCheckoutModal.init();
-    }
-    if (window.CatalogOrderSuccessModal) {
-        await CatalogOrderSuccessModal.init();
     }
     if (window.CatalogOrdersModal) {
         await CatalogOrdersModal.init();

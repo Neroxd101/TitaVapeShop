@@ -467,7 +467,6 @@
     const rejectedNotice = document.getElementById('paymentRejectedNotice');
     const submittedNotice = document.getElementById('paymentSubmittedNotice');
     const paymentForm = document.getElementById('paymentProofForm');
-    const submittedRefNumber = document.getElementById('submittedRefNumber');
     const viewReceiptLink = document.getElementById('viewSubmittedReceiptLink');
     const paymentStatusHeading = document.getElementById('paymentStatusHeading');
     const paymentStatusSub = document.getElementById('paymentStatusSub');

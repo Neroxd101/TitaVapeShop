@@ -5,7 +5,6 @@
 .form-group {
   margin-bottom: 24px;
 }
-
 .form-group label {
   display: block;
   color: var(--text-secondary);
@@ -15,11 +14,9 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 .input-wrapper {
   position: relative;
 }
-
 .input-wrapper svg {
   position: absolute;
   left: 16px;
@@ -30,7 +27,6 @@
   fill: var(--text-secondary);
   transition: fill 0.2s ease;
 }
-
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -45,42 +41,35 @@
   transition: all 0.2s ease;
   outline: none;
 }
-
 .form-group input:not(.has-icon),
 .form-group select:not(.has-icon),
 .form-group textarea:not(.has-icon) {
   padding-left: 16px;
 }
-
 .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: var(--text-secondary);
 }
-
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
-
 .input-wrapper:focus-within svg {
   fill: var(--accent);
 }
-
 /* Form Row (for multi-column forms) */
 .form-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
-
 .form-row-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
-
 /* Select styling */
 select {
   width: 100%;
@@ -98,27 +87,22 @@ select {
   background-repeat: no-repeat;
   background-position: right 12px center;
 }
-
 select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
-
 /* Responsive Styles */
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
   }
-
   .form-group {
     margin-bottom: 18px;
   }
-
   .form-group label {
     font-size: 12px;
     margin-bottom: 6px;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -126,14 +110,11 @@ select:focus {
     font-size: 14px;
     border-radius: 10px;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 14px;
-  }
-}
-
+  }}
 /* Tablet portrait (768x1024) - specific optimizations */
 @media (width: 768px) and (height: 1024px) and (orientation: portrait) {
   .form-row,
@@ -141,16 +122,13 @@ select:focus {
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
-
   .form-group {
     margin-bottom: 16px;
   }
-
   .form-group label {
     font-size: 14px;
     margin-bottom: 8px;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -158,18 +136,14 @@ select:focus {
     font-size: 15px;
     border-radius: 12px;
   }
-
   .form-group textarea {
     min-height: 120px;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 16px;
-  }
-}
-
+  }}
 /* Tablet portrait (820x1180) - specific optimizations */
 @media (width: 820px) and (height: 1180px) and (orientation: portrait) {
   .form-row,
@@ -177,16 +151,13 @@ select:focus {
     grid-template-columns: 1fr 1fr;
     gap: 18px;
   }
-
   .form-group {
     margin-bottom: 18px;
   }
-
   .form-group label {
     font-size: 15px;
     margin-bottom: 10px;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -194,18 +165,14 @@ select:focus {
     font-size: 16px;
     border-radius: 14px;
   }
-
   .form-group textarea {
     min-height: 140px;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 18px;
-  }
-}
-
+  }}
 /* Tablet portrait (912x1368) - specific optimizations */
 @media (width: 912px) and (height: 1368px) and (orientation: portrait) {
   .form-row,
@@ -213,16 +180,13 @@ select:focus {
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
-
   .form-group {
     margin-bottom: 20px;
   }
-
   .form-group label {
     font-size: 16px;
     margin-bottom: 12px;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -230,18 +194,14 @@ select:focus {
     font-size: 17px;
     border-radius: 14px;
   }
-
   .form-group textarea {
     min-height: 160px;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 20px;
-  }
-}
-
+  }}
 /* Tablet portrait (800x1145) - specific optimizations */
 @media (width: 800px) and (height: 1145px) and (orientation: portrait),
        (min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
@@ -250,17 +210,14 @@ select:focus {
     grid-template-columns: 1fr 1fr !important;
     gap: 10px !important;
   }
-
   .form-group {
     margin-bottom: 12px !important;
   }
-
   .form-group label {
     font-size: 11px !important;
     margin-bottom: 6px !important;
     letter-spacing: 0.3px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -268,18 +225,14 @@ select:focus {
     font-size: 13px !important;
     border-radius: 10px !important;
   }
-
   .form-group textarea {
     min-height: 100px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 12px !important;
-  }
-}
-
+  }}
 /* Tablet portrait (640x889) - specific optimizations */
 @media (width: 640px) and (height: 889px) and (orientation: portrait),
        (min-width: 638px) and (max-width: 642px) and (min-height: 887px) and (max-height: 891px) and (orientation: portrait) {
@@ -288,17 +241,14 @@ select:focus {
     grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
   }
-
   .form-group {
     margin-bottom: 10px !important;
   }
-
   .form-group label {
     font-size: 10px !important;
     margin-bottom: 5px !important;
     letter-spacing: 0.2px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -306,18 +256,14 @@ select:focus {
     font-size: 12px !important;
     border-radius: 9px !important;
   }
-
   .form-group textarea {
     min-height: 90px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 11px !important;
-  }
-}
-
+  }}
 /* Tablet landscape (1024x505) - compact forms */
 @media (width: 1024px) and (height: 505px) and (orientation: landscape),
        (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
@@ -326,17 +272,14 @@ select:focus {
     grid-template-columns: 1fr 1fr !important;
     gap: 6px !important;
   }
-
   .form-group {
     margin-bottom: 8px !important;
   }
-
   .form-group label {
     font-size: 9px !important;
     margin-bottom: 4px !important;
     letter-spacing: 0.2px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -344,35 +287,28 @@ select:focus {
     font-size: 11px !important;
     border-radius: 8px !important;
   }
-
   .form-group textarea {
     min-height: 80px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 10px !important;
-  }
-}
-
+  }}
 @media (max-width: 480px) {
   .form-row,
   .form-row-2 {
     grid-template-columns: 1fr;
     gap: 6px !important;
   }
-
   .form-group {
     margin-bottom: 8px !important;
   }
-
   .form-group label {
     font-size: 10px !important;
     margin-bottom: 3px !important;
     letter-spacing: 0.2px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -380,42 +316,34 @@ select:focus {
     font-size: 12px !important;
     border-radius: 6px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 8px !important;
   }
-
   .form-group textarea {
     min-height: 60px !important;
     rows: 4 !important;
   }
-
   select {
     padding: 8px !important;
     font-size: 12px !important;
     background-position: right 6px center !important;
-  }
-}
-
+  }}
 /* Phone portrait (360x740) - specific optimizations */
 @media (width: 360px) and (height: 740px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 4px !important;
   }
-
   .form-group {
     margin-bottom: 5px !important;
   }
-
   .form-group label {
     font-size: 9px !important;
     margin-bottom: 2px !important;
     letter-spacing: 0.1px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -423,29 +351,23 @@ select:focus {
     font-size: 11px !important;
     border-radius: 5px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 6px !important;
   }
-
   .form-group textarea {
     min-height: 50px !important;
     rows: 3 !important;
   }
-
   select {
     padding: 6px !important;
     font-size: 11px !important;
     background-position: right 4px center !important;
   }
-
   .label-hint {
     font-size: 8px !important;
-  }
-}
-
+  }}
 /* Phone portrait (360x800) - specific optimizations */
 @media (width: 360px) and (height: 800px) and (orientation: portrait),
        (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
@@ -453,17 +375,14 @@ select:focus {
   .form-row-2 {
     gap: 4px !important;
   }
-
   .form-group {
     margin-bottom: 6px !important;
   }
-
   .form-group label {
     font-size: 9px !important;
     margin-bottom: 2px !important;
     letter-spacing: 0.1px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -471,46 +390,37 @@ select:focus {
     font-size: 11px !important;
     border-radius: 5px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 6px !important;
   }
-
   .form-group textarea {
     min-height: 55px !important;
     rows: 3 !important;
   }
-
   select {
     padding: 6px !important;
     font-size: 11px !important;
     background-position: right 4px center !important;
   }
-
   .label-hint {
     font-size: 8px !important;
-  }
-}
-
+  }}
 /* Phone portrait (375x667) - specific optimizations */
 @media (width: 375px) and (height: 667px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 4px !important;
   }
-
   .form-group {
     margin-bottom: 5px !important;
   }
-
   .form-group label {
     font-size: 9px !important;
     margin-bottom: 2px !important;
     letter-spacing: 0.1px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -518,44 +428,35 @@ select:focus {
     font-size: 11px !important;
     border-radius: 5px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 6px !important;
   }
-
   .form-group textarea {
     min-height: 50px !important;
   }
-
   select {
     padding: 6px !important;
     font-size: 11px !important;
     background-position: right 4px center !important;
   }
-
   .label-hint {
     font-size: 8px !important;
-  }
-}
-
+  }}
 /* Phone portrait (375x812) - specific optimizations */
 @media (width: 375px) and (height: 812px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 5px !important;
   }
-
   .form-group {
     margin-bottom: 6px !important;
   }
-
   .form-group label {
     font-size: 10px !important;
     margin-bottom: 3px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -563,45 +464,36 @@ select:focus {
     font-size: 12px !important;
     border-radius: 6px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 7px !important;
   }
-
   .form-group textarea {
     min-height: 55px !important;
   }
-
   select {
     padding: 7px !important;
     font-size: 12px !important;
     background-position: right 5px center !important;
   }
-
   .label-hint {
     font-size: 9px !important;
-  }
-}
-
+  }}
 /* Phone portrait (380x706) - specific optimizations */
 @media (width: 380px) and (height: 706px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 4px !important;
   }
-
   .form-group {
     margin-bottom: 5px !important;
   }
-
   .form-group label {
     font-size: 9px !important;
     margin-bottom: 2px !important;
     letter-spacing: 0.1px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -609,28 +501,22 @@ select:focus {
     font-size: 11px !important;
     border-radius: 5px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 6px !important;
   }
-
   .form-group textarea {
     min-height: 50px !important;
   }
-
   select {
     padding: 6px !important;
     font-size: 11px !important;
     background-position: right 4px center !important;
   }
-
   .label-hint {
     font-size: 8px !important;
-  }
-}
-
+  }}
 /* Phone portrait (380x754) and (380x810) - specific optimizations */
 @media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
        (width: 380px) and (height: 754px) and (orientation: portrait),
@@ -639,16 +525,13 @@ select:focus {
   .form-row-2 {
     gap: 5px !important;
   }
-
   .form-group {
     margin-bottom: 6px !important;
   }
-
   .form-group label {
     font-size: 10px !important;
     margin-bottom: 3px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -656,44 +539,35 @@ select:focus {
     font-size: 12px !important;
     border-radius: 6px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 7px !important;
   }
-
   .form-group textarea {
     min-height: 55px !important;
   }
-
   select {
     padding: 7px !important;
     font-size: 12px !important;
     background-position: right 5px center !important;
   }
-
   .label-hint {
     font-size: 9px !important;
-  }
-}
-
+  }}
 /* Phone portrait (390x844) - specific optimizations */
 @media (width: 390px) and (height: 844px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 5px !important;
   }
-
   .form-group {
     margin-bottom: 6px !important;
   }
-
   .form-group label {
     font-size: 10px !important;
     margin-bottom: 3px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -701,28 +575,22 @@ select:focus {
     font-size: 12px !important;
     border-radius: 6px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 7px !important;
   }
-
   .form-group textarea {
     min-height: 55px !important;
   }
-
   select {
     padding: 7px !important;
     font-size: 12px !important;
     background-position: right 5px center !important;
   }
-
   .label-hint {
     font-size: 9px !important;
-  }
-}
-
+  }}
 /* Phone portrait (392x767) - specific optimizations */
 @media (width: 392px) and (height: 767px) and (orientation: portrait),
        (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
@@ -730,16 +598,13 @@ select:focus {
   .form-row-2 {
     gap: 5px !important;
   }
-
   .form-group {
     margin-bottom: 5px !important;
   }
-
   .form-group label {
     font-size: 10px !important;
     margin-bottom: 3px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -747,44 +612,35 @@ select:focus {
     font-size: 11px !important;
     border-radius: 6px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 6px !important;
   }
-
   .form-group textarea {
     min-height: 50px !important;
   }
-
   select {
     padding: 6px !important;
     font-size: 11px !important;
     background-position: right 5px center !important;
   }
-
   .label-hint {
     font-size: 9px !important;
-  }
-}
-
+  }}
 /* Phone portrait (411x823) - specific optimizations */
 @media (width: 411px) and (height: 823px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 10px !important;
   }
-
   .form-group {
     margin-bottom: 12px !important;
   }
-
   .form-group label {
     font-size: 11px !important;
     margin-bottom: 5px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -792,44 +648,35 @@ select:focus {
     font-size: 13px !important;
     border-radius: 8px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 11px !important;
   }
-
   .form-group textarea {
     min-height: 75px !important;
   }
-
   select {
     padding: 11px !important;
     font-size: 13px !important;
     background-position: right 7px center !important;
   }
-
   .label-hint {
     font-size: 10px !important;
-  }
-}
-
+  }}
 /* Phone portrait (412x892) - specific optimizations */
 @media (width: 412px) and (height: 892px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 10px !important;
   }
-
   .form-group {
     margin-bottom: 12px !important;
   }
-
   .form-group label {
     font-size: 11px !important;
     margin-bottom: 5px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -837,44 +684,35 @@ select:focus {
     font-size: 13px !important;
     border-radius: 8px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 11px !important;
   }
-
   .form-group textarea {
     min-height: 75px !important;
   }
-
   select {
     padding: 11px !important;
     font-size: 13px !important;
     background-position: right 7px center !important;
   }
-
   .label-hint {
     font-size: 10px !important;
-  }
-}
-
+  }}
 /* Phone portrait (412x915) - specific optimizations */
 @media (width: 412px) and (height: 915px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 10px !important;
   }
-
   .form-group {
     margin-bottom: 12px !important;
   }
-
   .form-group label {
     font-size: 11px !important;
     margin-bottom: 5px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -882,44 +720,35 @@ select:focus {
     font-size: 13px !important;
     border-radius: 8px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 11px !important;
   }
-
   .form-group textarea {
     min-height: 75px !important;
   }
-
   select {
     padding: 11px !important;
     font-size: 13px !important;
     background-position: right 7px center !important;
   }
-
   .label-hint {
     font-size: 10px !important;
-  }
-}
-
+  }}
 /* Phone portrait (414x736) - specific optimizations */
 @media (width: 414px) and (height: 736px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 9px !important;
   }
-
   .form-group {
     margin-bottom: 11px !important;
   }
-
   .form-group label {
     font-size: 10px !important;
     margin-bottom: 4px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -927,44 +756,35 @@ select:focus {
     font-size: 12px !important;
     border-radius: 7px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 10px !important;
   }
-
   .form-group textarea {
     min-height: 70px !important;
   }
-
   select {
     padding: 10px !important;
     font-size: 12px !important;
     background-position: right 6px center !important;
   }
-
   .label-hint {
     font-size: 9px !important;
-  }
-}
-
+  }}
 /* Phone portrait (414x896) - specific optimizations */
 @media (width: 414px) and (height: 896px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 10px !important;
   }
-
   .form-group {
     margin-bottom: 12px !important;
   }
-
   .form-group label {
     font-size: 11px !important;
     margin-bottom: 5px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -972,44 +792,35 @@ select:focus {
     font-size: 13px !important;
     border-radius: 8px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 11px !important;
   }
-
   .form-group textarea {
     min-height: 75px !important;
   }
-
   select {
     padding: 11px !important;
     font-size: 13px !important;
     background-position: right 7px center !important;
   }
-
   .label-hint {
     font-size: 10px !important;
-  }
-}
-
+  }}
 /* Phone portrait (430x932) - specific optimizations */
 @media (width: 430px) and (height: 932px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 12px !important;
   }
-
   .form-group {
     margin-bottom: 14px !important;
   }
-
   .form-group label {
     font-size: 12px !important;
     margin-bottom: 6px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -1017,44 +828,35 @@ select:focus {
     font-size: 14px !important;
     border-radius: 9px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 12px !important;
   }
-
   .form-group textarea {
     min-height: 80px !important;
   }
-
   select {
     padding: 12px !important;
     font-size: 14px !important;
     background-position: right 8px center !important;
   }
-
   .label-hint {
     font-size: 11px !important;
-  }
-}
-
+  }}
 /* 1080x2400 portrait - specific optimizations */
 @media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 18px !important;
   }
-
   .form-group {
     margin-bottom: 20px !important;
   }
-
   .form-group label {
     font-size: 13px !important;
     margin-bottom: 8px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -1062,44 +864,35 @@ select:focus {
     font-size: 15px !important;
     border-radius: 12px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 16px !important;
   }
-
   .form-group textarea {
     min-height: 100px !important;
   }
-
   select {
     padding: 16px !important;
     font-size: 15px !important;
     background-position: right 12px center !important;
   }
-
   .label-hint {
     font-size: 12px !important;
-  }
-}
-
+  }}
 /* 1080p portrait (1080px width) - general optimizations */
 @media (width: 1080px) and (orientation: portrait) {
   .form-row,
   .form-row-2 {
     gap: 18px !important;
   }
-
   .form-group {
     margin-bottom: 20px !important;
   }
-
   .form-group label {
     font-size: 13px !important;
     margin-bottom: 8px !important;
   }
-
   .form-group input,
   .form-group select,
   .form-group textarea {
@@ -1107,24 +900,19 @@ select:focus {
     font-size: 15px !important;
     border-radius: 12px !important;
   }
-
   .form-group input:not(.has-icon),
   .form-group select:not(.has-icon),
   .form-group textarea:not(.has-icon) {
     padding-left: 16px !important;
   }
-
   .form-group textarea {
     min-height: 100px !important;
   }
-
   select {
     padding: 16px !important;
     font-size: 15px !important;
     background-position: right 12px center !important;
   }
-
   .label-hint {
     font-size: 12px !important;
-  }
-}
+  }}

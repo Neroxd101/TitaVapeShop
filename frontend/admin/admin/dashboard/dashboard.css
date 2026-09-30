@@ -13,7 +13,7 @@
   --dash-text-main: #f8fafc;
   --dash-text-muted: #94a3b8;
   --dash-text-dim: #64748b;
-  
+
   /* Intentional Retail Color Tokens */
   --dash-emerald: #10b981;
   --dash-emerald-bg: rgba(16, 185, 129, 0.1);
@@ -35,19 +35,16 @@
   --dash-red-bg: rgba(239, 68, 68, 0.1);
   --dash-red-border: rgba(239, 68, 68, 0.25);
 }
-
 /* Base Body Surface */
 body {
   background-color: var(--dash-bg);
   color: var(--dash-text-main);
 }
-
 .dashboard-container {
   max-width: 1320px;
   margin: 0 auto;
   padding: 24px 20px 80px 20px;
 }
-
 /* =============================================
    1. Dashboard Header
    ============================================= */
@@ -60,13 +57,11 @@ body {
   gap: 20px;
   flex-wrap: wrap;
 }
-
 .dash-welcome {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .dash-store-badge {
   display: inline-flex;
   align-items: center;
@@ -81,7 +76,6 @@ body {
   width: fit-content;
   margin-bottom: 2px;
 }
-
 .pulse-dot {
   width: 7px;
   height: 7px;
@@ -90,20 +84,16 @@ body {
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
   display: inline-block;
 }
-
 .store-status-text {
   color: var(--dash-emerald);
   font-weight: 600;
 }
-
 .badge-separator {
   color: var(--dash-text-dim);
 }
-
 .store-date-text {
   color: var(--dash-text-muted);
 }
-
 .dash-title {
   font-family: 'Outfit', sans-serif;
   font-size: 30px;
@@ -113,26 +103,21 @@ body {
   margin: 0;
   line-height: 1.2;
 }
-
 .dash-subtitle {
   font-size: 14px;
   color: var(--dash-text-muted);
   margin: 0;
 }
-
 .dash-actions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 /* Align the actions with the greeting row on wider screens. */
 @media (min-width: 769px) {
   .dash-actions {
     margin-top: 38px;
-  }
-}
-
+  }}
 .dash-btn-sale {
   display: inline-flex;
   align-items: center;
@@ -147,13 +132,11 @@ body {
   transition: all 0.15s ease !important;
   text-decoration: none;
 }
-
 .dash-btn-sale:hover {
   background: #059669 !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
 }
-
 .dash-btn-add {
   display: inline-flex;
   align-items: center;
@@ -167,13 +150,11 @@ body {
   transition: all 0.15s ease !important;
   text-decoration: none;
 }
-
 .dash-btn-add:hover {
   background: var(--dash-surface-hover) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
   transform: translateY(-1px);
 }
-
 /* =============================================
    2. Retail Metrics Grid
    ============================================= */
@@ -184,7 +165,6 @@ body {
   gap: 16px;
   margin-bottom: 28px;
 }
-
 .metric-card {
   background: var(--dash-surface);
   border: 1px solid var(--dash-border);
@@ -197,27 +177,17 @@ body {
   transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
   position: relative;
 }
-
 .metric-card:hover {
   border-color: var(--dash-border-light);
   background: var(--dash-surface-hover);
   transform: translateY(-2px);
 }
-
-.metric-card-hero,
-.metric-card-alert,
-.metric-card-alert.has-urgent-stock {
-  border-top: 1px solid var(--dash-border);
-  background: var(--dash-surface);
-}
-
 .metric-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
 }
-
 .metric-label {
   font-size: 12px;
   font-weight: 600;
@@ -225,7 +195,6 @@ body {
   text-transform: uppercase;
   color: var(--dash-text-muted);
 }
-
 .metric-pill {
   display: inline-flex;
   align-items: center;
@@ -235,44 +204,22 @@ body {
   padding: 3px 8px;
   border-radius: 6px;
 }
-
-.pill-green {
-  background: var(--dash-emerald-bg);
-  color: var(--dash-emerald);
-  border: 1px solid var(--dash-emerald-border);
-}
-
-.pill-amber {
-  background: var(--dash-amber-bg);
-  color: var(--dash-amber);
-  border: 1px solid var(--dash-amber-border);
-}
-
 .pill-blue {
   background: rgba(92, 124, 250, 0.15);
   color: #7b9bff;
   border: none;
 }
-
-.pill-red {
-  background: var(--dash-red-bg);
-  color: var(--dash-red);
-  border: 1px solid var(--dash-red-border);
-}
-
 .pill-neutral {
   background: rgba(92, 124, 250, 0.15);
   color: #7b9bff;
   border: none;
 }
-
 .metric-value-row {
   display: flex;
   align-items: baseline;
   gap: 6px;
   margin: 4px 0 10px 0;
 }
-
 .metric-value {
   font-family: 'Outfit', sans-serif;
   font-size: 28px;
@@ -281,13 +228,11 @@ body {
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
-
 .metric-unit {
   font-size: 13px;
   color: var(--dash-text-muted);
   font-weight: 500;
 }
-
 .metric-card-footer {
   display: flex;
   align-items: center;
@@ -297,27 +242,22 @@ body {
   margin-top: auto;
   font-size: 12px;
 }
-
 .metric-subtext {
   color: var(--dash-text-dim);
 }
-
 .metric-subtext strong {
   color: var(--dash-text-muted);
   font-weight: 600;
 }
-
 .metric-link {
   color: var(--dash-text-muted);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.15s ease;
 }
-
 .metric-link:hover {
   color: var(--dash-emerald);
 }
-
 /* =============================================
    3. Dual-Column Operational Layout
    ============================================= */
@@ -328,20 +268,17 @@ body {
   gap: 24px;
   align-items: start;
 }
-
 .dash-main-column {
   display: flex;
   flex-direction: column;
   gap: 28px;
   min-width: 0;
 }
-
 .dash-side-column {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
-
 /* Section Header */
 .dash-section-header {
   display: grid;
@@ -354,11 +291,9 @@ body {
   align-items: start;
   margin-bottom: 14px;
 }
-
 .dash-section-header > div {
   display: contents;
 }
-
 .dash-section-title {
   grid-area: title;
   font-family: 'Outfit', sans-serif;
@@ -367,14 +302,12 @@ body {
   color: var(--dash-text-main);
   margin: 0 0 2px 0;
 }
-
 .dash-section-sub {
   grid-area: sub;
   font-size: 13px;
   color: var(--dash-text-dim);
   margin: 0;
 }
-
 .dash-header-link {
   grid-area: link;
   font-size: 13px;
@@ -383,12 +316,10 @@ body {
   font-weight: 500;
   transition: opacity 0.15s ease;
 }
-
 .dash-header-link:hover {
   opacity: 0.8;
   text-decoration: underline;
 }
-
 /* =============================================
    4. Operations Grid (Quick Actions)
    ============================================= */
@@ -398,7 +329,6 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 12px;
 }
-
 .op-card {
   min-width: 0;
   display: flex;
@@ -413,13 +343,11 @@ body {
   transition: all 0.15s ease;
   position: relative;
 }
-
 .op-card:hover {
   background: var(--dash-surface-hover);
   border-color: var(--dash-border-light);
   transform: translateY(-1px);
 }
-
 .op-icon {
   width: 44px;
   height: 44px;
@@ -429,31 +357,26 @@ body {
   justify-content: center;
   flex-shrink: 0;
 }
-
 .op-icon-green {
   background: var(--dash-emerald-bg);
   color: var(--dash-emerald);
   border: 1px solid var(--dash-emerald-border);
 }
-
 .op-icon-blue {
   background: var(--dash-blue-bg);
   color: var(--dash-blue);
   border: 1px solid var(--dash-blue-border);
 }
-
 .op-icon-amber {
   background: var(--dash-amber-bg);
   color: var(--dash-amber);
   border: 1px solid var(--dash-amber-border);
 }
-
 .op-icon-purple {
   background: var(--dash-purple-bg);
   color: var(--dash-purple);
   border: 1px solid var(--dash-purple-border);
 }
-
 .op-details {
   display: flex;
   flex-direction: column;
@@ -461,30 +384,17 @@ body {
   min-width: 0;
   flex: 1 1 auto;
 }
-
 .op-title-wrap {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
-
 .op-title {
   font-size: 14px;
   font-weight: 600;
   color: var(--dash-text-main);
 }
-
-.op-tag {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--dash-emerald);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
 .op-desc {
   font-size: 12px;
   color: var(--dash-text-dim);
@@ -493,7 +403,6 @@ body {
   overflow: visible;
   overflow-wrap: anywhere;
 }
-
 /* =============================================
    5. Activity Ledger
    ============================================= */
@@ -504,12 +413,10 @@ body {
   border-radius: 14px;
   overflow: hidden;
 }
-
 .activity-list {
   display: flex;
   flex-direction: column;
 }
-
 .activity-item {
   display: flex;
   align-items: flex-start;
@@ -518,15 +425,12 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   transition: background-color 0.12s ease;
 }
-
 .activity-item:last-child {
   border-bottom: none;
 }
-
 .activity-item:hover {
   background: var(--dash-surface-hover);
 }
-
 .activity-badge-tag {
   font-size: 10px;
   font-weight: 700;
@@ -537,43 +441,28 @@ body {
   flex-shrink: 0;
   margin-top: 2px;
 }
-
 .tag-sale {
   background: rgba(0, 212, 170, 0.15);
   color: var(--accent);
   border: 1px solid rgba(0, 212, 170, 0.3);
 }
-
 .tag-inventory {
   background: rgba(0, 200, 255, 0.12);
   color: #33d4f5;
   border: 1px solid rgba(0, 200, 255, 0.28);
 }
-
-.tag-order {
-  background: rgba(92, 124, 250, 0.15);
-  color: #7b9bff;
-  border: 1px solid rgba(92, 124, 250, 0.3);
-}
-
 .tag-void {
   background: rgba(255, 71, 87, 0.15);
   color: var(--error);
   border: 1px solid rgba(255, 71, 87, 0.3);
 }
-
-.tag-add { background: rgba(0, 200, 255, 0.12); color: #33d4f5; border: 1px solid rgba(0, 200, 255, 0.28); }
-.tag-edit { background: rgba(255, 159, 67, 0.14); color: #ffb347; border: 1px solid rgba(255, 159, 67, 0.3); }
-.tag-delete, .tag-cancel { background: rgba(255, 71, 87, 0.15); color: var(--error); border: 1px solid rgba(255, 71, 87, 0.3); }
-.tag-confirm { background: rgba(92, 124, 250, 0.15); color: #7b9bff; border: 1px solid rgba(92, 124, 250, 0.3); }
-
+.tag-add { background: rgba(0, 200, 255, 0.12); color: #33d4f5; border: 1px solid rgba(0, 200, 255, 0.28); }.tag-edit { background: rgba(255, 159, 67, 0.14); color: #ffb347; border: 1px solid rgba(255, 159, 67, 0.3); }.tag-delete, .tag-cancel { background: rgba(255, 71, 87, 0.15); color: var(--error); border: 1px solid rgba(255, 71, 87, 0.3); }.tag-confirm { background: rgba(92, 124, 250, 0.15); color: #7b9bff; border: 1px solid rgba(92, 124, 250, 0.3); }
 /* Match Activity Log action badges: translucent fill without an outline. */
 .activity-badge-tag {
   padding: 4px 10px;
   border: none !important;
   border-radius: 6px;
 }
-
 /* Keep quick-action icons consistent with the borderless activity badges. */
 .op-icon-green,
 .op-icon-blue,
@@ -581,12 +470,10 @@ body {
 .op-icon-purple {
   border: none;
 }
-
 .activity-details {
   flex: 1;
   min-width: 0;
 }
-
 .activity-top-row {
   display: flex;
   justify-content: space-between;
@@ -594,34 +481,29 @@ body {
   gap: 10px;
   margin-bottom: 3px;
 }
-
 .activity-title {
   font-size: 13px;
   font-weight: 600;
   color: var(--dash-text-main);
   line-height: 1.3;
 }
-
 .activity-time {
   font-size: 11px;
   color: var(--dash-text-dim);
   white-space: nowrap;
   flex-shrink: 0;
 }
-
 .activity-meta {
   font-size: 12px;
   color: var(--dash-text-muted);
   line-height: 1.4;
   word-break: break-word;
 }
-
 .activity-empty {
   padding: 40px 24px;
   text-align: center;
   color: var(--dash-text-dim);
 }
-
 .empty-icon-wrap {
   width: 52px;
   height: 52px;
@@ -634,21 +516,18 @@ body {
   margin: 0 auto 14px auto;
   color: var(--dash-text-dim);
 }
-
 .activity-empty h4 {
   font-size: 15px;
   font-weight: 600;
   color: var(--dash-text-muted);
   margin: 0 0 6px 0;
 }
-
 .activity-empty p {
   font-size: 13px;
   margin: 0;
   max-width: 320px;
   margin: 0 auto;
 }
-
 /* =============================================
    6. Sidebar Widgets
    ============================================= */
@@ -659,11 +538,9 @@ body {
   border-radius: 14px;
   padding: 18px 20px;
 }
-
 .widget-header {
   margin-bottom: 14px;
 }
-
 .widget-badge {
   font-size: 10px;
   font-weight: 700;
@@ -673,11 +550,9 @@ body {
   display: block;
   margin-bottom: 4px;
 }
-
 .alert-badge {
   color: var(--dash-text-dim);
 }
-
 .widget-title {
   font-family: 'Outfit', sans-serif;
   font-size: 16px;
@@ -685,7 +560,6 @@ body {
   color: var(--dash-text-main);
   margin: 0;
 }
-
 /* Store details list */
 .store-details-list {
   display: flex;
@@ -693,48 +567,40 @@ body {
   gap: 12px;
   margin-bottom: 16px;
 }
-
 .store-detail-row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
 }
-
 /* Store profile details no longer use decorative location, clock, or payment icons. */
 .store-detail-row .detail-icon {
   display: none;
 }
-
 .detail-icon {
   font-size: 16px;
   line-height: 1.2;
 }
-
 .detail-content {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
-
 .detail-label {
   font-size: 11px;
   color: var(--dash-text-dim);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-
 .detail-val {
   font-size: 13px;
   font-weight: 500;
   color: var(--dash-text-muted);
 }
-
 .widget-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 12px;
   margin-top: 12px;
 }
-
 .store-catalog-link,
 .widget-action-link {
   display: inline-flex;
@@ -746,20 +612,17 @@ body {
   text-decoration: none;
   transition: opacity 0.15s ease;
 }
-
 .store-catalog-link:hover,
 .widget-action-link:hover {
   opacity: 0.8;
   text-decoration: underline;
 }
-
 /* Low Stock Watchlist items */
 .low-stock-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-
 .low-stock-row {
   display: flex;
   align-items: center;
@@ -770,7 +633,6 @@ body {
   border-radius: 8px;
   font-size: 13px;
 }
-
 .low-stock-name {
   font-weight: 500;
   color: var(--dash-text-main);
@@ -779,7 +641,6 @@ body {
   text-overflow: ellipsis;
   max-width: 170px;
 }
-
 .low-stock-qty {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
@@ -790,13 +651,6 @@ body {
   padding: 2px 7px;
   border-radius: 4px;
 }
-
-.low-stock-qty.critical {
-  color: var(--dash-text-main);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
-}
-
 .low-stock-empty {
   font-size: 12px;
   color: var(--dash-text-dim);
@@ -804,14 +658,12 @@ body {
   padding: 8px 0;
   text-align: center;
 }
-
 /* Cloud Backup Widget */
 .cloud-widget-content {
   display: flex;
   align-items: center;
   gap: 14px;
 }
-
 .cloud-icon-wrap {
   width: 40px;
   height: 40px;
@@ -824,20 +676,17 @@ body {
   justify-content: center;
   flex-shrink: 0;
 }
-
 .cloud-title {
   font-size: 13px;
   font-weight: 600;
   color: var(--dash-text-main);
   margin: 0 0 2px 0;
 }
-
 .cloud-desc {
   font-size: 12px;
   color: var(--dash-text-dim);
   margin: 0;
 }
-
 /* =============================================
    7. Responsive Breakpoints
    ============================================= */
@@ -845,88 +694,69 @@ body {
 @media (max-width: 1400px) {
   .dash-operational-grid {
     grid-template-columns: 1fr;
-  }
-}
-
+  }}
 @media (max-width: 1100px) {
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+  }}
 @media (orientation: landscape) and (min-width: 769px) {
   .operations-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-
   .op-card {
     flex-direction: row;
     align-items: center;
     gap: 14px;
     padding: 14px;
   }
-
   .op-details {
     width: auto;
     overflow-wrap: anywhere;
-  }
-}
-
+  }}
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 16px 14px 80px 14px;
   }
-
   .dash-header {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
     margin-bottom: 20px;
   }
-
   .dash-actions {
     width: 100%;
     margin-top: 0;
   }
-
   .dash-btn-sale,
   .dash-btn-add {
     flex: 1;
     justify-content: center;
   }
-
   .dash-title {
     font-size: 24px;
   }
-
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 20px;
   }
-
   .metric-card {
     padding: 14px;
     min-height: 120px;
   }
-
   .metric-value {
     font-size: 22px;
   }
-
   .operations-grid {
     grid-template-columns: 1fr;
   }
-
   .dash-section-header {
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 12px;
   }
-
   .dash-section-header > div {
     display: contents;
   }
-
   .dash-section-sub {
     line-height: 1.4;
     max-width: 32rem;
@@ -934,20 +764,15 @@ body {
     overflow: visible;
     text-overflow: clip;
   }
-
   .dash-header-link {
     flex: 0 0 auto;
     align-self: flex-start;
     line-height: 1.3;
-  }
-}
-
+  }}
 @media (max-width: 480px) {
   .metrics-grid {
     grid-template-columns: 1fr;
-  }
-}
-#googleConnectModal .google-icon {
+  }}#googleConnectModal .google-icon {
   display: flex;
   align-items: center;
   justify-content: center;

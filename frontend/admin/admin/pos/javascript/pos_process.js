@@ -96,7 +96,7 @@ const SalesCreate = {
 
         this.isProcessing = true; // Lock processing
 
-        const { customerName, total, cash, change, state } = pending;
+        const { customerName, cash, state } = pending;
         const form = document.getElementById('checkoutForm');
         const checkoutUrl = form?.dataset.apiRouteCheckout || '/pos/pos_process';
         const receiptUrl = form?.dataset.apiRouteReceipt || '/pos/email_send_receipt';

@@ -104,7 +104,6 @@ const InventoryImage = {
     }
 
     let imgSrc, fallbackAttributes = '';
-    const originalUrl = imgData.url || imgData.preview;
     if (imgData.url) {
       const fallbacks = this.getFallbackUrls(imgData.url, 800);
       imgSrc = fallbacks[0];

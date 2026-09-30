@@ -47,7 +47,6 @@
 
   function wireEvents() {
     const searchInput = document.getElementById('productSearch');
-    const categoryFilter = document.getElementById('categoryFilter');
     const sortBy = document.getElementById('sortBy');
 
     if (searchInput) {

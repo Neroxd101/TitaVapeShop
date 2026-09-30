@@ -240,7 +240,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!confirm('Are you sure you want to disconnect? Backups will stop working.')) return;
 
         const btn = document.getElementById('disconnectBtn');
-        const originalText = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Disconnecting...';
 
@@ -496,7 +495,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
         // Step 1: Generate OTP
-        const otpModal = showOTPModal('Change Username', async (otp) => {
+        showOTPModal('Change Username', async (otp) => {
             const btn = document.getElementById('changeUsernameBtn');
             setLoading(btn, true);
 
@@ -665,7 +664,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             // Step 2: Show OTP Modal since password is valid
-            const otpModal = showOTPModal('Change Password', async (otp) => {
+            showOTPModal('Change Password', async (otp) => {
                 const btn = document.getElementById('changePasswordBtn');
                 setLoading(btn, true);
 

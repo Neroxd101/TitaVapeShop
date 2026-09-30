@@ -31,13 +31,6 @@ const CatalogCard = {
         };
     },
 
-    formatVariations(product) {
-        if (Array.isArray(product?.variations) && product.variations.length) {
-            return product.variations.map(v => `${v.name} (${v.quantity})`).join(' • ');
-        }
-        return product?.variation || '';
-    },
-
     renderProducts(products = []) {
         if (!this.productGrid || !this.emptyState) {
             this.productGrid = document.getElementById('productGrid');

@@ -12,7 +12,6 @@
   --stat-card-gap: 14px;
   --stat-icon-size: 42px;
 }
-
 /* Grid */
 .stats-grid {
   display: grid;
@@ -20,33 +19,25 @@
   gap: 14px;
   margin-bottom: 20px;
 }
-
 /* Medium phones/tablets: show 2 stat cards per row */
 @media (min-width: 420px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+  }}
 @media (min-width: 640px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-bottom: 24px;
-  }
-}
-
+  }}
 @media (min-width: 1000px) {
   .stats-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 24px;
-  }
-}
-
+  }}
 /* Card base (shared between .stat-card and .stats-card) */
-.stat-card,
-.stats-card {
+.stat-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
   border: 1px solid var(--border);
   border-radius: var(--stat-card-radius);
@@ -57,17 +48,13 @@
   min-height: 96px;
   transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
-
-.stat-card:hover,
-.stats-card:hover {
+.stat-card:hover {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
   transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
 }
-
 /* Icon base (shared) */
-.stat-icon,
-.stats-card-icon {
+.stat-icon {
   width: var(--stat-icon-size);
   height: var(--stat-icon-size);
   border-radius: 14px;
@@ -77,59 +64,40 @@
   background: var(--bg-secondary);
   border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
 }
-
-.stat-icon svg,
-.stats-card-icon svg {
+.stat-icon svg {
   width: 20px;
   height: 20px;
   fill: currentColor;
 }
-
 /* Icon themes */
-.stat-icon.blue,
-.stats-card-icon.blue,
-.stats-card-icon.sales {
+.stat-icon.blue {
   background: linear-gradient(135deg, #0096ff, #00d4ff);
   color: white;
   border-color: transparent;
 }
-
-.stat-icon.green,
-.stats-card-icon.green,
-.stats-card-icon.revenue {
+.stat-icon.green {
   background: linear-gradient(135deg, var(--accent), #00b894);
   color: white;
   border-color: transparent;
 }
-
-.stat-icon.orange,
-.stats-card-icon.orange,
-.stats-card-icon.items {
+.stat-icon.orange {
   background: linear-gradient(135deg, #ff9f43, #ee5a24);
   color: white;
   border-color: transparent;
 }
-
-.stat-icon.purple,
-.stats-card-icon.purple,
-.stats-card-icon.avg {
+.stat-icon.purple {
   background: linear-gradient(135deg, #a55eea, #8854d0);
   color: white;
   border-color: transparent;
 }
-
 /* Text */
-.stat-details,
-.stats-card-info,
-.stats-card .stat-details {
+.stat-details {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
 }
-
-.stat-label,
-.stats-label {
+.stat-label {
   font-size: 12px;
   color: var(--text-secondary);
   letter-spacing: 0.25px;
@@ -138,9 +106,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.stat-value,
-.stats-value {
+.stat-value {
   font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
@@ -150,7 +116,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 /* Compact large screens (27" monitors) */
 @media (min-width: 1440px) {
   :root {
@@ -158,13 +123,9 @@
     --stat-card-gap: 12px;
     --stat-icon-size: 46px;
   }
-
-  .stat-value,
-  .stats-value {
+  .stat-value {
     font-size: 20px;
-  }
-}
-
+  }}
 /* Very small screens (~300px): tighten spacing so padding looks balanced */
 @media (max-width: 300px) {
   :root {
@@ -172,13 +133,9 @@
     --stat-card-gap: 10px;
     --stat-icon-size: 40px;
   }
-
-  .stat-card,
-  .stats-card {
+  .stat-card {
     min-height: 0;
-  }
-}
-
+  }}
 /* View Stat (for modals/details) */
 .view-stat {
   display: flex;
@@ -189,64 +146,48 @@
   border-radius: 10px;
   border: 1px solid var(--border);
 }
-
 @media (max-width: 768px) {
   .view-stat {
     border-radius: 8px;
-  }
-}
-
+  }}
 .view-stat .stat-label {
   font-size: 11px;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 .view-stat .stat-value {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
 }
-
 .view-stat .stat-value.highlight,
 .view-stat .stat-value.profit.positive {
   color: var(--accent);
 }
-
 .view-stat .stat-value.profit.negative,
 .view-stat .stat-value.low-stock {
   color: var(--error);
 }
-
 /* Small phones (e.g., 360x740): keep 2x2 with tighter spacing. */
 @media (max-width: 420px) {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 12px;
   }
-
-  .stat-card,
-  .stats-card {
+  .stat-card {
     padding: 14px;
     gap: 10px;
     min-height: 0;
     min-width: 0;
   }
-
-  .stat-icon,
-  .stats-card-icon {
+  .stat-icon {
     width: 38px;
     height: 38px;
   }
-
-  .stat-value,
-  .stats-value {
+  .stat-value {
     font-size: 18px;
   }
-
-  .stat-label,
-  .stats-label {
+  .stat-label {
     font-size: 11px;
-  }
-}
+  }}

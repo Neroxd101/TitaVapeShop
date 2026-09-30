@@ -13,16 +13,13 @@
   display: flex;
   flex-direction: column;
 }
-
 .modal.modal-wide .modal-header {
   padding: 18px 20px 0;
 }
-
 .modal.modal-wide .modal-form-horizontal {
   flex: 1;
   overflow: hidden;
 }
-
 /* Horizontal Form Layout (form left, images/content right) */
 .modal-form-horizontal {
   display: grid;
@@ -31,11 +28,9 @@
   gap: 0;
   padding: 0 !important;
 }
-
 .modal-col {
   padding: 18px 20px;
 }
-
 .modal-col-images {
   order: 2;
   /* move images to the right */
@@ -44,51 +39,40 @@
   border-left: none;
   border-radius: 0;
 }
-
 .modal-col-fields {
   order: 1;
   display: flex;
   flex-direction: column;
 }
-
 .modal-col-fields .modal-actions {
   padding: 25px 0 0;
 }
-
 .modal-col .form-group:last-child {
   margin-bottom: 0;
 }
-
 /* Tighten form spacing inside wide modal */
 .modal.modal-wide .form-group {
   margin-bottom: 14px;
 }
-
 /* Responsive */
 @media (max-width: 1024px) {
   .modal.modal-wide {
     max-width: min(1100px, 95vw);
   }
-
   .modal-col {
     padding: 16px 18px;
-  }
-}
-
+  }}
 @media (max-width: 768px) {
   .modal.modal-wide {
     max-width: min(1000px, 98vw);
     max-height: 95vh;
   }
-
   .modal-form-horizontal {
     grid-template-columns: 1fr;
   }
-
   .modal-col {
     padding: 16px;
   }
-
   .modal-col-images {
     order: 1;
     border-left: none;
@@ -96,16 +80,12 @@
     border-radius: 0;
     padding-bottom: 16px;
   }
-
   .modal-col-fields {
     order: 2;
   }
-
   .modal.modal-wide .modal-header {
     padding: 16px 16px 0;
-  }
-}
-
+  }}
 /* Tablet portrait (768x1024) - specific optimizations */
 @media (width: 768px) and (height: 1024px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -117,27 +97,22 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 18px 18px 0 !important;
     flex-shrink: 0;
   }
-
   .modal.modal-wide .modal-header h3 {
     font-size: 20px !important;
   }
-
   .modal-form-horizontal {
     grid-template-columns: 1fr !important;
     flex: 1;
     overflow-y: auto;
     min-height: 0;
   }
-
   .modal-col {
     padding: 18px !important;
   }
-
   .modal-col-images {
     order: 1 !important;
     border-left: none !important;
@@ -145,38 +120,31 @@
     border-radius: 0 !important;
     padding-bottom: 18px !important;
   }
-
   .modal-col-fields {
     order: 2 !important;
     overflow-y: auto !important;
     flex: 1;
     min-height: 0;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 16px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 20px !important;
     margin-bottom: 18px !important;
     line-height: 1.3;
   }
-
   .modal-col-fields .modal-actions {
     padding: 20px 0 0 !important;
     gap: 12px !important;
     flex-shrink: 0;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 12px 20px !important;
     font-size: 14px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
-  }
-}
-
+  }}
 /* Tablet portrait (820x1180) - specific optimizations */
 @media (width: 820px) and (height: 1180px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -188,27 +156,22 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 20px 20px 0 !important;
     flex-shrink: 0;
   }
-
   .modal.modal-wide .modal-header h3 {
     font-size: 22px !important;
   }
-
   .modal-form-horizontal {
     grid-template-columns: 1fr !important;
     flex: 1;
     overflow-y: auto;
     min-height: 0;
   }
-
   .modal-col {
     padding: 20px !important;
   }
-
   .modal-col-images {
     order: 1 !important;
     border-left: none !important;
@@ -216,38 +179,31 @@
     border-radius: 0 !important;
     padding-bottom: 20px !important;
   }
-
   .modal-col-fields {
     order: 2 !important;
     overflow-y: auto !important;
     flex: 1;
     min-height: 0;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 18px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 22px !important;
     margin-bottom: 20px !important;
     line-height: 1.3;
   }
-
   .modal-col-fields .modal-actions {
     padding: 22px 0 0 !important;
     gap: 14px !important;
     flex-shrink: 0;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 14px 22px !important;
     font-size: 15px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
-  }
-}
-
+  }}
 /* Tablet portrait (912x1368) - specific optimizations */
 @media (width: 912px) and (height: 1368px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -259,27 +215,22 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 22px 22px 0 !important;
     flex-shrink: 0;
   }
-
   .modal.modal-wide .modal-header h3 {
     font-size: 24px !important;
   }
-
   .modal-form-horizontal {
     grid-template-columns: 1fr !important;
     flex: 1;
     overflow-y: auto;
     min-height: 0;
   }
-
   .modal-col {
     padding: 22px !important;
   }
-
   .modal-col-images {
     order: 1 !important;
     border-left: none !important;
@@ -287,38 +238,31 @@
     border-radius: 0 !important;
     padding-bottom: 22px !important;
   }
-
   .modal-col-fields {
     order: 2 !important;
     overflow-y: auto !important;
     flex: 1;
     min-height: 0;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 20px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 24px !important;
     margin-bottom: 22px !important;
     line-height: 1.3;
   }
-
   .modal-col-fields .modal-actions {
     padding: 24px 0 0 !important;
     gap: 16px !important;
     flex-shrink: 0;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 16px 24px !important;
     font-size: 16px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
-  }
-}
-
+  }}
 /* Tablet portrait (800x1145) - specific optimizations */
 @media (width: 800px) and (height: 1145px) and (orientation: portrait),
 (min-width: 798px) and (max-width: 802px) and (min-height: 1143px) and (max-height: 1147px) and (orientation: portrait) {
@@ -331,28 +275,23 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 14px 16px 0 !important;
     flex-shrink: 0;
   }
-
   .modal.modal-wide .modal-header h3 {
     font-size: 18px !important;
     margin-bottom: 0 !important;
   }
-
   .modal-form-horizontal {
     grid-template-columns: 1fr !important;
     flex: 1;
     overflow-y: auto;
     min-height: 0;
   }
-
   .modal-col {
     padding: 14px 16px !important;
   }
-
   .modal-col-images {
     order: 1 !important;
     border-left: none !important;
@@ -361,7 +300,6 @@
     padding-bottom: 14px !important;
     padding-top: 14px !important;
   }
-
   .modal-col-fields {
     order: 2 !important;
     overflow-y: auto !important;
@@ -370,32 +308,26 @@
     padding-bottom: 14px !important;
     padding-top: 14px !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 12px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 18px !important;
     margin-bottom: 12px !important;
     line-height: 1.2;
   }
-
   .modal-col-fields .modal-actions {
     padding: 14px 0 0 !important;
     gap: 10px !important;
     flex-shrink: 0;
     margin-top: 8px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 10px 16px !important;
     font-size: 13px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
-  }
-}
-
+  }}
 /* Tablet portrait (640x889) - specific optimizations */
 @media (width: 640px) and (height: 889px) and (orientation: portrait),
 (min-width: 638px) and (max-width: 642px) and (min-height: 887px) and (max-height: 891px) and (orientation: portrait) {
@@ -408,28 +340,23 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 12px 14px 0 !important;
     flex-shrink: 0;
   }
-
   .modal.modal-wide .modal-header h3 {
     font-size: 16px !important;
     margin-bottom: 0 !important;
   }
-
   .modal-form-horizontal {
     grid-template-columns: 1fr !important;
     flex: 1;
     overflow-y: auto;
     min-height: 0;
   }
-
   .modal-col {
     padding: 12px 14px !important;
   }
-
   .modal-col-images {
     order: 1 !important;
     border-left: none !important;
@@ -438,7 +365,6 @@
     padding-bottom: 12px !important;
     padding-top: 12px !important;
   }
-
   .modal-col-fields {
     order: 2 !important;
     overflow-y: auto !important;
@@ -447,32 +373,26 @@
     padding-bottom: 12px !important;
     padding-top: 12px !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 10px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 10px !important;
     line-height: 1.2;
   }
-
   .modal-col-fields .modal-actions {
     padding: 12px 0 0 !important;
     gap: 8px !important;
     flex-shrink: 0;
     margin-top: 6px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 9px 14px !important;
     font-size: 12px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
-  }
-}
-
+  }}
 /* Tablet landscape (1024x505) - compact modal layout */
 @media (width: 1024px) and (height: 505px) and (orientation: landscape),
 (min-width: 1022px) and (max-width: 1026px) and (min-height: 503px) and (max-height: 507px) and (orientation: landscape) {
@@ -486,17 +406,14 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 10px 12px 0 !important;
     flex-shrink: 0;
   }
-
   .modal.modal-wide .modal-header h3 {
     font-size: 15px !important;
     margin-bottom: 0 !important;
   }
-
   .modal-form-horizontal {
     grid-template-columns: 1fr 1fr !important;
     flex: 1;
@@ -506,11 +423,9 @@
     max-width: 100% !important;
     gap: 0 !important;
   }
-
   .modal-col {
     padding: 10px 12px !important;
   }
-
   .modal-col-images {
     order: 2 !important;
     border-left: 1px solid var(--border) !important;
@@ -529,7 +444,6 @@
     overflow: visible !important;
     justify-content: flex-start !important;
   }
-
   .modal-col-fields {
     order: 1 !important;
     overflow-y: auto !important;
@@ -543,17 +457,14 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 8px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 15px !important;
     margin-bottom: 8px !important;
     line-height: 1.2;
   }
-
   .modal-col-fields .modal-actions {
     padding: 10px 0 0 !important;
     gap: 8px !important;
@@ -565,15 +476,12 @@
     z-index: 10 !important;
     padding-bottom: 12px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 8px 12px !important;
     font-size: 11px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
-  }
-}
-
+  }}
 @media (max-width: 480px) {
   .modal.modal-wide {
     max-width: 100% !important;
@@ -582,37 +490,29 @@
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
   }
-
   .modal-col {
     padding: 12px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 12px 12px 0 !important;
   }
-
   .modal-col-fields {
     padding-bottom: 60px !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 8px 12px 12px !important;
     gap: 6px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 10px 14px !important;
     font-size: 12px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 12px !important;
-  }
-}
-
+  }}
 /* Phone portrait (375x667) - specific optimizations */
 @media (width: 375px) and (height: 667px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -623,19 +523,15 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 8px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 8px 8px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 8px !important;
   }
-
 
   .modal-col-fields .modal-actions {
     padding: 6px 8px 8px !important;
@@ -647,21 +543,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 8px 12px !important;
     font-size: 11px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 14px !important;
     margin-bottom: 10px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (430x932) - specific optimizations */
 @media (width: 430px) and (height: 932px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -672,43 +564,34 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 12px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 12px 12px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 12px !important;
   }
-
   .modal-col-fields {
     padding-bottom: 60px !important;
     overflow-y: auto !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 8px 12px 12px !important;
     gap: 6px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 10px 15px !important;
     font-size: 12px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 17px !important;
     margin-bottom: 12px !important;
     line-height: 1.3;
-  }
-}
-
+  }}
 /* Phone portrait (1080x2400) - specific optimizations */
 @media (width: 1080px) and (height: 2400px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -719,36 +602,28 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 20px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 20px 20px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 16px !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 24px 0 0 !important;
     gap: 12px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 14px 20px !important;
     font-size: 15px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 22px !important;
     margin-bottom: 16px !important;
     line-height: 1.3;
-  }
-}
-
+  }}
 /* 1080p portrait (1080px width) - general optimizations */
 @media (width: 1080px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -759,36 +634,28 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 20px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 20px 20px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 16px !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 24px 0 0 !important;
     gap: 12px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 14px 20px !important;
     font-size: 15px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 22px !important;
     margin-bottom: 16px !important;
     line-height: 1.3;
-  }
-}
-
+  }}
 /* Phone portrait (411x823) - specific optimizations */
 @media (width: 411px) and (height: 823px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -799,24 +666,19 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 10px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 10px 10px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 10px !important;
   }
-
   .modal-col-fields {
     padding-bottom: 60px !important;
     overflow-y: auto !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 8px 10px 10px !important;
     gap: 6px !important;
@@ -827,21 +689,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 9px 14px !important;
     font-size: 12px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 11px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* 1080x2400 portrait 380dpi - high DPI optimizations */
 @media (width: 1080px) and (height: 2400px) and (orientation: portrait) and (resolution: 380dpi),
 (width: 1080px) and (height: 2400px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2.375) {
@@ -853,24 +711,18 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 20px;
   }
-
   .modal.modal-wide .modal-header {
     padding: 20px 20px 0;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 16px;
   }
-
   .modal-col-fields .modal-actions {
     padding: 24px 0 0;
-  }
-}
-
+  }}
 /* Phone portrait (412x892) - specific optimizations */
 @media (width: 412px) and (height: 892px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -881,24 +733,19 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 10px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 10px 10px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 10px !important;
   }
-
   .modal-col-fields {
     padding-bottom: 60px !important;
     overflow-y: auto !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 8px 10px 10px !important;
     gap: 6px !important;
@@ -909,21 +756,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 9px 14px !important;
     font-size: 12px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 11px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (412x915) - specific optimizations */
 @media (width: 412px) and (height: 915px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -934,24 +777,19 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 10px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 10px 10px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 10px !important;
   }
-
   .modal-col-fields {
     padding-bottom: 60px !important;
     overflow-y: auto !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 8px 10px 10px !important;
     gap: 6px !important;
@@ -962,21 +800,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 9px 14px !important;
     font-size: 12px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 11px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (414x736) - specific optimizations */
 @media (width: 414px) and (height: 736px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -987,36 +821,28 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 10px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 10px 10px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 10px !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 12px 0 0 !important;
     gap: 8px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 10px 16px !important;
     font-size: 13px !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 11px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (414x896) - specific optimizations */
 @media (width: 414px) and (height: 896px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -1027,24 +853,19 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 10px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 10px 10px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 10px !important;
   }
-
   .modal-col-fields {
     padding-bottom: 60px !important;
     overflow-y: auto !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 8px 10px 10px !important;
     gap: 6px !important;
@@ -1055,21 +876,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 9px 14px !important;
     font-size: 12px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 11px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (360x740) - specific optimizations */
 @media (width: 360px) and (height: 740px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -1080,11 +897,9 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal-col {
     padding: 8px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 8px 8px 0 !important;
     position: sticky !important;
@@ -1093,11 +908,9 @@
     z-index: 10 !important;
     border-bottom: 1px solid var(--border) !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 8px !important;
   }
-
 
   .modal-col-fields .modal-actions {
     padding: 6px 8px 8px !important;
@@ -1109,21 +922,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 8px 12px !important;
     font-size: 11px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 14px !important;
     margin-bottom: 10px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (375x812) - specific optimizations */
 @media (width: 375px) and (height: 812px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -1135,40 +944,32 @@
     flex-direction: column !important;
     margin: 0 !important;
   }
-
   .modal-col {
     padding: 6px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 6px 6px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 5px !important;
   }
-
 
   .modal-col-fields .modal-actions {
     padding: 5px 6px 6px !important;
     gap: 4px !important;
     margin-top: 5px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 7px 10px !important;
     font-size: 10px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 13px !important;
     margin-bottom: 5px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (380x706) - specific optimizations */
 @media (width: 380px) and (height: 706px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -1179,19 +980,15 @@
     display: flex;
     flex-direction: column;
   }
-
   .modal-col {
     padding: 8px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 8px 8px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 8px !important;
   }
-
 
   .modal-col-fields .modal-actions {
     padding: 6px 8px 8px !important;
@@ -1203,21 +1000,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 8px 12px !important;
     font-size: 11px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 14px !important;
     margin-bottom: 10px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (360x800) - specific optimizations */
 @media (width: 360px) and (height: 800px) and (orientation: portrait),
 (min-width: 358px) and (max-width: 362px) and (min-height: 798px) and (max-height: 802px) and (orientation: portrait) {
@@ -1229,11 +1022,9 @@
     display: flex !important;
     flex-direction: column !important;
   }
-
   .modal-col {
     padding: 8px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 8px 8px 0 !important;
     position: sticky !important;
@@ -1242,11 +1033,9 @@
     z-index: 10 !important;
     border-bottom: 1px solid var(--border) !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 8px !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 6px 8px 8px !important;
     gap: 5px !important;
@@ -1257,21 +1046,17 @@
     border-top: 1px solid var(--border) !important;
     margin-top: auto !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 8px 12px !important;
     font-size: 11px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 14px !important;
     margin-bottom: 10px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (380x754) - specific optimizations */
 @media (width: 380px) and (height: 754px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -1283,40 +1068,32 @@
     flex-direction: column !important;
     margin: 0 !important;
   }
-
   .modal-col {
     padding: 6px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 6px 6px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 5px !important;
   }
-
 
   .modal-col-fields .modal-actions {
     padding: 5px 6px 6px !important;
     gap: 4px !important;
     margin-top: 5px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 7px 10px !important;
     font-size: 10px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 13px !important;
     margin-bottom: 5px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (380x754) and (380x810) - specific optimizations */
 /* Using range-based media query for Android compatibility */
 @media (min-width: 375px) and (max-width: 385px) and (min-height: 750px) and (max-height: 820px) and (orientation: portrait),
@@ -1331,40 +1108,32 @@
     flex-direction: column !important;
     margin: 0 !important;
   }
-
   .modal-col {
     padding: 6px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 6px 6px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 5px !important;
   }
-
 
   .modal-col-fields .modal-actions {
     padding: 5px 6px 6px !important;
     gap: 4px !important;
     margin-top: 5px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 7px 10px !important;
     font-size: 10px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 13px !important;
     margin-bottom: 5px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (390x844) - specific optimizations */
 @media (width: 390px) and (height: 844px) and (orientation: portrait) {
   .modal.modal-wide {
@@ -1376,40 +1145,32 @@
     flex-direction: column !important;
     margin: 0 !important;
   }
-
   .modal-col {
     padding: 6px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 6px 6px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 5px !important;
   }
-
 
   .modal-col-fields .modal-actions {
     padding: 5px 6px 6px !important;
     gap: 4px !important;
     margin-top: 5px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 7px 10px !important;
     font-size: 10px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 13px !important;
     margin-bottom: 5px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 /* Phone portrait (392x767) - specific optimizations */
 @media (width: 392px) and (height: 767px) and (orientation: portrait),
 (min-width: 390px) and (max-width: 394px) and (min-height: 765px) and (max-height: 769px) and (orientation: portrait) {
@@ -1422,79 +1183,60 @@
     flex-direction: column !important;
     margin: 0 !important;
   }
-
   .modal-col {
     padding: 6px !important;
   }
-
   .modal.modal-wide .modal-header {
     padding: 6px 6px 0 !important;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 5px !important;
   }
-
   .modal-col-fields .modal-actions {
     padding: 5px 6px 6px !important;
     gap: 4px !important;
     margin-top: 5px !important;
   }
-
   .modal-col-fields .modal-actions .btn {
     padding: 7px 10px !important;
     font-size: 10px !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
   }
-
   .modal-col-fields .view-name {
     font-size: 13px !important;
     margin-bottom: 5px !important;
     line-height: 1.2;
-  }
-}
-
+  }}
 @media (max-width: 360px) {
   .modal-col {
     padding: 12px;
   }
-
   .modal.modal-wide .modal-header {
     padding: 12px 12px 0;
-  }
-}
-
+  }}
 /* Small phones landscape (short height) */
 @media (orientation: landscape) and (max-height: 430px) and (max-width: 900px) {
   .modal.modal-wide {
     max-height: 98vh;
     border-radius: 12px;
   }
-
   .modal-col {
     padding: 10px;
   }
-
   .modal.modal-wide .modal-header {
     padding: 10px 10px 0;
   }
-
   .modal.modal-wide .form-group {
     margin-bottom: 10px;
-  }
-}
-
+  }}
 @media (orientation: landscape) and (max-height: 320px) {
   .modal-col {
     padding: 8px;
   }
-
   .modal.modal-wide .modal-header {
     padding: 8px 8px 0;
-  }
-}
-
+  }}
 /* All Portrait Viewports (Phones & Tablets e.g. 360x740, 768x1024, 1080x2400) - Inventory View Modal optimizations */
 @media (max-width: 1080px) and (orientation: portrait) {
 
@@ -1509,7 +1251,6 @@
     flex-direction: column !important;
     padding: 0 !important;
   }
-
   /* View modal content */
   #viewModal .view-modal-content {
     grid-template-columns: 1fr !important;
@@ -1518,7 +1259,6 @@
     height: auto !important;
     gap: 0 !important;
   }
-
   /* Images column - even more compact for short screens */
   #viewModal .view-col-images {
     order: 1 !important;
@@ -1527,19 +1267,16 @@
     flex-shrink: 0 !important;
     gap: 4px !important;
   }
-
   /* Main image - compact */
   #viewModal .view-main-image {
     min-height: 100px !important;
     max-height: 100px !important;
     height: 100px !important;
   }
-
   /* Thumbnails - compact */
   #viewModal .view-thumbnails {
     gap: 4px !important;
   }
-
   /* Details column */
   #viewModal .view-col-details {
     order: 2 !important;
@@ -1552,67 +1289,39 @@
     flex-direction: column !important;
     gap: 4px !important;
   }
-
   #viewModal .view-category {
     font-size: 9px !important;
     padding: 2px 6px !important;
   }
-
   #viewModal .view-name {
     font-size: 15px !important;
     line-height: 1.2 !important;
   }
-
   #viewModal .view-description {
     font-size: 11px !important;
     margin-bottom: 2px !important;
   }
-
   #viewModal .view-stats {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 6px !important;
   }
-
   #viewModal .view-stat {
     padding: 6px 8px !important;
     border-radius: 8px !important;
   }
-
   #viewModal .stat-label {
     font-size: 8px !important;
     color: var(--text-secondary) !important;
     margin-bottom: 0 !important;
   }
-
   #viewModal .stat-value {
     font-size: 12px !important;
     font-weight: 600 !important;
   }
-
-  #viewModal .view-dates {
-    padding: 6px 8px !important;
-    gap: 2px !important;
-    margin-bottom: 2px !important;
-  }
-
-  #viewModal .view-date {
-    gap: 4px !important;
-  }
-
-  #viewModal .view-date svg {
-    width: 10px !important;
-    height: 10px !important;
-  }
-
   #viewModal .date-label {
     font-size: 8px !important;
   }
-
-  #viewModal .date-value {
-    font-size: 9px !important;
-  }
-
   /* Action Buttons Grid (2x2) */
   #viewModal .view-actions {
     display: grid !important;
@@ -1632,43 +1341,34 @@
     padding-right: 0 !important;
     margin-left: 0 !important;
   }
-
   /* Default button order: Generate QR, Edit, Delete, History */
   #viewModal .view-actions #viewGenerateQrBtn {
     order: 1;
   }
-
   #viewModal .view-actions #viewEditBtn {
     order: 2;
   }
-
   #viewModal .view-actions #viewDeleteBtn {
     order: 3;
   }
-
   #viewModal .view-actions #viewHistoryBtn {
     order: 4;
   }
-
   /* When Generate QR is hidden, History moves up to fill the space */
   #viewModal .view-actions.qr-hidden {
     grid-template-columns: repeat(2, 1fr) !important;
   }
-
   /* Reorder buttons when QR is hidden: Edit, Delete, History */
   #viewModal .view-actions.qr-hidden #viewEditBtn {
     order: 1;
   }
-
   #viewModal .view-actions.qr-hidden #viewDeleteBtn {
     order: 2;
   }
-
   #viewModal .view-actions.qr-hidden #viewHistoryBtn {
     order: 3;
     grid-column: 1 / -1;
   }
-
   #viewModal .view-actions .btn {
     padding: 8px 6px !important;
     font-size: 10px !important;
@@ -1677,12 +1377,10 @@
     min-width: 0 !important;
     flex: 1 !important;
   }
-
   #viewModal .view-actions .btn svg {
     width: 12px !important;
     height: 12px !important;
   }
-
   /* For other modals with modal-form-horizontal (Add/Edit) */
   #itemModal .modal.modal-wide,
   .modal.modal-wide {
@@ -1694,7 +1392,6 @@
     flex-direction: column !important;
     padding: 0 !important;
   }
-
   #itemModal .modal-form-horizontal,
   .modal-form-horizontal {
     grid-template-columns: 1fr !important;
@@ -1703,7 +1400,6 @@
     flex-direction: column !important;
     gap: 0 !important;
   }
-
   #itemModal .modal-col-images,
   .modal-col-images {
     order: 1 !important;
@@ -1716,18 +1412,15 @@
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
   }
-
   #itemModal .edit-main-image {
     height: 180px !important;
     /* Increased from 100px */
     min-height: 180px !important;
     margin-bottom: 6px !important;
   }
-
   #itemModal .edit-thumbnails {
     gap: 4px !important;
   }
-
   #itemModal .modal-col-fields,
   .modal-col-fields {
     order: 2 !important;
@@ -1739,24 +1432,20 @@
     flex-direction: column !important;
     gap: 0 !important;
   }
-
   #itemModal .modal-col-fields .view-name {
     font-size: 16px !important;
     margin-bottom: 8px !important;
     line-height: 1.2 !important;
   }
-
   #itemModal .form-group,
   .modal.modal-wide .form-group {
     margin-bottom: 8px !important;
   }
-
   #itemModal label,
   .modal.modal-wide label {
     font-size: 11px !important;
     margin-bottom: 4px !important;
   }
-
   #itemModal input,
   #itemModal select,
   #itemModal textarea,
@@ -1766,18 +1455,15 @@
     padding: 8px 10px !important;
     font-size: 13px !important;
   }
-
   #itemModal textarea {
     /* Visual hint, might need JS or just height */
     height: 60px !important;
   }
-
   #itemModal .form-row-2,
   .modal.modal-wide .form-row-2 {
     grid-template-columns: 1fr 1fr !important;
     gap: 10px !important;
   }
-
   #itemModal .modal-actions,
   .modal-col-fields .modal-actions {
     padding: 10px 0 0 !important;
@@ -1792,16 +1478,13 @@
     display: flex !important;
     flex-direction: row !important;
   }
-
   #itemModal .modal-actions .btn,
   .modal-col-fields .modal-actions .btn {
     padding: 10px 15px !important;
     font-size: 12px !important;
     flex: 1 !important;
     min-width: 0 !important;
-  }
-}
-
+  }}
 /* Tablet Portrait Override - More generous spacing and heights */
 @media (min-width: 600px) and (max-width: 1080px) and (orientation: portrait) {
 
@@ -1813,7 +1496,6 @@
     max-width: 600px !important;
     height: auto !important;
   }
-
   /* Mid-size tablets specific image height (e.g. 640x889) */
   #viewModal .view-main-image,
   #itemModal .edit-main-image {
@@ -1821,116 +1503,80 @@
     max-height: 350px !important;
     height: 300px !important;
   }
-
   #itemModal .modal-col-images {
     max-height: 460px !important;
     /* Increased to fit the 300px image + labels */
   }
-
   #viewModal .view-col-details,
   #itemModal .modal-col-fields {
     padding: 20px 20px !important;
     gap: 12px !important;
   }
-
   #itemModal .modal-col-fields {
     gap: 0 !important;
   }
-
   #itemModal .form-group {
     margin-bottom: 12px !important;
   }
-
   #itemModal label {
     font-size: 13px !important;
     margin-bottom: 6px !important;
   }
-
   #itemModal input,
   #itemModal select,
   #itemModal textarea {
     padding: 10px 14px !important;
     font-size: 15px !important;
   }
-
   #itemModal textarea {
     height: 120px !important;
   }
-
   #itemModal .modal-actions {
     padding-top: 15px !important;
     margin-top: 10px !important;
   }
-
   #viewModal .view-category {
     font-size: 11px !important;
     padding: 4px 10px !important;
   }
-
   #viewModal .view-name {
     font-size: 20px !important;
     /* Slightly smaller than 22px */
   }
-
   #viewModal .view-description {
     font-size: 13px !important;
     margin-bottom: 8px !important;
   }
-
   #viewModal .view-stats {
     gap: 10px !important;
     margin-bottom: 10px !important;
   }
-
   #viewModal .view-stat {
     padding: 10px !important;
     border-radius: 8px !important;
   }
-
   #viewModal .stat-label {
     font-size: 10px !important;
   }
-
   #viewModal .stat-value {
     font-size: 15px !important;
   }
-
-  #viewModal .view-dates {
-    padding: 10px 12px !important;
-    gap: 6px !important;
-    border-radius: 10px !important;
-  }
-
-  #viewModal .view-date svg {
-    width: 14px !important;
-    height: 14px !important;
-  }
-
   #viewModal .date-label {
     font-size: 9px !important;
   }
-
-  #viewModal .date-value {
-    font-size: 12px !important;
-  }
-
   #viewModal .view-actions {
     padding-top: 12px !important;
     gap: 10px !important;
     margin-top: 6px !important;
   }
-
   #viewModal .view-actions .btn {
     padding: 10px 12px !important;
     font-size: 13px !important;
   }
-
   #viewModal .view-actions .btn svg {
     width: 16px !important;
     height: 16px !important;
-  }
-}
-
+  }}
 /* Inventory View Modal - Phone portrait (360x740) taller images column */
 @media (width: 360px) and (height: 740px) and (orientation: portrait) {
   /* Override the portrait "100px" compact image sizing */
@@ -1939,14 +1585,11 @@
     min-height: 28vh !important;
     max-height: 28vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 /* Inventory View Modal - Phone portrait (360x740) taller images column */
 @media (width: 353px) and (height: 745px){
   /* Override the portrait "100px" compact image sizing */
@@ -1955,14 +1598,11 @@
     min-height: 28vh !important;
     max-height: 28vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 /* Inventory View Modal - Phone portrait (360x740) taller images column */
 @media (width: 375px) and (height: 667px){
   /* Override the portrait "100px" compact image sizing */
@@ -1971,14 +1611,11 @@
     min-height: 33vh !important;
     max-height: 33vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 /* Inventory View Modal - Phone portrait (360x740) taller images column */
 @media (width: 414px) and (height: 896px){
   /* Override the portrait "100px" compact image sizing */
@@ -1987,14 +1624,11 @@
     min-height: 33vh !important;
     max-height: 33vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 /* Inventory View Modal - Phone portrait (360x740) taller images column */
 @media (width: 390px) and (height: 844px){
   /* Override the portrait "100px" compact image sizing */
@@ -2003,14 +1637,11 @@
     min-height: 33vh !important;
     max-height: 33vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 @media (width: 430px) and (height: 932px){
   /* Override the portrait "100px" compact image sizing */
   #viewModal .view-main-image {
@@ -2018,14 +1649,11 @@
     min-height: 33vh !important;
     max-height: 33vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 @media (min-width: 375px) and (min-height: 726px){
   /* Override the portrait "100px" compact image sizing */
   #viewModal .view-main-image {
@@ -2033,14 +1661,11 @@
     min-height: 27vh !important;
     max-height: 27vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 
 @media (width: 540px) and (height: 720px){
   /* Override the portrait "100px" compact image sizing */
@@ -2049,14 +1674,11 @@
     min-height: 35vh !important;
     max-height: 35vh !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
-
+  }}
 @media (min-width: 1024px) and (orientation: landscape), (min-width: 1200px) and (min-height: 800px) and (orientation: landscape) {
   /* Allow image column and main image to expand and occupy available space when description is long */
   #viewModal .view-col-images {
@@ -2064,7 +1686,6 @@
     flex-direction: column !important;
     height: 100% !important;
   }
-
   #viewModal .view-main-image {
     flex: 1 1 auto !important;
     height: 100% !important;
@@ -2072,14 +1693,11 @@
     max-height: 65vh !important;
     aspect-ratio: unset !important;
   }
-
   #viewModal .view-thumbnails {
     flex-shrink: 0 !important;
   }
-
   #viewModal .view-col-details {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     overflow-y: auto !important;
-  }
-}
+  }}
