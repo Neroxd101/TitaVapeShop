@@ -349,16 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     async function loadUsersList() {
         try {
-            const response = await fetch('/api/users/list');
-            
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: 'Failed to fetch users' }));
-                console.error('API Error:', errorData);
-                userSelector.innerHTML = `<option value="">Error: ${errorData.error || 'Failed to load users'}</option>`;
-                return;
-            }
-            
-            const data = await response.json();
+            const data = await window.UsersGetAll.get();
             
             if (data.success && data.users && Array.isArray(data.users)) {
                 userSelector.innerHTML = '<option value="">Select a user...</option>';

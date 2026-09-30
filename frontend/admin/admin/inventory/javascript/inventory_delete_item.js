@@ -40,11 +40,7 @@ const InventoryDelete = {
         impact.textContent = 'Checking affected orders...';
         confirmBtn.disabled = true;
         try {
-            const response = await fetch(`/inventory/inventory_delete_item/${encodeURIComponent(id)}/preview`, {
-                headers: { Accept: 'application/json' }
-            });
-            const result = await response.json();
-            if (!response.ok || !result.success) throw new Error(result.error || 'Unable to check affected orders.');
+            const result = await window.InventoryDeletePreview.get(id);
             if (InventoryState.deletingItemId !== id) return;
             impact.textContent = `This will update ${result.affected_orders} active order(s) and cancel ${result.cancelled_orders}.` +
                 (result.payment_review_orders ? ` ${result.payment_review_orders} order(s) will need payment or refund review.` : '');

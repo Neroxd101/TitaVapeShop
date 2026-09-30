@@ -1098,10 +1098,10 @@ const CustomerAuth = {
     }
 
     try {
-      if (!window.CustomerResetPassword) {
+      if (!window.CustomerResetPasswordRequest) {
         throw new Error('Customer reset password module is not loaded.');
       }
-      const res = await window.CustomerResetPassword.requestReset(email);
+      const res = await window.CustomerResetPasswordRequest.requestReset(email);
       if (res && res.success) {
         this.resetEmail = email;
         this.switchView('reset-otp');
@@ -1140,10 +1140,10 @@ const CustomerAuth = {
     }
 
     try {
-      if (!window.CustomerResetPassword) {
+      if (!window.CustomerResetPasswordVerifyCode) {
         throw new Error('Customer reset password module is not loaded.');
       }
-      const res = await window.CustomerResetPassword.verifyCode(this.resetEmail, otp);
+      const res = await window.CustomerResetPasswordVerifyCode.verifyCode(this.resetEmail, otp);
       if (res && res.success) {
         this.resetOtp = otp;
         this.switchView('reset-pwd');
@@ -1176,10 +1176,10 @@ const CustomerAuth = {
     }
 
     try {
-      if (!window.CustomerResetPassword) {
+      if (!window.CustomerResetPasswordRequest) {
         throw new Error('Customer reset password module is not loaded.');
       }
-      const res = await window.CustomerResetPassword.requestReset(this.resetEmail);
+      const res = await window.CustomerResetPasswordRequest.requestReset(this.resetEmail);
       if (res && res.success) {
         this.showSuccess('customerResetOtpSuccess', 'New 6-digit code has been sent to your email.');
       } else {
@@ -1253,10 +1253,10 @@ const CustomerAuth = {
     }
 
     try {
-      if (!window.CustomerResetPassword) {
+      if (!window.CustomerResetPasswordConfirm) {
         throw new Error('Customer reset password module is not loaded.');
       }
-      const res = await window.CustomerResetPassword.confirmReset(this.resetEmail, otp, newPassword);
+      const res = await window.CustomerResetPasswordConfirm.confirmReset(this.resetEmail, otp, newPassword);
       if (res && res.success) {
         this.showSuccess('customerResetPwdSuccess', 'Password successfully reset! You can now sign in.');
         setTimeout(() => {

@@ -4,9 +4,12 @@ require('dotenv').config();
 const setupMiddleware = require('./backend/middleware/middlewareSetup');
 
 // Auth routes
-const adminLoginRoutes = require('./backend/routes/admin/login/login');
+const adminLoginRoutes = require('./backend/routes/admin/login/admin_login');
 const googleAuthRoutes = require('./backend/routes/admin/admin/setting/google_auth');
 const passwordResetRoutes = require('./backend/routes/admin/login/password_reset');
+const passwordResetGenerateOtpRoutes = require('./backend/routes/admin/login/password_reset_generate_otp');
+const passwordResetVerifyOtpRoutes = require('./backend/routes/admin/login/password_reset_verify_otp');
+const passwordResetUpdatePasswordRoutes = require('./backend/routes/admin/login/password_reset_update_password');
 // Customer routes (1-to-1 matching Supabase RPC names)
 const customerCheckEmailRoutes = require('./backend/routes/customer/customer_check_email');
 const customerCheckPhoneRoutes = require('./backend/routes/customer/customer_check_phone');
@@ -21,11 +24,13 @@ const customerCancelOrderRoutes = require('./backend/routes/customer/customer_ca
 const customerConfirmDeliveryRoutes = require('./backend/routes/customer/customer_confirm_delivery');
 const customerTrackOrderRoutes = require('./backend/routes/customer/customer_track_order');
 const customerSubmitPaymentProofRoutes = require('./backend/routes/customer/customer_submit_payment_proof');
-const customerResetPasswordRoutes = require('./backend/routes/customer/customer_reset_password');
+const customerResetPasswordRequestRoutes = require('./backend/routes/customer/customer_reset_password_request');
+const customerResetPasswordVerifyCodeRoutes = require('./backend/routes/customer/customer_reset_password_verify_code');
+const customerResetPasswordConfirmRoutes = require('./backend/routes/customer/customer_reset_password_confirm');
 const customerChangePasswordRoutes = require('./backend/routes/customer/customer_change_password');
 
 // Setting routes
-const userProfileRoutes = require('./backend/routes/admin/admin/setting/user_profile');
+const usersGetAllRoutes = require('./backend/routes/admin/admin/setting/users_get_all');
 const userProfileGenerateOtpRoutes = require('./backend/routes/admin/admin/setting/user_profile_generate_otp');
 const userProfileVerifyOtpRoutes = require('./backend/routes/admin/admin/setting/user_profile_verify_otp');
 const userUpdateUsernameRoutes = require('./backend/routes/admin/admin/setting/user_update_username');
@@ -55,6 +60,7 @@ const inventorySummariesRoutes = require('./backend/routes/admin/admin/inventory
 const inventoryCreateRoutes = require('./backend/routes/admin/admin/inventory/inventory_create_item');
 const inventoryUpdateRoutes = require('./backend/routes/admin/admin/inventory/inventory_update_item');
 const inventoryDeleteRoutes = require('./backend/routes/admin/admin/inventory/inventory_delete_item');
+const inventoryDeletePreviewRoutes = require('./backend/routes/admin/admin/inventory/inventory_delete_preview');
 const inventoryHistoryRoutes = require('./backend/routes/admin/admin/inventory/inventory_get_sales_history');
 const inventoryCategoryCreateRoutes = require('./backend/routes/admin/admin/inventory/inventory_category_create');
 const inventoryCategoryDeleteRoutes = require('./backend/routes/admin/admin/inventory/inventory_category_delete');
@@ -121,16 +127,21 @@ app.use('/', customerCancelOrderRoutes);
 app.use('/', customerConfirmDeliveryRoutes);
 app.use('/', customerTrackOrderRoutes);
 app.use('/', customerSubmitPaymentProofRoutes);
-app.use('/', customerResetPasswordRoutes);
+app.use('/', customerResetPasswordRequestRoutes);
+app.use('/', customerResetPasswordVerifyCodeRoutes);
+app.use('/', customerResetPasswordConfirmRoutes);
 app.use('/', customerChangePasswordRoutes);
 app.use('/', catalogGetProductsRoutes); // Public product listing
 app.use('/', catalogCategoriesRoutes); // Public catalog categories
 app.use('/', catalogImageProxyRoutes); // Public product image proxy
 app.use('/', catalogStoreHoursRoutes); // Public store hours
 app.use('/', catalogRoutes); // Public catalog for customers
-app.use('/', passwordResetRoutes); // Password reset (public)
+app.use('/', passwordResetRoutes);
+app.use('/', passwordResetGenerateOtpRoutes);
+app.use('/', passwordResetVerifyOtpRoutes);
+app.use('/', passwordResetUpdatePasswordRoutes); // Password reset (public)
 app.use('/keep-alive', keepAliveRoutes); // Public keep-alive endpoint (token-protected)
-app.use('/', userProfileRoutes); // User profile management (authenticated)
+app.use('/', usersGetAllRoutes); // User profile management (authenticated)
 app.use('/', userProfileGenerateOtpRoutes);
 app.use('/', userProfileVerifyOtpRoutes);
 app.use('/', userUpdateUsernameRoutes);
@@ -152,6 +163,7 @@ app.use('/', inventorySummariesRoutes);
 app.use('/', inventoryCreateRoutes);
 app.use('/', inventoryUpdateRoutes);
 app.use('/', inventoryDeleteRoutes);
+app.use('/', inventoryDeletePreviewRoutes);
 app.use('/', inventoryHistoryRoutes);
 app.use('/', inventoryCategoryCreateRoutes);
 app.use('/', inventoryCategoryDeleteRoutes);

@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { supabaseAdmin } = require('../../../database/supabase');
 
+const { adminUpdateLastLogin } = require('./admin_update_last_login');
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
@@ -91,7 +93,7 @@ async function handleLogin(req, res) {
 
     // 3. Update last login timestamp in background via RPC
     try {
-      await supabaseAdmin.rpc('admin_update_last_login', { p_user_id: user.id });
+      await adminUpdateLastLogin(user.id);
     } catch (_) {}
 
     const roles = user.roles || '';

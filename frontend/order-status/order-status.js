@@ -436,13 +436,7 @@
     confirmDeliveredBtn.disabled = true;
     confirmDeliveredBtn.textContent = 'Confirming...';
     try {
-      const response = await fetch('/api/customer/orders/confirm-delivery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: currentOrder.id, phone: verifiedPhone })
-      });
-      const result = await response.json();
-      if (!response.ok || !result.success) throw new Error(result.error || 'Unable to confirm delivery.');
+      const result = await window.CustomerConfirmDelivery.confirm({ id: currentOrder.id, phone: verifiedPhone });
       currentOrder = { ...currentOrder, delivery_confirmed_at: result.delivery_confirmed_at };
       renderOrder(currentOrder);
     } catch (error) {

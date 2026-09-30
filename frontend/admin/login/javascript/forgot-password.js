@@ -36,15 +36,7 @@ requestOtpForm.addEventListener('submit', async (e) => {
   setLoading(btn, true);
 
   try {
-    const response = await fetch('/api/password-reset/request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username })
-    });
-
-    const data = await response.json();
+    const { response, data } = await window.PasswordResetGenerateOtp.request(username);
 
     if (!response.ok || !data.success) {
       showError(data.error || 'Failed to send OTP. Please try again.');
@@ -86,18 +78,7 @@ verifyOtpForm.addEventListener('submit', async (e) => {
   setLoading(btn, true);
 
   try {
-    const response = await fetch('/api/password-reset/verify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: currentUsername,
-        otp: otp
-      })
-    });
-
-    const data = await response.json();
+    const { response, data } = await window.PasswordResetVerifyOtp.verify(currentUsername, otp);
 
     if (!response.ok || !data.success) {
       showVerifyError(data.error || 'Invalid or expired OTP code');
@@ -141,18 +122,7 @@ resetPasswordForm.addEventListener('submit', async (e) => {
   setLoading(btn, true);
 
   try {
-    const response = await fetch('/api/password-reset/reset', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        token_id: currentTokenId,
-        new_password: newPassword
-      })
-    });
-
-    const data = await response.json();
+    const { response, data } = await window.PasswordResetUpdatePassword.update(currentTokenId, newPassword);
 
     if (!response.ok || !data.success) {
       showResetError(data.error || 'Failed to reset password');
@@ -186,15 +156,7 @@ document.getElementById('resendOtpLink')?.addEventListener('click', async (e) =>
   hideVerifyError();
 
   try {
-    const response = await fetch('/api/password-reset/request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username: currentUsername })
-    });
-
-    const data = await response.json();
+    const { response, data } = await window.PasswordResetGenerateOtp.request(currentUsername);
 
     if (response.ok && data.success) {
       showVerifyError('OTP has been resent to your email address.', 'success');
