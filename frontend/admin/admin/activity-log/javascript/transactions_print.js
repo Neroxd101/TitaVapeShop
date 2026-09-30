@@ -21,6 +21,7 @@ const TransactionsPrint = {
      * @param {Object} uiController - The TransactionsUI controller instance
      */
     async printTransactions(uiController) {
+        let printWindow;
         // Show loading
         const printBtn = document.getElementById('printTransactionsBtn');
         if (printBtn) {
@@ -29,21 +30,27 @@ const TransactionsPrint = {
         }
 
         try {
-            // Fetch all transactions (no pagination)
+            // Capture filters before loading the report's pages.
             const filters = uiController.getFiltersFromDOM();
             if (!filters) return;
-            filters.limit = 10000; // Large limit to get all
-            filters.offset = 0;
+            const filterSummary = this.getPrintFilters(uiController);
 
-            const result = await TransactionsGetAll.get(filters);
+            // Open during the click so longer reports aren't blocked as pop-ups.
+            printWindow = window.open('', '_blank');
+            if (!printWindow) throw new Error('Please allow pop-ups to print transactions.');
+            printWindow.document.title = 'Loading transactions...';
+            if (printWindow.document.body) printWindow.document.body.textContent = 'Loading transactions...';
 
-            if (!result || !result.success || !result.transactions || result.transactions.length === 0) {
+            const result = await TransactionsGetAll.getAll(filters);
+            if (!result?.success) throw new Error(result?.error || 'Failed to load transactions.');
+
+            if (result.transactions.length === 0) {
+                printWindow.close();
                 alert('No transactions to print');
                 return;
             }
 
             const transactions = result.transactions;
-            const printWindow = window.open('', '_blank');
             
             // Get current date for header
             const currentDate = new Date().toLocaleDateString('en-PH', {
@@ -164,7 +171,7 @@ const TransactionsPrint = {
         <p>Date: ${currentDate}</p>
     </div>
     <div class="print-filters">
-        ${this.getPrintFilters(uiController)}
+        ${filterSummary}
     </div>
     <table>
         <thead>
@@ -206,14 +213,16 @@ const TransactionsPrint = {
 </body>
 </html>`;
 
+            printWindow.document.open();
             printWindow.document.write(printHTML);
             printWindow.document.close();
             
             // Wait for content to load, then print
             setTimeout(() => {
-                printWindow.print();
+                if (!printWindow.closed) printWindow.print();
             }, 250);
         } catch (error) {
+            if (printWindow && !printWindow.closed) printWindow.close();
             console.error('Error printing transactions:', error);
             alert('Failed to print transactions: ' + error.message);
         } finally {

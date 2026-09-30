@@ -25,6 +25,31 @@ const TransactionsGetAll = {
             console.error('Error fetching transactions:', error);
             return { success: false, error: error.message };
         }
+    },
+
+    /** Fetch every matching page while respecting the RPC's 500-row limit. */
+    async getAll(filters = {}) {
+        const limit = 500;
+        const transactions = [];
+        let offset = 0;
+
+        while (true) {
+            const result = await this.get({ ...filters, limit, offset });
+            if (!result?.success) {
+                return { success: false, error: result?.error || 'Failed to fetch transactions.' };
+            }
+            if (!Array.isArray(result.transactions)) {
+                return { success: false, error: 'Invalid transactions response.' };
+            }
+
+            transactions.push(...result.transactions);
+            offset += result.transactions.length;
+            const total = result.total == null ? NaN : Number(result.total);
+            if (result.transactions.length < limit ||
+                (Number.isSafeInteger(total) && total >= 0 && offset >= total)) {
+                return { success: true, transactions, total: transactions.length };
+            }
+        }
     }
 };
 
