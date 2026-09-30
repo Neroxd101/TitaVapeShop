@@ -285,6 +285,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     'GoogleAuth',
                     `width=${width},height=${height},top=${top},left=${left}`
                 );
+                if (!popup) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    alert('Please allow pop-ups for this site to connect with Google.');
+                    return;
+                }
 
                 // Poll for popup closure (as a backup if message/storage fails)
                 const checkPopup = setInterval(() => {

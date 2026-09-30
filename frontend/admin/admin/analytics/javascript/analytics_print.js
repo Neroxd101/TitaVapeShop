@@ -32,6 +32,10 @@ const AnalyticsPrint = {
         // So controller.state.report is already the report object
         const report = controller.state.report;
         const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert('Please allow pop-ups for this site to print the analytics report.');
+            return;
+        }
         
         // Get current date for header
         const currentDate = new Date().toLocaleDateString('en-PH', {
@@ -262,7 +266,9 @@ const AnalyticsPrint = {
         
         // Wait for content to load, then print
         setTimeout(() => {
-            printWindow.print();
+            if (!printWindow.closed) {
+                printWindow.print();
+            }
         }, 250);
     },
 
