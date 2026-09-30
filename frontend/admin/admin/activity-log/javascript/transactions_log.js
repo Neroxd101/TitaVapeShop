@@ -97,6 +97,8 @@ const TransactionsLog = {
     getChanges(oldData, newData) {
         const changes = {};
         for (const key in newData) {
+            // Concurrency checks describe the request, not an inventory edit.
+            if (['expected_quantity', 'expected_variations'].includes(key)) continue;
             if (key === 'variations') {
                 const variationChanges = this.getVariationChanges(oldData[key], newData[key]);
                 if (variationChanges.length > 0) {

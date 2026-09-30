@@ -469,7 +469,7 @@ class TransactionsUI {
                 const changeList = [];
                 for (const [field, change] of Object.entries(d.changes)) {
                     // Skip internal fields if any
-                    if (['updated_at', 'images', 'qr_image_url'].includes(field)) continue;
+                    if (['updated_at', 'images', 'qr_image_url', 'expected_quantity', 'expected_variations'].includes(field)) continue;
 
                     let from = change.from;
                     let to = change.to;
