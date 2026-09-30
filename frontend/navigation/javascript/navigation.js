@@ -139,13 +139,16 @@ function updateNavigationLinks(roles) {
     }
     // Staff has restricted access
     else if (roles.includes('staff')) {
-      if (['sales', 'orders'].includes(page)) {
+      if (['sales', 'orders', 'settings'].includes(page)) {
         isAllowed = true;
       }
     }
     // Add other roles here if needed
 
     // Toggle visibility
+    if (page === 'settings') {
+      item.setAttribute('href', roles.includes('admin') ? '/settings' : '/staff/settings');
+    }
     if (isAllowed) {
       item.style.display = '';
     } else {

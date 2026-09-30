@@ -104,6 +104,7 @@ const ordersVoidRoutes = require('./backend/routes/admin/admin/orders/orders_voi
 // Staff routes
 const staffPosRoutes = require('./backend/routes/admin/staff/pos/serve_pos');
 const staffOrdersRoutes = require('./backend/routes/admin/staff/orders/serve_orders');
+const staffSettingsRoutes = require('./backend/routes/admin/staff/setting/serve_settings');
 
 const app = express();
 
@@ -196,6 +197,7 @@ app.use('/', settingOperatingHoursRoutes);
 // Staff routes
 app.use('/', staffPosRoutes);
 app.use('/', staffOrdersRoutes);
+app.use('/', staffSettingsRoutes);
 
 // For local development
 if (require.main === module) {
