@@ -28,16 +28,17 @@ BEGIN
     IF target.status <> 'completed' THEN
         RAISE EXCEPTION 'The order must be completed before delivery can be confirmed';
     END IF;
-    IF target.delivery_confirmed_at IS NOT NULL THEN
-        RETURN NEXT target;
-        RETURN;
-    END IF;
-
     order_digits := REGEXP_REPLACE(COALESCE(target.contact_number, ''), '[^0-9]', '', 'g');
     IF (p_customer_id IS NULL OR target.customer_id IS NULL OR target.customer_id <> p_customer_id)
        AND (clean_email IS NULL OR target.customer_email IS NULL OR LOWER(BTRIM(target.customer_email)) <> clean_email)
        AND (input_digits = '' OR input_digits <> order_digits) THEN
         RAISE EXCEPTION 'You are not authorized to confirm this order';
+    END IF;
+
+    -- A repeated confirmation is safe only after the same ownership check.
+    IF target.delivery_confirmed_at IS NOT NULL THEN
+        RETURN NEXT target;
+        RETURN;
     END IF;
 
     RETURN QUERY UPDATE public.orders

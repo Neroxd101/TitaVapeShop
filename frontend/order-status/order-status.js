@@ -440,7 +440,7 @@
       });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || 'Unable to confirm delivery.');
-      currentOrder = result.order;
+      currentOrder = { ...currentOrder, delivery_confirmed_at: result.delivery_confirmed_at };
       renderOrder(currentOrder);
     } catch (error) {
       confirmDeliveredBtn.disabled = false;

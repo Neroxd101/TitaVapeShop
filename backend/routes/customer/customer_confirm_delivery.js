@@ -22,7 +22,9 @@ router.post(['/api/customer/orders/confirm-delivery', '/api/orders/confirm-deliv
       p_phone: typeof phone === 'string' ? phone.trim() : null
     });
     if (error) return res.status(400).json({ success: false, error: error.message });
-    return res.json({ success: true, order: Array.isArray(data) ? data[0] : data });
+    const order = Array.isArray(data) ? data[0] : data;
+    if (!order) return res.status(404).json({ success: false, error: 'Order not found.' });
+    return res.json({ success: true, delivery_confirmed_at: order.delivery_confirmed_at });
   } catch (error) {
     console.error('[Customer Confirm Delivery] Error:', error);
     return res.status(500).json({ success: false, error: 'Unable to confirm delivery.' });
