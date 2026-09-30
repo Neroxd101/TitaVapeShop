@@ -17,3 +17,23 @@
         </div>
     </div>
 </div>
+
+<!-- Record a refund already sent by the store -->
+<div id="confirmRefundModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirmRefundTitle">
+    <div class="modal modal-small">
+        <div class="modal-header">
+            <h3 id="confirmRefundTitle">Mark Refunded</h3>
+            <button type="button" class="modal-close" id="closeRefundModal" aria-label="Close refund confirmation">
+                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Confirm that <strong id="confirmRefundAmount"></strong> has already been refunded to the customer.</p>
+            <p class="text-muted">This records the refund and clears the current refund due. It does not send money.</p>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="cancelRefundBtn">Cancel</button>
+            <button type="button" class="btn btn-success" id="confirmRefundBtn">Yes, Mark Refunded</button>
+        </div>
+    </div>
+</div>

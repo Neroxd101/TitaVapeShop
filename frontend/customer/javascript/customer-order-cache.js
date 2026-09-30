@@ -14,6 +14,11 @@ window.CustomerOrderCache = (() => {
         status: order.status,
         created_at: order.created_at,
         customer_name: order.customer_name,
+        items: order.items,
+        cancellation_reason: order.cancellation_reason,
+        refund_due_amount: order.refund_due_amount,
+        refunded_amount: order.refunded_amount,
+        refunded_at: order.refunded_at,
         updated_at: new Date().toISOString()
       };
 

@@ -249,7 +249,8 @@ const TransactionsPrint = {
                 'inventory_delete': 'Inventory Delete',
                 'order_confirm': 'Order Confirm',
                 'order_cancel': 'Order Cancel',
-                'order_payment_update': 'Payment Update'
+                'order_payment_update': 'Payment Update',
+                'order_refund': 'Order Refund'
             };
             filters.push(`Action: ${actionMap[action] || action}`);
         }

@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION public.analytics_modal_total_profit(
 )
 RETURNS JSONB AS $$
 DECLARE
-    v_total DECIMAL(10, 2);
+    v_total NUMERIC;
     v_rows JSONB;
 BEGIN
     WITH filtered_transactions AS (
@@ -34,8 +34,8 @@ BEGIN
                 'Unknown Product'
             ) AS product_name,
             COALESCE((item->>'qty')::NUMERIC, 0) AS qty,
-            COALESCE((item->>'price')::DECIMAL(10, 2), 0) AS price,
-            COALESCE((item->>'cost_price')::DECIMAL(10, 2), inv.cost_price, 0) AS cost_price
+            COALESCE(ROUND((item->>'price')::NUMERIC, 2), 0) AS price,
+            COALESCE(ROUND((item->>'cost_price')::NUMERIC, 2), inv.cost_price, 0) AS cost_price
         FROM filtered_transactions t,
         LATERAL jsonb_array_elements(t.sale_items) AS item
         LEFT JOIN inventory inv ON (

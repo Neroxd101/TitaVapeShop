@@ -3,6 +3,8 @@ const OrdersModals = {
     controller: null,
     pendingOrderId: null,
     pendingPaymentAction: null,
+    pendingRefundAction: null,
+    refundSubmitting: false,
 
     init(controller) {
         this.controller = controller;
@@ -93,15 +95,8 @@ const OrdersModals = {
         confirmVerifyPaymentBtn?.addEventListener('click', () => {
             if (this.pendingPaymentAction) {
                 const { orderId, paymentStatus } = this.pendingPaymentAction;
-                const reasonInput = document.getElementById('verifyPaymentReason');
-                const reason = reasonInput?.value.trim() || '';
-                if (!reason || reason.length > 1000) {
-                    alert('Enter a reason of 1–1000 characters.');
-                    reasonInput?.focus();
-                    return;
-                }
                 closeVerify();
-                this.executeVerifyPayment(orderId, paymentStatus, reason);
+                this.executeVerifyPayment(orderId, paymentStatus);
             }
         });
 
@@ -124,8 +119,8 @@ const OrdersModals = {
             if (this.pendingPaymentAction) {
                 const { orderId, paymentStatus } = this.pendingPaymentAction;
                 const reasonInput = document.getElementById('markUnpaidReason');
-                const reason = reasonInput?.value.trim() || '';
-                if (!reason || reason.length > 1000) {
+                const reason = paymentStatus === 'rejected' ? reasonInput?.value.trim() || '' : null;
+                if (paymentStatus === 'rejected' && (!reason || reason.length > 1000)) {
                     alert('Enter a reason of 1–1000 characters.');
                     reasonInput?.focus();
                     return;
@@ -133,6 +128,21 @@ const OrdersModals = {
                 closeUnpaid();
                 this.executeVerifyPayment(orderId, paymentStatus, reason);
             }
+        });
+
+        const refundModal = document.getElementById('confirmRefundModal');
+        const closeRefund = () => {
+            if (this.refundSubmitting) return;
+            refundModal?.classList.remove('show');
+            this.pendingRefundAction = null;
+        };
+        document.getElementById('closeRefundModal')?.addEventListener('click', closeRefund);
+        document.getElementById('cancelRefundBtn')?.addEventListener('click', closeRefund);
+        refundModal?.addEventListener('click', event => {
+            if (event.target === refundModal) closeRefund();
+        });
+        document.getElementById('confirmRefundBtn')?.addEventListener('click', async () => {
+            if (await this.executeMarkRefunded()) closeRefund();
         });
 
         // Success Modals (Confirmed, Completed, Voided, Cancelled)
@@ -294,10 +304,64 @@ const OrdersModals = {
         };
     },
 
+    markRefunded(orderId) {
+        if (this.refundSubmitting) return;
+        const order = this.controller?.state?.orders.find(o => o.id === orderId);
+        if (!order || order.payment_status !== 'paid' || !(Number(order.refund_due_amount) > 0)
+            || !Array.isArray(order.items) || !order.items.some(window.OrderAvailability.isUnavailable)) return;
+        const modal = document.getElementById('confirmRefundModal');
+        const amount = document.getElementById('confirmRefundAmount');
+        if (!modal || !amount) return;
+        this.pendingRefundAction = {
+            order_id: order.id, refund_amount: Number(order.refund_due_amount),
+            expected_refunded_amount: Number(order.refunded_amount) || 0
+        };
+        amount.textContent = '₱' + this.pendingRefundAction.refund_amount.toLocaleString('en-PH', {
+            minimumFractionDigits: 2, maximumFractionDigits: 2
+        });
+        modal.classList.add('show');
+    },
+
+    async executeMarkRefunded() {
+        if (!this.pendingRefundAction || this.refundSubmitting) return false;
+        this.refundSubmitting = true;
+        const buttons = ['confirmRefundBtn', 'cancelRefundBtn', 'closeRefundModal']
+            .map(id => document.getElementById(id)).filter(Boolean);
+        buttons.forEach(button => { button.disabled = true; });
+        const confirmButton = document.getElementById('confirmRefundBtn');
+        if (confirmButton) confirmButton.textContent = 'Recording…';
+        try {
+            const result = await window.OrdersUpdatePaymentStatus.markRefunded(this.pendingRefundAction);
+            if (!result.success) {
+                alert(result.error || 'Unable to record refund.');
+                return false;
+            }
+            const orderId = this.pendingRefundAction.order_id;
+            const existing = this.controller?.state?.orders.find(o => o.id === orderId);
+            if (existing) Object.assign(existing, result.order);
+            this.controller?.renderOrders();
+            this.controller?.viewOrder(orderId);
+            return true;
+        } catch (error) {
+            console.error('Error recording refund:', error);
+            alert('Unable to record refund. Please try again.');
+            return false;
+        } finally {
+            this.refundSubmitting = false;
+            buttons.forEach(button => { button.disabled = false; });
+            if (confirmButton) confirmButton.textContent = 'Yes, Mark Refunded';
+        }
+    },
+
     verifyPayment(orderId, paymentStatus) {
         this.pendingPaymentAction = { orderId, paymentStatus };
-        const reasonInput = document.getElementById(paymentStatus === 'paid' ? 'verifyPaymentReason' : 'markUnpaidReason');
-        if (reasonInput) reasonInput.value = '';
+        const reasonInput = document.getElementById('markUnpaidReason');
+        if (reasonInput) {
+            reasonInput.value = '';
+            reasonInput.required = paymentStatus === 'rejected';
+        }
+        const reasonGroup = document.getElementById('paymentRejectionReasonGroup');
+        if (reasonGroup) reasonGroup.hidden = paymentStatus !== 'rejected';
 
         if (paymentStatus === 'paid') {
             const modal = document.getElementById('confirmVerifyPaymentModal');
@@ -336,8 +400,7 @@ const OrdersModals = {
             if (result.success) {
                 const existing = this.controller?.state?.orders.find(o => o.id === orderId);
                 if (existing) {
-                    existing.payment_status = paymentStatus;
-                    existing.payment_status_reason = reason;
+                    Object.assign(existing, result.order);
                 }
                 this.controller?.renderOrders();
                 this.controller?.viewOrder(orderId);

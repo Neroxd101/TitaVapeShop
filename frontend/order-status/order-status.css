@@ -397,10 +397,10 @@ body {
   font-size: 11px;
   font-weight: 700;
   color: #007dfe;
-  background: rgba(0, 125, 254, 0.12);
-  border: 1px solid rgba(0, 125, 254, 0.3);
+  background: #162945;
+  border: none;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: 6px;
   letter-spacing: 1px;
   margin-bottom: 8px;
 }
@@ -477,8 +477,8 @@ body {
 }
 
 .copy-num-btn {
-  background: rgba(0, 212, 170, 0.12);
-  border: 1px solid rgba(0, 212, 170, 0.3);
+  background: #163638;
+  border: none;
   color: var(--accent);
   padding: 3px 8px;
   border-radius: 6px;
@@ -557,8 +557,8 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0, 212, 170, 0.1);
-  border: 1px solid rgba(0, 212, 170, 0.3);
+  background: #163638;
+  border: none;
   padding: 12px 14px;
   border-radius: 10px;
   color: var(--text-primary);
@@ -935,3 +935,15 @@ body {
     line-height: 1.4;
   }
 }
+#orderAvailabilityNotice {
+  color: #fbbf24;
+  background: #3c2e29;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.item-unavailable { color: #fbbf24; font-size: 12px; }
+.order-item-row.is-unavailable .item-name { text-decoration: line-through; opacity: 0.7; }

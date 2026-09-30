@@ -83,7 +83,7 @@ router.post('/api/orders/update_status', isAuthenticated, hasRole(['admin', 'sta
             && updatedOrder.items && Array.isArray(updatedOrder.items)) {
             try {
                 const { checkAndSendLowStockAlerts } = require('../setting/lowStockAlert');
-                const alertItems = updatedOrder.items.map(item => ({
+                const alertItems = updatedOrder.items.filter(item => item.unavailable !== true).map(item => ({
                     id: item.id,
                     name: item.name || 'Unknown Item',
                     deducted: parseInt(item.quantity, 10) || 0

@@ -49,7 +49,16 @@ BEGIN
             'user_email', t.user_email,
             'entity_id', t.entity_id,
             'entity_type', t.entity_type,
-            'details', t.details,
+            -- Fill missing cancellation metadata for older entries without
+            -- changing stored audit records or overriding their snapshots.
+            'details', CASE WHEN t.action_type = 'order_cancel' THEN
+                COALESCE(t.details, '{}'::jsonb) || jsonb_strip_nulls(jsonb_build_object(
+                    'order_id', COALESCE(t.details->>'order_id', t.entity_id::TEXT),
+                    'order_type', COALESCE(NULLIF(t.details->>'order_type', ''), o.order_type),
+                    'items_count', COALESCE(NULLIF(t.details->'items_count', 'null'::jsonb),
+                        CASE WHEN jsonb_typeof(t.sale_items) = 'array'
+                            THEN to_jsonb(jsonb_array_length(t.sale_items)) END)
+                )) ELSE t.details END,
             'sale_total', t.sale_total,
             'sale_items', t.sale_items,
             'customer_name', t.customer_name,
@@ -69,7 +78,8 @@ BEGIN
         ORDER BY created_at DESC
         LIMIT p_limit
         OFFSET p_offset
-    ) t;
+    ) t
+    LEFT JOIN public.orders o ON t.action_type = 'order_cancel' AND o.id = t.entity_id;
 
     -- Build result JSONB
     result := jsonb_build_object(

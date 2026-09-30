@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     'sale_void',
     'order_confirm',
     'order_cancel',
-    'order_payment_update'
+    'order_payment_update',
+    'order_refund'
   )),
   
   -- User information (from session)

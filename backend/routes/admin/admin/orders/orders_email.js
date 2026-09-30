@@ -186,10 +186,10 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                         : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #1a1a24; border: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #8b8b9e; margin: 0 auto; line-height: 50px; text-align: center;">📦</div>`
                     }
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}${item.unavailable === true ? ' — Unavailable (excluded from total)' : ''}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${formatPeso(item.price)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.quantity * parseFloat(item.price))}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.unavailable === true ? 0 : item.quantity * parseFloat(item.price))}</td>
             </tr>
         `;
     }).join('');
@@ -298,10 +298,10 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                         : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #1a1a24; border: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #8b8b9e; margin: 0 auto; line-height: 50px; text-align: center;">📦</div>`
                     }
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}${item.unavailable === true ? ' — Unavailable (excluded from total)' : ''}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${formatPeso(item.price)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.quantity * parseFloat(item.price))}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.unavailable === true ? 0 : item.quantity * parseFloat(item.price))}</td>
             </tr>
         `;
     }).join('');
@@ -410,10 +410,10 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                         : `<div style="width: 50px; height: 50px; border-radius: 6px; background-color: #1a1a24; border: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #8b8b9e; margin: 0 auto; line-height: 50px; text-align: center;">📦</div>`
                     }
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff; vertical-align: middle;">${escapeHtml(item.name)}${item.unavailable === true ? ' — Unavailable (excluded from total)' : ''}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff; vertical-align: middle;">${item.quantity}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e; vertical-align: middle;">₱${formatPeso(item.price)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.quantity * parseFloat(item.price))}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff; vertical-align: middle;">₱${formatPeso(item.unavailable === true ? 0 : item.quantity * parseFloat(item.price))}</td>
             </tr>
         `;
     }).join('');

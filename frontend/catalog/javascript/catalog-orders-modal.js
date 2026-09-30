@@ -204,7 +204,10 @@ const CatalogOrdersModal = {
           total_amount: remote.total_amount,
           status: remote.status,
           created_at: remote.created_at,
-          customer_name: remote.customer_name
+          customer_name: remote.customer_name,
+          items: remote.items,
+          cancellation_reason: remote.cancellation_reason,
+          refund_due_amount: remote.refund_due_amount
         }));
 
 
@@ -308,6 +311,13 @@ const CatalogOrdersModal = {
       `;
 
       this.ordersList.appendChild(card);
+      const availabilityNotice = window.OrderAvailability.notice(order);
+      if (availabilityNotice) {
+        const notice = document.createElement('p');
+        notice.textContent = availabilityNotice;
+        notice.style.cssText = 'font-size: 12px; margin: 8px 0 0; color: var(--text-secondary);';
+        card.firstElementChild.appendChild(notice);
+      }
     });
   }
 };

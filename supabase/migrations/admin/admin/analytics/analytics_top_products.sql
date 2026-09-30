@@ -39,7 +39,7 @@ BEGIN
                 'Uncategorized'
             ) as item_category,
             SUM(COALESCE((sale_item->>'qty')::INTEGER, 0)) as units_sold,
-            SUM(COALESCE((sale_item->>'qty')::INTEGER, 0) * COALESCE((sale_item->>'price')::DECIMAL(10, 2), 0)) as revenue
+            SUM(COALESCE((sale_item->>'qty')::INTEGER, 0) * COALESCE(ROUND((sale_item->>'price')::NUMERIC, 2), 0)) as revenue
         FROM filtered_transactions t,
         LATERAL jsonb_array_elements(t.sale_items) as sale_item
         LEFT JOIN inventory inv ON inv.id = (sale_item->>'id')::UUID

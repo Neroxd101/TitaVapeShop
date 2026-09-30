@@ -40,8 +40,8 @@ BEGIN
             date_trunc('day', t.created_at)::date as daily_date,
             COALESCE(SUM(
                 COALESCE((sale_item->>'qty')::INTEGER, 0) * (
-                    COALESCE((sale_item->>'price')::DECIMAL(10, 2), 0) - 
-                    COALESCE((sale_item->>'cost_price')::DECIMAL(10, 2), inv.cost_price, 0)
+                    COALESCE(ROUND((sale_item->>'price')::NUMERIC, 2), 0) -
+                    COALESCE(ROUND((sale_item->>'cost_price')::NUMERIC, 2), inv.cost_price, 0)
                 )
             ), 0) as daily_profit_total
         FROM filtered_transactions t,

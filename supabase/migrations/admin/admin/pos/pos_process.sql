@@ -29,6 +29,8 @@ DECLARE
     sale_total DECIMAL(10,2) := 0;
     sale_id UUID;
 BEGIN
+    -- Coordinate with inventory deletion before reading or locking any rows.
+    PERFORM pg_advisory_xact_lock_shared(746482, 1);
     IF p_items IS NULL OR jsonb_typeof(p_items) <> 'array' OR jsonb_array_length(p_items) = 0 THEN
         RAISE EXCEPTION 'Cart must contain at least one item';
     END IF;

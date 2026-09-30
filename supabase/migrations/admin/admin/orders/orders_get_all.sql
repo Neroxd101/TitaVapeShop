@@ -33,6 +33,11 @@ RETURNS TABLE (
     payment_status VARCHAR(50),
     void_reason TEXT,
     delivery_confirmed_at TIMESTAMPTZ,
+    cancellation_reason TEXT,
+    payment_amount NUMERIC,
+    refund_due_amount NUMERIC,
+    refunded_amount NUMERIC,
+    refunded_at TIMESTAMPTZ,
     total_count BIGINT
 ) AS $$
 BEGIN
@@ -70,6 +75,11 @@ BEGIN
                 LIMIT 1
             ) AS void_reason,
             o.delivery_confirmed_at,
+            o.cancellation_reason,
+            o.payment_amount,
+            o.refund_due_amount,
+            o.refunded_amount,
+            o.refunded_at,
             COUNT(*) OVER() as total_count
         FROM orders o
         WHERE (p_status IS NULL OR o.status = p_status)
@@ -104,6 +114,11 @@ BEGIN
         fo.payment_status,
         fo.void_reason,
         fo.delivery_confirmed_at,
+        fo.cancellation_reason,
+        fo.payment_amount,
+        fo.refund_due_amount,
+        fo.refunded_amount,
+        fo.refunded_at,
         fo.total_count
     FROM filtered_orders fo;
 END;

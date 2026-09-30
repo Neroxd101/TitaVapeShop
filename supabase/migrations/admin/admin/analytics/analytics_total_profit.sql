@@ -9,9 +9,9 @@ CREATE OR REPLACE FUNCTION public.analytics_total_profit(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
-RETURNS DECIMAL(10, 2) AS $$
+RETURNS NUMERIC AS $$
 DECLARE
-    total_profit DECIMAL(10, 2);
+    total_profit NUMERIC;
 BEGIN
     -- Calculate total profit from all non-voided sale transactions:
     -- Profit = sum of (selling_price - cost_price) * quantity for each sold item
@@ -34,8 +34,8 @@ BEGIN
     SELECT COALESCE(
         SUM(
             COALESCE((sale_item->>'qty')::INTEGER, 0) * (
-                COALESCE((sale_item->>'price')::DECIMAL(10, 2), 0) - 
-                COALESCE((sale_item->>'cost_price')::DECIMAL(10, 2), inv.cost_price, 0)
+                COALESCE(ROUND((sale_item->>'price')::NUMERIC, 2), 0) -
+                COALESCE(ROUND((sale_item->>'cost_price')::NUMERIC, 2), inv.cost_price, 0)
             )
         ), 0
     )
@@ -50,7 +50,7 @@ BEGIN
         END
     );
 
-    RETURN total_profit;
+    RETURN ROUND(total_profit, 2);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 REVOKE ALL ON FUNCTION public.analytics_total_profit(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;

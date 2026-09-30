@@ -18,6 +18,8 @@ DECLARE
     inventory_item public.inventory%ROWTYPE;
     logged_items JSONB := '[]'::jsonb;
 BEGIN
+    -- Coordinate with inventory deletion before reading or locking any rows.
+    PERFORM pg_advisory_xact_lock_shared(746482, 1);
     IF p_reason IS NULL OR length(btrim(p_reason)) NOT BETWEEN 1 AND 1000 THEN
         RAISE EXCEPTION 'A void reason of 1–1000 characters is required';
     END IF;
@@ -26,7 +28,8 @@ BEGIN
     IF target.status IS DISTINCT FROM 'completed' THEN
         RAISE EXCEPTION 'Only completed orders can be voided';
     END IF;
-    FOR item IN SELECT value FROM jsonb_array_elements(target.items) ORDER BY value->>'id'
+    FOR item IN SELECT value FROM jsonb_array_elements(target.items)
+        WHERE value->>'unavailable' IS DISTINCT FROM 'true' ORDER BY value->>'id'
     LOOP
         item_id := (item->>'id')::UUID;
         qty := (item->>'quantity')::INTEGER;

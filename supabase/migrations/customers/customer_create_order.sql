@@ -21,6 +21,8 @@ DECLARE
     official_items JSONB := '[]'::jsonb;
     official_total DECIMAL(10,2) := 0;
 BEGIN
+    -- Coordinate with inventory deletion before reading or locking any rows.
+    PERFORM pg_advisory_xact_lock_shared(746482, 1);
     IF p_customer_id IS NULL THEN
         RAISE EXCEPTION 'Customer account is required';
     END IF;

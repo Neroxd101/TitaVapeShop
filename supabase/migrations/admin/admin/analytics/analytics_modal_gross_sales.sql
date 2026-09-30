@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION public.analytics_modal_gross_sales(
 )
 RETURNS JSONB AS $$
 DECLARE
-    v_total DECIMAL(10, 2);
+    v_total NUMERIC;
     v_rows JSONB;
 BEGIN
     WITH filtered_transactions AS (

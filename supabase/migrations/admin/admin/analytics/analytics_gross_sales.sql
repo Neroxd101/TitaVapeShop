@@ -9,9 +9,9 @@ CREATE OR REPLACE FUNCTION public.analytics_gross_sales(
     p_start_date TIMESTAMPTZ DEFAULT NULL,
     p_end_date TIMESTAMPTZ DEFAULT NULL
 )
-RETURNS DECIMAL(10, 2) AS $$
+RETURNS NUMERIC AS $$
 DECLARE
-    total_gross DECIMAL(10, 2);
+    total_gross NUMERIC;
 BEGIN
     -- Calculate total gross sales amount from all non-voided sale transactions
     -- If end_date is provided, include the entire day (up to end of day)
@@ -29,7 +29,7 @@ BEGIN
         AND (p_start_date IS NULL OR t.created_at >= p_start_date)
         AND (p_end_date IS NULL OR t.created_at < (p_end_date + INTERVAL '1 day'));
 
-    RETURN total_gross;
+    RETURN ROUND(total_gross, 2);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 REVOKE ALL ON FUNCTION public.analytics_gross_sales(TIMESTAMPTZ, TIMESTAMPTZ) FROM PUBLIC, anon, authenticated;

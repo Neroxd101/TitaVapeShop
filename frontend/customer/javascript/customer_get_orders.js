@@ -34,7 +34,12 @@ const CustomerGetOrders = {
             total_amount: o.total_amount,
             status: o.status,
             created_at: o.created_at,
-            customer_name: o.customer_name
+            customer_name: o.customer_name,
+            items: o.items,
+            cancellation_reason: o.cancellation_reason,
+            refund_due_amount: o.refund_due_amount,
+            refunded_amount: o.refunded_amount,
+            refunded_at: o.refunded_at
           }));
           localStorage.setItem('tita_recent_orders', JSON.stringify(cached));
         } catch (_) {}

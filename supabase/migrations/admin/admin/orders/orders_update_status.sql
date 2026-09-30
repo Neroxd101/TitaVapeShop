@@ -26,6 +26,8 @@ DECLARE
     inventory_item public.inventory%ROWTYPE;
     logged_items JSONB := '[]'::jsonb;
 BEGIN
+    -- Coordinate with inventory deletion before reading or locking any rows.
+    PERFORM pg_advisory_xact_lock_shared(746482, 1);
     IF p_order_id IS NULL THEN
         RAISE EXCEPTION 'Order ID is required';
     END IF;
@@ -65,7 +67,8 @@ BEGIN
         END IF;
 
         FOR item IN
-            SELECT value FROM jsonb_array_elements(target.items) ORDER BY value->>'id'
+            SELECT value FROM jsonb_array_elements(target.items)
+            WHERE value->>'unavailable' IS DISTINCT FROM 'true' ORDER BY value->>'id'
         LOOP
             item_id := (item->>'id')::UUID;
             item_qty := (item->>'quantity')::INTEGER;
@@ -184,7 +187,8 @@ BEGIN
     RETURN QUERY
     UPDATE public.orders
     SET status = p_status,
-        stock_reserved = CASE WHEN p_status = 'confirmed' THEN TRUE ELSE stock_reserved END,
+        stock_reserved = CASE WHEN p_status = 'confirmed' THEN TRUE
+            WHEN p_status = 'cancelled' THEN FALSE ELSE stock_reserved END,
         updated_at = NOW()
     WHERE id = target.id
     RETURNING *;

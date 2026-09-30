@@ -80,10 +80,21 @@ const OrdersViewModal = {
         };
 
         // Render order details
-        const itemsHtml = Array.isArray(order.items) ? order.items.map(item => `
+        const availabilityNotice = window.OrderAvailability.notice(order, { includeRefundInstructions: false });
+        const firstUnavailableIndex = Array.isArray(order.items)
+            ? order.items.findIndex(window.OrderAvailability.isUnavailable) : -1;
+        const canRefund = order.payment_status === 'paid' && Number(order.refund_due_amount) > 0 && firstUnavailableIndex >= 0;
+        const refundSettled = Number(order.refunded_amount) > 0 && Number(order.refund_due_amount) === 0;
+        const itemsHtml = Array.isArray(order.items) ? order.items.map((item, index) => `
             <div class="order-item-row">
                 <div class="order-item-info">
                     <strong>${escapeHtml(item.name || 'Item')}</strong>
+                    ${window.OrderAvailability.isUnavailable(item) ? (index === firstUnavailableIndex
+                        ? `<div class="order-item-availability-row">
+                            <span class="badge ${refundSettled ? 'badge-success' : 'badge-danger'} order-item-availability${refundSettled ? ' is-refunded' : ''}" role="status">${escapeHtml(availabilityNotice)}</span>
+                            ${canRefund ? `<button type="button" class="btn btn-small btn-success" data-order-action="markRefunded" data-order-id="${escapeHtml(order.id)}">Mark Refunded</button>` : ''}
+                        </div>`
+                        : '<span class="badge badge-danger">Unavailable — excluded from total</span>') : ''}
                     <div class="order-item-meta-row">
                         <span class="order-item-category">${escapeHtml(item.category || '')}</span>
                         ${(item.selected_variation || item.variation) ? `<span class="order-item-variation">Variation: ${escapeHtml(item.selected_variation || item.variation)}</span>` : ''}
@@ -91,7 +102,7 @@ const OrdersViewModal = {
                 </div>
                 <div class="order-item-qty">${item.quantity}x</div>
                 <div class="order-item-price">₱${parseFloat(item.price || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
-                <div class="order-item-subtotal">₱${(parseFloat(item.price || 0) * parseInt(item.quantity || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+                <div class="order-item-subtotal">₱${window.OrderAvailability.lineTotal(item).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
             </div>
         `).join('') : '<p>No items</p>';
 
@@ -116,6 +127,8 @@ const OrdersViewModal = {
 
         const isDelivery = orderType === 'delivery';
         const paymentStatus = order.payment_status || 'unpaid';
+        const availabilityHtml = availabilityNotice && firstUnavailableIndex === -1
+            ? `<p role="status">${escapeHtml(availabilityNotice)}</p>` : '';
         const voidReasonHtml = order.status === 'voided' ? `
             <div class="order-void-reason">
                 <strong>Void Reason</strong>
@@ -171,6 +184,7 @@ const OrdersViewModal = {
                         ` : ''}
                     </div>
                     <div class="order-items-section" style="margin-top: 24px;">
+                        ${availabilityHtml}
                         <h4>Order Items</h4>
                         <div class="order-items-list">
                             ${itemsHtml}
@@ -202,6 +216,7 @@ const OrdersViewModal = {
                         </div>
                     </div>
                     <div class="order-items-section">
+                        ${availabilityHtml}
                         <h4>Order Items</h4>
                         <div class="order-items-list">
                             ${itemsHtml}

@@ -231,7 +231,7 @@ class OrdersController {
         listEl.innerHTML = this.state.orders.map(order => {
             const dateParts = this.formatDateParts(order.created_at);
             const statusBadge = this.getStatusBadge(order.status);
-            const itemsCount = Array.isArray(order.items) ? order.items.length : 0;
+            const itemsCount = Array.isArray(order.items) ? order.items.filter(item => !window.OrderAvailability.isUnavailable(item)).length : 0;
             const itemsSummary = this.getItemsSummary(order.items);
             
             // Display order type based on customer's selection
@@ -273,7 +273,7 @@ class OrdersController {
                             <small class="items-summary">${itemsSummary}</small>
                         </div>
                     </td>
-                    <td class="col-total" data-label="Total"><strong class="total-amount">₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong></td>
+                    <td class="col-total" data-label="Total"><strong class="total-amount">₱${parseFloat(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>${Number(order.refund_due_amount) > 0 ? '<div class="badge badge-warning">Refund due</div>' : Number(order.refunded_amount) > 0 ? '<div class="badge badge-success">Refunded</div>' : ''}</td>
                     <td class="col-type" data-label="Type">${orderTypeBadge}${paymentBadge}</td>
                     <td class="col-status" data-label="Status">${statusBadge}${deliveryConfirmationBadge ? deliveryConfirmationBadge.replace('delivery-confirmation-status', 'delivery-confirmation-status delivery-confirmation-desktop') : ''}</td>
                     <td class="col-date" data-label="Date">
@@ -287,6 +287,7 @@ class OrdersController {
                         <div class="order-actions">
                             ${order.status === 'completed' ? `<button type="button" class="btn btn-small btn-danger" data-order-action="voidOrder" data-order-id="${order.id}">Void</button>` : ''}
                             <button type="button" class="btn btn-small btn-secondary" data-order-action="viewOrder" data-order-id="${order.id}">View</button>
+                            ${window.OrdersModals && order.payment_status === 'paid' && Number(order.refund_due_amount) > 0 && Array.isArray(order.items) && order.items.some(window.OrderAvailability.isUnavailable) ? `<button type="button" class="btn btn-small btn-success" data-order-action="markRefunded" data-order-id="${order.id}">Mark Refunded</button>` : ''}
                             ${order.status === 'pending' 
                                 ? `
                                     <button type="button" class="btn btn-small btn-primary" data-order-action="confirmOrder" data-order-id="${order.id}">Confirm</button>
@@ -399,6 +400,10 @@ class OrdersController {
         if (window.OrdersViewModal?.viewOrder) {
             window.OrdersViewModal.viewOrder(orderId);
         }
+    }
+
+    markRefunded(orderId) {
+        window.OrdersModals?.markRefunded(orderId);
     }
 
     updatePagination() {

@@ -425,6 +425,9 @@
     }
 
     // Items List
+    const availabilityNotice = document.getElementById('orderAvailabilityNotice');
+    availabilityNotice.textContent = window.OrderAvailability.notice(order);
+    availabilityNotice.hidden = !availabilityNotice.textContent;
     renderItems(order.items, order.total_amount);
   }
 
@@ -700,12 +703,14 @@
     itemsArr.forEach(item => {
       const qty = parseInt(item.quantity) || 1;
       const price = parseFloat(item.price) || 0;
-      const subtotal = qty * price;
-      totalQty += qty;
+      const unavailable = window.OrderAvailability.isUnavailable(item);
+      const subtotal = window.OrderAvailability.lineTotal(item);
+      if (!unavailable) totalQty += qty;
       computedSubtotal += subtotal;
 
       const row = document.createElement('div');
       row.className = 'order-item-row';
+      row.classList.toggle('is-unavailable', unavailable);
 
       // Resolve image
       let imgSrc = null;
@@ -735,6 +740,7 @@
           ${imgHtml}
           <div class="item-meta">
             <span class="item-name">${escapeHtml(item.name || 'Item')}</span>
+            ${unavailable ? '<span class="item-unavailable">Unavailable — removed from total</span>' : ''}
             ${selectedVariation ? `<span class="item-variation">Variation: ${escapeHtml(selectedVariation)}</span>` : ''}
             <span class="item-qty-price">${qty} × ${formatMoney(price)}</span>
           </div>
@@ -752,7 +758,7 @@
     });
 
     itemsCountBadge.textContent = `${totalQty} Item${totalQty === 1 ? '' : 's'}`;
-    const finalTotal = parseFloat(totalAmount) || computedSubtotal;
+    const finalTotal = totalAmount != null && Number.isFinite(Number(totalAmount)) ? Number(totalAmount) : computedSubtotal;
     orderSubtotalText.textContent = formatMoney(computedSubtotal);
     orderGrandTotalText.textContent = formatMoney(finalTotal);
   }

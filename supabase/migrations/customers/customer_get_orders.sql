@@ -1,3 +1,4 @@
+DROP FUNCTION IF EXISTS public.customer_get_orders(UUID, INTEGER);
 -- =============================================
 -- Customer Get Orders RPC Function
 -- Returns recent orders for an authenticated customer
@@ -17,7 +18,11 @@ RETURNS TABLE (
     status VARCHAR(50),
     created_at TIMESTAMPTZ,
     items JSONB,
-    items_count NUMERIC
+    items_count NUMERIC,
+    cancellation_reason TEXT,
+    refund_due_amount NUMERIC,
+    refunded_amount NUMERIC,
+    refunded_at TIMESTAMPTZ
 ) AS $$
 BEGIN
     IF p_customer_id IS NULL THEN
@@ -49,7 +54,12 @@ BEGIN
         COALESCE((
             SELECT SUM((i->>'quantity')::NUMERIC)
             FROM jsonb_array_elements(o.items) AS i
-        ), 0::NUMERIC) AS items_count
+            WHERE i->>'unavailable' IS DISTINCT FROM 'true'
+        ), 0::NUMERIC) AS items_count,
+        o.cancellation_reason,
+        o.refund_due_amount,
+        o.refunded_amount,
+        o.refunded_at
     FROM public.orders o
     WHERE o.customer_id = p_customer_id
     ORDER BY o.created_at DESC

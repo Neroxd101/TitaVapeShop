@@ -365,7 +365,8 @@ class TransactionsUI {
         const orders = transactions.filter(t =>
             t.action_type === 'order_confirm' ||
             t.action_type === 'order_cancel' ||
-            t.action_type === 'order_payment_update'
+            t.action_type === 'order_payment_update' ||
+            t.action_type === 'order_refund'
         ).length;
         const inv = transactions.filter(t =>
             t.action_type === 'inventory_add' ||
@@ -437,7 +438,8 @@ class TransactionsUI {
             'category_delete': '<span class="badge badge-delete">Category Deleted</span>',
             'order_confirm': '<span class="badge badge-confirm">Confirm</span>',
             'order_cancel': '<span class="badge badge-cancel">Cancel</span>',
-            'order_payment_update': '<span class="badge badge-payment">Payment</span>'
+            'order_payment_update': '<span class="badge badge-payment">Payment</span>',
+            'order_refund': '<span class="badge badge-payment">Refund</span>'
         };
         return map[type] || `<span class="badge">${type}</span>`;
     }
@@ -540,11 +542,21 @@ class TransactionsUI {
         }
 
         if (t.action_type === 'order_cancel') {
-            const orderId = d.order_id ? d.order_id.substring(0, 8) : 'N/A';
-            const itemsCount = d.items_count || 0;
-            const orderType = d.order_type || 'pickup';
-            const action = d.cancelled_by === 'customer' ? 'Customer cancelled order' : 'Cancelled order';
-            return `${action} ${orderId} (${itemsCount} items, ${orderType})`;
+            const orderId = this.escapeHtml(String(d.order_id || t.entity_id || 'N/A').substring(0, 8));
+            const itemsCount = d.items_count ?? (Array.isArray(t.sale_items) ? t.sale_items.length : null);
+            const summary = [];
+            if (itemsCount !== null) summary.push(`${this.escapeHtml(String(itemsCount))} ${Number(itemsCount) === 1 ? 'item' : 'items'}`);
+            if (d.order_type) summary.push(this.escapeHtml(d.order_type));
+            const action = d.cancelled_by === 'customer' ? 'Customer cancelled order'
+                : d.cancelled_by === 'product_deletion' ? 'Automatically cancelled order' : 'Cancelled order';
+            const reason = d.reason ? ` — ${this.escapeHtml(d.reason)}` : '';
+            return `${action} ${orderId}${summary.length ? ` (${summary.join(', ')})` : ''}${reason}`;
+        }
+
+        if (t.action_type === 'order_refund') {
+            const orderId = this.escapeHtml(String(d.order_id || t.entity_id || 'N/A').substring(0, 8));
+            const amount = Number(d.refund_amount || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return `Refunded ₱${amount} for order ${orderId}`;
         }
 
         if (t.action_type === 'order_payment_update') {
