@@ -331,7 +331,7 @@ const OrdersModals = {
         const confirmButton = document.getElementById('confirmRefundBtn');
         if (confirmButton) confirmButton.textContent = 'Recording…';
         try {
-            const result = await window.OrdersUpdatePaymentStatus.markRefunded(this.pendingRefundAction);
+            const result = await window.OrdersMarkRefunded.markRefunded(this.pendingRefundAction);
             if (!result.success) {
                 alert(result.error || 'Unable to record refund.');
                 return false;
