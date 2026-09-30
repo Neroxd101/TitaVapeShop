@@ -11,7 +11,7 @@ router.put('/inventory/inventory_update_item', isAuthenticated, hasRole(['admin'
             return res.status(500).json({ success: false, error: 'Database not configured' });
         }
 
-        const { id, category, name, variations, description, quantity, cost_price, sale_price, qr_image_url, images } = req.body;
+        const { id, category, name, variations, description, quantity, cost_price, sale_price, qr_image_url, images, expected_quantity, expected_variations } = req.body;
 
         // Validate required fields
         if (!id) {
@@ -29,6 +29,8 @@ router.put('/inventory/inventory_update_item', isAuthenticated, hasRole(['admin'
         if (sale_price !== undefined) rpcParams.p_sale_price = sale_price !== null && sale_price !== undefined ? sale_price : null;
         if (qr_image_url !== undefined) rpcParams.p_qr_image_url = qr_image_url || null;
         if (images !== undefined) rpcParams.p_images = images || null;
+        if (expected_quantity !== undefined) rpcParams.p_expected_quantity = expected_quantity;
+        if (expected_variations !== undefined) rpcParams.p_expected_variations = expected_variations;
 
         // Call database RPC function
         const { data, error } = await supabaseAdmin.rpc('inventory_update_item', rpcParams);

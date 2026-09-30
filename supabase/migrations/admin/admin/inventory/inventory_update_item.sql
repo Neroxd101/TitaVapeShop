@@ -1,5 +1,6 @@
 DROP FUNCTION IF EXISTS public.inventory_update_item(UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB);
 DROP FUNCTION IF EXISTS public.inventory_update_item(UUID, VARCHAR, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB);
+DROP FUNCTION IF EXISTS public.inventory_update_item(UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB, INTEGER, JSONB);
 
 CREATE OR REPLACE FUNCTION public.inventory_update_item(
     p_id UUID,
@@ -11,7 +12,9 @@ CREATE OR REPLACE FUNCTION public.inventory_update_item(
     p_cost_price DECIMAL(10, 2) DEFAULT NULL,
     p_sale_price DECIMAL(10, 2) DEFAULT NULL,
     p_qr_image_url TEXT DEFAULT NULL,
-    p_images JSONB DEFAULT NULL
+    p_images JSONB DEFAULT NULL,
+    p_expected_quantity INTEGER DEFAULT NULL,
+    p_expected_variations JSONB DEFAULT NULL
 )
 RETURNS TABLE (
     id UUID,
@@ -32,9 +35,9 @@ DECLARE
     cur_qty INTEGER;
     cur_cost DECIMAL(10,2);
     cur_profit DECIMAL(10,2);
+    cur_variations JSONB;
 
     new_qty INTEGER;
-    new_variations JSONB;
     new_cost DECIMAL(10,2);
     new_profit DECIMAL(10,2);
     diff_qty INTEGER;
@@ -53,17 +56,26 @@ BEGIN
     END IF;
 
     -- Fetch current inventory
-    SELECT inv.quantity, inv.cost_price, inv.total_profit
-    INTO cur_qty, cur_cost, cur_profit
+    SELECT inv.quantity, inv.cost_price, inv.total_profit, inv.variations
+    INTO cur_qty, cur_cost, cur_profit, cur_variations
     FROM inventory AS inv
-    WHERE inv.id = p_id;
+    WHERE inv.id = p_id
+    FOR UPDATE;
 
     IF NOT FOUND THEN
         RAISE EXCEPTION 'Item not found';
     END IF;
 
     -- Resolve new values
-    new_variations := COALESCE(p_variations, (SELECT inv.variations FROM inventory inv WHERE inv.id = p_id));
+    IF p_quantity IS NOT NULL AND
+       (p_expected_quantity IS NULL OR p_expected_quantity <> cur_qty) THEN
+        RAISE EXCEPTION 'Inventory quantity changed; reload the item before adjusting stock';
+    END IF;
+    IF p_variations IS NOT NULL AND
+       (p_expected_variations IS NULL OR p_expected_variations <> cur_variations) THEN
+        RAISE EXCEPTION 'Inventory variations changed; reload the item before adjusting stock';
+    END IF;
+
     new_qty  := COALESCE(p_quantity, cur_qty);
     new_cost := COALESCE(p_cost_price, cur_cost);
     new_profit := COALESCE(cur_profit, 0);
@@ -88,12 +100,12 @@ BEGIN
         name = COALESCE(p_name, inv.name),
         variations = COALESCE(p_variations, inv.variations),
         description = COALESCE(p_description, inv.description),
-        quantity = new_qty,
+        quantity = CASE WHEN p_quantity IS NULL THEN inv.quantity ELSE new_qty END,
         cost_price = new_cost,
         sale_price = COALESCE(p_sale_price, inv.sale_price),
         qr_image_url = COALESCE(p_qr_image_url, inv.qr_image_url),
         images = COALESCE(p_images, inv.images),
-        total_profit = new_profit,
+        total_profit = CASE WHEN p_quantity IS NULL THEN inv.total_profit ELSE new_profit END,
         updated_at = NOW()
     WHERE inv.id = p_id;
 
@@ -122,9 +134,9 @@ SET search_path = public;
 
 -- Only the trusted backend service-role client may update inventory items.
 REVOKE ALL ON FUNCTION public.inventory_update_item(
-    UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+    UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB, INTEGER, JSONB
 ) FROM PUBLIC, anon, authenticated;
 
 GRANT EXECUTE ON FUNCTION public.inventory_update_item(
-    UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB
+    UUID, VARCHAR, VARCHAR, JSONB, TEXT, INTEGER, DECIMAL, DECIMAL, TEXT, JSONB, INTEGER, JSONB
 ) TO service_role;

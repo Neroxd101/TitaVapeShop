@@ -46,13 +46,23 @@ const InventoryUpdate = {
                 id: InventoryState.editingItemId,
                 category: document.getElementById('itemCategory').value,
                 name: productName,
-                variations: InventoryCreate.getVariationValue(),
                 description: document.getElementById('itemDescription').value.trim() || null,
-                quantity: parseInt(document.getElementById('itemQuantity').value) || 0,
                 cost_price: parseFloat(document.getElementById('itemCostPrice').value) || 0,
                 sale_price: parseFloat(document.getElementById('itemSalePrice').value) || 0,
                 images: imageUrls,
             };
+
+            const quantity = parseInt(document.getElementById('itemQuantity').value, 10) || 0;
+            if (quantity !== oldItem.quantity) {
+                itemData.quantity = quantity;
+                itemData.expected_quantity = oldItem.quantity;
+            }
+            const variations = InventoryCreate.getVariationValue();
+            const originalVariations = oldItem.variations || [];
+            if (JSON.stringify(variations) !== JSON.stringify(originalVariations)) {
+                itemData.variations = variations;
+                itemData.expected_variations = originalVariations;
+            }
 
             const response = await fetch('/inventory/inventory_update_item', {
                 method: 'PUT',
