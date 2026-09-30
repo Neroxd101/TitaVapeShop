@@ -67,7 +67,7 @@ router.post('/sales/email_send_receipt', isAuthenticated, hasRole(['admin', 'sta
 function generateReceiptHtml({ customerName, items, total, cash, change, saleDate }) {
   const itemsHtml = items.map(item => `
     <tr>
-      <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff;">${escapeHtml(item.name)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff;">${escapeHtml(item.name)}${item.selected_variation ? ` — ${escapeHtml(item.selected_variation)}` : ''}</td>
       <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: center; color: #ffffff;">${item.qty}</td>
       <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; color: #8b8b9e;">₱${item.price.toFixed(2)}</td>
       <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; text-align: right; font-weight: 600; color: #ffffff;">₱${(item.qty * item.price).toFixed(2)}</td>

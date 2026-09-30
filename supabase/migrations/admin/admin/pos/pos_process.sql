@@ -23,6 +23,8 @@ AS $$
 DECLARE
     cart_item RECORD;
     inventory_item public.inventory%ROWTYPE;
+    variation_stock INTEGER;
+    variation_matches INTEGER;
     sale_items JSONB := '[]'::jsonb;
     sale_total DECIMAL(10,2) := 0;
     sale_id UUID;
@@ -35,13 +37,29 @@ BEGIN
         RAISE EXCEPTION 'Cash must be zero or greater';
     END IF;
 
-    -- Combine duplicate product IDs and lock products in a consistent order.
+    -- Validate each line before aggregation so negative quantities cannot
+    -- cancel out valid lines for the same product/variation.
+    IF EXISTS (
+        SELECT 1 FROM jsonb_array_elements(p_items) AS entry
+        WHERE jsonb_typeof(entry) IS DISTINCT FROM 'object'
+           OR NULLIF(entry->>'id', '') IS NULL
+           OR COALESCE(entry->>'qty', '') !~ '^[0-9]+$'
+           OR (entry->>'qty')::NUMERIC <= 0
+           OR (entry->>'qty')::NUMERIC > 2147483647
+           OR (entry->'selected_variation' IS NOT NULL
+               AND jsonb_typeof(entry->'selected_variation') NOT IN ('string', 'null'))
+    ) THEN
+        RAISE EXCEPTION 'Every cart item requires a valid id, positive integer quantity, and valid variation';
+    END IF;
+
+    -- Keep variations separate and lock products in a consistent order.
     FOR cart_item IN
         SELECT (value->>'id')::UUID AS id,
+               NULLIF(BTRIM(value->>'selected_variation'), '') AS selected_variation,
                SUM((value->>'qty')::INTEGER)::INTEGER AS qty
         FROM jsonb_array_elements(p_items)
-        GROUP BY (value->>'id')::UUID
-        ORDER BY (value->>'id')::UUID
+        GROUP BY (value->>'id')::UUID, NULLIF(BTRIM(value->>'selected_variation'), '')
+        ORDER BY (value->>'id')::UUID, NULLIF(BTRIM(value->>'selected_variation'), '')
     LOOP
         IF cart_item.id IS NULL OR cart_item.qty IS NULL OR cart_item.qty <= 0 THEN
             RAISE EXCEPTION 'Every cart item requires a valid id and positive quantity';
@@ -56,9 +74,31 @@ BEGIN
             RAISE EXCEPTION 'Inventory item % was not found', cart_item.id;
         END IF;
 
-        IF inventory_item.quantity < cart_item.qty THEN
+        IF inventory_item.quantity IS NULL OR inventory_item.quantity < cart_item.qty THEN
             RAISE EXCEPTION 'Not enough stock for %. Available: %',
                 inventory_item.name, inventory_item.quantity;
+        END IF;
+
+        IF jsonb_array_length(COALESCE(inventory_item.variations, '[]'::jsonb)) > 0 THEN
+            IF cart_item.selected_variation IS NULL THEN
+                RAISE EXCEPTION 'A variation is required for %', inventory_item.name;
+            END IF;
+
+            SELECT COUNT(*), MIN((variation->>'quantity')::INTEGER)
+            INTO variation_matches, variation_stock
+            FROM jsonb_array_elements(inventory_item.variations) AS variation
+            WHERE variation->>'name' = cart_item.selected_variation;
+
+            IF variation_matches <> 1 THEN
+                RAISE EXCEPTION 'Variation % is missing or ambiguous for %',
+                    cart_item.selected_variation, inventory_item.name;
+            END IF;
+            IF variation_stock IS NULL OR variation_stock < cart_item.qty THEN
+                RAISE EXCEPTION 'Not enough stock for % (%). Available: %',
+                    inventory_item.name, cart_item.selected_variation, COALESCE(variation_stock, 0);
+            END IF;
+        ELSIF cart_item.selected_variation IS NOT NULL THEN
+            RAISE EXCEPTION 'Product % does not have variations', inventory_item.name;
         END IF;
 
         sale_total := sale_total + (inventory_item.sale_price * cart_item.qty);
@@ -68,11 +108,25 @@ BEGIN
             'category', inventory_item.category,
             'qty', cart_item.qty,
             'price', inventory_item.sale_price,
-            'cost_price', inventory_item.cost_price
+            'cost_price', inventory_item.cost_price,
+            'selected_variation', cart_item.selected_variation
         ));
 
         UPDATE public.inventory
         SET quantity = quantity - cart_item.qty,
+            variations = CASE
+                WHEN cart_item.selected_variation IS NULL THEN variations
+                ELSE (
+                    SELECT jsonb_agg(
+                        CASE WHEN variation->>'name' = cart_item.selected_variation THEN
+                            jsonb_set(variation, '{quantity}', to_jsonb(variation_stock - cart_item.qty), true)
+                        ELSE variation END
+                        ORDER BY position
+                    )
+                    FROM jsonb_array_elements(inventory_item.variations)
+                        WITH ORDINALITY AS entries(variation, position)
+                )
+            END,
             total_profit = COALESCE(total_profit, 0) + (inventory_item.sale_price * cart_item.qty),
             updated_at = NOW()
         WHERE id = cart_item.id;
