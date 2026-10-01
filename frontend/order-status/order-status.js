@@ -216,6 +216,11 @@
       refInput?.focus();
       return;
     }
+    if (reference.length < 4 || reference.length > 14) {
+      alert('Reference number must be between 4 and 14 characters.');
+      refInput?.focus();
+      return;
+    }
 
     if (!selectedReceiptFile) {
       alert('Please upload a screenshot of your receipt.');

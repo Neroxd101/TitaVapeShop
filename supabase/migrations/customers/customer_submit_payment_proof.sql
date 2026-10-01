@@ -31,8 +31,8 @@ BEGIN
     IF p_order_id IS NULL THEN RAISE EXCEPTION 'Order ID is required'; END IF;
     clean_reference := BTRIM(p_reference);
     clean_url := BTRIM(p_receipt_url);
-    IF clean_reference IS NULL OR length(clean_reference) NOT BETWEEN 4 AND 100 THEN
-        RAISE EXCEPTION 'A valid reference number is required';
+    IF clean_reference IS NULL OR length(clean_reference) NOT BETWEEN 4 AND 14 THEN
+        RAISE EXCEPTION 'Reference number must be between 4 and 14 characters';
     END IF;
     IF clean_url IS NULL OR length(clean_url) > 2000 OR clean_url !~* '^https://[^[:space:]]+$' THEN
         RAISE EXCEPTION 'A valid HTTPS receipt URL is required';

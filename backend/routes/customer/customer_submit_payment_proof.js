@@ -17,6 +17,14 @@ router.post(['/api/customer/orders/submit-payment', '/api/orders/submit-payment'
       });
     }
 
+    const cleanReference = reference.trim();
+    if (cleanReference.length < 4 || cleanReference.length > 14) {
+      return res.status(400).json({
+        success: false,
+        error: 'Reference number must be between 4 and 14 characters.'
+      });
+    }
+
     let customerPayload = null;
     if (req.cookies?.customer_token && process.env.JWT_SECRET) {
       try {
@@ -26,7 +34,7 @@ router.post(['/api/customer/orders/submit-payment', '/api/orders/submit-payment'
 
     const { data, error } = await supabaseAdmin.rpc('customer_submit_payment_proof', {
       p_order_id: order_id,
-      p_reference: reference.trim(),
+      p_reference: cleanReference,
       p_receipt_url: receipt_url.trim(),
       p_customer_id: customerPayload?.id || null,
       p_customer_email: customerPayload?.email || null,
