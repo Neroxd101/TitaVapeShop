@@ -1455,6 +1455,11 @@
 }
 
 /* Void Order Modal & Reason Textarea */
+#paymentRejectionCustomReasonGroup,
+#voidCustomReasonGroup {
+  margin-top: 16px;
+}
+
 .void-reason-group {
   margin-bottom: 0;
   display: flex;

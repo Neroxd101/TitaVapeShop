@@ -162,14 +162,28 @@
             </div>
             <div class="modal-body">
                 <p>Are you sure you want to void this order?</p>
-                <p class="text-muted" style="margin-bottom: 18px;">All items will be returned to stock and recorded as voided. <strong>This action cannot be undone.</strong></p>
+                <p class="text-muted" style="margin-bottom: 18px;">Existing products and variations will be restocked, and the order recorded as voided. <strong>This action cannot be undone.</strong></p>
 
                 <div class="form-group void-reason-group">
                     <div class="void-reason-header">
-                        <label for="voidReason" class="void-reason-label">Reason for Voiding <span class="required-star">*</span></label>
-                        <span id="voidReasonCharCount" class="void-char-count">0 / 1000</span>
+                        <label for="voidReasonSelect" class="void-reason-label">Reason for Voiding <span class="required-star">*</span></label>
                     </div>
-                    <textarea id="voidReason" class="void-reason-textarea" required maxlength="1000" rows="3" placeholder="Explain why this order is being voided (e.g. customer cancelled, wrong item)..."></textarea>
+                    <select id="voidReasonSelect" required>
+                        <option value="">Select a reason</option>
+                        <option value="Customer requested cancellation">Customer requested cancellation</option>
+                        <option value="Duplicate order">Duplicate order</option>
+                        <option value="Wrong item or variation">Wrong item or variation</option>
+                        <option value="Incorrect quantity">Incorrect quantity</option>
+                        <option value="Incorrect price or total">Incorrect price or total</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div id="voidCustomReasonGroup" hidden>
+                        <div class="void-reason-header">
+                            <label for="voidReason" class="void-reason-label">Explain the reason <span class="required-star">*</span></label>
+                            <span id="voidReasonCharCount" class="void-char-count">0 / 1000</span>
+                        </div>
+                        <textarea id="voidReason" class="void-reason-textarea" maxlength="1000" rows="3" placeholder="Explain why this order is being voided"></textarea>
+                    </div>
                     <p id="voidOrderError" class="void-order-error" role="alert"></p>
                 </div>
             </div>
@@ -282,9 +296,20 @@
             <div class="modal-body">
                 <p id="markUnpaidModalMessage">Mark this order payment as unpaid?</p>
                 <p class="text-muted" id="markUnpaidModalSubtext">The order payment status will be reverted to unpaid or rejected.</p>
-                <div id="paymentRejectionReasonGroup" hidden>
-                    <label for="markUnpaidReason">Rejection reason <span class="required-star">*</span></label>
-                    <textarea id="markUnpaidReason" class="void-reason-textarea" maxlength="1000" rows="3" placeholder="Explain why this payment proof was rejected"></textarea>
+                <div id="paymentRejectionReasonGroup" class="form-group" hidden>
+                    <label for="markUnpaidReasonSelect">Rejection reason <span class="required-star">*</span></label>
+                    <select id="markUnpaidReasonSelect">
+                        <option value="">Select a reason</option>
+                        <option value="Receipt is unclear">Receipt is unclear</option>
+                        <option value="Reference number does not match">Reference number does not match</option>
+                        <option value="Incorrect payment amount">Incorrect payment amount</option>
+                        <option value="Payment could not be verified">Payment could not be verified</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div id="paymentRejectionCustomReasonGroup" hidden>
+                        <label for="markUnpaidReason">Explain the reason <span class="required-star">*</span></label>
+                        <textarea id="markUnpaidReason" class="void-reason-textarea" maxlength="1000" rows="3" placeholder="Explain why this payment proof was rejected"></textarea>
+                    </div>
                 </div>
             </div>
             <div class="modal-actions">

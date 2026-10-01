@@ -105,6 +105,7 @@ const OrdersModals = {
         const closeMarkUnpaidModal = document.getElementById('closeMarkUnpaidModal');
         const cancelMarkUnpaidBtn = document.getElementById('cancelMarkUnpaidBtn');
         const confirmMarkUnpaidBtn = document.getElementById('confirmMarkUnpaidBtn');
+        document.getElementById('markUnpaidReasonSelect')?.addEventListener('change', () => this.updatePaymentRejectionReason());
 
         const closeUnpaid = () => {
             confirmMarkUnpaidModal?.classList.remove('show');
@@ -119,7 +120,16 @@ const OrdersModals = {
             if (this.pendingPaymentAction) {
                 const { orderId, paymentStatus } = this.pendingPaymentAction;
                 const reasonInput = document.getElementById('markUnpaidReason');
-                const reason = paymentStatus === 'rejected' ? reasonInput?.value.trim() || '' : null;
+                const reasonSelect = document.getElementById('markUnpaidReasonSelect');
+                const selectedReason = reasonSelect?.value || '';
+                if (paymentStatus === 'rejected' && !selectedReason) {
+                    alert('Select a rejection reason.');
+                    reasonSelect?.focus();
+                    return;
+                }
+                const reason = paymentStatus === 'rejected'
+                    ? (selectedReason === 'other' ? reasonInput?.value.trim() || '' : selectedReason)
+                    : null;
                 if (paymentStatus === 'rejected' && (!reason || reason.length > 1000)) {
                     alert('Enter a reason of 1–1000 characters.');
                     reasonInput?.focus();
@@ -251,6 +261,8 @@ const OrdersModals = {
         const button = document.getElementById('submitVoidOrder');
         const errorBox = document.getElementById('voidOrderError');
         const reasonInput = document.getElementById('voidReason');
+        const reasonSelect = document.getElementById('voidReasonSelect');
+        const customReasonGroup = document.getElementById('voidCustomReasonGroup');
         const charCount = document.getElementById('voidReasonCharCount');
         const closeBtn = document.getElementById('closeVoidOrderModal');
         const dismissBtn = document.getElementById('dismissVoidOrder');
@@ -259,8 +271,19 @@ const OrdersModals = {
         form?.reset();
         if (errorBox) errorBox.textContent = '';
         if (charCount) charCount.textContent = '0 / 1000';
+        const updateReasonFields = () => {
+            const isOther = reasonSelect?.value === 'other';
+            if (customReasonGroup) customReasonGroup.hidden = !isOther;
+            if (reasonInput) {
+                reasonInput.required = isOther;
+                reasonInput.disabled = !isOther;
+            }
+            if (errorBox) errorBox.textContent = '';
+        };
+        if (reasonSelect) reasonSelect.onchange = updateReasonFields;
+        updateReasonFields();
         modal.classList.add('show');
-        reasonInput?.focus();
+        reasonSelect?.focus();
 
         const closeModal = () => {
             if (!button.disabled) modal.classList.remove('show');
@@ -282,7 +305,13 @@ const OrdersModals = {
         form.onsubmit = async (event) => {
             event.preventDefault();
             if (button.disabled) return;
-            const reason = reasonInput ? reasonInput.value.trim() : '';
+            const selectedReason = reasonSelect?.value || '';
+            if (!selectedReason) {
+                if (errorBox) errorBox.textContent = 'Please select a reason for voiding.';
+                reasonSelect?.focus();
+                return;
+            }
+            const reason = selectedReason === 'other' ? reasonInput?.value.trim() || '' : selectedReason;
             if (!reason || reason.length > 1000) {
                 if (errorBox) errorBox.textContent = 'Please enter a reason for voiding (1–1000 characters).';
                 reasonInput?.focus();
@@ -353,13 +382,31 @@ const OrdersModals = {
         }
     },
 
+    updatePaymentRejectionReason() {
+        const isOther = this.pendingPaymentAction?.paymentStatus === 'rejected'
+            && document.getElementById('markUnpaidReasonSelect')?.value === 'other';
+        const customGroup = document.getElementById('paymentRejectionCustomReasonGroup');
+        if (customGroup) customGroup.hidden = !isOther;
+        const reasonInput = document.getElementById('markUnpaidReason');
+        if (reasonInput) {
+            reasonInput.required = isOther;
+            reasonInput.disabled = !isOther;
+        }
+    },
+
     verifyPayment(orderId, paymentStatus) {
         this.pendingPaymentAction = { orderId, paymentStatus };
         const reasonInput = document.getElementById('markUnpaidReason');
         if (reasonInput) {
             reasonInput.value = '';
-            reasonInput.required = paymentStatus === 'rejected';
         }
+        const reasonSelect = document.getElementById('markUnpaidReasonSelect');
+        if (reasonSelect) {
+            reasonSelect.value = '';
+            reasonSelect.required = paymentStatus === 'rejected';
+            reasonSelect.disabled = paymentStatus !== 'rejected';
+        }
+        this.updatePaymentRejectionReason();
         const reasonGroup = document.getElementById('paymentRejectionReasonGroup');
         if (reasonGroup) reasonGroup.hidden = paymentStatus !== 'rejected';
 
