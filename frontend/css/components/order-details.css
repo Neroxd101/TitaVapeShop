@@ -131,7 +131,9 @@
 
 .btn[data-order-action="markRefunded"],
 .btn[data-order-action="verifyPayment"][data-payment-status="paid"],
-#confirmVerifyPaymentBtn {
+#confirmVerifyPaymentBtn,
+#confirmCompleteOrderBtn,
+#closeOrderCompletedSuccessBtn {
   background: #16382c;
   color: var(--success);
   border: none;
@@ -139,7 +141,9 @@
 
 .btn[data-order-action="markRefunded"]:hover,
 .btn[data-order-action="verifyPayment"][data-payment-status="paid"]:hover,
-#confirmVerifyPaymentBtn:hover {
+#confirmVerifyPaymentBtn:hover,
+#confirmCompleteOrderBtn:hover,
+#closeOrderCompletedSuccessBtn:hover {
   background: #1b4637;
 }
 
