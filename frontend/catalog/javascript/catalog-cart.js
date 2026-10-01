@@ -260,8 +260,12 @@ const CatalogCart = {
                         <div class="cart-name">${this.escapeHtml(item.name)}${item.selected_variation ? ` <span class="cart-variation">(${this.escapeHtml(item.selected_variation)})</span>` : ''}</div>
                         <div class="cart-price">${this.escapeHtml(item.category)} • ₱${parseFloat(item.sale_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                     </div>
-                    <input type="number" class="cart-qty-input" data-cart-index="${cartIndex}"
-                           value="${item.quantity}" min="1" max="${maxQuantity}">
+                    <div class="catalog-cart-qty-stepper">
+                        <button type="button" class="catalog-cart-qty-step" data-step="-1" aria-label="Decrease quantity" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
+                        <input type="number" class="cart-qty-input" data-cart-index="${cartIndex}"
+                               value="${item.quantity}" min="1" max="${maxQuantity}" aria-label="Quantity">
+                        <button type="button" class="catalog-cart-qty-step" data-step="1" aria-label="Increase quantity" ${item.quantity >= maxQuantity ? 'disabled' : ''}>+</button>
+                    </div>
                     <div class="cart-subtotal">₱${(parseFloat(item.sale_price) * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
                     <button type="button" class="cart-remove-btn" data-cart-index="${cartIndex}" title="Remove">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -284,6 +288,9 @@ const CatalogCart = {
                 // Reflect stock clamping immediately without rebuilding the row and
                 // interrupting keyboard input.
                 input.value = String(item.quantity);
+                const stepper = input.closest('.catalog-cart-qty-stepper');
+                stepper.querySelector('[data-step="-1"]').disabled = item.quantity <= 1;
+                stepper.querySelector('[data-step="1"]').disabled = item.quantity >= Number(input.max);
                 const subtotal = input.closest('.cart-row')?.querySelector('.cart-subtotal');
                 if (subtotal) {
                     subtotal.textContent = `₱${(parseFloat(item.sale_price) * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
@@ -297,6 +304,16 @@ const CatalogCart = {
                 const quantity = parseInt(input.value, 10) || 1;
                 const item = this.cart[Number(input.dataset.cartIndex)];
                 if (item) this.updateQuantity(item.id, quantity, true, item.selected_variation || null);
+            });
+        });
+
+        cartItems.querySelectorAll('.catalog-cart-qty-step').forEach(button => {
+            button.addEventListener('click', () => {
+                const input = button.closest('.catalog-cart-qty-stepper').querySelector('.cart-qty-input');
+                const item = this.cart[Number(input.dataset.cartIndex)];
+                if (!item) return;
+                input.value = String(Math.max(1, item.quantity + Number(button.dataset.step)));
+                input.dispatchEvent(new Event('input', { bubbles: true }));
             });
         });
 
