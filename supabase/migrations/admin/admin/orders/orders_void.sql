@@ -51,18 +51,20 @@ BEGIN
             RAISE EXCEPTION 'Cannot restore missing inventory item %', item_id;
         END IF;
 
-        IF item_variation IS NOT NULL AND NOT EXISTS (
-            SELECT 1
-            FROM jsonb_array_elements(COALESCE(inventory_item.variations, '[]'::jsonb)) AS variation
-            WHERE variation->>'name' = item_variation
-        ) THEN
+        IF jsonb_array_length(COALESCE(inventory_item.variations, '[]'::jsonb)) > 0 AND (
+            item_variation IS NULL OR NOT EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements(COALESCE(inventory_item.variations, '[]'::jsonb)) AS variation
+                WHERE variation->>'name' = item_variation
+        )) THEN
             RAISE EXCEPTION 'Cannot restore missing variation % for %', item_variation, inventory_item.name;
         END IF;
 
         UPDATE public.inventory
         SET quantity = quantity + qty,
             variations = CASE
-                WHEN item_variation IS NULL THEN variations
+                WHEN item_variation IS NULL
+                    OR jsonb_array_length(COALESCE(inventory_item.variations, '[]'::jsonb)) = 0 THEN variations
                 ELSE (
                     SELECT jsonb_agg(
                         CASE

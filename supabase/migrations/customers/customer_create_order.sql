@@ -1,9 +1,8 @@
 -- Customer checkout. Pending orders are availability requests. Stock is
 -- reserved atomically when an admin confirms the order.
 DROP FUNCTION IF EXISTS public.customer_create_order(UUID, VARCHAR, VARCHAR, JSONB, DECIMAL, VARCHAR, VARCHAR);
-DROP FUNCTION IF EXISTS public.customer_create_order(UUID, JSONB, VARCHAR);
 
-CREATE FUNCTION public.customer_create_order(
+CREATE OR REPLACE FUNCTION public.customer_create_order(
     p_customer_id UUID,
     p_items JSONB,
     p_order_type VARCHAR(20) DEFAULT 'pickup'
@@ -42,12 +41,16 @@ BEGIN
     END IF;
 
     FOR requested IN
-        SELECT (value->>'id')::UUID AS id,
-               NULLIF(BTRIM(value->>'selected_variation'), '') AS selected_variation,
-               SUM((value->>'quantity')::INTEGER)::INTEGER AS quantity
-        FROM jsonb_array_elements(p_items)
-        GROUP BY (value->>'id')::UUID, NULLIF(BTRIM(value->>'selected_variation'), '')
-        ORDER BY (value->>'id')::UUID, NULLIF(BTRIM(value->>'selected_variation'), '')
+        -- Clear stale labels before grouping so the same plain product cannot
+        -- evade its stock limit through different client-supplied variations.
+        SELECT (entry.value->>'id')::UUID AS id,
+               CASE WHEN jsonb_array_length(COALESCE(inv.variations, '[]'::jsonb)) > 0
+                   THEN NULLIF(BTRIM(entry.value->>'selected_variation'), '') END AS selected_variation,
+               SUM((entry.value->>'quantity')::INTEGER)::INTEGER AS quantity
+        FROM jsonb_array_elements(p_items) AS entry(value)
+        LEFT JOIN public.inventory inv ON inv.id = (entry.value->>'id')::UUID
+        GROUP BY 1, 2
+        ORDER BY 1, 2
     LOOP
         IF requested.id IS NULL OR requested.quantity IS NULL OR requested.quantity <= 0 THEN
             RAISE EXCEPTION 'Every order item requires a valid id and positive quantity';

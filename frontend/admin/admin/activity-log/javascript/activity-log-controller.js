@@ -461,6 +461,9 @@ class TransactionsUI {
         }
 
         if (t.action_type === 'inventory_edit') {
+            if (t.entity_type === 'order' && d.cancelled_by === 'variation_deletion') {
+                return `Unavailable variations removed from order ${this.escapeHtml(String(d.order_id || t.entity_id).substring(0, 8))}`;
+            }
             const itemName = this.escapeHtml(d.new?.name || d.old?.name || 'Item');
 
             if (d.changes && Object.keys(d.changes).length > 0) {
@@ -548,7 +551,7 @@ class TransactionsUI {
             if (itemsCount !== null) summary.push(`${this.escapeHtml(String(itemsCount))} ${Number(itemsCount) === 1 ? 'item' : 'items'}`);
             if (d.order_type) summary.push(this.escapeHtml(d.order_type));
             const action = d.cancelled_by === 'customer' ? 'Customer cancelled order'
-                : d.cancelled_by === 'product_deletion' ? 'Automatically cancelled order' : 'Cancelled order';
+                : ['product_deletion', 'variation_deletion'].includes(d.cancelled_by) ? 'Automatically cancelled order' : 'Cancelled order';
             const reason = d.reason ? ` — ${this.escapeHtml(d.reason)}` : '';
             return `${action} ${orderId}${summary.length ? ` (${summary.join(', ')})` : ''}${reason}`;
         }

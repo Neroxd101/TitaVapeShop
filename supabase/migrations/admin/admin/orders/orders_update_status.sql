@@ -3,9 +3,7 @@
 -- Existing confirmed orders retain false and use the old completion deduction.
 ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS stock_reserved BOOLEAN NOT NULL DEFAULT FALSE;
 
-DROP FUNCTION IF EXISTS public.orders_update_status(UUID, VARCHAR, VARCHAR);
-
-CREATE FUNCTION public.orders_update_status(
+CREATE OR REPLACE FUNCTION public.orders_update_status(
     p_order_id UUID,
     p_status VARCHAR(50),
     p_user_email VARCHAR(255) DEFAULT NULL
@@ -95,10 +93,13 @@ BEGIN
                 RAISE EXCEPTION 'Not enough stock for %. Available: %', inventory_item.name, inventory_item.quantity;
             END IF;
 
-            IF item_variation IS NOT NULL THEN
-                IF inventory_item.variations IS NULL
-                    OR jsonb_typeof(inventory_item.variations) <> 'array' THEN
-                    RAISE EXCEPTION 'Variation % was not found for %', item_variation, inventory_item.name;
+            -- Completion consumes an existing reservation, so later variation
+            -- edits cannot invalidate it. Stock changes use the current model:
+            -- products with no variations use their aggregate quantity.
+            IF NOT (p_status = 'completed' AND target.stock_reserved)
+                AND jsonb_array_length(COALESCE(inventory_item.variations, '[]'::jsonb)) > 0 THEN
+                IF item_variation IS NULL THEN
+                    RAISE EXCEPTION 'A variation is required for %', inventory_item.name;
                 END IF;
 
                 SELECT (variation->>'quantity')::INTEGER
@@ -123,7 +124,9 @@ BEGIN
                     WHEN p_status = 'cancelled' THEN item_qty
                     ELSE 0 END,
                 variations = CASE
-                    WHEN item_variation IS NULL OR (p_status = 'completed' AND target.stock_reserved) THEN variations
+                    WHEN item_variation IS NULL
+                        OR jsonb_array_length(COALESCE(inventory_item.variations, '[]'::jsonb)) = 0
+                        OR (p_status = 'completed' AND target.stock_reserved) THEN variations
                     ELSE (
                         SELECT jsonb_agg(
                             CASE

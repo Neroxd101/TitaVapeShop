@@ -118,6 +118,9 @@ function getActivityTitle(transaction) {
   }
 
   if (actionType === 'inventory_edit') {
+    if (transaction.entity_type === 'order' && d.cancelled_by === 'variation_deletion') {
+      return `Unavailable variations removed from order ${escapeHtml(String(d.order_id || transaction.entity_id).substring(0, 8))}`;
+    }
     const itemName = escapeHtml(d.new?.name || d.old?.name || 'Item');
     return `Edited "${itemName}"`;
   }
@@ -147,7 +150,7 @@ function getActivityTitle(transaction) {
 
   if (actionType === 'order_cancel') {
     const orderId = escapeHtml(String(d.order_id || transaction.entity_id || 'N/A').substring(0, 8));
-    const action = d.cancelled_by === 'product_deletion' ? 'Automatically cancelled order'
+    const action = ['product_deletion', 'variation_deletion'].includes(d.cancelled_by) ? 'Automatically cancelled order'
       : d.cancelled_by === 'customer' ? 'Customer cancelled order' : 'Cancelled order';
     return `${action} ${orderId}`;
   }

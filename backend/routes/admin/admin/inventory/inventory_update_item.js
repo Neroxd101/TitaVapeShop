@@ -17,12 +17,15 @@ router.put('/inventory/inventory_update_item', isAuthenticated, hasRole(['admin'
         if (!id) {
             return res.status(400).json({ success: false, error: 'Item ID is required' });
         }
+        if (variations !== undefined && !Array.isArray(variations)) {
+            return res.status(400).json({ success: false, error: 'Variations must be an array' });
+        }
 
         // Build RPC parameters - only include defined values, convert undefined to null
         const rpcParams = { p_id: id };
         if (category !== undefined) rpcParams.p_category = category || null;
         if (name !== undefined) rpcParams.p_name = name || null;
-        if (variations !== undefined) rpcParams.p_variations = Array.isArray(variations) ? variations : [];
+        if (variations !== undefined) rpcParams.p_variations = variations;
         if (description !== undefined) rpcParams.p_description = description || null;
         if (quantity !== undefined) rpcParams.p_quantity = quantity !== null && quantity !== undefined ? quantity : null;
         if (cost_price !== undefined) rpcParams.p_cost_price = cost_price !== null && cost_price !== undefined ? cost_price : null;
