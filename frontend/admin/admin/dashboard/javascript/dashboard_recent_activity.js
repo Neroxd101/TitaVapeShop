@@ -162,6 +162,11 @@ function getActivityMeta(transaction) {
   const actionType = normalizeActionType(transaction.action_type);
   const d = transaction.details || {};
 
+  if (actionType === 'sale_void' && Array.isArray(d.restock_skipped_items) && d.restock_skipped_items.length) {
+    const skipped = d.restock_skipped_items.length;
+    return `Restocking skipped for ${skipped} deleted item${skipped === 1 ? '' : 's'}`;
+  }
+
   if (actionType === 'order_cancel') {
     const parts = [];
     const itemsCount = d.items_count ?? (Array.isArray(transaction.sale_items) ? transaction.sale_items.length : null);
