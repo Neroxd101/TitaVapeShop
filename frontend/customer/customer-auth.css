@@ -169,6 +169,10 @@
   width: 100%;
   padding-right: 44px !important;
 }
+.customer-reg-grid .customer-password-wrap input {
+  flex: 1 1 auto;
+  padding-right: 44px !important;
+}
 .customer-password-toggle {
   position: absolute;
   right: 6px;

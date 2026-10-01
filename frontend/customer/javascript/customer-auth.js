@@ -169,6 +169,16 @@ const CustomerAuth = {
         toggleBtn.setAttribute('aria-label', 'Show password');
       }
     } else if (view === 'register') {
+      ['customerRegPassword', 'customerRegConfirmPassword'].forEach(inputId => {
+        const input = document.getElementById(inputId);
+        const toggle = document.querySelector(`[aria-controls="${inputId}"]`);
+        if (input) input.type = 'password';
+        if (toggle) {
+          toggle.classList.remove('is-visible');
+          toggle.setAttribute('aria-pressed', 'false');
+          toggle.setAttribute('aria-label', 'Show password');
+        }
+      });
       const nameInput = document.getElementById('customerRegName');
       if (nameInput) setTimeout(() => nameInput.focus(), 50);
       const bday = document.getElementById('customerRegBirthday');
@@ -374,6 +384,20 @@ const CustomerAuth = {
         toggleSignInPassword.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
       });
     }
+
+    // Create Account Password Toggles
+    ['customerRegPassword', 'customerRegConfirmPassword'].forEach(inputId => {
+      const input = document.getElementById(inputId);
+      const toggle = document.querySelector(`[aria-controls="${inputId}"]`);
+      if (!input || !toggle) return;
+      toggle.addEventListener('click', () => {
+        const visible = input.type === 'password';
+        input.type = visible ? 'text' : 'password';
+        toggle.classList.toggle('is-visible', visible);
+        toggle.setAttribute('aria-pressed', String(visible));
+        toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+      });
+    });
 
     // Sign In Form Submission
     const signInForm = document.getElementById('customerSignInForm');
