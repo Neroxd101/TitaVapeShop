@@ -55,11 +55,11 @@ AS $$
 DECLARE confirmed_count INTEGER;
 BEGIN
     UPDATE public.orders
-    SET delivery_confirmed_at = updated_at + INTERVAL '7 days'
+    SET delivery_confirmed_at = updated_at + INTERVAL '3 days'
     WHERE order_type = 'delivery'
       AND status = 'completed'
       AND delivery_confirmed_at IS NULL
-      AND updated_at <= NOW() - INTERVAL '7 days';
+      AND updated_at <= NOW() - INTERVAL '3 days';
     GET DIAGNOSTICS confirmed_count = ROW_COUNT;
     RETURN confirmed_count;
 END;
