@@ -124,85 +124,30 @@ const CatalogProductModal = {
     },
 
     /**
-     * Handle modal image error
+     * Advance through image fallbacks, stopping after the placeholder.
      */
     handleModalImageError(imgElement) {
-        const fallbacksJson = imgElement.getAttribute('data-fallbacks');
-        let fallbacks;
-        
-        if (fallbacksJson) {
-            try {
-                fallbacks = JSON.parse(fallbacksJson);
-            } catch (e) {
-                const originalUrl = imgElement.getAttribute('data-original-url');
-                if (originalUrl) {
-                    fallbacks = window.CatalogImages.getFallbackUrls(originalUrl, 800);
-                }
-            }
+        const fallbacks = JSON.parse(imgElement.getAttribute('data-fallbacks') || '[]');
+        const nextIndex = Number(imgElement.getAttribute('data-tried-index') || '0') + 1;
+        imgElement.setAttribute('data-tried-index', String(nextIndex));
+        if (nextIndex < fallbacks.length) {
+            imgElement.src = fallbacks[nextIndex];
         } else {
-            const originalUrl = imgElement.getAttribute('data-original-url');
-            if (originalUrl) {
-                fallbacks = window.CatalogImages.getFallbackUrls(originalUrl, 800);
-            } else {
-                imgElement.src = '/img/placeholder-product.png';
-                return;
-            }
-        }
-        
-        const currentSrc = imgElement.src;
-        const currentIndex = fallbacks.indexOf(currentSrc);
-        
-        if (currentIndex >= 0 && currentIndex < fallbacks.length - 1) {
-            imgElement.src = fallbacks[currentIndex + 1];
-            imgElement.setAttribute('data-fallbacks', JSON.stringify(fallbacks));
-        } else {
+            imgElement.onerror = null;
             imgElement.src = '/img/placeholder-product.png';
         }
     },
 
     /**
-     * Handle thumbnail image error
+     * Set image listeners and fallback state before starting the request.
      */
-    handleThumbnailError(imgElement) {
-        const fallbacksJson = imgElement.getAttribute('data-fallbacks');
-        let fallbacks;
-        
-        if (fallbacksJson) {
-            try {
-                const unescaped = fallbacksJson.replace(/&quot;/g, '"');
-                fallbacks = JSON.parse(unescaped);
-            } catch (e) {
-                const originalUrl = imgElement.getAttribute('data-original-url');
-                if (originalUrl) {
-                    const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
-                    fallbacks = window.CatalogImages.getFallbackUrls(unescapedUrl, 200);
-                }
-            }
-        } else {
-            const originalUrl = imgElement.getAttribute('data-original-url');
-            if (originalUrl) {
-                const unescapedUrl = originalUrl.replace(/&quot;/g, '"').replace(/\\'/g, "'");
-                fallbacks = window.CatalogImages.getFallbackUrls(unescapedUrl, 200);
-            } else {
-                imgElement.src = '/img/placeholder-product.png';
-                return;
-            }
-        }
-        
-        if (!fallbacks || fallbacks.length === 0) {
-            imgElement.src = '/img/placeholder-product.png';
-            return;
-        }
-        
-        const triedIndex = parseInt(imgElement.getAttribute('data-tried-index') || '0');
-        
-        if (triedIndex < fallbacks.length - 1) {
-            const nextIndex = triedIndex + 1;
-            imgElement.src = fallbacks[nextIndex];
-            imgElement.setAttribute('data-tried-index', nextIndex.toString());
-        } else {
-            imgElement.src = '/img/placeholder-product.png';
-        }
+    loadImage(imgElement, url, size) {
+        const fallbacks = window.CatalogImages.getFallbackUrls(url, size);
+        imgElement.setAttribute('data-original-url', url || '');
+        imgElement.setAttribute('data-fallbacks', JSON.stringify(fallbacks));
+        imgElement.setAttribute('data-tried-index', '0');
+        imgElement.onerror = () => this.handleModalImageError(imgElement);
+        imgElement.src = fallbacks[0];
     },
 
     /**
@@ -215,16 +160,12 @@ const CatalogProductModal = {
             return;
         }
 
-        const fallbacks = window.CatalogImages.getFallbackUrls(url, 800);
-        
-        mainImageEl.setAttribute('data-original-url', url);
-        mainImageEl.setAttribute('data-fallbacks', JSON.stringify(fallbacks));
-        mainImageEl.src = fallbacks[0];
-        mainImageEl.onerror = () => this.handleModalImageError(mainImageEl);
+        this.loadImage(mainImageEl, url, 800);
 
         // Update active thumbnail
-        document.querySelectorAll('.modal-thumbnail').forEach((thumb, index) => {
+        this.modalContent.querySelectorAll('.modal-thumbnail').forEach((thumb, index) => {
             thumb.classList.toggle('active', index === activeIndex);
+            thumb.setAttribute('aria-pressed', String(index === activeIndex));
         });
     },
 
@@ -241,7 +182,6 @@ const CatalogProductModal = {
 
         const images = window.CatalogImages.parseImages(product);
         const mainImageUrl = images.length > 0 ? images[0] : null;
-        const mainImageFallbacks = mainImageUrl ? window.CatalogImages.getFallbackUrls(mainImageUrl, 800) : ['/img/placeholder-product.png'];
         
         const hasMultipleImages = images.length >= 2;
 
@@ -250,22 +190,12 @@ const CatalogProductModal = {
         if (hasMultipleImages) {
             thumbnailsHTML = `
                 <div class="modal-thumbnails">
-                    ${images.map((img, index) => {
-                        const thumbFallbacks = window.CatalogImages.getFallbackUrls(img, 200);
-                        const escapedUrl = img.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                        const fallbacksJson = JSON.stringify(thumbFallbacks);
-                        return `
-                            <div class="modal-thumbnail ${index === 0 ? 'active' : ''}" 
-                                 onclick="CatalogProductModal.setModalMainImage('${escapedUrl}', ${index})">
-                                <img src="${thumbFallbacks[0]}" alt="Thumbnail ${index + 1}" 
-                                     onerror="CatalogProductModal.handleThumbnailError(this)"
-                                     data-original-url="${escapedUrl}"
-                                     data-fallbacks="${fallbacksJson.replace(/"/g, '&quot;')}"
-                                     data-thumb-index="${index}"
-                                     loading="lazy">
-                            </div>
-                        `;
-                    }).join('')}
+                    ${images.map((img, index) => `
+                        <button type="button" class="modal-thumbnail ${index === 0 ? 'active' : ''}"
+                                aria-label="View image ${index + 1}" aria-pressed="${index === 0}">
+                            <img alt="Thumbnail ${index + 1}" loading="lazy">
+                        </button>
+                    `).join('')}
                 </div>
             `;
         }
@@ -286,11 +216,7 @@ const CatalogProductModal = {
         this.modalContent.innerHTML = `
             <div class="modal-product-view">
                 <div class="modal-image-container ${hasMultipleImages ? 'with-thumbnails' : ''}">
-                    <img id="modalMainImage" src="${mainImageFallbacks[0]}" alt="${product.name}" 
-                         onerror="CatalogProductModal.handleModalImageError(this)"
-                         data-original-url="${mainImageUrl || ''}"
-                         data-fallbacks='${JSON.stringify(mainImageFallbacks)}'
-                         loading="lazy">
+                    <img id="modalMainImage" alt="Product image">
                     ${thumbnailsHTML}
                 </div>
                 <div class="modal-details">
@@ -341,6 +267,14 @@ const CatalogProductModal = {
                 </div>
             </div>
         `;
+
+        const mainImageEl = document.getElementById('modalMainImage');
+        mainImageEl.alt = product.name;
+        this.setModalMainImage(mainImageUrl, 0);
+        this.modalContent.querySelectorAll('.modal-thumbnail').forEach((thumbnail, index) => {
+            thumbnail.addEventListener('click', () => this.setModalMainImage(images[index], index));
+            this.loadImage(thumbnail.querySelector('img'), images[index], 200);
+        });
 
         // Wire up quantity controls and Add to Cart inside modal
         if (!isOutOfStock) {
