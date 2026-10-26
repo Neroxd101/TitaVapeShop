@@ -48,6 +48,7 @@ const CatalogCard = {
             this.productGrid.style.display = 'grid';
             this.productGrid.innerHTML = products.map(product => {
                 const availableStock = this.getAvailableStock(product);
+                const variationCount = Array.isArray(product.variations) ? product.variations.filter(v => v && v.name).length : 0;
                 const category = String(product.category || 'General').trim() || 'General';
                 const categoryBadge = this.getCategoryBadge(category);
                 return `
@@ -81,7 +82,7 @@ const CatalogCard = {
                             </button>
                             ${availableStock > 0 
                                     ? `<button class="btn-card add-cart-btn" data-product-id="${product.id}">
-                                        <span>Add to Cart</span>
+                                        <span>${variationCount ? 'Choose Options' : 'Add to Cart'}</span>
                                     </button>`
                                     : `<button class="btn-card" disabled>Out of Stock</button>`}
                         </div>
