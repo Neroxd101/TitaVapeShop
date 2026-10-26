@@ -17,8 +17,9 @@ const InventoryProductCardRenderer = {
     },
 
     create(item) {
-        const isLowStock = item.quantity <= 5;
-        const stockLabel = Number(item.quantity) === 0 ? '(No Stock)' : (isLowStock ? '(Low)' : '');
+        const isOutOfStock = Number(item.quantity) === 0;
+        const isLowStock = item.quantity > 0 && item.quantity <= 5;
+        const stockLabel = isOutOfStock ? '(No Stock)' : (isLowStock ? '(Low)' : '');
         const category = String(item.category || 'General').trim() || 'General';
         const categoryBadge = this.getCategoryBadge(category);
         const images = InventoryImage.parseImages(item);
@@ -37,7 +38,7 @@ const InventoryProductCardRenderer = {
         <div class="card-header"><span class="card-category ${categoryBadge.className}"${categoryBadge.style}>${category}</span></div>
         <h3 class="card-name">${item.name}</h3>
         <div class="card-details">
-          <div class="detail-item"><span class="detail-label">Quantity</span><span class="detail-value ${isLowStock ? 'low-stock' : ''}">${item.quantity} ${stockLabel}</span></div>
+          <div class="detail-item"><span class="detail-label">Quantity</span><span class="detail-value ${isOutOfStock ? 'out-of-stock' : isLowStock ? 'low-stock' : ''}">${item.quantity} ${stockLabel}</span></div>
           <div class="detail-item"><span class="detail-label">Sale Price</span><span class="detail-value price">${InventoryUtils.formatCurrency(item.sale_price)}</span></div>
         </div>
         <div class="card-actions">

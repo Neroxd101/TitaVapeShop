@@ -2057,3 +2057,15 @@
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
 }
+
+/* Distinguish low stock (1–5) from an empty inventory item. */
+.inventory-card .detail-value.low-stock,
+#viewQuantity.low-stock,
+.inventory-header .counter-low .counter-value {
+  color: #facc15;
+}
+.inventory-card .detail-value.out-of-stock,
+#viewQuantity.out-of-stock,
+.inventory-header .counter-out .counter-value {
+  color: var(--error);
+}

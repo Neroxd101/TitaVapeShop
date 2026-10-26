@@ -118,7 +118,10 @@ const InventoryViewModal = {
                 return row;
             }));
         }
-        document.getElementById('viewQuantity').textContent = item.quantity;
+        const quantityEl = document.getElementById('viewQuantity');
+        quantityEl.textContent = item.quantity;
+        quantityEl.classList.toggle('low-stock', item.quantity > 0 && item.quantity <= 5);
+        quantityEl.classList.toggle('out-of-stock', Number(item.quantity) === 0);
         document.getElementById('viewCostPrice').textContent = InventoryUtils.formatCurrency(item.cost_price);
         document.getElementById('viewSalePrice').textContent = InventoryUtils.formatCurrency(item.sale_price);
         
