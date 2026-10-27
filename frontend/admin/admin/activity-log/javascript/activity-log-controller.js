@@ -450,9 +450,9 @@ class TransactionsUI {
             const skipped = Array.isArray(d.restock_skipped_items) ? d.restock_skipped_items : [];
             const restored = Array.isArray(d.restocked_items) ? d.restocked_items : [];
             const stockMessage = skipped.length
-                ? `restocking skipped for ${skipped.length} deleted item${skipped.length === 1 ? '' : 's'} (${skipped.map(i => this.escapeHtml(i.name || i.id || 'Item') + (i.selected_variation ? ` / ${this.escapeHtml(i.selected_variation)}` : '')).join(', ')})${restored.length ? '; remaining items restocked' : '; no stock restored'}`
+                ? `restocking skipped for ${skipped.length} item${skipped.length === 1 ? '' : 's'} (${skipped.map(i => this.escapeHtml(i.name || i.id || 'Item') + (i.selected_variation ? ` / ${this.escapeHtml(i.selected_variation)}` : '')).join(', ')})${restored.length ? '; remaining items restocked' : '; no stock restored'}`
                 : d.stock_restored === false ? 'stock was not restored' : 'stock restored';
-            return `Voided order ${this.escapeHtml(d.order_id || t.entity_id || '')}; ${stockMessage}. Reason: ${this.escapeHtml(d.reason || '')}`;
+            return `Voided ${t.entity_type === 'sale' ? 'POS sale' : 'order'} ${this.escapeHtml(d.sale_id || d.order_id || t.entity_id || '')}; ${stockMessage}. Reason: ${this.escapeHtml(d.reason || '')}`;
         }
 
         if (t.action_type === 'sale_complete') {

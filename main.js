@@ -70,6 +70,8 @@ const inventoryCategoryGetRoutes = require('./backend/routes/admin/admin/invento
 // POS (Sales) routes
 const posControllerRoutes = require('./backend/routes/admin/admin/pos/pos_controller');
 const posGetProductsRoutes = require('./backend/routes/admin/admin/pos/pos_get_products');
+const posSalesHistoryRoutes = require('./backend/routes/admin/admin/pos/pos_sales_history');
+const posVoidSaleRoutes = require('./backend/routes/admin/admin/pos/pos_void_sale');
 const salesCreateRoutes = require('./backend/routes/admin/admin/pos/pos_process');
 const salesEmailRoutes = require('./backend/routes/admin/admin/pos/email_send_receipt');
 
@@ -176,6 +178,8 @@ app.use('/', inventoryCategoryGetRoutes);
 app.use('/', posControllerRoutes);
 app.use('/', posGetProductsRoutes);
 app.use('/', salesCreateRoutes);
+app.use('/', posSalesHistoryRoutes);
+app.use('/', posVoidSaleRoutes);
 app.use('/', salesEmailRoutes);
 app.use('/', googleAuthRoutes);
 app.use('/', uploadRoutes);

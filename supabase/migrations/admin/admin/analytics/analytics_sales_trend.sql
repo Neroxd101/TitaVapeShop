@@ -23,7 +23,7 @@ BEGIN
             SELECT 1 FROM transactions void_tx
             WHERE void_tx.action_type = 'sale_void'
                 AND void_tx.entity_type = sale_tx.entity_type
-                AND void_tx.entity_id = sale_tx.entity_id
+                AND void_tx.entity_id = CASE WHEN sale_tx.entity_type = 'sale' THEN sale_tx.id ELSE COALESCE(sale_tx.entity_id, sale_tx.id) END
         )
             AND (p_start_date IS NULL OR created_at >= p_start_date)
             AND (p_end_date IS NULL OR created_at < (p_end_date + INTERVAL '1 day'))

@@ -23,6 +23,7 @@
       await PosCategories.init(() => SalesLoad.filterProducts(state));
     }
     wireEvents();
+    window.PosSalesHistory.init(() => SalesLoad.loadProducts(state));
 
     // Initialize Data - ensure modules are loaded
     if (typeof SalesLoad === 'undefined') {
