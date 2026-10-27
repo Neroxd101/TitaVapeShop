@@ -40,6 +40,7 @@
     <link rel="stylesheet" href="/css/components/order-details.css">
     <!-- Orders Structure -->
     <link rel="stylesheet" href="/admin/admin/orders/orders-structure.css">
+    <link rel="stylesheet" href="/css/components/order-chat.css?v=shared-chat-1">
 </head>
 
 <body>
@@ -447,7 +448,16 @@
         </div>
     </div>
 
+    <dialog class="order-chat-modal" id="adminChatDialog" aria-labelledby="adminChatTitle" aria-describedby="adminChatCustomer">
+        <div class="order-chat-header">
+            <div><h2 id="adminChatTitle">Order Chat</h2><p id="adminChatCustomer"></p></div>
+            <button type="button" id="closeAdminChatBtn" class="btn btn-secondary btn-sm" aria-label="Close chat">Close</button>
+        </div>
+        <div id="adminChatContent" class="order-chat-content"></div>
+    </dialog>
+
     <script src="/customer/javascript/order-availability.js"></script>
+    <script src="/customer/javascript/order-chat.js?v=chat-history-2"></script>
 
     <script src="/navigation/javascript/navigation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -459,10 +469,11 @@
     <script src="/admin/admin/orders/javascript/orders_mark_refunded.js"></script>
     <script src="/admin/admin/orders/javascript/orders_void.js"></script>
     <script src="/admin/admin/orders/javascript/orders_filter.js"></script>
-    <script src="/admin/admin/orders/javascript/orders_view_modal.js"></script>
+    <script src="/admin/admin/orders/javascript/orders_view_modal.js?v=chat-modal-1"></script>
     <script src="/admin/admin/orders/javascript/orders_qr.js"></script>
     <script src="/admin/admin/orders/javascript/orders_modals.js"></script>
-    <script src="/admin/admin/orders/javascript/orders_controller.js"></script>
+    <script src="/admin/admin/orders/javascript/orders_chat_modal.js?v=shared-chat-1"></script>
+    <script src="/admin/admin/orders/javascript/orders_controller.js?v=chat-modal-1"></script>
 </body>
 
 </html>

@@ -49,6 +49,13 @@
   const verifyPhoneErrorText = document.getElementById('verifyPhoneErrorText');
   const verifyPhoneBtn = document.getElementById('verifyPhoneBtn');
 
+  const orderChatDialog = document.getElementById('orderChatDialog');
+  const openOrderChatBtn = document.getElementById('openOrderChatBtn');
+  const orderChatForm = document.getElementById('orderChatForm');
+  const orderChatInput = document.getElementById('orderChatInput');
+  const orderChatMessage = document.getElementById('orderChatMessage');
+  let sendingMessage = false;
+  let chatOrderId = null;
   let currentOrder = null;
   let pollInterval = null;
   let verifiedPhone = null;
@@ -70,6 +77,50 @@
    * Setup event listeners
    */
   function setupEventListeners() {
+    openOrderChatBtn.addEventListener('click', () => {
+      orderChatDialog.showModal();
+      const messages = document.getElementById('orderChatMessages');
+      messages.scrollTop = messages.scrollHeight;
+      fetchOrder(null, true);
+    });
+    document.getElementById('closeOrderChatBtn').addEventListener('click', () => orderChatDialog.close());
+    orderChatDialog.addEventListener('click', event => {
+      if (event.target !== orderChatDialog) return;
+      const bounds = orderChatDialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) orderChatDialog.close();
+    });
+    orderChatForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (sendingMessage || currentOrder?.order_type !== 'delivery' || currentOrder?.status !== 'confirmed') return;
+      const message = orderChatInput.value.trim();
+      if (!message) return;
+      const button = document.getElementById('sendOrderChatBtn');
+      sendingMessage = true;
+      ++orderRequestVersion;
+      button.disabled = true;
+      orderChatInput.disabled = true;
+      orderChatMessage.textContent = 'Sending…';
+      try {
+        const response = await fetch('/api/customer/orders/chat-send', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: currentOrder.id, phone: verifiedPhone, message })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error || 'Unable to send message.');
+        const history = window.OrderChat.messages(currentOrder).slice();
+        history.push(result.message);
+        currentOrder.chat_messages = history;
+        window.OrderChat.render(document.getElementById('orderChatMessages'), currentOrder);
+        orderChatInput.value = '';
+        orderChatMessage.textContent = 'Message sent.';
+      } catch (error) {
+        orderChatMessage.textContent = error.message;
+      } finally {
+        sendingMessage = false;
+        button.disabled = false;
+        orderChatInput.disabled = currentOrder?.status !== 'confirmed';
+      }
+    });
     cancelOrderBtn.addEventListener('click', () => {
       if (isCancelling || currentOrder?.status !== 'pending') return;
       cancelDialogError.hidden = true;
@@ -313,7 +364,7 @@
   }
 
   async function fetchOrder(phoneInput = null, isSilentRefresh = false) {
-    if (isCancelling) return;
+    if (isCancelling || sendingMessage) return;
     const requestVersion = ++orderRequestVersion;
     if (!isSilentRefresh && !phoneInput) {
       showState('loading');
@@ -326,7 +377,7 @@
     }
 
     try {
-      const result = await window.CustomerTrackOrder.trackOrder(targetId, phoneInput || '');
+      const result = await window.CustomerTrackOrder.trackOrder(targetId, phoneInput || verifiedPhone || '');
 
       if (requestVersion !== orderRequestVersion) return;
 
@@ -403,6 +454,17 @@
     }
     cancelOrderBtn.hidden = order.status !== 'pending';
     document.querySelector('.order-layout-grid').classList.toggle('is-cancelled', ['cancelled', 'voided'].includes(order.status));
+
+    const canViewNotes = !isPickup && ['confirmed', 'completed'].includes(order.status);
+    openOrderChatBtn.hidden = !canViewNotes;
+    if (!canViewNotes && orderChatDialog.open) orderChatDialog.close();
+    document.getElementById('orderChatHelp').textContent = order.status === 'confirmed'
+      ? 'Up to 1,000 characters per message.'
+      : 'This order is completed. Messages are read-only.';
+    orderChatInput.disabled = sendingMessage || order.status !== 'confirmed';
+    document.getElementById('sendOrderChatBtn').hidden = order.status !== 'confirmed';
+    if (chatOrderId !== order.id) { chatOrderId = order.id; orderChatInput.value = ''; }
+    window.OrderChat.render(document.getElementById('orderChatMessages'), order);
 
     // QR Code / Delivery Notice
     if (['cancelled', 'voided'].includes(order.status)) {

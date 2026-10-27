@@ -38,6 +38,7 @@ RETURNS TABLE (
     refund_due_amount NUMERIC,
     refunded_amount NUMERIC,
     refunded_at TIMESTAMPTZ,
+    chat_messages JSONB,
     total_count BIGINT
 ) AS $$
 BEGIN
@@ -119,6 +120,10 @@ BEGIN
         fo.refund_due_amount,
         fo.refunded_amount,
         fo.refunded_at,
+        COALESCE((SELECT jsonb_agg(jsonb_build_object(
+            'id', m.id::TEXT, 'sender', m.sender, 'body', m.body, 'created_at', m.created_at
+        ) ORDER BY m.created_at NULLS FIRST, m.id)
+        FROM public.order_chat_messages m WHERE m.order_id = fo.id), '[]'::JSONB),
         fo.total_count
     FROM filtered_orders fo;
 END;

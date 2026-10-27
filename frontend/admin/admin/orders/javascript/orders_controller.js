@@ -287,6 +287,7 @@ class OrdersController {
                         <div class="order-actions">
                             ${order.status === 'completed' ? `<button type="button" class="btn btn-small btn-danger" data-order-action="voidOrder" data-order-id="${order.id}">Void</button>` : ''}
                             <button type="button" class="btn btn-small btn-secondary" data-order-action="viewOrder" data-order-id="${order.id}">View</button>
+                            ${orderType === 'delivery' && ['confirmed', 'completed'].includes(order.status) ? `<button type="button" class="btn btn-small btn-info" data-order-action="openChat" data-order-id="${order.id}">Chat</button>` : ''}
                             ${window.OrdersModals && order.payment_status === 'paid' && Number(order.refund_due_amount) > 0 && Array.isArray(order.items) && order.items.some(window.OrderAvailability.isUnavailable) ? `<button type="button" class="btn btn-small btn-success" data-order-action="markRefunded" data-order-id="${order.id}">Mark Refunded</button>` : ''}
                             ${order.status === 'pending' 
                                 ? `
@@ -394,6 +395,11 @@ class OrdersController {
         if (window.OrdersModals?.cancelOrder) {
             window.OrdersModals.cancelOrder(orderId);
         }
+    }
+
+    openChat(orderId) {
+        const order = this.state.orders.find(item => item.id === orderId);
+        if (order) window.OrdersChatModal.open(order);
     }
 
     viewOrder(orderId) {

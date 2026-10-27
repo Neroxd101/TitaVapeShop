@@ -18,7 +18,8 @@
   <link rel="stylesheet" href="/css/components/forms.css">
   <link rel="stylesheet" href="/css/components/alerts.css">
   <link rel="stylesheet" href="/css/components/loading-state.css">
-  <link rel="stylesheet" href="/order-status/order-status.css">
+  <link rel="stylesheet" href="/order-status/order-status.css?v=chat-history-2">
+  <link rel="stylesheet" href="/css/components/order-chat.css?v=shared-chat-1">
 </head>
 
 <body>
@@ -218,6 +219,8 @@
               <p id="deliveryConfirmationMessage" role="status" aria-live="polite" hidden></p>
             </div>
 
+
+
             <!-- GCash QR Display -->
             <div class="gcash-qr-box">
               <img src="/qr/qr_gcash.jpg" alt="GCash QR Code" class="gcash-qr-image" id="gcashQrImg">
@@ -377,11 +380,14 @@
         <div class="help-card text-center">
           <p class="text-secondary" style="font-size: 13px;">Have questions about your order?</p>
           
-          <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
+          <div class="order-support-actions">
             <a href="https://www.facebook.com/TitasVShopNaic" target="_blank"
               class="btn btn-secondary btn-sm">
               Message on Facebook
             </a>
+            <button type="button" class="btn btn-secondary btn-sm" id="openOrderChatBtn" aria-haspopup="dialog" aria-controls="orderChatDialog" hidden>
+              Chat Us
+            </button>
             <button type="button" class="btn btn-secondary btn-sm" id="cancelOrderBtn" hidden>Cancel Order</button>
             <a href="/catalog" class="btn btn-secondary btn-sm">
               Return to Shop
@@ -393,6 +399,28 @@
       </div>
     </div>
   </main>
+
+  <dialog class="order-chat-modal" id="orderChatDialog" aria-labelledby="orderChatTitle" aria-describedby="orderChatDescription">
+    <div class="order-chat-header">
+      <div>
+        <h2 id="orderChatTitle">Chat Us</h2>
+        <p id="orderChatDescription">Send delivery details to the store. Your conversation is saved here.</p>
+      </div>
+      <button type="button" id="closeOrderChatBtn" class="btn btn-secondary btn-sm" aria-label="Close chat">Close</button>
+    </div>
+    <div id="orderChatMessages" class="order-chat-history" aria-label="Order messages"></div>
+    <form id="orderChatForm" class="order-chat-form">
+      <label for="orderChatInput">Your message</label>
+      <div class="order-chat-input-wrap">
+        <textarea id="orderChatInput" class="form-control order-chat-input" rows="3" required maxlength="1000" aria-describedby="orderChatHelp" placeholder="Type your message…"></textarea>
+      </div>
+      <div class="order-chat-compose-footer">
+        <small id="orderChatHelp">Up to 1,000 characters per message.</small>
+        <button type="submit" id="sendOrderChatBtn" class="btn btn-primary order-chat-send">Send</button>
+      </div>
+      <p id="orderChatMessage" class="order-chat-status" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
 
   <dialog id="cancelOrderDialog" aria-labelledby="cancelDialogTitle" aria-describedby="cancelDialogDescription">
     <h2 id="cancelDialogTitle">Cancel this order?</h2>
@@ -413,7 +441,8 @@
   <script src="/customer/javascript/cloudinary_service.js"></script>
   <script src="/customer/javascript/customer_submit_payment_proof.js"></script>
   <script src="/customer/javascript/customer_confirm_delivery.js"></script>
-  <script src="/order-status/order-status.js"></script>
+  <script src="/customer/javascript/order-chat.js?v=chat-history-2"></script>
+  <script src="/order-status/order-status.js?v=chat-history-2"></script>
 </body>
 
 </html>
