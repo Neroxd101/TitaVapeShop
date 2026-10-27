@@ -175,11 +175,11 @@ const OrdersViewModal = {
                         </div>
                         ${hasReceipt ? `
                         <div class="order-details-receipt-col">
-                            <h4 style="margin: 0 0 16px 0; font-size: 18px; color: var(--text-primary);">Receipt Proof</h4>
+                            <h4 style="margin: 0 0 16px 0; font-size: 18px; color: var(--text-primary);">Payment Proof</h4>
                             <a href="${escapeHtml(order.payment_receipt_url)}" target="_blank" rel="noopener noreferrer" class="receipt-proof-link">
-                                <img src="${escapeHtml(order.payment_receipt_url)}" alt="Payment Receipt" class="receipt-proof-img" />
+                                <img src="${escapeHtml(order.payment_receipt_url)}" alt="Payment proof" class="receipt-proof-img" />
                             </a>
-                            <small class="receipt-proof-hint">Click to view full receipt ↗</small>
+                            <small class="receipt-proof-hint">Click to view full payment proof ↗</small>
                         </div>
                         ` : ''}
                     </div>

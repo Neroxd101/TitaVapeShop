@@ -223,14 +223,14 @@
     }
 
     if (!selectedReceiptFile) {
-      alert('Please upload a screenshot of your receipt.');
+      alert('Please upload a screenshot of your payment confirmation.');
       return;
     }
 
     isSubmittingPayment = true;
     errorBox.style.display = 'none';
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Uploading Receipt...';
+    submitBtn.textContent = 'Uploading Payment Proof...';
 
     try {
       // 1. Upload to Cloudinary using dedicated CloudinaryService
@@ -480,7 +480,7 @@
       if (paymentStatusReason) {
         paymentStatusReason.innerHTML = reason
           ? `<strong style="color: #ef4444;">Reason:</strong> ${escapeHtml(reason)}`
-          : 'Your previous payment proof was rejected by the store staff. Please verify your payment and upload a new receipt below.';
+          : 'Your previous payment proof was rejected by the store staff. Please verify your payment and upload new payment proof below.';
         paymentStatusReason.style.display = 'block';
       }
       if (submittedNotice) submittedNotice.style.display = 'none';

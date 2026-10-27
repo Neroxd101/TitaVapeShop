@@ -423,7 +423,7 @@ const OrdersModals = {
             if (titleEl && msgEl && subtextEl) {
                 if (paymentStatus === 'rejected') {
                     titleEl.textContent = 'Reject Payment Proof';
-                    msgEl.textContent = 'Are you sure you want to reject this payment receipt?';
+                    msgEl.textContent = 'Are you sure you want to reject this payment proof?';
                     subtextEl.textContent = 'The customer will need to re-upload a valid proof of payment.';
                 } else {
                     titleEl.textContent = 'Mark Payment as Unpaid';

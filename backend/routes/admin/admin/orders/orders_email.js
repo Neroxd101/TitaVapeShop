@@ -456,7 +456,7 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                                     </p>
                                     <div style="margin: 24px 0 8px; text-align: center;">
                                         <a href="${orderData.trackingUrl}" style="background-color: #00d4aa; color: #0a0a0f; padding: 13px 26px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; display: inline-block; font-family: 'Outfit', sans-serif;">
-                                            View Order Receipt
+                                            View Order Invoice
                                         </a>
                                     </div>
                                 </td>

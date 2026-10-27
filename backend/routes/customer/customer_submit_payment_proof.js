@@ -13,7 +13,7 @@ router.post(['/api/customer/orders/submit-payment', '/api/orders/submit-payment'
     if (!order_id || typeof reference !== 'string' || typeof receipt_url !== 'string') {
       return res.status(400).json({
         success: false,
-        error: 'Order ID, reference number, and receipt URL are required.'
+        error: 'Order ID, reference number, and payment proof URL are required.'
       });
     }
 

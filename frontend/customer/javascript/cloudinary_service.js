@@ -13,7 +13,7 @@ const CloudinaryService = {
    */
   async uploadReceipt(file) {
     if (!file) {
-      throw new Error('No receipt file provided for upload.');
+      throw new Error('No payment proof file provided for upload.');
     }
 
     const formData = new FormData();
@@ -27,7 +27,7 @@ const CloudinaryService = {
 
     if (!response.ok) {
       const err = await response.json().catch(() => null);
-      throw new Error(err?.error?.message || 'Failed to upload receipt image to Cloudinary.');
+      throw new Error(err?.error?.message || 'Failed to upload payment proof image to Cloudinary.');
     }
 
     const data = await response.json();

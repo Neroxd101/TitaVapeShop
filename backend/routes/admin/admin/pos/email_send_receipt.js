@@ -44,16 +44,16 @@ const handleSendReceipt = async (req, res) => {
     const mailOptions = {
       from: `"Tita's Vape Shop" <${process.env.SMTP_USER}>`,
       to: customerEmail,
-      subject: 'Your Receipt from Tita\'s Vape Shop',
+      subject: 'Your Invoice from Tita\'s Vape Shop',
       html: receiptHtml
     };
 
     await transporter.sendMail(mailOptions);
 
-    res.json({ success: true, message: 'Receipt sent successfully' });
+    res.json({ success: true, message: 'Invoice sent successfully' });
   } catch (error) {
     console.error('Error in sendReceipt:', error);
-    res.status(500).json({ error: 'Failed to send receipt email', details: error.message });
+    res.status(500).json({ error: 'Failed to send invoice email', details: error.message });
   }
 };
 
@@ -80,7 +80,7 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Receipt - Tita's Vape Shop</title>
+      <title>Invoice - Tita's Vape Shop</title>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0f; color: #ffffff;">
@@ -92,7 +92,7 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
               <tr>
                 <td style="background: linear-gradient(135deg, #00d4aa, #1a1a24); padding: 40px 30px; text-align: center; border-bottom: 1px solid #2a2a3a;">
                   <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: 1px; font-family: 'Outfit', sans-serif;">TITA'S VAPE SHOP</h1>
-                  <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Sales Receipt</p>
+                  <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Sales Invoice</p>
                 </td>
               </tr>
               
@@ -148,7 +148,7 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
               <tr>
                 <td style="background-color: #1a1a24; padding: 24px 30px; text-align: center; border-top: 1px solid #2a2a3a;">
                   <p style="margin: 0; color: #00d4aa; font-size: 14px; font-weight: 600; letter-spacing: 0.5px;">Thank you for your purchase!</p>
-                  <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 12px;">This is an automated receipt from Tita's Vape Shop</p>
+                  <p style="margin: 8px 0 0; color: #8b8b9e; font-size: 12px;">This is an automated invoice from Tita's Vape Shop</p>
                 </td>
               </tr>
             </table>

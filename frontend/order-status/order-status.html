@@ -256,7 +256,7 @@
               <hr class="payment-divider">
               <h4>Submit Proof of Payment</h4>
               <p class="text-secondary" style="font-size: 12px; margin-bottom: 12px;">
-                After sending your payment, upload a screenshot of your receipt and enter your Reference Number.
+                After sending your payment, upload a screenshot of your payment confirmation and enter your Reference Number.
               </p>
 
               <!-- State: Rejected Payment Alert -->
@@ -282,14 +282,14 @@
                 <div>
                   <strong id="paymentStatusHeading">Payment Proof Submitted</strong>
                   <p style="margin: 2px 0 0; font-size: 12px;" id="paymentStatusSub">Reference: <code id="submittedRefNumber">-</code></p>
-                  <a href="#" target="_blank" id="viewSubmittedReceiptLink" class="view-receipt-link" style="display: inline-block; margin-top: 6px; font-size: 12px;">View Uploaded Receipt ↗</a>
+                  <a href="#" target="_blank" id="viewSubmittedReceiptLink" class="view-receipt-link" style="display: inline-block; margin-top: 6px; font-size: 12px;">View Uploaded Payment Proof ↗</a>
                 </div>
               </div>
 
               <!-- State: Upload Form -->
               <form id="paymentProofForm" class="payment-form">
                 <div class="form-group">
-                  <label for="receiptFileInput">Upload Screenshot of Receipt <span class="required" style="color: #f87171;">*</span></label>
+                  <label for="receiptFileInput">Upload Screenshot of Payment <span class="required" style="color: #f87171;">*</span></label>
                   <input type="file" id="receiptFileInput" accept="image/*" required class="form-control-file" style="display: none;">
                   
                   <div class="receipt-dropzone" id="receiptDropzone">
@@ -299,11 +299,11 @@
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
                         <polyline points="21 15 16 10 5 21"></polyline>
                       </svg>
-                      <p><strong>Click to Choose Receipt Image</strong></p>
+                      <p><strong>Click to Choose Payment Proof Image</strong></p>
                       <small>PNG, JPG, or WebP</small>
                     </div>
                     <div id="dropzonePreview" style="display: none;">
-                      <img id="receiptPreviewImg" src="" alt="Receipt preview">
+                      <img id="receiptPreviewImg" src="" alt="Payment proof preview">
                       <button type="button" id="changeReceiptBtn" class="btn btn-secondary btn-small">Change</button>
                     </div>
                   </div>
@@ -315,7 +315,7 @@
                 </div>
 
                 <div class="alert alert-error" id="paymentProofError" style="display: none;">
-                  <span id="paymentProofErrorText">Failed to upload receipt</span>
+                  <span id="paymentProofErrorText">Failed to upload payment proof</span>
                 </div>
 
                 <button type="submit" id="submitPaymentProofBtn" class="btn btn-primary btn-full">

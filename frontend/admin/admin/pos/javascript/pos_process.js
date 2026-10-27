@@ -225,10 +225,10 @@ const SalesCreate = {
         if (emailStatus) {
             if (email) {
                 if (emailSent) {
-                    emailStatus.textContent = `✓ Receipt sent to ${email}`;
+                    emailStatus.textContent = `✓ Invoice sent to ${email}`;
                     emailStatus.className = 'success-email-status sent';
                 } else if (emailError) {
-                    emailStatus.textContent = `⚠ Failed to send receipt to ${email}`;
+                    emailStatus.textContent = `⚠ Failed to send invoice to ${email}`;
                     emailStatus.className = 'success-email-status failed';
                 }
             } else {
