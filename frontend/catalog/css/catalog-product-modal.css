@@ -181,7 +181,7 @@
     margin-top: 10px;
 }
 .modal-variation-selector { display: grid; gap: 8px; margin-top: 14px; }
-#modalVariationLabel { color: var(--text-secondary); font-size: 14px; font-weight: 600; }
+#modalVariationLabel { color: var(--accent); font-size: 14px; font-weight: 600; }
 .modal-variation-options { display: flex; flex-wrap: wrap; gap: 8px; }
 .modal-variation-option {
     display: inline-flex;
