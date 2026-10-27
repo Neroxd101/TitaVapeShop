@@ -6,8 +6,10 @@
 -- 1. Create dedicated customers table
 CREATE TABLE IF NOT EXISTS public.customers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    full_name TEXT NOT NULL,
-    name_parts JSONB,
+    last_name TEXT,
+    first_name TEXT,
+    middle_name TEXT,
+    suffix TEXT,
     email TEXT UNIQUE NOT NULL,
     contact_number VARCHAR(20) UNIQUE NOT NULL,
     password TEXT NOT NULL,

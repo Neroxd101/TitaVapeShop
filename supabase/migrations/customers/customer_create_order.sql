@@ -102,7 +102,7 @@ BEGIN
         order_type, items, total_amount, status,
         payment_method, payment_status
     ) VALUES (
-        customer_record.id, customer_record.full_name, customer_record.contact_number,
+        customer_record.id, public.customer_display_name(customer_record.last_name, customer_record.first_name, customer_record.middle_name, customer_record.suffix), customer_record.contact_number,
         LOWER(customer_record.email), p_order_type, official_items, official_total, 'pending',
         CASE WHEN p_order_type = 'delivery' THEN 'gcash' ELSE 'cash' END,
         'unpaid'

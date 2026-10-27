@@ -22,7 +22,9 @@ DECLARE
     v_otp_code VARCHAR(6);
     v_expires_at TIMESTAMPTZ;
 BEGIN
-    v_clean_name := TRIM(p_full_name);
+    IF p_name_parts IS NULL THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Please enter your last name and first name.');
+    END IF;
     IF p_name_parts IS NOT NULL THEN
         p_name_parts := public.customer_normalize_name_parts(p_name_parts);
         v_clean_name := public.customer_format_name(p_name_parts);
@@ -72,8 +74,7 @@ BEGIN
 
     -- Insert into customers table
     INSERT INTO public.customers (
-        full_name,
-        name_parts,
+        last_name, first_name, middle_name, suffix,
         email,
         contact_number,
         password,
@@ -81,8 +82,8 @@ BEGIN
         is_verified
     )
     VALUES (
-        v_clean_name,
-        p_name_parts,
+        NULLIF(p_name_parts->>'last_name', ''), NULLIF(p_name_parts->>'first_name', ''),
+        NULLIF(p_name_parts->>'middle_name', ''), NULLIF(p_name_parts->>'suffix', ''),
         v_clean_email,
         v_clean_phone,
         p_password_hash,

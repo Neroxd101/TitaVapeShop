@@ -1,5 +1,12 @@
+const CustomerName = require('../../../frontend/customer/javascript/customer-name');
 const express = require('express');
 const router = express.Router();
+
+function nameParts(customer) {
+  if (!customer.last_name || !customer.first_name) return null;
+  return { last_name: customer.last_name, first_name: customer.first_name,
+    middle_name: customer.middle_name || '', suffix: customer.suffix || '' };
+}
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { supabaseAdmin } = require('../../database/supabase');
@@ -115,7 +122,7 @@ router.get('/api/customer/me', async (req, res) => {
 
     const { data: customer, error } = await supabaseAdmin
       .from('customers')
-      .select('id, email, full_name, name_parts, contact_number, birthday, is_verified')
+      .select('id, email, last_name, first_name, middle_name, suffix, contact_number, birthday, is_verified')
       .eq('id', decoded.id)
       .maybeSingle();
 
@@ -129,8 +136,8 @@ router.get('/api/customer/me', async (req, res) => {
       user: {
         id: customer.id,
         email: customer.email,
-        full_name: customer.full_name || '',
-        name_parts: customer.name_parts || null,
+        full_name: nameParts(customer) ? CustomerName.format(nameParts(customer)) : '',
+        name_parts: nameParts(customer),
         contact_number: customer.contact_number || '',
         birthday: customer.birthday || null
       }

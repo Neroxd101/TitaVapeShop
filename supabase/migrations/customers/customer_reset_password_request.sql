@@ -14,7 +14,7 @@ BEGIN
         RETURN;
     END IF;
 
-    SELECT c.id, c.full_name INTO v_customer
+    SELECT c.id, public.customer_display_name(c.last_name, c.first_name, c.middle_name, c.suffix) AS full_name INTO v_customer
     FROM public.customers AS c
     WHERE LOWER(c.email) = v_clean_email AND c.is_verified IS TRUE;
 

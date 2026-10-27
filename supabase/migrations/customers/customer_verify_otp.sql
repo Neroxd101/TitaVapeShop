@@ -72,7 +72,7 @@ BEGIN
         email_verified_at = NOW(),
         updated_at = NOW()
     WHERE id = v_code_record.customer_id
-    RETURNING id, email, full_name, name_parts, contact_number, birthday
+    RETURNING id, email, last_name, first_name, middle_name, suffix, contact_number, birthday
     INTO v_customer;
 
     IF v_customer IS NULL THEN
@@ -85,8 +85,8 @@ BEGIN
         'customer', jsonb_build_object(
             'id', v_customer.id,
             'email', v_customer.email,
-            'full_name', v_customer.full_name,
-            'name_parts', v_customer.name_parts,
+            'full_name', public.customer_display_name(v_customer.last_name, v_customer.first_name, v_customer.middle_name, v_customer.suffix),
+            'name_parts', public.customer_name_object(v_customer.last_name, v_customer.first_name, v_customer.middle_name, v_customer.suffix),
             'contact_number', v_customer.contact_number,
             'birthday', v_customer.birthday,
             'role', 'customer'

@@ -48,7 +48,7 @@ BEGIN
     END IF;
 
     -- Look up active customer
-    SELECT c.id, c.email, c.full_name, c.contact_number, c.birthday, c.is_verified
+    SELECT c.id, c.email, c.last_name, c.first_name, c.middle_name, c.suffix, c.contact_number, c.birthday, c.is_verified
     INTO v_current_customer
     FROM public.customers AS c
     WHERE c.id = p_customer_id
@@ -56,6 +56,10 @@ BEGIN
 
     IF v_current_customer IS NULL OR v_current_customer.is_verified IS NOT TRUE THEN
         RETURN jsonb_build_object('success', false, 'error', 'Customer account not found.');
+    END IF;
+
+    IF p_name_parts IS NULL THEN
+        v_clean_name := public.customer_display_name(v_current_customer.last_name, v_current_customer.first_name, v_current_customer.middle_name, v_current_customer.suffix);
     END IF;
 
     -- Check if phone is already in use by another account
@@ -103,8 +107,10 @@ BEGIN
 
         -- Update name and phone immediately, but NOT email yet
         UPDATE public.customers AS c
-        SET full_name = v_clean_name,
-        name_parts = CASE WHEN p_name_parts IS NOT NULL THEN p_name_parts WHEN c.full_name = v_clean_name THEN c.name_parts ELSE NULL END,
+        SET last_name = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'last_name', '') ELSE c.last_name END,
+        first_name = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'first_name', '') ELSE c.first_name END,
+        middle_name = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'middle_name', '') ELSE c.middle_name END,
+        suffix = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'suffix', '') ELSE c.suffix END,
             contact_number = v_clean_phone,
             updated_at = NOW()
         WHERE c.id = p_customer_id;
@@ -145,12 +151,14 @@ BEGIN
 
     -- Email unchanged: update name & contact number only
     UPDATE public.customers AS c
-    SET full_name = v_clean_name,
-        name_parts = CASE WHEN p_name_parts IS NOT NULL THEN p_name_parts WHEN c.full_name = v_clean_name THEN c.name_parts ELSE NULL END,
+    SET last_name = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'last_name', '') ELSE c.last_name END,
+        first_name = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'first_name', '') ELSE c.first_name END,
+        middle_name = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'middle_name', '') ELSE c.middle_name END,
+        suffix = CASE WHEN p_name_parts IS NOT NULL THEN NULLIF(p_name_parts->>'suffix', '') ELSE c.suffix END,
         contact_number = v_clean_phone,
         updated_at = NOW()
     WHERE c.id = p_customer_id
-    RETURNING c.id, c.email, c.full_name, c.name_parts, c.contact_number, c.birthday
+    RETURNING c.id, c.email, c.last_name, c.first_name, c.middle_name, c.suffix, c.contact_number, c.birthday
     INTO v_updated_customer;
 
     RETURN jsonb_build_object(
@@ -160,8 +168,8 @@ BEGIN
         'customer', jsonb_build_object(
             'id', v_updated_customer.id,
             'email', v_updated_customer.email,
-            'full_name', v_updated_customer.full_name,
-            'name_parts', v_updated_customer.name_parts,
+            'full_name', public.customer_display_name(v_updated_customer.last_name, v_updated_customer.first_name, v_updated_customer.middle_name, v_updated_customer.suffix),
+            'name_parts', public.customer_name_object(v_updated_customer.last_name, v_updated_customer.first_name, v_updated_customer.middle_name, v_updated_customer.suffix),
             'contact_number', v_updated_customer.contact_number,
             'birthday', v_updated_customer.birthday,
             'role', 'customer'

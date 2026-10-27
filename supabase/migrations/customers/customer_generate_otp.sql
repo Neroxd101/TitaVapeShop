@@ -25,7 +25,7 @@
       -- A signed-in customer may resend to their current email or to an
       -- unverified email change previously requested through the profile RPC.
       IF v_target_customer_id IS NOT NULL THEN
-          SELECT id, full_name, email INTO v_customer
+          SELECT id, public.customer_display_name(last_name, first_name, middle_name, suffix) AS full_name, email INTO v_customer
           FROM public.customers
           WHERE id = v_target_customer_id;
 
@@ -46,7 +46,7 @@
           END IF;
       ELSE
           -- Look up customer by email
-          SELECT id, full_name, email, is_verified INTO v_customer
+          SELECT id, public.customer_display_name(last_name, first_name, middle_name, suffix) AS full_name, email, is_verified INTO v_customer
           FROM public.customers
           WHERE LOWER(email) = v_clean_email;
 
@@ -67,7 +67,7 @@
               LIMIT 1;
 
               IF v_target_customer_id IS NOT NULL THEN
-                  SELECT full_name INTO v_target_name
+                  SELECT public.customer_display_name(last_name, first_name, middle_name, suffix) INTO v_target_name
                   FROM public.customers
                   WHERE id = v_target_customer_id;
               END IF;
