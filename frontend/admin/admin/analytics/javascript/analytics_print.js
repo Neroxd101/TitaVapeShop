@@ -46,6 +46,8 @@ const AnalyticsPrint = {
 
         const range = controller.state.reportRange;
         const timeRangeLabel = range ? `${range.from} to ${range.to}` : '';
+        const saleItems = Number(report.grossSales ?? report.averageSale ?? 0);
+        const profit = Number(report.totalProfit ?? report.totalRevenue ?? 0);
 
         // Build print HTML
         let printHTML = `
@@ -105,7 +107,7 @@ const AnalyticsPrint = {
         }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -132,6 +134,34 @@ const AnalyticsPrint = {
             margin: 30px 0 15px 0;
             border-bottom: 1px solid #ddd;
             padding-bottom: 8px;
+        }
+        .category-summary-table,
+        .daily-summary-table {
+            table-layout: fixed;
+            margin: 16px 0 24px;
+        }
+        .category-summary-table caption,
+        .daily-summary-table caption {
+            text-align: left;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 0 0 12px;
+            break-after: avoid;
+        }
+        .category-summary-table th,
+        .daily-summary-table th,
+        .category-summary-table td,
+        .daily-summary-table td {
+            line-height: 1.5;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+        }
+        .category-summary-table th:not(:first-child),
+        .daily-summary-table th:not(:first-child),
+        .category-summary-table td:not(:first-child),
+        .daily-summary-table td:not(:first-child) {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
         }
         .print-chart { break-inside: avoid; margin-bottom: 24px; }
         .print-chart img { display: block; width: 100%; max-height: 300px; object-fit: contain; }
@@ -216,8 +246,12 @@ const AnalyticsPrint = {
             <div class="stat-value">${report.itemsSold || 0}</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Gross Sales</div>
-            <div class="stat-value">₱${this.formatNumber(report.grossSales !== undefined ? report.grossSales : (report.averageSale || 0))}</div>
+            <div class="stat-label">Sale Item</div>
+            <div class="stat-value">₱${this.formatNumber(saleItems)}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Cost of Items</div>
+            <div class="stat-value">₱${this.formatNumber(saleItems - profit)}</div>
         </div>
     </div>
 
@@ -259,7 +293,7 @@ const AnalyticsPrint = {
     </table>
 
     <!-- Daily Revenue Summary -->
-    ${this.renderSalesTrend(report.salesTrend || [])}
+    ${this.renderSalesTrend(report.salesTrend || [], true)}
 
     <div class="print-footer">
         <p>Total Products: ${products.length}</p>
@@ -289,7 +323,7 @@ const AnalyticsPrint = {
      * @returns {string} HTML string
      */
     renderCategoryStats(categoryStats) {
-        let html = '<h3 class="section-header">Category Performance</h3><table class="data-table"><thead><tr><th>Category</th><th>Revenue</th></tr></thead><tbody>';
+        let html = '<table class="data-table category-summary-table"><caption>Category Performance</caption><thead><tr><th>Category</th><th>Revenue</th></tr></thead><tbody>';
         const sortedCategories = Object.entries(categoryStats || {})
             .map(([name, data]) => ({ ...data, name }))
             .sort((a, b) => (b.revenue || 0) - (a.revenue || 0));
@@ -306,11 +340,11 @@ const AnalyticsPrint = {
      * @param {Array} salesTrend - Array of daily sales trend data
      * @returns {string} HTML string
      */
-    renderSalesTrend(salesTrend) {
-        let html = '<h3 class="section-header">Daily Sales & Profit Summary</h3><table class="data-table"><thead><tr><th>Date</th><th>Gross Sales</th><th>Total Sales</th></tr></thead><tbody>';
+    renderSalesTrend(salesTrend, forPrint = false) {
+        let html = `<table class="data-table daily-summary-table"><caption>Daily Sales &amp; Profit Summary</caption><thead><tr><th>Date</th>${forPrint ? '<th>Cost of Items</th><th>Sale Item</th>' : '<th>Gross Sales</th>'}<th>Total Sales</th></tr></thead><tbody>`;
         
         (salesTrend || []).forEach(day => {
-            const date = new Date(day.date).toLocaleDateString('en-PH', {
+            const date = new Date(`${day.date}T00:00:00`).toLocaleDateString('en-PH', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -320,12 +354,13 @@ const AnalyticsPrint = {
             html += `
             <tr>
                 <td>${date}</td>
+                ${forPrint ? `<td>₱${this.formatNumber(Number(grossSales) - Number(profit))}</td>` : ''}
                 <td>₱${this.formatNumber(grossSales)}</td>
                 <td>₱${this.formatNumber(profit)}</td>
             </tr>`;
         });
 
-        if (!salesTrend || !salesTrend.length) html += '<tr><td colspan="3">No daily sales data available</td></tr>';
+        if (!salesTrend || !salesTrend.length) html += `<tr><td colspan="${forPrint ? 4 : 3}">No daily sales data available</td></tr>`;
         html += '</tbody></table>';
         return html;
     },

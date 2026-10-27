@@ -994,3 +994,43 @@
     font-size: 9px !important;
     margin-top: 2px !important;
   }}
+
+/* Keep summary titles with their tables and let narrow columns wrap. */
+#analyticsCategoryTable .category-summary-table,
+#analyticsDailyTable .daily-summary-table {
+  min-width: 0;
+  table-layout: fixed;
+  margin: 0;
+}
+#analyticsCategoryTable .category-summary-table caption,
+#analyticsDailyTable .daily-summary-table caption {
+  padding: 20px 24px 16px;
+  text-align: left;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+#analyticsCategoryTable .category-summary-table th,
+#analyticsDailyTable .daily-summary-table th,
+#analyticsCategoryTable .category-summary-table td,
+#analyticsDailyTable .daily-summary-table td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+  line-height: 1.5;
+}
+#analyticsCategoryTable .category-summary-table th:not(:first-child),
+#analyticsDailyTable .daily-summary-table th:not(:first-child),
+#analyticsCategoryTable .category-summary-table td:not(:first-child),
+#analyticsDailyTable .daily-summary-table td:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 768px) {
+  #analyticsCategoryTable .category-summary-table caption,
+#analyticsDailyTable .daily-summary-table caption {
+    padding: 16px 16px 12px;
+    font-size: 16px;
+  }
+}
