@@ -62,3 +62,23 @@
 
 .order-chat-unread { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; min-width: 20px; height: 20px; box-sizing: border-box; padding: 0 6px; margin-left: 6px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
 .order-chat-unread[hidden] { display: none !important; }
+#openOrderChatBtn, [data-order-action="openChat"] { position: relative; overflow: visible; }
+/* Reserve room outside the button so scrolling action rows do not clip the badge. */
+.order-actions:has([data-order-action="openChat"]) {
+  padding-top: 12px;
+  padding-right: 16px;
+  padding-bottom: 4px;
+}
+#openOrderChatBtn, [data-order-action="openChat"] {
+  margin-right: 14px;
+  isolation: isolate;
+  z-index: 1;
+}
+#openOrderChatBtn .order-chat-unread, [data-order-action="openChat"] .order-chat-unread {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  margin: 0;
+  z-index: 2;
+}
