@@ -27,6 +27,13 @@
   flex-shrink: 0;
   gap: 12px;
 }
+.history-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
 .history-header-left {
   display: flex;
   align-items: center;

@@ -13,6 +13,7 @@ const InventoryHistory = {
             if (response.ok) {
                 container.innerHTML = await response.text();
                 InventoryDOM.historyModal = document.getElementById('historyModal');
+                document.getElementById('printHistoryBtn')?.addEventListener('click', () => InventoryHistoryPrint.print());
 
                 document.getElementById('closeHistoryModalBtn')?.addEventListener('click', () => {
                     this.closeHistoryModal();
