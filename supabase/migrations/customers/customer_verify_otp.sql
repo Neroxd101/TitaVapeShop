@@ -72,7 +72,7 @@ BEGIN
         email_verified_at = NOW(),
         updated_at = NOW()
     WHERE id = v_code_record.customer_id
-    RETURNING id, email, full_name, contact_number, birthday
+    RETURNING id, email, full_name, name_parts, contact_number, birthday
     INTO v_customer;
 
     IF v_customer IS NULL THEN
@@ -86,6 +86,7 @@ BEGIN
             'id', v_customer.id,
             'email', v_customer.email,
             'full_name', v_customer.full_name,
+            'name_parts', v_customer.name_parts,
             'contact_number', v_customer.contact_number,
             'birthday', v_customer.birthday,
             'role', 'customer'

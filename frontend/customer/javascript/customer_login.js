@@ -80,11 +80,12 @@ const CustomerLogin = {
     document.body.classList.toggle('customer-logged-in', Boolean(currentUser));
 
     if (currentUser) {
+      const fullName = (currentUser.full_name || '').replace(/,\s*/g, ' ').trim();
       const initials = (currentUser.full_name || currentUser.email || 'C')
         .trim()
         .charAt(0)
         .toUpperCase();
-      const displayName = (currentUser.full_name || currentUser.email || 'Customer').split(' ')[0];
+      const displayName = (fullName || currentUser.email || 'Customer').split(' ')[0];
 
       container.innerHTML = `
         <div class="cart-button customer-profile-pill" id="customerProfileBtn" title="Account Menu">
@@ -95,7 +96,7 @@ const CustomerLogin = {
           </svg>
           <div class="customer-dropdown-menu" id="customerDropdownMenu">
             <div class="customer-dropdown-header">
-              <strong style="font-size: 13px; display: block; color: var(--text-primary);">${this.escapeHtml(currentUser.full_name || 'Customer')}</strong>
+              <strong style="font-size: 13px; display: block; color: var(--text-primary);">${this.escapeHtml(fullName || 'Customer')}</strong>
               <span class="customer-dropdown-email">${this.escapeHtml(currentUser.email)}</span>
             </div>
             <button type="button" class="customer-dropdown-item" id="navProfileItem">

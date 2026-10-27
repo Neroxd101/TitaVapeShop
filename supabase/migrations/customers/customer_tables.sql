@@ -7,6 +7,7 @@
 CREATE TABLE IF NOT EXISTS public.customers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name TEXT NOT NULL,
+    name_parts JSONB,
     email TEXT UNIQUE NOT NULL,
     contact_number VARCHAR(20) UNIQUE NOT NULL,
     password TEXT NOT NULL,

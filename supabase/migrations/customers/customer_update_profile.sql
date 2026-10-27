@@ -3,11 +3,14 @@
 -- Updates customer name, phone, and initiates email change OTP
 -- =============================================
 
+DROP FUNCTION IF EXISTS public.customer_update_profile(UUID, TEXT, TEXT, TEXT);
+
 CREATE OR REPLACE FUNCTION public.customer_update_profile(
     p_customer_id UUID,
     p_full_name TEXT,
     p_contact_number TEXT,
-    p_email TEXT
+    p_email TEXT,
+    p_name_parts JSONB DEFAULT NULL
 )
 RETURNS JSONB AS $$
 DECLARE
@@ -21,6 +24,10 @@ DECLARE
     v_updated_customer RECORD;
 BEGIN
     v_clean_name := TRIM(p_full_name);
+    IF p_name_parts IS NOT NULL THEN
+        p_name_parts := public.customer_normalize_name_parts(p_name_parts);
+        v_clean_name := public.customer_format_name(p_name_parts);
+    END IF;
     v_clean_phone := REGEXP_REPLACE(TRIM(p_contact_number), '\D', '', 'g');
     v_clean_email := LOWER(TRIM(p_email));
 
@@ -97,6 +104,7 @@ BEGIN
         -- Update name and phone immediately, but NOT email yet
         UPDATE public.customers AS c
         SET full_name = v_clean_name,
+        name_parts = CASE WHEN p_name_parts IS NOT NULL THEN p_name_parts WHEN c.full_name = v_clean_name THEN c.name_parts ELSE NULL END,
             contact_number = v_clean_phone,
             updated_at = NOW()
         WHERE c.id = p_customer_id;
@@ -138,10 +146,11 @@ BEGIN
     -- Email unchanged: update name & contact number only
     UPDATE public.customers AS c
     SET full_name = v_clean_name,
+        name_parts = CASE WHEN p_name_parts IS NOT NULL THEN p_name_parts WHEN c.full_name = v_clean_name THEN c.name_parts ELSE NULL END,
         contact_number = v_clean_phone,
         updated_at = NOW()
     WHERE c.id = p_customer_id
-    RETURNING c.id, c.email, c.full_name, c.contact_number, c.birthday
+    RETURNING c.id, c.email, c.full_name, c.name_parts, c.contact_number, c.birthday
     INTO v_updated_customer;
 
     RETURN jsonb_build_object(
@@ -152,6 +161,7 @@ BEGIN
             'id', v_updated_customer.id,
             'email', v_updated_customer.email,
             'full_name', v_updated_customer.full_name,
+            'name_parts', v_updated_customer.name_parts,
             'contact_number', v_updated_customer.contact_number,
             'birthday', v_updated_customer.birthday,
             'role', 'customer'
@@ -162,8 +172,8 @@ $$ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public;
 
-REVOKE ALL ON FUNCTION public.customer_update_profile(UUID, TEXT, TEXT, TEXT)
+REVOKE ALL ON FUNCTION public.customer_update_profile(UUID, TEXT, TEXT, TEXT, JSONB)
 FROM PUBLIC, anon, authenticated;
 
-GRANT EXECUTE ON FUNCTION public.customer_update_profile(UUID, TEXT, TEXT, TEXT)
+GRANT EXECUTE ON FUNCTION public.customer_update_profile(UUID, TEXT, TEXT, TEXT, JSONB)
 TO service_role;

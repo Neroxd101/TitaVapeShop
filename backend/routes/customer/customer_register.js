@@ -1,3 +1,4 @@
+const CustomerName = require('../../../frontend/customer/javascript/customer-name');
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -18,9 +19,18 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Database service unavailable' });
     }
 
-    const { full_name, email, contact_number, password, birthday } = req.body;
+    let { full_name, email, contact_number, password, birthday } = req.body;
+    let nameParts = null;
+    if (req.body.name_parts !== undefined) {
+      try {
+        nameParts = CustomerName.normalize(req.body.name_parts);
+        full_name = CustomerName.format(nameParts);
+      } catch (error) {
+        return res.status(400).json({ success: false, error: error.message });
+      }
+    }
 
-    if (!full_name || full_name.trim().length < 2) {
+    if (typeof full_name !== 'string' || !full_name || full_name.trim().length < 2) {
       return res.status(400).json({ success: false, error: 'Please enter your full name (minimum 2 characters).' });
     }
 
@@ -88,7 +98,8 @@ router.post('/api/customer/register', async (req, res) => {
       p_email: cleanEmail,
       p_contact_number: digitsOnly,
       p_password_hash: hashedPassword,
-      p_birthday: birthDateFormatted
+      p_birthday: birthDateFormatted,
+      ...(nameParts ? { p_name_parts: nameParts } : {})
     });
 
     if (rpcError) {

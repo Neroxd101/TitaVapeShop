@@ -74,10 +74,22 @@
 
       <form id="customerRegisterForm">
         <div class="customer-reg-grid">
-          <!-- Row 1: Full Name & Contact Number -->
+          <!-- Customer name -->
           <div class="form-group">
-            <label for="customerRegName"><span>Full Name <span style="color: var(--error);">*</span></span></label>
-            <input type="text" id="customerRegName" required placeholder="Juan Dela Cruz" autocomplete="name">
+            <label for="customerRegLastName">Last Name <span style="color: var(--error);">*</span></label>
+            <input type="text" id="customerRegLastName" required maxlength="100" placeholder="Dela Cruz" autocomplete="family-name">
+          </div>
+          <div class="form-group">
+            <label for="customerRegFirstName">First Name <span style="color: var(--error);">*</span></label>
+            <input type="text" id="customerRegFirstName" required maxlength="100" placeholder="Juan" autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label for="customerRegMiddleName">Middle Name <span class="label-hint">(optional)</span></label>
+            <input type="text" id="customerRegMiddleName" maxlength="100" placeholder="Santos" autocomplete="additional-name">
+          </div>
+          <div class="form-group">
+            <label for="customerRegSuffix">Suffix <span class="label-hint">(optional)</span></label>
+            <input type="text" id="customerRegSuffix" maxlength="20" placeholder="Jr., Sr., III" autocomplete="honorific-suffix">
           </div>
 
           <div class="form-group">
@@ -325,7 +337,27 @@
           <!-- Collapsible Edit Input for Name -->
           <form id="formEditProfileName" class="profile-setting-collapse" style="display: none;">
             <div class="profile-inline-edit-group">
-              <input type="text" id="customerProfileName" required placeholder="Juan Dela Cruz" autocomplete="name">
+              <div class="profile-name-editor">
+                <p id="customerProfileLegacyName" class="customer-name-legacy" hidden></p>
+                <div class="customer-name-fields">
+                  <div class="form-group">
+                    <label for="customerProfileLastName">Last Name <span class="required">*</span></label>
+                    <input type="text" id="customerProfileLastName" required maxlength="100" placeholder="Dela Cruz" autocomplete="family-name">
+                  </div>
+                  <div class="form-group">
+                    <label for="customerProfileFirstName">First Name <span class="required">*</span></label>
+                    <input type="text" id="customerProfileFirstName" required maxlength="100" placeholder="Juan" autocomplete="given-name">
+                  </div>
+                  <div class="form-group">
+                    <label for="customerProfileMiddleName">Middle Name <span class="label-hint">(optional)</span></label>
+                    <input type="text" id="customerProfileMiddleName" maxlength="100" placeholder="Santos" autocomplete="additional-name">
+                  </div>
+                  <div class="form-group">
+                    <label for="customerProfileSuffix">Suffix <span class="label-hint">(optional)</span></label>
+                    <input type="text" id="customerProfileSuffix" maxlength="20" placeholder="Jr., Sr., III" autocomplete="honorific-suffix">
+                  </div>
+                </div>
+              </div>
               <div class="profile-inline-actions">
                 <button type="button" class="btn btn-secondary btn-sm" id="btnCancelEditName">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm" id="btnSaveProfileName">Save</button>

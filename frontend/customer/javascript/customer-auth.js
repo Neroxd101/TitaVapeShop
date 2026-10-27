@@ -179,7 +179,7 @@ const CustomerAuth = {
           toggle.setAttribute('aria-label', 'Show password');
         }
       });
-      const nameInput = document.getElementById('customerRegName');
+      const nameInput = document.getElementById('customerRegLastName');
       if (nameInput) setTimeout(() => nameInput.focus(), 50);
       const bday = document.getElementById('customerRegBirthday');
       if (bday && !bday.max) {
@@ -465,7 +465,7 @@ const CustomerAuth = {
       const toggleBtn = document.getElementById(`btnToggleEdit${field}`);
       const cancelBtn = document.getElementById(`btnCancelEdit${field}`);
       const form = document.getElementById(`formEditProfile${field}`);
-      const input = document.getElementById(`customerProfile${field}`);
+      const input = document.getElementById(field === 'Name' ? 'customerProfileLastName' : `customerProfile${field}`);
 
       if (toggleBtn && form) {
         toggleBtn.addEventListener('click', () => {
@@ -474,7 +474,7 @@ const CustomerAuth = {
           this.clearErrors();
 
           if (input) {
-            if (field === 'Name') input.value = this.currentUser?.full_name || '';
+            if (field === 'Name') window.CustomerName.populate('customerProfile', this.currentUser);
             if (field === 'Phone') input.value = this.currentUser?.contact_number || '';
             if (field === 'Email') input.value = this.currentUser?.email || '';
             setTimeout(() => input.focus(), 50);
@@ -489,7 +489,7 @@ const CustomerAuth = {
           this.clearErrors();
 
           if (input) {
-            if (field === 'Name') input.value = this.currentUser?.full_name || '';
+            if (field === 'Name') window.CustomerName.populate('customerProfile', this.currentUser);
             if (field === 'Phone') input.value = this.currentUser?.contact_number || '';
             if (field === 'Email') input.value = this.currentUser?.email || '';
           }
@@ -828,8 +828,12 @@ const CustomerAuth = {
     e.preventDefault();
     this.clearErrors();
 
+    let nameParts;
+    try { nameParts = window.CustomerName.read('customerReg'); }
+    catch (error) { this.showError('customerRegisterError', error.message); return; }
     const payload = {
-      full_name: document.getElementById('customerRegName').value.trim(),
+      full_name: window.CustomerName.format(nameParts),
+      name_parts: nameParts,
       email: document.getElementById('customerRegEmail').value.trim(),
       contact_number: document.getElementById('customerRegPhone').value.trim(),
       birthday: document.getElementById('customerRegBirthday').value,
@@ -851,6 +855,7 @@ const CustomerAuth = {
 
     const result = await window.CustomerRegister.submit({
       full_name: payload.full_name,
+      name_parts: payload.name_parts,
       email: payload.email,
       contact_number: payload.contact_number,
       birthday: payload.birthday,
@@ -991,6 +996,7 @@ const CustomerAuth = {
     if (!this.currentUser) return;
 
     let fullName = this.currentUser.full_name || '';
+    let nameParts;
     let phone = this.currentUser.contact_number || '';
     let email = (this.currentUser.email || '').toLowerCase();
 
@@ -999,17 +1005,18 @@ const CustomerAuth = {
     let toggleBtn = null;
 
     if (fieldKey === 'name') {
-      const input = document.getElementById('customerProfileName');
+      const input = document.getElementById('customerProfileLastName');
       submitBtn = document.getElementById('btnSaveProfileName');
       collapseForm = document.getElementById('formEditProfileName');
       toggleBtn = document.getElementById('btnToggleEditName');
-      const val = input ? input.value.trim() : '';
-      if (!val || val.length < 2) {
-        this.showError('customerProfileError', 'Please enter your full name (at least 2 characters).');
+      try {
+        nameParts = window.CustomerName.read('customerProfile');
+        fullName = window.CustomerName.format(nameParts);
+      } catch (error) {
+        this.showError('customerProfileError', error.message);
         if (input) input.focus();
         return;
       }
-      fullName = val;
     } else if (fieldKey === 'phone') {
       const input = document.getElementById('customerProfilePhone');
       submitBtn = document.getElementById('btnSaveProfilePhone');
@@ -1046,6 +1053,7 @@ const CustomerAuth = {
     try {
       const result = await window.CustomerUpdateProfile.update({
         full_name: fullName,
+        ...(nameParts ? { name_parts: nameParts } : {}),
         contact_number: phone,
         email: email
       });

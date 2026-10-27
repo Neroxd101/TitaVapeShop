@@ -111,7 +111,10 @@ const CatalogCheckoutModal = {
     async handleSubmit() {
         const orderType = document.getElementById('orderType')?.value || 'pickup';
         const user = window.CustomerAuth?.currentUser || {};
-        const customerName = document.getElementById('customerName')?.value?.trim() || user.full_name || '';
+        let nameParts;
+        try { nameParts = window.CustomerName.read('checkout'); }
+        catch (error) { alert(error.message); return; }
+        const customerName = window.CustomerName.format(nameParts);
         const contactNumber = document.getElementById('contactNumber')?.value?.trim() || user.contact_number || '';
         const customerEmail = document.getElementById('customerEmail')?.value?.trim() || user.email || '';
 
@@ -159,6 +162,18 @@ const CatalogCheckoutModal = {
         let isRedirecting = false;
 
         try {
+            if (JSON.stringify(nameParts) !== JSON.stringify(user.name_parts)) {
+                const saved = await window.CustomerUpdateProfile.update({
+                    name_parts: nameParts, full_name: customerName,
+                    contact_number: user.contact_number, email: user.email
+                });
+                if (!saved.success || !saved.user) {
+                    alert(saved.error || 'Unable to save your name.');
+                    return;
+                }
+                window.CustomerAuth.currentUser = saved.user;
+                window.CustomerAuth.updateNavUI();
+            }
             const result = await window.CustomerCreateOrder.submit({
                 customer_name: customerName,
                 contact_number: digitsOnly,
@@ -243,6 +258,7 @@ const CatalogCheckoutModal = {
                 avatar.textContent = initial;
             }
 
+            window.CustomerName.populate('checkout', user);
             if (nameInput) nameInput.value = user.full_name || '';
             if (emailInput) emailInput.value = user.email || '';
             if (phoneInput) phoneInput.value = user.contact_number || '';

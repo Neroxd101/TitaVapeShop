@@ -60,13 +60,12 @@ const CustomerUpdateProfile = {
     if (emailDisplay) emailDisplay.textContent = user.email || '—';
 
     // Form inputs
-    const nameInput = document.getElementById('customerProfileName');
     const phoneInput = document.getElementById('customerProfilePhone');
     const emailInput = document.getElementById('customerProfileEmail');
     const avatarBadge = document.getElementById('profileModalAvatar');
     const ageBadgeText = document.getElementById('profileAgeBadgeText');
 
-    if (nameInput) nameInput.value = user.full_name || '';
+    window.CustomerName.populate('customerProfile', user);
     if (phoneInput) phoneInput.value = user.contact_number || '';
     if (emailInput) emailInput.value = user.email || '';
 

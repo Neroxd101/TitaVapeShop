@@ -4,6 +4,8 @@
 -- Password verification is done in Express using bcrypt
 -- =============================================
 
+DROP FUNCTION IF EXISTS public.customer_login(TEXT);
+
 CREATE OR REPLACE FUNCTION public.customer_login(
     p_email TEXT
 )
@@ -12,6 +14,7 @@ RETURNS TABLE (
     email TEXT,
     password TEXT,
     full_name TEXT,
+    name_parts JSONB,
     contact_number VARCHAR(20),
     birthday DATE,
     is_verified BOOLEAN,
@@ -24,6 +27,7 @@ BEGIN
         c.email,
         c.password,
         c.full_name,
+        c.name_parts,
         c.contact_number,
         c.birthday,
         c.is_verified,

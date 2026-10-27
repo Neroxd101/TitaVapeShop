@@ -70,6 +70,7 @@ router.post('/api/customer/login', async (req, res) => {
       id: customer.id,
       email: customer.email,
       full_name: customer.full_name || '',
+      name_parts: customer.name_parts || null,
       contact_number: customer.contact_number || '',
       birthday: customer.birthday || null,
       role: 'customer'
@@ -114,7 +115,7 @@ router.get('/api/customer/me', async (req, res) => {
 
     const { data: customer, error } = await supabaseAdmin
       .from('customers')
-      .select('id, email, full_name, contact_number, birthday, is_verified')
+      .select('id, email, full_name, name_parts, contact_number, birthday, is_verified')
       .eq('id', decoded.id)
       .maybeSingle();
 
@@ -129,6 +130,7 @@ router.get('/api/customer/me', async (req, res) => {
         id: customer.id,
         email: customer.email,
         full_name: customer.full_name || '',
+        name_parts: customer.name_parts || null,
         contact_number: customer.contact_number || '',
         birthday: customer.birthday || null
       }

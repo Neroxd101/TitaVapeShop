@@ -3,12 +3,15 @@
 -- Registers a new customer and generates a 6-digit OTP code
 -- =============================================
 
+DROP FUNCTION IF EXISTS public.customer_register(TEXT, TEXT, TEXT, TEXT, DATE);
+
 CREATE OR REPLACE FUNCTION public.customer_register(
     p_full_name TEXT,
     p_email TEXT,
     p_contact_number TEXT,
     p_password_hash TEXT,
-    p_birthday DATE
+    p_birthday DATE,
+    p_name_parts JSONB DEFAULT NULL
 )
 RETURNS JSONB AS $$
 DECLARE
@@ -20,6 +23,10 @@ DECLARE
     v_expires_at TIMESTAMPTZ;
 BEGIN
     v_clean_name := TRIM(p_full_name);
+    IF p_name_parts IS NOT NULL THEN
+        p_name_parts := public.customer_normalize_name_parts(p_name_parts);
+        v_clean_name := public.customer_format_name(p_name_parts);
+    END IF;
     v_clean_email := LOWER(TRIM(p_email));
     v_clean_phone := REGEXP_REPLACE(TRIM(p_contact_number), '\D', '', 'g');
 
@@ -66,6 +73,7 @@ BEGIN
     -- Insert into customers table
     INSERT INTO public.customers (
         full_name,
+        name_parts,
         email,
         contact_number,
         password,
@@ -74,6 +82,7 @@ BEGIN
     )
     VALUES (
         v_clean_name,
+        p_name_parts,
         v_clean_email,
         v_clean_phone,
         p_password_hash,
@@ -120,8 +129,8 @@ SET search_path = public;
 
 -- Registration must pass through the backend, which validates the request,
 -- hashes the password, and sends the verification email.
-REVOKE ALL ON FUNCTION public.customer_register(TEXT, TEXT, TEXT, TEXT, DATE)
+REVOKE ALL ON FUNCTION public.customer_register(TEXT, TEXT, TEXT, TEXT, DATE, JSONB)
 FROM PUBLIC, anon, authenticated;
 
-GRANT EXECUTE ON FUNCTION public.customer_register(TEXT, TEXT, TEXT, TEXT, DATE)
+GRANT EXECUTE ON FUNCTION public.customer_register(TEXT, TEXT, TEXT, TEXT, DATE, JSONB)
 TO service_role;

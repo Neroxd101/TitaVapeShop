@@ -1,3 +1,4 @@
+const CustomerName = require('../../../frontend/customer/javascript/customer-name');
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -32,7 +33,16 @@ router.put('/api/customer/profile', async (req, res) => {
     return res.status(401).json({ success: false, error: 'Invalid customer session.' });
   }
 
-  const { full_name, contact_number, email } = req.body;
+  let { full_name, contact_number, email } = req.body;
+  let nameParts = null;
+  if (req.body.name_parts !== undefined) {
+    try {
+      nameParts = CustomerName.normalize(req.body.name_parts);
+      full_name = CustomerName.format(nameParts);
+    } catch (error) {
+      return res.status(400).json({ success: false, error: error.message });
+    }
+  }
 
   // Validate full_name
   if (!full_name || typeof full_name !== 'string' || full_name.trim().length < 2) {
@@ -64,7 +74,8 @@ router.put('/api/customer/profile', async (req, res) => {
       p_customer_id: decoded.id,
       p_full_name: normalizedName,
       p_contact_number: normalizedPhone,
-      p_email: normalizedEmail
+      p_email: normalizedEmail,
+      ...(nameParts ? { p_name_parts: nameParts } : {})
     });
 
     if (rpcError) {
