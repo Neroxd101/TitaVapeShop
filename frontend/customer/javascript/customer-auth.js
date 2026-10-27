@@ -54,6 +54,7 @@ const CustomerAuth = {
    * Update navigation bar with Sign In button or Profile Pill
    */
   updateNavUI() {
+    window.CatalogNotifications?.setUser(this.currentUser);
     if (window.CustomerLogin) {
       window.CustomerLogin.updateNavUI(this.currentUser, {
         onOpenProfile: () => this.openProfile(),

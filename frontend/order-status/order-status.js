@@ -7,6 +7,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   let currentToken = urlParams.get('token');
   let currentOrderId = urlParams.get('id');
+  let openNotificationChat = urlParams.get('chat') === '1';
 
   // DOM elements
   const loadingState = document.getElementById('loadingState');
@@ -475,6 +476,12 @@
     document.getElementById('sendOrderChatBtn').hidden = order.status !== 'confirmed';
     if (chatOrderId !== order.id) { chatOrderId = order.id; orderChatInput.value = ''; }
     window.OrderChat.render(document.getElementById('orderChatMessages'), order);
+    if (openNotificationChat && canViewNotes) {
+      openNotificationChat = false;
+      orderChatDialog.showModal();
+      const history = document.getElementById('orderChatMessages');
+      history.scrollTop = history.scrollHeight;
+    }
     window.OrderChat.setBadge(openOrderChatBtn, window.OrderChat.unreadCount(order));
     markCustomerChatRead();
 

@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="/catalog/catalog.css?v=7">
     <link rel="stylesheet" href="/catalog/catalog-checkout-styles.css">
     <link rel="stylesheet" href="/customer/customer-auth.css">
+    <link rel="stylesheet" href="/catalog/css/catalog-notifications.css">
 </head>
 
 <body>
@@ -83,10 +84,24 @@
                     <span>Cart</span>
                     <span id="cartBadge" class="cart-badge">0</span>
                 </button>
+                <button id="catalogNotificationsBtn" class="cart-button" type="button" title="Notifications" aria-label="Notifications" aria-expanded="false" aria-controls="catalogNotificationsPanel" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4a1.5 1.5 0 0 0-3 0v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+                    <span id="catalogNotificationsBadge" class="cart-badge" hidden></span>
+                </button>
                 <div id="customerNavContainer"></div>
             </div>
         </div>
     </nav>
+    <section id="catalogNotificationsPanel" class="catalog-notifications-panel" aria-label="Notifications" hidden>
+        <div class="catalog-notifications-header">
+            <h2>Notifications</h2>
+            <button id="catalogNotificationsReadAll" type="button" class="notification-text-button" disabled>Mark all read</button>
+            <button id="catalogNotificationsClose" type="button" class="notification-text-button" aria-label="Close notifications">✕</button>
+        </div>
+        <p id="catalogNotificationsStatus" class="catalog-notifications-status" role="status"></p>
+        <div id="catalogNotificationsList" class="catalog-notifications-list"></div>
+        <button id="catalogNotificationsMore" type="button" class="notification-text-button notification-load-more" hidden>Show older updates</button>
+    </section>
 
     <!-- Hero Section -->
     <main class="page-content">
@@ -178,6 +193,7 @@
     <script src="/catalog/javascript/catalog-privacy-modal.js"></script>
     <script src="/catalog/javascript/catalog-checkout-modal.js"></script>
     <script src="/catalog/javascript/catalog-orders-modal.js"></script>
+    <script src="/catalog/javascript/catalog-notifications.js"></script>
     <!-- Customer Authentication & Verification Modules -->
     <script src="/customer/javascript/customer_check_email.js"></script>
     <script src="/customer/javascript/customer_check_phone.js"></script>
