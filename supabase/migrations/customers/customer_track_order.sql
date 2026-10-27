@@ -109,7 +109,7 @@ BEGIN
         v_order.refunded_amount,
         v_order.refunded_at,
         COALESCE((SELECT jsonb_agg(jsonb_build_object(
-            'id', m.id::TEXT, 'sender', m.sender, 'body', m.body, 'created_at', m.created_at
+            'id', m.id::TEXT, 'sender', m.sender, 'body', m.body, 'created_at', m.created_at, 'read_at', m.read_at
         ) ORDER BY m.created_at NULLS FIRST, m.id)
         FROM public.order_chat_messages m WHERE m.order_id = v_order.id), '[]'::JSONB);
 END;

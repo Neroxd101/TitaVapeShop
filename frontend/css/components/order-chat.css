@@ -59,3 +59,6 @@
   .order-chat-header h2 { font-size: 18px; }
   .order-chat-bubble { max-width: 95%; }
 }
+
+.order-chat-unread { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; min-width: 20px; height: 20px; box-sizing: border-box; padding: 0 6px; margin-left: 6px; border-radius: 999px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
+.order-chat-unread[hidden] { display: none !important; }

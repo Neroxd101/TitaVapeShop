@@ -76,9 +76,19 @@
   /**
    * Setup event listeners
    */
+  async function markCustomerChatRead() {
+    if (!currentOrder || !orderChatDialog.open || document.visibilityState === 'hidden') return;
+    const order = currentOrder;
+    try {
+      await window.OrderChat.markRead(order, 'customer', verifiedPhone);
+      if (currentOrder?.id === order.id) window.OrderChat.setBadge(openOrderChatBtn, window.OrderChat.unreadCount(currentOrder));
+    } catch (_) { /* Keep the unread badge if the read receipt cannot be saved. */ }
+  }
+
   function setupEventListeners() {
     openOrderChatBtn.addEventListener('click', () => {
       orderChatDialog.showModal();
+      markCustomerChatRead();
       const messages = document.getElementById('orderChatMessages');
       messages.scrollTop = messages.scrollHeight;
       fetchOrder(null, true);
@@ -465,6 +475,8 @@
     document.getElementById('sendOrderChatBtn').hidden = order.status !== 'confirmed';
     if (chatOrderId !== order.id) { chatOrderId = order.id; orderChatInput.value = ''; }
     window.OrderChat.render(document.getElementById('orderChatMessages'), order);
+    window.OrderChat.setBadge(openOrderChatBtn, window.OrderChat.unreadCount(order));
+    markCustomerChatRead();
 
     // QR Code / Delivery Notice
     if (['cancelled', 'voided'].includes(order.status)) {
@@ -832,11 +844,11 @@
       pollInterval = null;
     }
 
-    // Only poll if order is not in a terminal state
+    // Keep unread counts current; poll more frequently while the conversation is open.
     if (status === 'pending' || status === 'confirmed') {
       pollInterval = setInterval(() => {
         fetchOrder(null, true);
-      }, 25000); // Check every 25 seconds
+      }, orderChatDialog.open ? 5000 : 25000);
     }
   }
 

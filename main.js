@@ -21,6 +21,7 @@ const customerUpdateProfileRoutes = require('./backend/routes/customer/customer_
 const customerCreateOrderRoutes = require('./backend/routes/customer/customer_create_order');
 const customerGetOrdersRoutes = require('./backend/routes/customer/customer_get_orders');
 const customerCancelOrderRoutes = require('./backend/routes/customer/customer_cancel_order');
+const customerOrderChatReadRoutes = require('./backend/routes/customer/customer_order_chat_read');
 const customerOrderChatSendRoutes = require('./backend/routes/customer/customer_order_chat_send');
 const customerConfirmDeliveryRoutes = require('./backend/routes/customer/customer_confirm_delivery');
 const customerTrackOrderRoutes = require('./backend/routes/customer/customer_track_order');
@@ -98,6 +99,7 @@ const analyticsModalGrossSalesRoutes = require('./backend/routes/admin/admin/ana
 // Orders routes
 const ordersControllerRoutes = require('./backend/routes/admin/admin/orders/orders_controller');
 const ordersSummariesRoutes = require('./backend/routes/admin/admin/orders/orders_summaries');
+const ordersChatReadRoutes = require('./backend/routes/admin/admin/orders/orders_chat_read');
 const ordersChatSendRoutes = require('./backend/routes/admin/admin/orders/orders_chat_send');
 const ordersGetAllRoutes = require('./backend/routes/admin/admin/orders/orders_get_all');
 const ordersUpdateStatusRoutes = require('./backend/routes/admin/admin/orders/orders_update_status');
@@ -131,6 +133,7 @@ app.use('/', customerGetOrdersRoutes);
 app.use('/', customerCancelOrderRoutes);
 app.use('/', customerConfirmDeliveryRoutes);
 app.use('/', customerOrderChatSendRoutes);
+app.use('/', customerOrderChatReadRoutes);
 app.use('/', customerTrackOrderRoutes);
 app.use('/', customerSubmitPaymentProofRoutes);
 app.use('/', customerResetPasswordRequestRoutes);
@@ -160,6 +163,7 @@ app.use('/', ordersControllerRoutes);
 app.use('/', ordersSummariesRoutes);
 app.use('/', ordersGetAllRoutes);
 app.use('/', ordersChatSendRoutes);
+app.use('/', ordersChatReadRoutes);
 app.use('/', ordersUpdateStatusRoutes);
 app.use('/', ordersUpdatePaymentStatusRoutes);
 app.use('/', ordersMarkRefundedRoutes);

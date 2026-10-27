@@ -15,9 +15,11 @@ CREATE TABLE IF NOT EXISTS public.order_chat_messages (
     body TEXT NOT NULL CHECK (LENGTH(BTRIM(body)) BETWEEN 1 AND 1000),
     -- Older notes can have no recorded date. Do not invent one during import.
     created_at TIMESTAMPTZ,
+    read_at TIMESTAMPTZ,
     legacy BOOLEAN NOT NULL DEFAULT FALSE,
     CHECK (legacy OR created_at IS NOT NULL)
 );
+ALTER TABLE public.order_chat_messages ADD COLUMN IF NOT EXISTS read_at TIMESTAMPTZ;
 CREATE INDEX IF NOT EXISTS order_chat_messages_order_idx
     ON public.order_chat_messages(order_id, created_at, id);
 ALTER TABLE public.order_chat_messages ENABLE ROW LEVEL SECURITY;

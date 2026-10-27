@@ -1,7 +1,7 @@
 // Dedicated order conversation modal, independent of the order details view.
 const OrdersChatModal = {
     chatPoll: null,
-    open(order) {
+    open(order, onRead) {
         clearInterval(this.chatPoll);
         const modal = document.getElementById('adminChatDialog');
         document.getElementById('adminChatCustomer').textContent = order.customer_name || 'Customer';
@@ -22,13 +22,20 @@ const OrdersChatModal = {
         document.getElementById('closeAdminChatBtn').onclick = () => modal.close();
         modal.onclose = () => clearInterval(this.chatPoll);
         const chat = document.getElementById('adminOrderChatMessages');
+        const markRead = async displayed => {
+            if (!modal.open || !chat.isConnected || document.visibilityState === 'hidden') return;
+            try {
+                const result = await window.OrderChat.markRead(displayed, 'admin');
+                if (chat.isConnected) onRead?.(result ? Number(result.unread_count) : window.OrderChat.unreadCount(displayed, 'admin'));
+            } catch (_) { /* Leave unread messages counted until the receipt is saved. */ }
+        };
         let chatVersion = 0;
         if (chat) {
             window.OrderChat.render(chat, order, 'admin');
             let refreshing = false;
             this.chatPoll = setInterval(async () => {
                 if (!modal.open || !chat.isConnected) { clearInterval(this.chatPoll); return; }
-                if (refreshing || document.getElementById('adminOrderChatInput')?.disabled && order.status === 'confirmed') return;
+                if (document.visibilityState === 'hidden' || refreshing || document.getElementById('adminOrderChatInput')?.disabled && order.status === 'confirmed') return;
                 refreshing = true;
                 const version = chatVersion;
                 try {
@@ -38,6 +45,7 @@ const OrdersChatModal = {
                         order.chat_messages = latest.chat_messages;
                         order.status = latest.status;
                         window.OrderChat.render(chat, latest, 'admin');
+                        markRead(latest);
                         const input = document.getElementById('adminOrderChatInput');
                         if (input) input.disabled = latest.status !== 'confirmed';
                         const send = document.getElementById('adminOrderChatForm')?.querySelector('button');
@@ -81,6 +89,7 @@ const OrdersChatModal = {
             }
         });
         if (!modal.open) modal.showModal();
+        markRead(order);
     }
 };
 window.OrdersChatModal = OrdersChatModal;

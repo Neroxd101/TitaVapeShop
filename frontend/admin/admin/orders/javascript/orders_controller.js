@@ -77,6 +77,7 @@ class OrdersController {
 
         this.setupModalEventListeners();
         await this.loadOrders();
+        this.chatBadgeTimer = setInterval(() => this.refreshChatBadges(), 10000);
     }
 
 
@@ -165,6 +166,7 @@ class OrdersController {
     }
 
     async loadOrders() {
+        this.chatBadgeRequestId = (this.chatBadgeRequestId || 0) + 1;
         this.setLoading(true);
 
         try {
@@ -287,7 +289,7 @@ class OrdersController {
                         <div class="order-actions">
                             ${order.status === 'completed' ? `<button type="button" class="btn btn-small btn-danger" data-order-action="voidOrder" data-order-id="${order.id}">Void</button>` : ''}
                             <button type="button" class="btn btn-small btn-secondary" data-order-action="viewOrder" data-order-id="${order.id}">View</button>
-                            ${orderType === 'delivery' && ['confirmed', 'completed'].includes(order.status) ? `<button type="button" class="btn btn-small btn-info" data-order-action="openChat" data-order-id="${order.id}">Chat</button>` : ''}
+                            ${orderType === 'delivery' && ['confirmed', 'completed'].includes(order.status) ? `<button type="button" class="btn btn-small btn-info" data-order-action="openChat" data-order-id="${order.id}">Chat${window.OrderChat.badgeHtml(order.chat_unread_count ?? window.OrderChat.unreadCount(order, 'admin'))}</button>` : ''}
                             ${window.OrdersModals && order.payment_status === 'paid' && Number(order.refund_due_amount) > 0 && Array.isArray(order.items) && order.items.some(window.OrderAvailability.isUnavailable) ? `<button type="button" class="btn btn-small btn-success" data-order-action="markRefunded" data-order-id="${order.id}">Mark Refunded</button>` : ''}
                             ${order.status === 'pending' 
                                 ? `
@@ -397,9 +399,42 @@ class OrdersController {
         }
     }
 
+    updateChatBadge(orderId, count) {
+        this.chatBadgeRequestId = (this.chatBadgeRequestId || 0) + 1;
+        const order = this.state.orders.find(item => item.id === orderId);
+        if (order) order.chat_unread_count = count;
+        document.querySelectorAll('[data-order-action="openChat"]').forEach(button => {
+            if (button.dataset.orderId === orderId) window.OrderChat.setBadge(button, count);
+        });
+    }
+
+    async refreshChatBadges() {
+        if (document.visibilityState === 'hidden' || this.chatBadgeBusy || this.state.loading) return;
+        const ids = this.state.orders.filter(order => order.order_type === 'delivery').map(order => order.id);
+        if (!ids.length) return;
+        const requestId = this.chatBadgeRequestId = (this.chatBadgeRequestId || 0) + 1;
+        this.chatBadgeBusy = true;
+        try {
+            const response = await fetch('/api/orders/chat-unread?' + new URLSearchParams({ ids: ids.join(',') }), {
+                credentials: 'include', headers: { Accept: 'application/json' }
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success || requestId !== this.chatBadgeRequestId) return;
+            for (const order of this.state.orders) {
+                if (!Object.hasOwn(result.counts || {}, order.id)) continue;
+                const count = Number(result.counts[order.id]);
+                order.chat_unread_count = count;
+                document.querySelectorAll('[data-order-action="openChat"]').forEach(button => {
+                    if (button.dataset.orderId === order.id) window.OrderChat.setBadge(button, count);
+                });
+            }
+        } catch (_) { /* Leave the current badge visible when polling fails. */ }
+        finally { this.chatBadgeBusy = false; }
+    }
+
     openChat(orderId) {
         const order = this.state.orders.find(item => item.id === orderId);
-        if (order) window.OrdersChatModal.open(order);
+        if (order) window.OrdersChatModal.open(order, count => this.updateChatBadge(orderId, count));
     }
 
     viewOrder(orderId) {
