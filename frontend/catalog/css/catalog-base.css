@@ -538,6 +538,15 @@ main {
 }
 
 .detail-value.low-stock {
+    color: #facc15;
+}
+
+.badge-low {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+}
+
+.detail-value.out-of-stock {
     color: var(--error);
 }
 

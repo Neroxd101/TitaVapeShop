@@ -58,7 +58,7 @@ const CatalogCard = {
                              onerror="CatalogCard.handleImageError(this, '${product.id}')"
                              loading="lazy">
                         ${availableStock > 0
-                    ? `<span class="product-badge badge-stock">In Stock</span>`
+                    ? `<span class="product-badge ${availableStock <= 10 ? 'badge-low' : 'badge-stock'}">${availableStock <= 10 ? 'Low Stock' : 'In Stock'}</span>`
                     : `<span class="product-badge badge-out">Out of Stock</span>`}
                     </div>
                     <div class="product-info">
@@ -73,7 +73,7 @@ const CatalogCard = {
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Stock</span>
-                                <span class="detail-value ${availableStock <= 10 ? 'low-stock' : ''}">${availableStock}</span>
+                                <span class="detail-value ${availableStock <= 0 ? 'out-of-stock' : availableStock <= 10 ? 'low-stock' : ''}">${availableStock}</span>
                             </div>
                         </div>
                         <div class="card-actions">
@@ -128,7 +128,8 @@ const CatalogCard = {
                 const stockValue = item.querySelector('.detail-value');
                 if (stockValue) {
                     stockValue.textContent = availableStock;
-                    stockValue.classList.toggle('low-stock', availableStock <= 10);
+                    stockValue.classList.toggle('low-stock', availableStock > 0 && availableStock <= 10);
+                    stockValue.classList.toggle('out-of-stock', availableStock <= 0);
                 }
             }
         });
@@ -137,8 +138,8 @@ const CatalogCard = {
         const badge = productCard.querySelector('.product-badge');
         if (badge) {
             if (availableStock > 0) {
-                badge.className = 'product-badge badge-stock';
-                badge.textContent = 'In Stock';
+                badge.className = 'product-badge ' + (availableStock <= 10 ? 'badge-low' : 'badge-stock');
+                badge.textContent = availableStock <= 10 ? 'Low Stock' : 'In Stock';
             } else {
                 badge.className = 'product-badge badge-out';
                 badge.textContent = 'Out of Stock';

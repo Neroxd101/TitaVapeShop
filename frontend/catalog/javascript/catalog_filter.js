@@ -62,6 +62,10 @@ const CatalogFilter = {
             filtered.sort((a, b) => (parseFloat(a.sale_price) || 0) - (parseFloat(b.sale_price) || 0));
         } else if (this.currentSort === 'price-desc') {
             filtered.sort((a, b) => (parseFloat(b.sale_price) || 0) - (parseFloat(a.sale_price) || 0));
+        } else if (this.currentSort === 'stock-asc') {
+            filtered.sort((a, b) => (Number(a.quantity) || 0) - (Number(b.quantity) || 0));
+        } else if (this.currentSort === 'stock-desc') {
+            filtered.sort((a, b) => (Number(b.quantity) || 0) - (Number(a.quantity) || 0));
         } else if (this.currentSort === 'name-asc') {
             filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
         } else if (this.currentSort === 'name-desc') {

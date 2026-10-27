@@ -91,8 +91,8 @@ const CatalogProductModal = {
 
         if (stockBadge) {
             if (availableStock > 0) {
-                stockBadge.className = 'status-badge connected';
-                stockBadge.textContent = `In Stock (${availableStock})`;
+                stockBadge.className = 'status-badge ' + (availableStock <= 10 ? 'stock-low' : 'connected');
+                stockBadge.textContent = `${availableStock <= 10 ? 'Low Stock' : 'In Stock'} (${availableStock})`;
             } else {
                 stockBadge.className = 'status-badge disconnected';
                 stockBadge.textContent = 'Out of Stock';
@@ -236,8 +236,8 @@ const CatalogProductModal = {
                     
                     <div class="stock-info">
                         <strong>Availability:</strong>
-                        <span id="modalStockBadge" class="status-badge ${availableStock > 0 ? 'connected' : 'disconnected'}">
-                            ${availableStock > 0 ? `In Stock (${availableStock})` : 'Out of Stock'}
+                        <span id="modalStockBadge" class="status-badge ${availableStock <= 0 ? 'disconnected' : availableStock <= 10 ? 'stock-low' : 'connected'}">
+                            ${availableStock > 0 ? `${availableStock <= 10 ? 'Low Stock' : 'In Stock'} (${availableStock})` : 'Out of Stock'}
                         </span>
                     </div>
 
@@ -377,8 +377,8 @@ const CatalogProductModal = {
 
                     if (stockBadge) {
                         if (newAvailableStock > 0 && (!hasVariations || getSelectedVariation())) {
-                            stockBadge.className = 'status-badge connected';
-                            stockBadge.textContent = `In Stock (${newAvailableStock})`;
+                            stockBadge.className = 'status-badge ' + (newAvailableStock <= 10 ? 'stock-low' : 'connected');
+                            stockBadge.textContent = `${newAvailableStock <= 10 ? 'Low Stock' : 'In Stock'} (${newAvailableStock})`;
                         } else {
                             stockBadge.className = 'status-badge disconnected';
                             stockBadge.textContent = 'Out of Stock';
