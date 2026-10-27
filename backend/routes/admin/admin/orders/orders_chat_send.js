@@ -3,7 +3,7 @@ const router = express.Router();
 const { supabaseAdmin } = require('../../../../database/supabase');
 const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddleware');
 
-router.post('/api/orders/chat-send', isAuthenticated, hasRole(['admin']), async (req, res) => {
+router.post('/api/orders/chat-send', isAuthenticated, hasRole(['admin', 'staff']), async (req, res) => {
     const { id, message } = req.body || {};
     if (typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
         || typeof message !== 'string' || !message.trim() || message.trim().length > 1000) {

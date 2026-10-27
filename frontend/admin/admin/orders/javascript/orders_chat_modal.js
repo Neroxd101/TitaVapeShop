@@ -70,7 +70,7 @@ const OrdersChatModal = {
             message.textContent = 'Sending…';
             try {
                 const response = await fetch('/api/orders/chat-send', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({ id: order.id, message: input.value })
                 });
                 const result = await response.json();
