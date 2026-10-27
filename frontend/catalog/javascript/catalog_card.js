@@ -82,7 +82,7 @@ const CatalogCard = {
                             </button>
                             ${availableStock > 0 
                                     ? `<button class="btn-card add-cart-btn" data-product-id="${product.id}">
-                                        <span>${variationCount ? 'Choose Options' : 'Add to Cart'}</span>
+                                        <span>${variationCount ? 'Choose Variant' : 'Add to Cart'}</span>
                                     </button>`
                                     : `<button class="btn-card" disabled>Out of Stock</button>`}
                         </div>
