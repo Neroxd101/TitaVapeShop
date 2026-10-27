@@ -133,6 +133,10 @@ const AnalyticsPrint = {
             border-bottom: 1px solid #ddd;
             padding-bottom: 8px;
         }
+        .print-chart { break-inside: avoid; margin-bottom: 24px; }
+        .print-chart img { display: block; width: 100%; max-height: 300px; object-fit: contain; }
+        thead { display: table-header-group; }
+        tr { break-inside: avoid; }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -217,6 +221,8 @@ const AnalyticsPrint = {
         </div>
     </div>
 
+    ${this.renderCharts()}
+
     <!-- Category Performance -->
     ${this.renderCategoryStats(report.categoryStats || {})}
 
@@ -236,6 +242,7 @@ const AnalyticsPrint = {
 
         // Add product rows
         const products = report.topProducts || [];
+        if (!products.length) printHTML += '<tr><td colspan="5">No product performance data available</td></tr>';
         products.forEach(p => {
             printHTML += `
             <tr>
@@ -264,12 +271,16 @@ const AnalyticsPrint = {
         printWindow.document.write(printHTML);
         printWindow.document.close();
         
-        // Wait for content to load, then print
-        setTimeout(() => {
-            if (!printWindow.closed) {
-                printWindow.print();
-            }
-        }, 250);
+        // Wait for chart images to finish loading before opening the print dialog.
+        Promise.all(Array.from(printWindow.document.images, img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        })).then(() => {
+            if (!printWindow.closed) printWindow.print();
+        });
     },
 
     /**
@@ -278,26 +289,15 @@ const AnalyticsPrint = {
      * @returns {string} HTML string
      */
     renderCategoryStats(categoryStats) {
-        if (!categoryStats || Object.keys(categoryStats).length === 0) {
-            return '';
-        }
-
-        let html = '<div class="section-header">Category Performance</div><div class="category-stats">';
-        
-        // Sort by revenue descending
-        const sortedCategories = Object.entries(categoryStats)
-            .map(([name, data]) => ({ name, ...data }))
+        let html = '<h3 class="section-header">Category Performance</h3><table class="data-table"><thead><tr><th>Category</th><th>Revenue</th></tr></thead><tbody>';
+        const sortedCategories = Object.entries(categoryStats || {})
+            .map(([name, data]) => ({ ...data, name }))
             .sort((a, b) => (b.revenue || 0) - (a.revenue || 0));
-
         sortedCategories.forEach(cat => {
-            html += `
-            <div class="category-item">
-                <span class="category-name">${this.escapeHtml(cat.name)}</span>
-                <span class="category-value">₱${this.formatNumber(cat.revenue || 0)}</span>
-            </div>`;
+            html += `<tr><td>${this.escapeHtml(cat.name)}</td><td>₱${this.formatNumber(cat.revenue || 0)}</td></tr>`;
         });
-
-        html += '</div>';
+        if (!sortedCategories.length) html += '<tr><td colspan="2">No category performance data available</td></tr>';
+        html += '</tbody></table>';
         return html;
     },
 
@@ -307,13 +307,9 @@ const AnalyticsPrint = {
      * @returns {string} HTML string
      */
     renderSalesTrend(salesTrend) {
-        if (!salesTrend || salesTrend.length === 0) {
-            return '';
-        }
-
-        let html = '<div class="section-header">Daily Sales & Profit Summary</div><table><thead><tr><th>Date</th><th>Gross Sales</th><th>Total Sales</th></tr></thead><tbody>';
+        let html = '<h3 class="section-header">Daily Sales & Profit Summary</h3><table class="data-table"><thead><tr><th>Date</th><th>Gross Sales</th><th>Total Sales</th></tr></thead><tbody>';
         
-        salesTrend.forEach(day => {
+        (salesTrend || []).forEach(day => {
             const date = new Date(day.date).toLocaleDateString('en-PH', {
                 year: 'numeric',
                 month: 'long',
@@ -329,8 +325,22 @@ const AnalyticsPrint = {
             </tr>`;
         });
 
+        if (!salesTrend || !salesTrend.length) html += '<tr><td colspan="3">No daily sales data available</td></tr>';
         html += '</tbody></table>';
         return html;
+    },
+
+    renderCharts() {
+        return [
+            ['Sales Trend', window.AnalyticsSalesTrend],
+            ['Top Selling Products', window.AnalyticsTopProducts],
+            ['Category Performance', window.AnalyticsCategoryPerformance]
+        ].map(([title, module]) => {
+            if (!module || !module.chart) return '';
+            module.chart.stop();
+            module.chart.update('none');
+            return `<div class="print-chart"><h3 class="section-header">${title}</h3><img src="${module.chart.toBase64Image()}" alt="${title}"></div>`;
+        }).join('');
     },
 
     /**

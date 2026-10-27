@@ -99,6 +99,11 @@ class AnalyticsController {
                 this.state.report = data;
                 this.state.reportRange = reportRange;
 
+                if (window.AnalyticsPrint) {
+                    document.getElementById('analyticsCategoryTable').innerHTML = AnalyticsPrint.renderCategoryStats(data.categoryStats || {});
+                    document.getElementById('analyticsDailyTable').innerHTML = AnalyticsPrint.renderSalesTrend(data.salesTrend || []);
+                }
+
                 // Render everything using separate modules
                 if (window.AnalyticsStats) {
                     AnalyticsStats.render(data);

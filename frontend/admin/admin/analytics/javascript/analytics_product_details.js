@@ -43,13 +43,13 @@ const AnalyticsProductDetails = {
                 <td class="col-category" data-label="Category">
                     <span class="badge category-badge">${this.escapeHtml(p.category || 'Uncategorized')}</span>
                 </td>
-                <td class="col-revenue" data-label="Revenue">
-                    <span class="metric-label">Revenue:</span>
-                    <strong class="revenue-val">₱${formattedRevenue}</strong>
-                </td>
                 <td class="col-units-sold" data-label="Units Sold">
                     <span class="metric-label">Sold:</span>
                     <span class="units-val">${p.unitsSold} units</span>
+                </td>
+                <td class="col-revenue" data-label="Revenue">
+                    <span class="metric-label">Revenue:</span>
+                    <strong class="revenue-val">₱${formattedRevenue}</strong>
                 </td>
                 <td class="col-stock-left" data-label="Stock Left">
                     <span class="metric-label">Stock:</span>
