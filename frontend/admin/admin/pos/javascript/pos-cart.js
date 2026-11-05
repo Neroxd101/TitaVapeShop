@@ -9,11 +9,10 @@ const SalesCart = {
             if (!response.ok) throw new Error(`Failed to load cart modal: ${response.statusText}`);
             const html = await response.text();
 
-            const temp = document.createElement('div');
-            temp.innerHTML = html.trim();
-            const modalEl = temp.firstElementChild;
+            const template = document.createElement('template');
+            template.innerHTML = html.trim();
             const container = document.getElementById('modal-container') || document.body;
-            if (modalEl) container.appendChild(modalEl);
+            container.appendChild(template.content);
         } catch (err) {
             console.error('Error loading cart modal:', err);
         }
@@ -23,6 +22,8 @@ const SalesCart = {
         const openCartModalBtn = document.getElementById('openCartModalBtn');
         const closeCartModalBtn = document.getElementById('closeCartModalBtn');
         const cartModal = document.getElementById('cartModal');
+        const paymentModal = document.getElementById('paymentModal');
+        const nextToPaymentBtn = document.getElementById('nextToPaymentBtn');
         const clearCartBtn = document.getElementById('clearCartBtn');
         const cashInput = document.getElementById('cashInput');
         const quickCashChips = document.getElementById('quickCashChips');
@@ -30,10 +31,7 @@ const SalesCart = {
         openCartModalBtn?.addEventListener('click', () => {
             cartModal?.classList.add('show');
             this.updateCartUI(state);
-            setTimeout(() => {
-                const cashEl = document.getElementById('cashInput');
-                if (cashEl && state.cart.length > 0) cashEl.focus();
-            }, 150);
+            nextToPaymentBtn?.focus();
         });
 
         closeCartModalBtn?.addEventListener('click', () => {
@@ -46,9 +44,31 @@ const SalesCart = {
             }
         });
 
+        nextToPaymentBtn?.addEventListener('click', () => {
+            if (!state.cart.length || !paymentModal) return;
+            document.querySelector('#checkoutForm [name="paymentMethod"][value="cash"]').checked = true;
+            SalesCreate.updatePaymentFields();
+            cartModal.classList.remove('show');
+            paymentModal.classList.add('show');
+            cashInput?.focus();
+        });
+
+        const backToCart = () => {
+            paymentModal.classList.remove('show');
+            cartModal.classList.add('show');
+            nextToPaymentBtn?.focus();
+        };
+        document.getElementById('backToCartBtn')?.addEventListener('click', backToCart);
+        document.getElementById('closePaymentModalBtn')?.addEventListener('click', backToCart);
+        paymentModal?.addEventListener('click', (event) => {
+            if (event.target === paymentModal) backToCart();
+        });
+
         clearCartBtn?.addEventListener('click', () => {
+            const productIds = new Set(state.cart.map(item => item.id));
             state.cart = [];
             this.updateCartUI(state);
+            productIds.forEach(id => SalesLoad.updateProductCardStock(state, id));
         });
 
         cashInput?.addEventListener('input', () => {
@@ -175,10 +195,29 @@ const SalesCart = {
         price.className = 'cart-price';
         price.textContent = this.formatCurrencySafe(item.price);
 
-        main.appendChild(name);
-        main.appendChild(price);
-
         const product = state.products.find(p => p.id === item.id);
+        const thumbnail = document.createElement('span');
+        thumbnail.className = 'cart-thumbnail';
+        thumbnail.setAttribute('aria-hidden', 'true');
+        const placeholder = '/img/placeholder-product.png?v=cart-thumbnail-1';
+        let imageUrl = placeholder;
+        if (product && typeof InventoryImage !== 'undefined') {
+            const images = InventoryImage.parseImages(product);
+            const source = images.find(url => url && url !== product.qr_image_url) || images[0];
+            if (source) imageUrl = InventoryImage.getFallbackUrls(source, 120)[0] || placeholder;
+        }
+        const image = document.createElement('img');
+        image.alt = '';
+        if (imageUrl !== placeholder) {
+            image.addEventListener('error', () => { image.src = placeholder; }, { once: true });
+        }
+        image.src = imageUrl;
+        thumbnail.appendChild(image);
+        const description = document.createElement('div');
+        description.className = 'cart-item-description';
+        description.append(name, price);
+        main.replaceChildren(thumbnail, description);
+
         const variation = item.selected_variation || null;
         const selectedVariation = product?.variations?.find(v => v.name === variation);
         const max = product ? (selectedVariation ? Number(selectedVariation.quantity) || 0 : Number(product.quantity) || 1) : 9999;
@@ -292,6 +331,7 @@ const SalesCart = {
         const itemsCountEl = document.getElementById('cartItemsCount');
         const subtotalEl = document.getElementById('cartSubtotal');
         const totalEl = document.getElementById('cartTotal');
+        const paymentTotalEl = document.getElementById('paymentCartTotal');
 
         const totalItems = state.cart.reduce((sum, item) => sum + item.qty, 0);
         const subtotal = state.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
@@ -299,6 +339,7 @@ const SalesCart = {
         if (itemsCountEl) itemsCountEl.textContent = String(totalItems);
         if (subtotalEl) subtotalEl.textContent = this.formatCurrencySafe(subtotal);
         if (totalEl) totalEl.textContent = this.formatCurrencySafe(subtotal);
+        if (paymentTotalEl) paymentTotalEl.textContent = this.formatCurrencySafe(subtotal);
 
         const badge = document.getElementById('cartBadge');
         if (badge) {

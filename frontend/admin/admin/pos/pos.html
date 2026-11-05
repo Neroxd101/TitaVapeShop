@@ -32,8 +32,8 @@
   <link rel="stylesheet" href="/css/components/skeleton.css">
   <link rel="stylesheet" href="/css/components/confirmation-modal.css">
   <link rel="stylesheet" href="/css/components/qr-scanner.css">
-  <link rel="stylesheet" href="/admin/admin/pos/pos-structure.css?v=aligned-controls-3">
-  <link rel="stylesheet" href="/admin/admin/pos/pos-history.css">
+  <link rel="stylesheet" href="/admin/admin/pos/pos-structure.css?v=camera-qr-slot-1">
+  <link rel="stylesheet" href="/admin/admin/pos/pos-history.css?v=history-mobile-cards-1">
 </head>
 
 <body>
@@ -166,7 +166,6 @@
       <label>Search<input type="search" id="posHistorySearch" maxlength="200" placeholder="Sale ID, customer, cashier"></label>
       <label>From<input type="date" id="posHistoryFrom"></label>
       <label>To<input type="date" id="posHistoryTo"></label>
-      <button class="btn btn-primary btn-small" type="submit">Apply</button>
     </form>
     <p id="posHistoryStatus" role="status" aria-live="polite"></p>
     <div class="pos-history-scroll"><table class="pos-history-table"><thead><tr><th>Sale / Date</th><th>Customer / Cashier</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="posHistoryRows"></tbody></table></div>
@@ -175,6 +174,13 @@
   <dialog id="posSaleDetailsDialog" class="pos-history-dialog" aria-labelledby="posSaleDetailsTitle">
     <div class="pos-history-header"><h2 id="posSaleDetailsTitle">Sale Details</h2><button type="button" class="btn btn-secondary btn-small" data-history-close>Close</button></div>
     <div id="posSaleDetailsContent"></div>
+  </dialog>
+  <dialog id="posPaymentPhotoDialog" class="pos-history-dialog pos-payment-photo-dialog" aria-labelledby="posPaymentPhotoTitle">
+    <div class="pos-history-header">
+      <h2 id="posPaymentPhotoTitle">Payment Photo</h2>
+      <button type="button" class="btn btn-secondary btn-small" data-history-close>Close</button>
+    </div>
+    <img id="posPaymentPhotoLarge" alt="Payment proof">
   </dialog>
   <dialog id="posVoidDialog" class="pos-history-dialog pos-void-dialog" aria-labelledby="posVoidTitle">
     <div class="pos-history-header"><h2 id="posVoidTitle">Void POS Sale</h2><button type="button" class="btn btn-secondary btn-small" data-history-close>Close</button></div>
@@ -202,12 +208,15 @@
   <script src="/admin/admin/pos/javascript/pos_get_products.js"></script>
   <script src="/admin/admin/pos/javascript/pos_filter.js"></script>
   <script src="/admin/admin/pos/javascript/pos_load_products.js?v=variation-placeholder-1"></script>
-  <script src="/admin/admin/pos/javascript/pos-cart.js?v=variations-1"></script>
-  <script src="/admin/admin/pos/javascript/pos_receipt_email.js"></script>
-  <script src="/admin/admin/pos/javascript/pos_process.js?v=variations-1"></script>
+  <script src="/admin/admin/pos/javascript/pos-cart.js?v=cart-thumbnail-1"></script>
+  <script src="/admin/admin/pos/javascript/pos_receipt_email.js?v=payment-method-1"></script>
+  <script src="/customer/javascript/cloudinary_service.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js"></script>
+  <script defer src="/customer/javascript/payment-reference-scanner.js"></script>
+  <script defer src="/admin/admin/pos/javascript/pos_process.js?v=shared-reference-scan-1"></script>
 
   <script src="/admin/admin/pos/javascript/pos_categories.js"></script>
-  <script src="/admin/admin/pos/javascript/pos_sales_history.js?v=automatic-restock-1"></script>
+  <script src="/admin/admin/pos/javascript/pos_sales_history.js?v=history-payment-label-1"></script>
   <script src="/admin/admin/pos/javascript/pos-controller.js"></script>
 </body>
 

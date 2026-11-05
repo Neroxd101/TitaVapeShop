@@ -5,7 +5,7 @@ function securityHeaders(req, res, next) {
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self'",
-    "script-src 'self' https://cdn.jsdelivr.net https://unpkg.com",
+    "script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",

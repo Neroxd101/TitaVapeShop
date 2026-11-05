@@ -11,7 +11,24 @@ const PosSalesHistory = {
             if (!this.busy) button.closest('dialog').close();
         }));
         document.getElementById('posVoidDialog').addEventListener('cancel', event => { if (this.busy) event.preventDefault(); });
-        document.getElementById('posHistoryFilters').addEventListener('submit', event => { event.preventDefault(); this.offset = 0; this.load(); });
+        const filters = document.getElementById('posHistoryFilters');
+        let searchTimer;
+        const refreshFilters = () => {
+            clearTimeout(searchTimer);
+            this.offset = 0;
+            this.load();
+        };
+        filters.addEventListener('submit', event => {
+            event.preventDefault();
+            refreshFilters();
+        });
+        filters.addEventListener('change', event => {
+            if (event.target.type === 'date') refreshFilters();
+        });
+        document.getElementById('posHistorySearch').addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(refreshFilters, 300);
+        });
         document.getElementById('posHistoryPrev').addEventListener('click', () => { this.offset = Math.max(0, this.offset - 20); this.load(); });
         document.getElementById('posHistoryNext').addEventListener('click', () => { this.offset += 20; this.load(); });
         document.getElementById('posHistoryRows').addEventListener('click', event => {
@@ -22,7 +39,12 @@ const PosSalesHistory = {
             if (button.dataset.action === 'void') this.openVoid(sale); else this.view(sale);
         });
         document.getElementById('posSaleDetailsContent').addEventListener('click', event => {
-            if (event.target.closest('[data-void-current-sale]')) this.openVoid(this.selected);
+            const photo = event.target.closest('[data-preview-payment-photo]')?.querySelector('img');
+            if (photo) {
+                document.getElementById('posPaymentPhotoLarge').src = photo.src;
+                document.getElementById('posPaymentPhotoDialog').showModal();
+                return;
+            }
         });
         document.getElementById('posVoidForm').addEventListener('submit', event => { event.preventDefault(); this.voidSale(); });
     },
@@ -69,18 +91,31 @@ const PosSalesHistory = {
         this.selected = sale;
         const e = value => this.escape(value);
         const details = sale.void_details || {};
+        const payment = sale.details || {};
+        const online = payment.payment_method === 'online';
+        const proof = online && typeof payment.payment_proof === 'string'
+            && (/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(payment.payment_proof)
+                || /^https:\/\/res\.cloudinary\.com\/titavapeshop\/image\/upload\/[A-Za-z0-9_./%-]+$/.test(payment.payment_proof))
+            ? payment.payment_proof : null;
         document.getElementById('posSaleDetailsContent').innerHTML = `
+            <div class="pos-sale-overview">
             <div class="pos-sale-info"><p><strong>Sale ID:</strong> <code>${e(sale.id)}</code></p>
             <p><strong>Date:</strong> ${e(this.date(sale.created_at))}</p><p><strong>Customer:</strong> ${e(sale.customer_name || 'Walk-in')}</p>
-            <p><strong>Cashier:</strong> ${e(sale.user_email || 'Not recorded')}</p><p><strong>Status:</strong> ${sale.voided ? 'Voided' : 'Completed'}</p></div>
+            <p><strong>Cashier:</strong> ${e(sale.user_email || 'Not recorded')}</p><p><strong>Status:</strong> ${sale.voided ? 'Voided' : 'Completed'}</p>
+            <p><strong>Payment:</strong> ${online ? 'Online Payment' : 'Cash'}</p>
+            ${online && payment.payment_reference ? '<p><strong>Reference:</strong> ' + e(payment.payment_reference) + '</p>' : ''}
+            </div>
+            ${proof ? '<figure class="pos-sale-proof"><figcaption>Payment photo</figcaption><button type="button" data-preview-payment-photo aria-label="Enlarge payment photo"><img alt="" src="' + proof + '"></button></figure>' : ''}
+            </div>
             <div class="pos-history-scroll"><table class="pos-history-table"><thead><tr><th>Item / Variant</th><th>Quantity</th><th>Unit Price</th><th>Subtotal</th></tr></thead><tbody>
             ${(sale.sale_items || []).map(item => `<tr><td>${e(item.name || 'Product')}<small>${e(item.selected_variation || item.variation || '')}</small></td><td>${e(item.qty)}</td><td>${e(this.money(item.price))}</td><td>${e(this.money(Number(item.qty) * Number(item.price)))}</td></tr>`).join('')}
-            </tbody></table></div><p class="pos-sale-total"><strong>Total: ${e(this.money(sale.sale_total))}</strong></p>
+            </tbody></table></div>
+            <p class="pos-sale-total"><strong>Total: ${e(this.money(sale.sale_total))}</strong></p>
             ${sale.voided ? `<div class="pos-void-audit"><h3>Void Details</h3><p>${e(this.date(sale.voided_at))} · ${e(sale.voided_by || 'Not recorded')}</p>
                 <p><strong>Reason:</strong> ${e(details.reason)}</p>
                 <p><strong>Stock restored:</strong> ${(details.restocked_items || []).reduce((n, item) => n + Number(item.qty || 0), 0)} unit(s)</p>
                 ${(details.restock_skipped_items || []).map(item => `<p>${e(item.name || item.id)}${item.selected_variation ? ' / ' + e(item.selected_variation) : ''}: ${e(item.restock_skipped_reason)}</p>`).join('')}
-                <p>Refund due: ${e(this.money(details.refund_amount ?? sale.sale_total))}. Handle the refund separately.</p></div>` : this.canVoid ? '<button type="button" class="btn btn-danger" data-void-current-sale>Void Sale</button>' : ''}`;
+                <p>Refund due: ${e(this.money(details.refund_amount ?? sale.sale_total))}. Handle the refund separately.</p></div>` : ''}`;
         document.getElementById('posSaleDetailsDialog').showModal();
     },
     openVoid(sale) {

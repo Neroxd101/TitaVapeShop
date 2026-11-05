@@ -36,9 +36,43 @@
           </div>
         </div>
 
-        <form id="checkoutForm" data-api-route-checkout="/pos/pos_process"
-          data-api-route-receipt="/pos/email_send_receipt">
-          <div class="cart-payment">
+        <div class="cart-actions">
+          <button type="button" class="btn btn-secondary" id="clearCartBtn">Clear All</button>
+          <button type="button" class="btn btn-primary" id="nextToPaymentBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+    <div class="modal-header">
+      <h3 id="paymentModalTitle">Checkout Payment</h3>
+      <button type="button" class="modal-close" id="closePaymentModalBtn" aria-label="Back to cart">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="checkoutForm" data-api-route-checkout="/pos/pos_process"
+        data-api-route-receipt="/pos/email_send_receipt">
+        <fieldset>
+          <legend class="payment-method-heading">Payment Method</legend>
+          <div class="payment-method-options">
+            <label class="payment-method-option">
+              <input type="radio" name="paymentMethod" value="cash" checked>
+              <span class="btn btn-primary">Cash</span>
+            </label>
+            <label class="payment-method-option">
+              <input type="radio" name="paymentMethod" value="online">
+              <span class="btn btn-primary">Online Payment</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="cart-payment">
+          <div class="checkout-customer-fields">
             <div class="form-group">
               <label for="customerName">Customer Name (optional)</label>
               <input type="text" id="customerName" placeholder="Walk-in">
@@ -47,35 +81,79 @@
               <label for="customerEmail">Customer Email (optional)</label>
               <input type="email" id="customerEmail" placeholder="customer@example.com">
             </div>
-            <div class="form-group cash-input-group">
-              <div class="cash-input-header">
-                <label for="cashInput">Cash Tendered</label>
-                <span class="cash-hint" id="cashShortfallHint"></span>
-              </div>
-              <input type="number" id="cashInput" min="0" step="0.01" placeholder="0.00" autocomplete="off">
-              
-              <!-- Quick Cash Preset Chips -->
-              <div class="quick-cash-chips" id="quickCashChips">
-                <button type="button" class="cash-chip" data-action="exact">Exact</button>
-                <button type="button" class="cash-chip" data-amount="100">₱100</button>
-                <button type="button" class="cash-chip" data-amount="200">₱200</button>
-                <button type="button" class="cash-chip" data-amount="500">₱500</button>
-                <button type="button" class="cash-chip" data-amount="1000">₱1,000</button>
-              </div>
+          </div>
+          <fieldset id="cashPaymentFields">
+          <div class="form-group cash-input-group">
+            <div class="cash-input-header">
+              <label for="cashInput">Cash Tendered</label>
+              <span class="cash-hint" id="cashShortfallHint"></span>
             </div>
-            
-            <div class="form-group change-group">
-              <label>Change Due</label>
-              <div id="changeDisplay" class="change-display">₱0.00</div>
+            <input type="number" id="cashInput" min="0" step="0.01" placeholder="0.00" autocomplete="off">
+
+            <!-- Quick Cash Preset Chips -->
+            <div class="quick-cash-chips" id="quickCashChips">
+              <button type="button" class="cash-chip" data-action="exact">Exact</button>
+              <button type="button" class="cash-chip" data-amount="100">₱100</button>
+              <button type="button" class="cash-chip" data-amount="200">₱200</button>
+              <button type="button" class="cash-chip" data-amount="500">₱500</button>
+              <button type="button" class="cash-chip" data-amount="1000">₱1,000</button>
             </div>
           </div>
 
-          <div class="cart-actions">
-            <button type="button" class="btn btn-secondary" id="clearCartBtn">Clear</button>
-            <button type="submit" class="btn btn-primary" id="completeSaleBtn">Complete Sale</button>
+          <div class="form-group change-group">
+            <label>Change Due</label>
+            <div id="changeDisplay" class="change-display">₱0.00</div>
           </div>
-        </form>
-      </div>
+          </fieldset>
+          <fieldset id="onlinePaymentFields" hidden disabled>
+            <div class="online-payment-layout">
+              <div class="online-payment-qr">
+                <div id="paymentQrInstructions">
+                  <p class="payment-qr-heading">Pay with InstaPay</p>
+                  <img src="/qr/qr_gcash.jpg" alt="InstaPay payment QR code" width="144">
+                  <p>Scan to pay. Verify payment before completing the sale.</p>
+                </div>
+                <img id="paymentPhotoPreview" alt="Payment photo preview" hidden>
+                <div id="paymentCameraPanel" hidden>
+                  <video id="paymentCameraVideo" autoplay muted playsinline aria-label="Live payment camera preview"></video>
+                  <button type="button" class="btn btn-primary" id="takePaymentPhoto" disabled>Take Photo</button>
+                  <button type="button" class="btn btn-secondary" id="closePaymentCamera">Close Camera</button>
+                </div>
+              </div>
+              <div class="online-payment-controls">
+                <div class="form-group">
+                  <label for="paymentReference">Reference Number (optional)</label>
+                  <input id="paymentReference" type="text" maxlength="100" autocomplete="off" aria-describedby="paymentReferenceStatus">
+                  <small id="paymentReferenceStatus" role="status"></small>
+                </div>
+                <fieldset class="payment-photo-options">
+                  <legend>Payment Photo (optional)</legend>
+                  <div class="payment-photo-actions">
+                    <label for="paymentUpload" class="btn btn-secondary payment-upload-label">Upload Photo</label>
+                    <input id="paymentUpload" type="file" accept="image/*" class="payment-upload-input">
+                    <button type="button" class="btn btn-secondary" id="paymentCapture">Open Camera</button>
+                    <button type="button" class="btn btn-secondary" id="removePaymentPhoto" hidden>Remove Photo</button>
+                  </div>
+                  <span id="paymentUploadName" class="payment-upload-name" aria-live="polite"></span>
+                </fieldset>
+              </div>
+            </div>
+            <div>
+              <p id="paymentCameraStatus" role="status"></p>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="cart-summary-row">
+          <span>Total</span>
+          <span id="paymentCartTotal" class="cart-total-amount">₱0.00</span>
+        </div>
+
+        <div class="cart-actions">
+          <button type="button" class="btn btn-secondary" id="backToCartBtn">Back</button>
+          <button type="submit" class="btn btn-primary" id="completeSaleBtn">Complete Sale</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -199,6 +199,12 @@
     const receiptPreviewImg = document.getElementById('receiptPreviewImg');
     const changeReceiptBtn = document.getElementById('changeReceiptBtn');
 
+    document.getElementById('gcashRefInput')?.addEventListener('input', () => {
+      receiptScan = null;
+      detectedReceiptReference = null;
+      document.getElementById('customerPaymentReferenceStatus').textContent = '';
+    });
+
     if (receiptDropzone && receiptFileInput) {
       receiptDropzone.addEventListener('click', () => {
         if (!selectedReceiptFile) {
@@ -223,11 +229,13 @@
           selectedReceiptFile = file;
           const reader = new FileReader();
           reader.onload = (re) => {
+            if (selectedReceiptFile !== file) return;
             receiptPreviewImg.src = re.target.result;
             dropzoneEmpty.style.display = 'none';
             dropzonePreview.style.display = 'flex';
           };
           reader.readAsDataURL(file);
+          scanReceiptReference(file);
         }
       });
     }
@@ -258,6 +266,34 @@
   }
 
   let selectedReceiptFile = null;
+  let receiptScan = null;
+  let detectedReceiptReference = null;
+
+  async function scanReceiptReference(file) {
+    const input = document.getElementById('gcashRefInput');
+    const status = document.getElementById('customerPaymentReferenceStatus');
+    receiptScan = null;
+    if (input.value === detectedReceiptReference) input.value = '';
+    detectedReceiptReference = null;
+    status.textContent = '';
+    if (!file || input.value.trim()) return;
+
+    const scan = {};
+    receiptScan = scan;
+    status.textContent = 'Reading reference number…';
+    try {
+      const reference = await window.PaymentReferenceScanner.read(file);
+      if (receiptScan !== scan) return;
+      if (reference) {
+        input.value = detectedReceiptReference = reference;
+        status.textContent = 'Check the detected number against your photo.';
+      } else {
+        status.textContent = 'Reference number not found. Enter it manually.';
+      }
+    } catch {
+      if (receiptScan === scan) status.textContent = 'Could not read the reference number. Enter it manually.';
+    }
+  }
   let isSubmittingPayment = false;
 
   /**
@@ -572,6 +608,8 @@
         if (refInput) refInput.value = '';
         const receiptInput = document.getElementById('receiptFileInput');
         if (receiptInput) receiptInput.value = '';
+        selectedReceiptFile = null;
+        scanReceiptReference(null);
         const dropzoneEmpty = document.getElementById('dropzoneEmpty');
         const dropzonePreview = document.getElementById('dropzonePreview');
         if (dropzoneEmpty && dropzonePreview) {

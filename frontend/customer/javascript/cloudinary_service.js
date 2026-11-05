@@ -8,7 +8,7 @@ const CloudinaryService = {
 
   /**
    * Upload an image file to Cloudinary (unsigned direct upload)
-   * @param {File} file - The receipt image file to upload
+   * @param {File|string} file - The receipt file or image data URL to upload
    * @returns {Promise<string>} The secure public URL of the uploaded image
    */
   async uploadReceipt(file) {

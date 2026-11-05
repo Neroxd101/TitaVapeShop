@@ -1,3 +1,5 @@
+BEGIN;
+
 -- Remove the old item-level functions. Order completion will receive its own
 -- stock-processing function when the Orders module is refactored.
 DROP FUNCTION IF EXISTS public.inventory_complete_sale(UUID, INTEGER, DECIMAL);
@@ -8,12 +10,17 @@ DROP FUNCTION IF EXISTS public.pos_process(UUID, INTEGER, DECIMAL);
 -- Validates the whole cart, uses database prices, deducts stock, and logs
 -- one sale in a single transaction. Any error rolls back every change.
 -- =============================================
+DROP FUNCTION IF EXISTS public.pos_process_sale(JSONB, DECIMAL, VARCHAR, VARCHAR, VARCHAR);
+
 CREATE OR REPLACE FUNCTION public.pos_process_sale(
     p_items JSONB,
     p_cash DECIMAL(10,2),
     p_customer_name VARCHAR(255) DEFAULT NULL,
     p_customer_email VARCHAR(255) DEFAULT NULL,
-    p_user_email VARCHAR(255) DEFAULT NULL
+    p_user_email VARCHAR(255) DEFAULT NULL,
+    p_payment_method TEXT DEFAULT 'cash',
+    p_payment_reference TEXT DEFAULT NULL,
+    p_payment_proof TEXT DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -37,6 +44,10 @@ BEGIN
 
     IF p_cash IS NULL OR p_cash < 0 THEN
         RAISE EXCEPTION 'Cash must be zero or greater';
+    END IF;
+
+    IF p_payment_method IS NULL OR p_payment_method NOT IN ('cash', 'online') THEN
+        RAISE EXCEPTION 'Invalid payment method';
     END IF;
 
     -- Validate each line before aggregation so negative quantities cannot
@@ -134,7 +145,11 @@ BEGIN
         WHERE id = cart_item.id;
     END LOOP;
 
-    IF p_cash < sale_total THEN
+    IF p_payment_method = 'online' AND round(p_cash, 2) <> sale_total THEN
+        RAISE EXCEPTION 'The cart total changed. Check the GCash payment before completing the sale. Required: %', sale_total;
+    END IF;
+
+    IF p_payment_method = 'cash' AND p_cash < sale_total THEN
         RAISE EXCEPTION 'Cash is not enough. Required: %', sale_total;
     END IF;
 
@@ -143,7 +158,11 @@ BEGIN
         p_action_type => 'sale_complete',
         p_user_email => p_user_email,
         p_entity_type => 'sale',
-        p_details => jsonb_build_object('items_count', jsonb_array_length(sale_items)),
+        p_details => jsonb_build_object('items_count', jsonb_array_length(sale_items), 'payment_method', p_payment_method)
+            || CASE WHEN p_payment_method = 'online' THEN jsonb_strip_nulls(jsonb_build_object(
+                'payment_reference', p_payment_reference,
+                'payment_proof', p_payment_proof
+            )) ELSE '{}'::jsonb END,
         p_sale_total => sale_total,
         p_sale_items => sale_items,
         p_customer_name => COALESCE(NULLIF(BTRIM(p_customer_name), ''), 'Walk-in'),
@@ -156,14 +175,17 @@ BEGIN
         'sale_id', sale_id,
         'items', sale_items,
         'total', sale_total,
-        'cash', p_cash,
-        'change', p_cash - sale_total
+        'cash', CASE WHEN p_payment_method = 'online' THEN sale_total ELSE p_cash END,
+        'change', CASE WHEN p_payment_method = 'online' THEN 0 ELSE p_cash - sale_total END
     );
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.pos_process_sale(JSONB, DECIMAL, VARCHAR, VARCHAR, VARCHAR)
+REVOKE ALL ON FUNCTION public.pos_process_sale(JSONB, DECIMAL, VARCHAR, VARCHAR, VARCHAR, TEXT, TEXT, TEXT)
 FROM PUBLIC, anon, authenticated;
 
-GRANT EXECUTE ON FUNCTION public.pos_process_sale(JSONB, DECIMAL, VARCHAR, VARCHAR, VARCHAR)
+GRANT EXECUTE ON FUNCTION public.pos_process_sale(JSONB, DECIMAL, VARCHAR, VARCHAR, VARCHAR, TEXT, TEXT, TEXT)
 TO service_role;
+
+NOTIFY pgrst, 'reload schema';
+COMMIT;

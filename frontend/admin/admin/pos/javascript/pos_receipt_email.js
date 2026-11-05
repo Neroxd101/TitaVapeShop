@@ -1,6 +1,6 @@
 // Logic for Sending POS Email Receipts
 const SalesReceiptEmail = {
-    async sendReceipt({ receiptUrl = '/pos/email_send_receipt', customerEmail, customerName, items, total, cash, change }) {
+    async sendReceipt({ receiptUrl = '/pos/email_send_receipt', customerEmail, customerName, items, total, cash, change, paymentMethod }) {
         if (!customerEmail) {
             return { emailSent: false, emailError: false };
         }
@@ -18,6 +18,7 @@ const SalesReceiptEmail = {
                     total,
                     cash,
                     change,
+                    paymentMethod,
                     saleDate: new Date().toLocaleString('en-PH', {
                         timeZone: 'Asia/Manila',
                         dateStyle: 'medium',

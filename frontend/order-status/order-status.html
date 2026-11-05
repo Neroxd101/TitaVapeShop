@@ -314,7 +314,8 @@
 
                 <div class="form-group">
                   <label for="gcashRefInput">GCash / Bank Reference Number <span class="required" style="color: #f87171;">*</span></label>
-                  <input type="text" id="gcashRefInput" placeholder="e.g. 10029384102912" required minlength="4" maxlength="14" class="form-control" autocomplete="off">
+                  <input type="text" id="gcashRefInput" placeholder="e.g. 10029384102912" required minlength="4" maxlength="14" class="form-control" autocomplete="off" aria-describedby="customerPaymentReferenceStatus">
+                  <small id="customerPaymentReferenceStatus" role="status"></small>
                 </div>
 
                 <div class="alert alert-error" id="paymentProofError" style="display: none;">
@@ -442,7 +443,9 @@
   <script src="/customer/javascript/customer_submit_payment_proof.js"></script>
   <script src="/customer/javascript/customer_confirm_delivery.js"></script>
   <script src="/customer/javascript/order-chat.js?v=unread-chat-1"></script>
-  <script src="/order-status/order-status.js?v=unread-chat-1"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js"></script>
+  <script defer src="/customer/javascript/payment-reference-scanner.js"></script>
+  <script defer src="/order-status/order-status.js?v=reference-scan-1"></script>
 </body>
 
 </html>

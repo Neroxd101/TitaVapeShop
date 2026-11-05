@@ -8,7 +8,7 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
  */
 const handleSendReceipt = async (req, res) => {
   try {
-    const { customerEmail, customerName, items, total, cash, change, saleDate } = req.body;
+    const { customerEmail, customerName, items, total, cash, change, saleDate, paymentMethod } = req.body;
 
     if (!customerEmail) {
       return res.status(400).json({ error: 'Customer email is required' });
@@ -32,6 +32,7 @@ const handleSendReceipt = async (req, res) => {
       items,
       total,
       cash,
+      paymentMethod,
       change,
       saleDate: saleDate || new Date().toLocaleString('en-PH', {
         timeZone: 'Asia/Manila',
@@ -133,13 +134,13 @@ function generateReceiptHtml({ customerName, items, total, cash, change, saleDat
                       <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 20px; font-weight: 700; width: 150px; font-family: 'Outfit', sans-serif;">₱${total.toFixed(2)}</td>
                     </tr>
                     <tr>
-                      <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 14px;">Cash:</td>
+                      <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 14px;">${paymentMethod === 'online' ? 'GCash' : 'Cash'}:</td>
                       <td style="padding: 8px 0; text-align: right; color: #ffffff; font-size: 16px; font-weight: 600;">₱${cash.toFixed(2)}</td>
-                    </tr>
+                    </tr>${paymentMethod === 'online' ? '' : `
                     <tr>
                       <td style="padding: 8px 0; text-align: right; color: #8b8b9e; font-size: 14px;">Change:</td>
                       <td style="padding: 8px 0; text-align: right; color: #00d4aa; font-size: 16px; font-weight: 700;">₱${change.toFixed(2)}</td>
-                    </tr>
+                    </tr>`}
                   </table>
                 </td>
               </tr>

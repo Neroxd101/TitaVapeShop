@@ -6,10 +6,18 @@ const { isAuthenticated, hasRole } = require('../../../../middleware/authMiddlew
 // Handle sale checkout: deduct inventory via RPC function
 const handleSalesProcess = async (req, res) => {
     try {
-        const { items, cash, customer_name, customer_email } = req.body;
+        const { items, cash, customer_name, customer_email,
+            payment_method = 'cash', payment_reference, payment_proof } = req.body;
 
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ error: 'Invalid cart items' });
+        }
+
+        if (!['cash', 'online'].includes(payment_method)
+            || (payment_reference != null && (typeof payment_reference !== 'string' || payment_reference.length > 100))
+            || (payment_proof != null && (typeof payment_proof !== 'string' || payment_proof.length > 2048
+                || !/^https:\/\/res\.cloudinary\.com\/titavapeshop\/image\/upload\/[A-Za-z0-9_./%-]+$/.test(payment_proof)))) {
+            return res.status(400).json({ success: false, error: 'Invalid payment details' });
         }
 
         if (!supabaseAdmin) {
@@ -31,11 +39,22 @@ const handleSalesProcess = async (req, res) => {
             p_cash: cash,
             p_customer_name: customer_name || 'Walk-in',
             p_customer_email: customer_email || null,
-            p_user_email: user_email
+            p_user_email: user_email,
+            ...(payment_method === 'online' && {
+                p_payment_method: payment_method,
+                p_payment_reference: payment_reference?.trim() || null,
+                p_payment_proof: payment_proof || null
+            })
         });
 
         if (error) {
             console.error('RPC Error in pos_process_sale:', error);
+            if (payment_method === 'online' && error.code === 'PGRST202') {
+                return res.status(503).json({
+                    success: false,
+                    error: 'Online checkout is unavailable until the POS database update is applied. The sale was not recorded.'
+                });
+            }
             return res.status(400).json({
                 success: false,
                 error: error.message || 'Failed to process sale'
