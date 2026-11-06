@@ -65,7 +65,7 @@ router.post('/sales/email_send_receipt', isAuthenticated, hasRole(['admin', 'sta
 /**
  * Generate HTML for the receipt email
  */
-function generateReceiptHtml({ customerName, items, total, cash, change, saleDate }) {
+function generateReceiptHtml({ customerName, items, total, cash, change, saleDate, paymentMethod }) {
   const itemsHtml = items.map(item => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #2a2a3a; color: #ffffff;">${escapeHtml(item.name)}${item.selected_variation ? ` — ${escapeHtml(item.selected_variation)}` : ''}</td>
