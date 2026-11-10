@@ -23,7 +23,7 @@
 .order-chat-bubble strong { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
 .order-chat-bubble p { margin: 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
 .order-chat-bubble time { display: block; margin-top: 8px; color: var(--text-secondary); font-size: 11px; line-height: 1.4; }
-.order-chat-modal .store-note { align-self: flex-start; background: var(--bg-secondary, rgba(255, 255, 255, 0.04)); }
+.order-chat-modal .store-note { align-self: flex-start; background: rgba(96, 165, 250, 0.16); }
 .order-chat-modal .customer-note { align-self: flex-end; background: rgba(0, 212, 170, 0.1); }
 .order-chat-form { display: grid; gap: 10px; margin: 0; padding-top: 16px; border-top: 1px solid var(--border); flex-shrink: 0; }
 .order-chat-form label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
