@@ -261,6 +261,18 @@
     -webkit-appearance: none;
     margin: 0;
 }
+.modal-purchase-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+.modal-purchase-buttons > button {
+    min-width: 0;
+    white-space: normal;
+}
+
 .modal-add-cart-btn {
     display: flex;
     align-items: center;
@@ -503,7 +515,7 @@
         padding: 8px 12px 12px !important;
     }
     #productModal .modal-product-view {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) !important;
         gap: 8px !important;
         height: auto !important;
     }

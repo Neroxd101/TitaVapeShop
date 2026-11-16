@@ -135,12 +135,13 @@ const CatalogCheckoutModal = {
         }
 
         // Prepare order items
-        if (!window.CatalogCart) {
+        const directItem = this.directItem;
+        if (!directItem && !window.CatalogCart) {
             alert('Cart not available');
             return;
         }
 
-        const items = window.CatalogCart.cart.map(item => ({
+        const items = (directItem ? [directItem] : window.CatalogCart.cart).map(item => ({
             id: item.id,
             name: item.name,
             category: item.category,
@@ -149,7 +150,7 @@ const CatalogCheckoutModal = {
             selected_variation: item.selected_variation || null
         }));
 
-        const totalAmount = window.CatalogCart.getTotalAmount();
+        const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
         // Disable submit button
         const submitBtn = document.getElementById('createOrderBtn');
@@ -172,7 +173,7 @@ const CatalogCheckoutModal = {
             if (result.requiresAuth) {
                 this.close();
                 if (window.CustomerAuth) {
-                    window.CustomerAuth.requireAuth(() => this.show(), result.error || 'Please sign in or verify your email to create an order.');
+                    window.CustomerAuth.requireAuth(() => this.show(directItem), result.error || 'Please sign in or verify your email to create an order.');
                 } else {
                     alert(result.error || 'Please sign in with a verified account to place an order.');
                 }
@@ -184,7 +185,7 @@ const CatalogCheckoutModal = {
                 submitBtn.textContent = 'Redirecting to Order Status...';
 
                 // Clear cart and reset form
-                if (window.CatalogCart) {
+                if (!directItem && window.CatalogCart) {
                     window.CatalogCart.clearCart();
                 }
                 this.close();
@@ -211,7 +212,7 @@ const CatalogCheckoutModal = {
     /**
      * Show the checkout modal
      */
-    show() {
+    show(directItem = null) {
         if (!this.modal) {
             console.error('[Checkout Modal] Modal not initialized');
             return;
@@ -219,9 +220,11 @@ const CatalogCheckoutModal = {
 
         // Enforce verified customer account
         if (window.CustomerAuth && !window.CustomerAuth.currentUser) {
-            window.CustomerAuth.requireAuth(() => this.show(), 'Please sign in or create a verified account to place your order.');
+            window.CustomerAuth.requireAuth(() => this.show(directItem), 'Please sign in or create a verified account to place your order.');
             return;
         }
+
+        this.directItem = directItem;
 
         // Display verified customer info (no typing needed)
         if (window.CustomerAuth && window.CustomerAuth.currentUser) {
@@ -259,8 +262,11 @@ const CatalogCheckoutModal = {
         }
 
         // Update total
-        if (this.checkoutTotal && window.CatalogCart) {
-            this.checkoutTotal.textContent = `₱${window.CatalogCart.getTotalAmount().toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+        if (this.checkoutTotal) {
+            const total = directItem
+                ? directItem.sale_price * directItem.quantity
+                : (window.CatalogCart?.getTotalAmount() ?? 0);
+            this.checkoutTotal.textContent = `₱${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
         }
 
         this.modal.classList.add('show');
@@ -270,6 +276,7 @@ const CatalogCheckoutModal = {
      * Close the checkout modal
      */
     close() {
+        this.directItem = null;
         if (this.modal) {
             this.modal.classList.remove('show');
         }

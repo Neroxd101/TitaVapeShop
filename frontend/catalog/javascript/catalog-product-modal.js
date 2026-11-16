@@ -252,12 +252,17 @@ const CatalogProductModal = {
                                 </div>
                                 <span id="modalMaxQtyText" style="font-size: 12px; color: var(--text-muted);">(Max ${availableStock})</span>
                             </div>
-                            <button type="button" id="modalAddToCartBtn" class="modal-add-cart-btn" ${hasVariations ? 'disabled aria-disabled="true"' : ''}>
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                                </svg>
-                                <span>${hasVariations ? 'Choose a variation' : 'Add to Cart'}</span>
-                            </button>
+                            <div class="modal-purchase-buttons">
+                                <button type="button" id="modalAddToCartBtn" class="modal-add-cart-btn" ${hasVariations ? 'disabled aria-disabled="true"' : ''}>
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                    </svg>
+                                    <span>${hasVariations ? 'Choose a variation' : 'Add to Cart'}</span>
+                                </button>
+                                <button type="button" id="modalBuyNowBtn" class="modal-add-cart-btn" ${hasVariations ? 'disabled' : ''}>
+                                    Buy Now
+                                </button>
+                            </div>
                         ` : `
                             <button type="button" class="btn-card" disabled style="width: 100%; padding: 12px 20px; font-size: 15px; opacity: 0.6; cursor: not-allowed; text-align: center;">
                                 Out of Stock
@@ -282,6 +287,7 @@ const CatalogProductModal = {
             const qtyMinus = document.getElementById('modalQtyMinus');
             const qtyPlus = document.getElementById('modalQtyPlus');
             const addBtn = document.getElementById('modalAddToCartBtn');
+            const buyBtn = document.getElementById('modalBuyNowBtn');
             const variationOptions = [...document.querySelectorAll('.modal-variation-option')];
             let selectedVariationIndex = null;
             const getSelectedVariation = () => selectedVariationIndex === null ? null : variations[selectedVariationIndex] || null;
@@ -291,6 +297,7 @@ const CatalogProductModal = {
                 const stock = getCurrentStock();
                 if (hasVariations && addBtn) {
                     addBtn.disabled = this.isAddingToCart || !selected || stock <= 0;
+                    buyBtn.disabled = !selected || stock <= 0;
                     addBtn.setAttribute('aria-disabled', String(addBtn.disabled));
                     if (!this.isAddingToCart) addBtn.querySelector('span').textContent = selected ? (stock > 0 ? 'Add to Cart' : 'Out of Stock') : 'Choose a variation';
                 }
@@ -336,6 +343,19 @@ const CatalogProductModal = {
 
             qtyInput?.addEventListener('change', () => {
                 qtyInput.value = parseQty();
+            });
+
+            buyBtn.addEventListener('click', () => {
+                const selectedVariation = getSelectedVariation();
+                const quantity = parseQty();
+                if ((hasVariations && !selectedVariation) || quantity <= 0 || !window.CatalogCheckoutModal) return;
+
+                this.close();
+                window.CatalogCheckoutModal.show({
+                    ...product,
+                    quantity,
+                    selected_variation: selectedVariation?.name
+                });
             });
 
             addBtn?.addEventListener('click', (e) => {
