@@ -357,7 +357,7 @@
     }
     #productModal .modal-product-view {
         flex-shrink: 0;
-        grid-template-columns: 1fr 1.2fr !important;
+        grid-template-columns: minmax(0, 1fr) !important;
         gap: 14px !important;
         align-items: center !important;
         height: auto !important;
@@ -515,18 +515,18 @@
         padding: 8px 12px 12px !important;
     }
     #productModal .modal-product-view {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) !important;
+        grid-template-columns: minmax(0, 1fr) !important;
         gap: 8px !important;
         height: auto !important;
     }
     #productModal .modal-image-container,
     #productModal .modal-image-container.with-thumbnails {
-        height: clamp(110px, 20dvh, 170px) !important;
+        height: clamp(180px, 30dvh, 260px) !important;
         max-height: none !important;
     }
     #productModal .modal-variation-options {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 1fr);
     }
     #productModal .modal-variation-option {
         min-width: 0;
@@ -591,8 +591,8 @@
         padding: 8px 12px !important;
         font-size: 12px !important;
     }}
-/* Keep gallery and actions aligned on tablet layouts too. */
-@media (min-width: 481px) and (max-width: 1024px) {
+/* Keep gallery and actions aligned on larger tablet layouts. */
+@media (min-width: 769px) and (max-width: 1024px) {
     #productModal .modal-product-details,
     #productModal .modal-product-details .modal-body,
     #productModal .modal-product-view {
@@ -630,7 +630,7 @@
     }
 }
 /* Landscape mode on small devices (e.g. phones rotated sideways) */
-@media (max-height: 520px) and (min-width: 481px) {
+@media (max-height: 520px) and (min-width: 481px) and (max-width: 768px) {
     #productModal {
         padding: 4px !important;
         align-items: center !important;
@@ -649,7 +649,7 @@
         padding: 6px 12px 8px !important;
     }
     #productModal .modal-product-view {
-        grid-template-columns: 1fr 1.3fr !important;
+        grid-template-columns: minmax(0, 1fr) !important;
         gap: 10px !important;
         align-items: center !important;
     }
@@ -677,8 +677,8 @@
     #productModal .modal-product-actions {
         margin-top: 6px !important;
         padding-top: 6px !important;
-        flex-direction: row !important;
-        align-items: center !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
         gap: 8px !important;
     }
     #productModal .modal-add-cart-btn {
@@ -687,7 +687,7 @@
     }}
 /* The anchored tablet gallery follows the details, including variation rows.
    Reset both dimensions after all portrait and landscape height limits. */
-@media (min-width: 481px) and (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
     #productModal .modal-image-container {
         height: auto !important;
         max-height: none !important;
