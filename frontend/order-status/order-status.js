@@ -54,6 +54,7 @@
   const openOrderChatBtn = document.getElementById('openOrderChatBtn');
   const orderChatForm = document.getElementById('orderChatForm');
   const orderChatInput = document.getElementById('orderChatInput');
+  const orderChatPhoto = document.getElementById('orderChatPhoto');
   const orderChatMessage = document.getElementById('orderChatMessage');
   let sendingMessage = false;
   let chatOrderId = null;
@@ -103,15 +104,18 @@
     orderChatForm.addEventListener('submit', async event => {
       event.preventDefault();
       if (sendingMessage || currentOrder?.order_type !== 'delivery' || currentOrder?.status !== 'confirmed') return;
-      const message = orderChatInput.value.trim();
-      if (!message) return;
+      const text = orderChatInput.value.trim();
+      const photo = orderChatPhoto.files[0];
+      if (!text && !photo) return;
       const button = document.getElementById('sendOrderChatBtn');
       sendingMessage = true;
       ++orderRequestVersion;
       button.disabled = true;
       orderChatInput.disabled = true;
+      orderChatPhoto.disabled = true;
       orderChatMessage.textContent = 'Sending…';
       try {
+        const message = await window.OrderChat.composeMessage(text, photo);
         const response = await fetch('/api/customer/orders/chat-send', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: currentOrder.id, phone: verifiedPhone, message })
@@ -123,6 +127,7 @@
         currentOrder.chat_messages = history;
         window.OrderChat.render(document.getElementById('orderChatMessages'), currentOrder);
         orderChatInput.value = '';
+        orderChatPhoto.value = '';
         orderChatMessage.textContent = 'Message sent.';
       } catch (error) {
         orderChatMessage.textContent = error.message;
@@ -130,6 +135,7 @@
         sendingMessage = false;
         button.disabled = false;
         orderChatInput.disabled = currentOrder?.status !== 'confirmed';
+        orderChatPhoto.disabled = orderChatInput.disabled;
       }
     });
     cancelOrderBtn.addEventListener('click', () => {
@@ -509,8 +515,9 @@
       ? 'Up to 1,000 characters per message.'
       : 'This order is completed. Messages are read-only.';
     orderChatInput.disabled = sendingMessage || order.status !== 'confirmed';
+    orderChatPhoto.disabled = orderChatInput.disabled;
     document.getElementById('sendOrderChatBtn').hidden = order.status !== 'confirmed';
-    if (chatOrderId !== order.id) { chatOrderId = order.id; orderChatInput.value = ''; }
+    if (chatOrderId !== order.id) { chatOrderId = order.id; orderChatForm.reset(); }
     window.OrderChat.render(document.getElementById('orderChatMessages'), order);
     if (openNotificationChat && canViewNotes) {
       openNotificationChat = false;

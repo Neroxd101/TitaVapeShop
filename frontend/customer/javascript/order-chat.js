@@ -1,4 +1,4 @@
-/** Shared, text-only rendering for customer and admin order conversations. */
+/** Shared rendering for customer and admin order conversations. */
 const OrderChat = {
     messages(order) {
         return Array.isArray(order.chat_messages) ? order.chat_messages : [];
@@ -49,6 +49,31 @@ const OrderChat = {
         try { return await request; } finally { this.pendingReads.delete(key); }
     },
 
+    photoUploads: new WeakMap(),
+
+    isPhotoUrl(value) {
+        return /^https:\/\/res\.cloudinary\.com\/titavapeshop\/image\/upload\/v\d+\/[a-z0-9_./-]+\.(?:jpe?g|png|webp|gif)$/i.test(value);
+    },
+
+    async composeMessage(text, photo) {
+        if (!photo) return text.trim();
+        if (!/^image\/(jpeg|png|webp|gif)$/i.test(photo.type)) {
+            throw new Error('Choose a JPEG, PNG, WebP, or GIF photo.');
+        }
+        if (!photo.size || photo.size > 25_000_000) {
+            throw new Error('Choose a photo up to 25 MB.');
+        }
+        let url = this.photoUploads.get(photo);
+        if (!url) {
+            url = await window.CloudinaryService.uploadReceipt(photo);
+            if (!this.isPhotoUrl(url)) throw new Error('Cloudinary returned an unsupported photo URL.');
+            this.photoUploads.set(photo, url);
+        }
+        const message = [url, text.trim()].filter(Boolean).join('\n');
+        if (message.length > 1000) throw new Error('Shorten your caption to send it with a photo.');
+        return message;
+    },
+
     render(container, order, viewer = 'customer') {
         const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 48;
         const messages = this.messages(order);
@@ -70,7 +95,21 @@ const OrderChat = {
             author.textContent = message.sender === 'admin' ? 'Tita’s Vape Shop' : 'Customer';
             if (message.sender === viewer) author.textContent += ' (You)';
             const body = document.createElement('p');
-            body.textContent = message.body;
+            const [firstLine, ...caption] = String(message.body).split('\n');
+            const photoUrl = this.isPhotoUrl(firstLine) ? firstLine : null;
+            body.textContent = photoUrl ? caption.join('\n') : message.body;
+            if (photoUrl) {
+                const link = document.createElement('a');
+                link.href = photoUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                const image = document.createElement('img');
+                image.src = photoUrl;
+                image.alt = 'Open attached photo';
+                image.className = 'order-chat-photo';
+                link.appendChild(image);
+                body.prepend(link);
+            }
             const time = document.createElement('time');
             const date = message.created_at ? new Date(message.created_at) : null;
             if (date && !Number.isNaN(date.getTime())) {

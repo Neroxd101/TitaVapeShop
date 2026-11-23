@@ -82,3 +82,41 @@
   margin: 0;
   z-index: 2;
 }
+
+.order-chat-photo { display: block; max-width: min(100%, 280px); max-height: 240px; object-fit: contain; border-radius: 8px; margin: 0 auto 6px; }
+
+.order-chat-compose-footer .order-chat-attach {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.order-chat-attach input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.order-chat-attach:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.order-chat-attach:has(input:disabled) {
+  opacity: 0.55;
+}
+
+.order-chat-modal,
+.order-chat-modal :is(.order-chat-history, .order-chat-input) {
+  scrollbar-width: none;
+}
+.order-chat-modal::-webkit-scrollbar,
+.order-chat-modal :is(.order-chat-history, .order-chat-input)::-webkit-scrollbar {
+  display: none;
+}
