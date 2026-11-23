@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('productGrid');
 
     let currentPage = 1;
-    const productsPerPage = 12;
+    const largeScreen = window.matchMedia('(min-width: 1900px) and (min-height: 900px)');
     let allProducts = [];
 
     // Initialize
@@ -85,17 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
             ? CatalogFilter.filterAndSort(allProducts) 
             : allProducts;
 
+        const productsPerPage = largeScreen.matches ? 10 : 12;
         const totalPages = Math.max(1, Math.ceil(filtered.length / productsPerPage));
         currentPage = Math.min(currentPage, totalPages);
         const start = (currentPage - 1) * productsPerPage;
         renderProducts(filtered.slice(start, start + productsPerPage));
-        renderPagination(filtered.length, totalPages);
+        renderPagination(totalPages);
     }
 
-    function renderPagination(totalProducts, totalPages) {
+    function renderPagination(totalPages) {
         const el = document.getElementById("catalogPagination");
         if (!el) return;
-        if (totalProducts <= productsPerPage) { el.hidden = true; el.innerHTML = ""; return; }
+        if (totalPages <= 1) { el.hidden = true; el.innerHTML = ""; return; }
         el.hidden = false;
         el.innerHTML = "";
         for (let page = 1; page <= totalPages; page++) {
@@ -133,6 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('[Catalog] Product modal not initialized');
         }
     });
+
+    largeScreen.addEventListener('change', filterAndRender);
 
     // Start initialization
     init();

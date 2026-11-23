@@ -14,6 +14,8 @@ const Inventory = {
     // Initialize sidebar first
     await initSidebar('inventory');
 
+    InventoryPagination.init();
+
     // Initialize Feature Modules
     await Promise.all([
       InventoryDisplay.init(),
@@ -34,7 +36,6 @@ const Inventory = {
     });
     InventorySearch.init();
     InventoryFilter.init();
-    InventoryPagination.init();
     InventoryPrintDropdown.init();
     InventoryProductCard.init();
 

@@ -1,6 +1,24 @@
 ﻿// Handle inventory pagination controls.
 const InventoryPagination = {
     init() {
+        const largeScreen = window.matchMedia('(min-width: 1900px) and (min-height: 900px)');
+        const defaultOption = InventoryDOM.pageSizeSelect?.querySelector('option[value="12"]');
+        const updateDefault = () => {
+            const pageSize = largeScreen.matches ? 10 : 12;
+            if (defaultOption) {
+                defaultOption.value = pageSize;
+                defaultOption.textContent = pageSize;
+            }
+            return pageSize;
+        };
+
+        InventoryState.pageSize = updateDefault();
+        largeScreen.addEventListener('change', () => {
+            const usesDefault = InventoryState.pageSize === 10 || InventoryState.pageSize === 12;
+            const pageSize = updateDefault();
+            if (usesDefault) this.setPageSize(pageSize);
+        });
+
         InventoryDOM.prevPageBtn?.addEventListener('click', () => {
             this.goToPage(InventoryState.currentPage - 1);
         });
