@@ -37,6 +37,23 @@ const InventoryCreate = {
         document.getElementById('addVariationBtn')?.addEventListener('click', () => this.addVariationField());
         document.getElementById('deleteVariationBtn')?.addEventListener('click', () => this.deleteSelectedVariation());
         document.getElementById('itemQuantity')?.addEventListener('input', () => this.updateVariationLimits());
+        for (const id of ['itemCostPrice', 'itemSalePrice']) {
+            const input = document.getElementById(id);
+            let previousValue = input.value;
+            input.addEventListener('focus', () => {
+                input.value = input.value.replaceAll(',', '');
+                previousValue = input.value;
+            });
+            input.addEventListener('input', () => {
+                if (input.validity.patternMismatch && input.value !== '.') {
+                    input.value = previousValue;
+                    return;
+                }
+                previousValue = input.value;
+            });
+            input.addEventListener('blur', () => this.formatPriceInput(input));
+        }
+
         // Multiple images upload & thumbnail editing
         document.getElementById('itemImages')?.addEventListener('change', (e) => {
             if (window.InventoryImage?.handleImagesSelect) InventoryImage.handleImagesSelect(e);
@@ -55,6 +72,18 @@ const InventoryCreate = {
         InventoryDOM.itemModal?.addEventListener('click', (e) => {
             if (e.target === InventoryDOM.itemModal) this.closeModal();
         });
+    },
+
+    formatPriceInput(input) {
+        if (!input.value || input.validity.patternMismatch) return;
+        input.value = this.readPrice(input.id).toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    },
+
+    readPrice(id) {
+        return Number(document.getElementById(id).value.replaceAll(',', ''));
     },
 
     openAddModal() {
@@ -94,8 +123,8 @@ const InventoryCreate = {
                 variations: this.getVariationValue(),
                 description: document.getElementById('itemDescription').value.trim() || null,
                 quantity: parseInt(document.getElementById('itemQuantity').value) || 0,
-                cost_price: parseFloat(document.getElementById('itemCostPrice').value) || 0,
-                sale_price: parseFloat(document.getElementById('itemSalePrice').value) || 0,
+                cost_price: this.readPrice('itemCostPrice'),
+                sale_price: this.readPrice('itemSalePrice'),
                 images: imageUrls,
             };
 

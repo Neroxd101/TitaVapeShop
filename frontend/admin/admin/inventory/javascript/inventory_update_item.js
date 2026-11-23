@@ -21,8 +21,12 @@ const InventoryUpdate = {
         document.getElementById('itemQuantity').value = item.quantity;
         InventoryCreate.renderVariationFields(item.variations || item.variation || '');
         document.getElementById('itemDescription').value = item.description || '';
-        document.getElementById('itemCostPrice').value = item.cost_price;
-        document.getElementById('itemSalePrice').value = item.sale_price;
+        const costPrice = document.getElementById('itemCostPrice');
+        const salePrice = document.getElementById('itemSalePrice');
+        costPrice.value = item.cost_price;
+        salePrice.value = item.sale_price;
+        InventoryCreate.formatPriceInput(costPrice);
+        InventoryCreate.formatPriceInput(salePrice);
 
         InventoryImage.renderImagesGrid();
         InventoryDOM.itemModal.classList.add('show');
@@ -53,8 +57,8 @@ const InventoryUpdate = {
                 category: document.getElementById('itemCategory').value,
                 name: productName,
                 description: document.getElementById('itemDescription').value.trim() || null,
-                cost_price: parseFloat(document.getElementById('itemCostPrice').value) || 0,
-                sale_price: parseFloat(document.getElementById('itemSalePrice').value) || 0,
+                cost_price: InventoryCreate.readPrice('itemCostPrice'),
+                sale_price: InventoryCreate.readPrice('itemSalePrice'),
                 images: imageUrls,
             };
 
