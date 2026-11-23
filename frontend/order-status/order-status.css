@@ -327,6 +327,17 @@ body {
 .store-info-row strong {
   color: var(--text-primary);
 }
+.store-info-icon {
+  display: inline-flex;
+  width: 1.25em;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+}
+.store-info-row a {
+  color: var(--accent);
+  text-decoration: underline;
+}
 /* Delivery & GCash Payment Card */
 .delivery-payment-card {
   padding: 24px 20px;

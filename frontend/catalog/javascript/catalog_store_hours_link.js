@@ -1,5 +1,5 @@
 /**
- * Load public store hours and links into the catalog header and footer.
+ * Load public store hours and links into the catalog and pickup details.
  */
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const hours = document.getElementById('catalogOperatingHours');
         if (hours) hours.textContent = label;
 
-        ['catalogLocationLink', 'catalogFooterLocationLink'].forEach(id => {
+        ['catalogLocationLink', 'catalogFooterLocationLink', 'pickupStoreLocationLink'].forEach(id => {
             const link = document.getElementById(id);
-            if (link) link.href = location_url;
+            if (link && location_url) link.href = location_url;
         });
 
         ['catalogFacebookLink', 'catalogFooterFacebookLink'].forEach(id => {

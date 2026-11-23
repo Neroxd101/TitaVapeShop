@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="/css/components/forms.css">
   <link rel="stylesheet" href="/css/components/alerts.css">
   <link rel="stylesheet" href="/css/components/loading-state.css">
-  <link rel="stylesheet" href="/order-status/order-status.css?v=unread-chat-1">
+  <link rel="stylesheet" href="/order-status/order-status.css?v=pickup-icons-1">
   <link rel="stylesheet" href="/css/components/order-chat.css?v=unread-chat-4">
 </head>
 
@@ -193,10 +193,14 @@
 
             <div class="pickup-store-info">
               <p class="store-info-row">
-                <strong>📍 Branch:</strong> Tita's Vape Shop Main Branch
+                <strong><span class="store-info-icon" aria-hidden="true">📍</span> Branch :</strong> Tita's Vape Shop Main Branch
               </p>
               <p class="store-info-row">
-                <strong>🕒 Hours:</strong> 8:00 AM - 8:30 PM Daily
+                <strong><span class="store-info-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg></span> Google Map :</strong>
+                <a id="pickupStoreLocationLink" href="https://maps.app.goo.gl/GzssH9xZQUN94pU38" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+              </p>
+              <p class="store-info-row">
+                <strong><span class="store-info-icon" aria-hidden="true">🕒</span> Hours :</strong> 8:00 AM - 8:30 PM Daily
               </p>
             </div>
           </div>
@@ -445,6 +449,7 @@
   <script src="/customer/javascript/order-chat.js?v=unread-chat-1"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js"></script>
   <script defer src="/customer/javascript/payment-reference-scanner.js"></script>
+  <script defer src="/catalog/javascript/catalog_store_hours_link.js"></script>
   <script defer src="/order-status/order-status.js?v=reference-scan-1"></script>
 </body>
 
