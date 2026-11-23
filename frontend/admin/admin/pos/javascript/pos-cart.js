@@ -5,7 +5,7 @@ const SalesCart = {
             const existing = document.getElementById('cartModal');
             if (existing) return;
 
-            const response = await fetch('/admin/admin/pos/pos-cart-modal.html');
+            const response = await fetch('/admin/admin/pos/pos-cart-modal.html?v=cash-format-1');
             if (!response.ok) throw new Error(`Failed to load cart modal: ${response.statusText}`);
             const html = await response.text();
 
@@ -71,8 +71,24 @@ const SalesCart = {
             productIds.forEach(id => SalesLoad.updateProductCardStock(state, id));
         });
 
+        let previousCash = '';
+        cashInput?.addEventListener('focus', () => {
+            cashInput.value = cashInput.value.replaceAll(',', '');
+            previousCash = cashInput.value;
+        });
         cashInput?.addEventListener('input', () => {
+            if (cashInput.validity.patternMismatch && cashInput.value !== '.') {
+                cashInput.value = previousCash;
+            }
+            previousCash = cashInput.value;
             this.updateChangeDisplay(state);
+        });
+        cashInput?.addEventListener('blur', () => {
+            if (!cashInput.value || cashInput.validity.patternMismatch) return;
+            cashInput.value = this.readCash(cashInput).toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         });
 
         quickCashChips?.addEventListener('click', (e) => {
@@ -379,19 +395,24 @@ const SalesCart = {
         const amount = btn.dataset.amount;
         const total = state.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
 
-        if (action === 'exact') {
-            cashInput.value = total > 0 ? total.toFixed(2) : '0';
-        } else if (amount) {
-            const val = parseFloat(amount);
-            cashInput.value = isNaN(val) ? '0' : val.toFixed(2);
+        const cash = action === 'exact' ? total : Number(amount);
+        if (!Number.isFinite(cash) || cash < 0) return;
+        if (Number(cash.toFixed(2)) > 999999.99) {
+            alert('Cash tendered cannot exceed ₱999,999.99.');
+            return;
         }
+        cashInput.focus();
+        cashInput.value = cash.toFixed(2);
+        cashInput.dispatchEvent(new Event('input'));
 
         // Add pop animation effect to chip
         btn.classList.add('chip-active');
         setTimeout(() => btn.classList.remove('chip-active'), 200);
 
-        this.updateChangeDisplay(state);
-        cashInput.focus();
+    },
+
+    readCash(input) {
+        return Number(input?.value.replaceAll(',', '')) || 0;
     },
 
     updateChangeDisplay(state) {
@@ -410,7 +431,7 @@ const SalesCart = {
             return;
         }
 
-        const cash = parseFloat(rawVal) || 0;
+        const cash = this.readCash(cashInput);
         const diff = cash - total;
 
         if (total === 0) {

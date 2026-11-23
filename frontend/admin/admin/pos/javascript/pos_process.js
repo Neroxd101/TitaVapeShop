@@ -243,7 +243,8 @@ const SalesCreate = {
         const cashInput = document.getElementById('cashInput');
 
         const online = document.querySelector('#checkoutForm [name="paymentMethod"]:checked')?.value === 'online';
-        const cash = online ? total : (parseFloat(cashInput?.value || '0') || 0);
+        if (!online && cashInput && !cashInput.reportValidity()) return;
+        const cash = online ? total : SalesCart.readCash(cashInput);
 
         if (cash < total) {
             alert('Cash is not enough to complete the sale.');
