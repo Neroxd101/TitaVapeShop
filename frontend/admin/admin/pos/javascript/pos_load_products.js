@@ -123,7 +123,19 @@ const SalesLoad = {
         header.className = 'pos-card-header';
 
         const category = document.createElement('span');
-        category.className = `pos-card-category ${item.category || ''}`.trim();
+        category.className = 'pos-card-category';
+        const categoryLabel = String(item.category || 'General').trim() || 'General';
+        const categoryKey = categoryLabel.toLowerCase();
+        if (categoryKey === 'hardware' || categoryKey === 'juices') {
+            category.classList.add(categoryKey);
+        } else {
+            let hash = 0;
+            for (let index = 0; index < categoryLabel.length; index += 1) {
+                hash = ((hash << 5) - hash + categoryLabel.charCodeAt(index)) | 0;
+            }
+            category.classList.add('category-generated');
+            category.style.setProperty('--category-hue', Math.abs(hash) % 360);
+        }
         category.textContent = item.category || 'Uncategorized';
 
         const stock = document.createElement('span');

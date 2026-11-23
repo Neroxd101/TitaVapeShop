@@ -72,6 +72,11 @@
   color: #ff9f43;
 }
 
+.pos-card-category.category-generated {
+  background: hsl(var(--category-hue, 220) 75% 52% / 0.16);
+  color: hsl(var(--category-hue, 220) 90% 72%);
+}
+
 .pos-card-stock {
   font-size: 9px;
   color: var(--text-secondary);
