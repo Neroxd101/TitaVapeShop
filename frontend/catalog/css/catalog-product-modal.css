@@ -3,6 +3,7 @@
     --product-gallery-height: 380px;
 }
 .modal-product-details {
+    border: none;
     width: min(960px, calc(100vw - 32px));
     max-width: 960px;
     max-height: 96vh;

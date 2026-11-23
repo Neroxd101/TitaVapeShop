@@ -347,3 +347,17 @@
         margin: 0 !important;
     }
 }
+
+.nav .header-hours,
+.nav .nav-links .social-link,
+.nav .nav-links .social-link:hover,
+.nav .cart-button,
+.nav #customerNavContainer .customer-nav-btn,
+.nav #customerNavContainer .customer-profile-pill {
+    border-color: transparent;
+}
+
+.nav .nav-links :is(.social-link, .cart-button, .customer-nav-btn, .customer-profile-pill):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}

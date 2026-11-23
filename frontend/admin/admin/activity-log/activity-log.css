@@ -761,15 +761,11 @@
     gap: 8px 12px;
     align-items: center;
     background: var(--bg-card);
-    border: 1px solid var(--border);
     border-radius: 12px;
     padding: 14px 16px !important;
     margin: 0 !important;
     box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.25);
-    transition: transform 0.15s ease, border-color 0.15s ease;
-  }
-  .transactions-table tbody tr:not(.empty-row):hover {
-    border-color: rgba(255, 255, 255, 0.15);
+    transition: transform 0.15s ease;
   }
   .transactions-table tbody tr.empty-row {
     display: flex !important;
@@ -779,7 +775,6 @@
     width: 100% !important;
     padding: 40px 16px !important;
     background: var(--bg-card) !important;
-    border: 1px solid var(--border) !important;
     border-radius: 12px !important;
     box-sizing: border-box !important;
   }
@@ -1135,3 +1130,49 @@
     font-size: 11px !important;
     padding: 8px 10px !important;
   }}
+
+.header-counters .header-counter-pill,
+.transactions-table .badge,
+.page-container .table-card,
+.transactions-filter-tabs :is(input, select, .btn),
+.table-card .pagination-controls .btn {
+  border-color: transparent !important;
+}
+
+.transactions-filter-tabs :is(input, select, .btn):focus-visible,
+.table-card .pagination-controls .btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@supports (appearance: base-select) and selector(::picker(select)) {
+  .transactions-filter-select,
+  .transactions-filter-select::picker(select) {
+    appearance: base-select;
+  }
+  .transactions-filter-select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .transactions-filter-select::picker-icon {
+    display: none;
+  }
+  .transactions-filter-select::picker(select) {
+    min-inline-size: min(12rem, calc(100vw - 24px));
+    max-inline-size: calc(100vw - 24px);
+    max-block-size: min(280px, 45dvh);
+    overflow-y: auto;
+    scrollbar-width: none;
+    border: 0;
+    border-radius: 10px;
+    background: #242635;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    color: var(--text-primary);
+  }
+  .transactions-filter-select option {
+    min-block-size: 38px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}

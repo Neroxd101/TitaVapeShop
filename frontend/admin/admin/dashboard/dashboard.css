@@ -167,18 +167,16 @@ body {
 }
 .metric-card {
   background: var(--dash-surface);
-  border: 1px solid var(--dash-border);
   border-radius: 14px;
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 136px;
-  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+  transition: background-color 0.15s ease, transform 0.15s ease;
   position: relative;
 }
 .metric-card:hover {
-  border-color: var(--dash-border-light);
   background: var(--dash-surface-hover);
   transform: translateY(-2px);
 }
@@ -335,7 +333,6 @@ body {
   align-items: center;
   gap: 14px;
   background: var(--dash-surface);
-  border: 1px solid var(--dash-border);
   border-radius: 12px;
   padding: 14px 16px;
   text-decoration: none;
@@ -345,7 +342,6 @@ body {
 }
 .op-card:hover {
   background: var(--dash-surface-hover);
-  border-color: var(--dash-border-light);
   transform: translateY(-1px);
 }
 .op-icon {
@@ -409,7 +405,6 @@ body {
 
 .ledger-card {
   background: var(--dash-surface);
-  border: 1px solid var(--dash-border);
   border-radius: 14px;
   overflow: hidden;
 }
@@ -534,7 +529,6 @@ body {
 
 .side-widget {
   background: var(--dash-surface);
-  border: 1px solid var(--dash-border);
   border-radius: 14px;
   padding: 18px 20px;
 }
@@ -776,4 +770,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#googleConnectModal > .modal {
+  border: none;
+}
+
+#googleConnectModal :is(#closeGoogleModal, #skipGoogleBtn, #googleConnectBtn) {
+  border-color: transparent;
+}
+#googleConnectModal #skipGoogleBtn:is(:hover, :focus-visible) {
+  background: var(--error);
+  color: #fff;
+}
+#googleConnectModal #googleConnectBtn:is(:hover, :focus-visible) {
+  background: linear-gradient(135deg, var(--accent), #00b894);
+  color: var(--bg-primary);
 }

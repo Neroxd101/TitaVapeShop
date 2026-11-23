@@ -39,8 +39,8 @@ const InventoryCategoryGet = {
     const select = document.getElementById('itemCategory');
     if (!select) return;
     select.innerHTML = '<option value="">Select category</option>' + categories
-      .map(category => `<option value="${this.escape(category.slug)}">${this.escape(category.name)}</option>`).join('')
-      + '<option value="__new__">+ Add New Category</option>';
+      .map(category => `<option value="${this.escape(category.slug)}">${this.escape(category.name)}</option>`).join('');
+    select.add(new Option('+ Add New Category', '__new__'));
     if (selected) select.value = selected;
   },
 

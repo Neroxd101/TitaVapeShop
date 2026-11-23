@@ -11,7 +11,7 @@ const InventoryCreate = {
         if (!container) return;
 
         try {
-            const response = await fetch('/admin/admin/inventory/inventory-add-edit-modal.html');
+            const response = await fetch('/admin/admin/inventory/inventory-add-edit-modal.html?v=category-action-2');
             if (response.ok) {
                 container.innerHTML = await response.text();
                 InventoryDOM.itemModal = document.getElementById('itemModal');
@@ -206,7 +206,10 @@ const InventoryCreate = {
 
     updateDeleteVariationButton() {
         const button = document.getElementById('deleteVariationBtn');
-        if (button) button.disabled = !this.selectedVariationRow || !this.selectedVariationRow.isConnected;
+        if (!button) return;
+        const hasSelection = Boolean(this.selectedVariationRow?.isConnected);
+        button.hidden = !hasSelection;
+        button.disabled = !hasSelection;
     },
 
     deleteSelectedVariation() {

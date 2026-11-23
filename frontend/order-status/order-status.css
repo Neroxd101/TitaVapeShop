@@ -129,7 +129,6 @@ body {
 .copy-btn:hover {
   background: rgba(0, 212, 170, 0.15);
   color: var(--accent);
-  border-color: var(--accent);
 }
 .order-timestamp {
   font-size: 13px;
@@ -461,11 +460,10 @@ body {
   text-align: center;
   cursor: pointer;
   background: var(--bg-surface, rgba(255, 255, 255, 0.02));
-  transition: border-color 0.2s, background 0.2s;
+  transition: background 0.2s;
 }
 .receipt-dropzone:hover {
-  border-color: var(--accent);
-  background: rgba(0, 212, 170, 0.04);
+  background: rgba(0, 212, 170, 0.12);
 }
 #dropzoneEmpty p {
   margin: 0;
@@ -822,3 +820,49 @@ body {
 
 .order-support-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 10px; }
 .order-support-actions [hidden] { display: none !important; }
+
+.status-card,
+.order-type-tag,
+.copy-btn,
+.pickup-store-info,
+.order-item-row,
+.item-thumb,
+.item-variation,
+body .btn-secondary {
+  border-color: transparent;
+}
+body :is(.btn, .copy-btn):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+body .btn-secondary:hover:not(:disabled, .order-support-actions .btn, .order-nav .back-btn) {
+  background-color: color-mix(in srgb, var(--accent) 18%, var(--bg-secondary));
+  border-color: transparent;
+}
+
+.order-support-actions .btn {
+  background: #292c3b;
+  color: var(--text-primary);
+}
+.order-nav .back-btn,
+.order-nav .back-btn:hover,
+.order-support-actions .facebook-support-btn {
+  background: var(--bg-card);
+}
+.order-support-actions #openOrderChatBtn:hover:not(:disabled) {
+  background: #373b4e;
+}
+.order-support-actions #cancelOrderBtn {
+  background: var(--error);
+  color: #fff;
+}
+.order-support-actions a[href="/catalog"] {
+  background: linear-gradient(135deg, var(--accent), #00b894);
+  color: var(--bg-primary);
+}
+
+.order-nav .back-btn:hover,
+.order-support-actions .btn-secondary:hover {
+  border-color: transparent;
+}

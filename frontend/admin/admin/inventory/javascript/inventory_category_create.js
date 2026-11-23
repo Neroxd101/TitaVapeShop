@@ -20,7 +20,7 @@ const InventoryCategoryCreate = {
           </div>
           <div class="modal-actions">
             <button type="button" class="btn btn-secondary" id="categoryModalCancel">Cancel</button>
-            <button type="submit" class="btn btn-primary">Add Category</button>
+            <button type="submit" class="btn btn-secondary">Add Category</button>
           </div>
         </form>
       </div>`);
@@ -56,19 +56,29 @@ const InventoryCategoryCreate = {
   },
 
   bind({ openModal, onCreated, showError }) {
-    document.getElementById('itemCategory')?.addEventListener('change', async event => {
-      if (event.target.value !== '__new__') return;
-      const name = await openModal();
-      if (!name) {
-        event.target.value = '';
+    const select = document.getElementById('itemCategory');
+    if (!select) return;
+    let previousCategory = select.value;
+    select.addEventListener('focus', () => {
+      previousCategory = select.value;
+    });
+    select.addEventListener('change', async () => {
+      if (select.value !== '__new__') {
+        previousCategory = select.value;
         return;
       }
+      select.value = previousCategory;
+      select.disabled = true;
       try {
+        const name = await openModal();
+        if (!name) return;
         const category = await this.create(name);
         await onCreated(category);
       } catch (error) {
         showError(error.message);
-        event.target.value = '';
+      } finally {
+        select.disabled = false;
+        select.focus();
       }
     });
   },

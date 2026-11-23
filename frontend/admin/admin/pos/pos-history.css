@@ -99,9 +99,8 @@
     align-items: center;
     gap: 6px 10px;
     padding: 10px;
-    border: 1px solid var(--border);
     border-radius: 10px;
-    background: var(--bg-card);
+    background: var(--bg-secondary);
   }
   #posHistoryRows td {
     min-width: 0;
@@ -120,4 +119,15 @@
   #posHistoryRows .pos-history-badge { padding: 3px 6px; }
   #posHistoryRows .pos-history-actions { gap: 6px; }
   #posHistoryRows .pos-history-actions .btn { flex: 1; }
+}
+
+:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog) {
+  border: 0;
+}
+:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog) :is(input, textarea, .btn) {
+  border-color: transparent;
+}
+:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog) .btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
