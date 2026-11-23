@@ -32,10 +32,15 @@ const CatalogCard = {
     },
 
     renderProducts(products = []) {
-        if (!this.productGrid || !this.emptyState) {
+        if (!this.productGrid) {
             this.productGrid = document.getElementById('productGrid');
-            this.emptyState = document.getElementById('emptyState');
+            this.productGrid?.addEventListener('error', ({ target }) => {
+                if (!target.matches('img.product-image')) return;
+                const card = target.closest('.product-card');
+                if (card) this.handleImageError(target, card.dataset.id);
+            }, { capture: true });
         }
+        this.emptyState ??= document.getElementById('emptyState');
 
         if (products.length === 0) {
             if (this.productGrid) this.productGrid.style.display = 'none';
@@ -54,8 +59,7 @@ const CatalogCard = {
                 return `
                 <div class="product-card" data-id="${product.id}">
                     <div class="product-image-container">
-                        <img src="${this.getImageUrl(product)}" alt="${product.name}" class="product-image" 
-                             onerror="CatalogCard.handleImageError(this, '${product.id}')"
+                        <img src="${this.getImageUrl(product)}" alt="${product.name}" class="product-image"
                              loading="lazy">
                         ${availableStock > 0
                     ? `<span class="product-badge ${availableStock <= 10 ? 'badge-low' : 'badge-stock'}">${availableStock <= 10 ? 'Low Stock' : 'In Stock'}</span>`
@@ -242,7 +246,8 @@ const CatalogCard = {
     },
 
     handleImageError(imgElement, productId) {
-        const currentSrc = imgElement.src;
+        const currentSrc = imgElement.getAttribute('src');
+        if (currentSrc === '/img/placeholder-product.png') return;
         const product = window.CatalogGetProducts?.getProductById?.(productId);
         
         if (!product) {
