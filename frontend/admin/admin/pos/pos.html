@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="/css/components/confirmation-modal.css">
   <link rel="stylesheet" href="/css/components/qr-scanner.css">
   <link rel="stylesheet" href="/admin/admin/pos/pos-structure.css?v=borderless-pickers-3">
-  <link rel="stylesheet" href="/admin/admin/pos/pos-history.css?v=borderless-history-3">
+  <link rel="stylesheet" href="/admin/admin/pos/pos-history.css?v=history-view-color-1">
 </head>
 
 <body>
@@ -164,8 +164,8 @@
     <div class="pos-history-header"><h2 id="posHistoryTitle">POS Sales History</h2><button type="button" class="btn btn-secondary btn-small" data-history-close>Close</button></div>
     <form id="posHistoryFilters" class="pos-history-filters">
       <label>Search<input type="search" id="posHistorySearch" maxlength="200" placeholder="Sale ID, customer, cashier"></label>
-      <label>From<input type="date" id="posHistoryFrom"></label>
-      <label>To<input type="date" id="posHistoryTo"></label>
+      <label>From<span class="pos-history-date-field"><input type="date" id="posHistoryFrom" data-empty="true"><span class="pos-history-date-hint" aria-hidden="true">mm/dd/yyyy</span></span></label>
+      <label>To<span class="pos-history-date-field"><input type="date" id="posHistoryTo" data-empty="true"><span class="pos-history-date-hint" aria-hidden="true">mm/dd/yyyy</span></span></label>
     </form>
     <p id="posHistoryStatus" role="status" aria-live="polite"></p>
     <div class="pos-history-scroll"><table class="pos-history-table"><thead><tr><th>Sale / Date</th><th>Customer / Cashier</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="posHistoryRows"></tbody></table></div>
@@ -216,7 +216,7 @@
   <script defer src="/admin/admin/pos/javascript/pos_process.js?v=cash-format-1"></script>
 
   <script src="/admin/admin/pos/javascript/pos_categories.js"></script>
-  <script src="/admin/admin/pos/javascript/pos_sales_history.js?v=history-payment-label-1"></script>
+  <script src="/admin/admin/pos/javascript/pos_sales_history.js?v=mobile-date-hints-1"></script>
   <script src="/admin/admin/pos/javascript/pos-controller.js"></script>
 </body>
 

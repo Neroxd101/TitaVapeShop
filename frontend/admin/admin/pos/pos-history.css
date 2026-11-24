@@ -131,3 +131,33 @@
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+.pos-history-date-field {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+.pos-history-date-hint {
+  display: none;
+}
+@media (max-width: 600px) {
+  .pos-history-date-field input[data-empty="true"]::-webkit-datetime-edit {
+    color: transparent;
+  }
+  .pos-history-date-field input[data-empty="true"] + .pos-history-date-hint {
+    position: absolute;
+    inset: 0 28px 0 12px;
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+}
+
+#posSalesHistoryDialog .pos-history-actions [data-action="view"] {
+  background: #2457a6;
+  color: #fff;
+}
+#posSalesHistoryDialog .pos-history-actions [data-action="view"]:hover {
+  background: #2a64ba;
+}

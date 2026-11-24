@@ -737,7 +737,7 @@
       "id type status"
       "customer customer contact"
       "items items items"
-      "date payment total"
+      "date date total"
       "actions actions actions";
     gap: 8px 10px;
     align-items: center;
@@ -907,10 +907,12 @@
   /* 7. Date & Payment Badge (Between Date and Price) */
   .orders-table td.col-date {
     grid-area: date;
-    grid-column: date / payment;
+    width: auto;
     display: flex !important;
+    flex-wrap: wrap;
     align-items: center !important;
-    gap: 10px !important;
+    gap: 4px 10px !important;
+    min-width: 0;
     font-size: 12px !important;
     color: var(--text-secondary);
     white-space: nowrap;
@@ -939,11 +941,14 @@
   .orders-table td.col-date .payment-badge-mobile {
     display: inline-flex !important;
     align-items: center !important;
+    max-width: 100%;
+    white-space: normal;
   }
 
   /* 8. Total */
   .orders-table td.col-total {
     grid-area: total;
+    width: auto;
     text-align: right;
     margin-left: auto;
     display: flex !important;
@@ -972,6 +977,14 @@
     gap: 8px !important;
     width: 100% !important;
     overflow-x: visible !important;
+  }
+
+  .orders-table .order-actions:has([data-order-action="openChat"]) {
+    padding-right: 0;
+  }
+
+  .orders-table .order-actions [data-order-action="openChat"] {
+    margin-right: 0;
   }
 
   .orders-table .order-actions .btn {
@@ -1152,7 +1165,7 @@
       "id type status"
       "customer customer contact"
       "items items items"
-      "date payment total"
+      "date date total"
       "actions actions actions";
     padding: 12px !important;
     gap: 6px 8px !important;

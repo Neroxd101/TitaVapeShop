@@ -22,8 +22,14 @@ const PosSalesHistory = {
             event.preventDefault();
             refreshFilters();
         });
-        filters.addEventListener('change', event => {
-            if (event.target.type === 'date') refreshFilters();
+        const syncDateHint = input => { input.dataset.empty = String(!input.value); };
+        filters.querySelectorAll('input[type="date"]').forEach(input => {
+            syncDateHint(input);
+            input.addEventListener('input', () => syncDateHint(input));
+            input.addEventListener('change', () => {
+                syncDateHint(input);
+                refreshFilters();
+            });
         });
         document.getElementById('posHistorySearch').addEventListener('input', () => {
             clearTimeout(searchTimer);
