@@ -23,7 +23,7 @@ router.post('/api/customer/register', async (req, res) => {
     let nameParts = null;
     if (req.body.name_parts !== undefined) {
       try {
-        nameParts = CustomerName.normalize(req.body.name_parts);
+        nameParts = CustomerName.normalize(req.body.name_parts, CustomerName.registrationLimits);
         full_name = CustomerName.format(nameParts);
       } catch (error) {
         return res.status(400).json({ success: false, error: error.message });

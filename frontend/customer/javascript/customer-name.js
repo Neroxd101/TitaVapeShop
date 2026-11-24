@@ -2,14 +2,19 @@
 const CustomerName = {
   keys: ['last_name', 'first_name', 'middle_name', 'suffix'],
   ids: ['LastName', 'FirstName', 'MiddleName', 'Suffix'],
-  normalize(parts) {
+  registrationLimits: { first_name: 25, last_name: 25, middle_name: 25, suffix: 5 },
+  normalize(parts, limits = {}) {
     if (!parts || typeof parts !== 'object' || Array.isArray(parts)) throw new Error('Please enter your last name and first name.');
     const result = {};
-    this.keys.forEach(key => {
+    this.keys.forEach((key, index) => {
       const value = parts[key] === undefined ? '' : parts[key];
       if (typeof value !== 'string') throw new Error('Name fields must be text.');
       result[key] = value.trim();
-      if (result[key].length > (key === 'suffix' ? 20 : 100)) throw new Error('Name field is too long.');
+      const limit = limits[key] ?? (key === 'suffix' ? 20 : 100);
+      if (result[key].length > limit) {
+        const label = this.ids[index].replace('Name', ' name');
+        throw new Error(`${label} must be ${limit} characters or fewer.`);
+      }
     });
     if (!result.last_name || !result.first_name) throw new Error('Please enter your last name and first name.');
     if (`${result.last_name}, ${[result.first_name, result.middle_name, result.suffix].filter(Boolean).join(' ')}`.length > 255) {
@@ -22,7 +27,8 @@ const CustomerName = {
     return `${clean.last_name}, ${[clean.first_name, clean.middle_name, clean.suffix].filter(Boolean).join(' ')}`;
   },
   read(prefix) {
-    return this.normalize(Object.fromEntries(this.keys.map((key, index) => [key, document.getElementById(prefix + this.ids[index])?.value || ''])));
+    const parts = Object.fromEntries(this.keys.map((key, index) => [key, document.getElementById(prefix + this.ids[index])?.value || '']));
+    return this.normalize(parts, prefix === 'customerReg' ? this.registrationLimits : undefined);
   },
   populate(prefix, user) {
     // Never guess how an older free-text name divides into first/middle/last names.
