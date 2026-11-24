@@ -27,6 +27,9 @@ async function loadNavigation() {
   }
 }
 
+let ordersBadgeTimer;
+let ordersBadgeLoading = false;
+
 /**
  * Initialize navigation functionality
  * @param {string} currentPage - Current page identifier (e.g., 'dashboard', 'inventory')
@@ -43,6 +46,36 @@ async function initNavigation(currentPage) {
 
   // Setup event listeners
   setupNavigationListeners();
+
+  clearInterval(ordersBadgeTimer);
+  refreshOrdersNavBadge();
+  ordersBadgeTimer = setInterval(refreshOrdersNavBadge, 30000);
+}
+
+async function refreshOrdersNavBadge() {
+  const badge = document.querySelector('.nav-orders-count');
+  const link = badge?.closest('.nav-item');
+  if (!link || link.style.display === 'none' || document.hidden || ordersBadgeLoading) return;
+
+  ordersBadgeLoading = true;
+  try {
+    const response = await fetch('/orders/orders_summaries', {
+      cache: 'no-store',
+      headers: { Accept: 'application/json' }
+    });
+    if (!response.ok) return;
+    const result = await response.json();
+    if (!result.success || !result.data) return;
+    const count = Number(result.data.total_pending_orders) + Number(result.data.total_ready_orders);
+    if (!Number.isSafeInteger(count) || count < 0) return;
+    badge.hidden = count === 0;
+    badge.textContent = String(count);
+    link.setAttribute('aria-label', count ? `Orders, ${count} open` : 'Orders');
+  } catch (error) {
+    console.warn('Unable to refresh the Orders badge:', error);
+  } finally {
+    ordersBadgeLoading = false;
+  }
 }
 
 /**

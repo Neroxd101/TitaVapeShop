@@ -200,6 +200,7 @@ class OrdersController {
                 this.updateActiveKpiCards();
                 // Refresh KPI counts in background
                 this.refreshKPIs();
+                window.refreshOrdersNavBadge?.();
             } else {
                 this.showError(result.error);
             }
