@@ -138,6 +138,16 @@ const OrdersViewModal = {
 
         if (isDelivery) {
             const hasReceipt = Boolean(order.payment_receipt_url);
+            const paymentActions = paymentStatus === 'pending_verification' && Boolean(order.payment_reference || order.payment_receipt_url) ? `
+                <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-small btn-primary" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="paid">
+                        ✓ Mark Paid
+                    </button>
+                    <button type="button" class="btn btn-small btn-danger" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="rejected">
+                        ✕ Reject Proof
+                    </button>
+                </div>
+            ` : '';
             content.innerHTML = `
                 <div class="order-details">
                     <div class="order-details-delivery-header ${hasReceipt ? '' : 'no-receipt'}">
@@ -157,16 +167,8 @@ const OrdersViewModal = {
                                 <p><strong>Payment Method:</strong> GCash / InstaPay</p>
                                 <p><strong>Payment Status:</strong> ${getPaymentBadge(paymentStatus)}</p>
                                 <p class="payment-reference-row"><strong>Reference No:</strong> ${order.payment_reference ? `<code class="payment-reference-value">${escapeHtml(order.payment_reference)}</code>` : '<span class="text-muted">Not submitted yet</span>'}</p>
-                                ${paymentStatus === 'pending_verification' && Boolean(order.payment_reference || order.payment_receipt_url) ? `
-                                    <div style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                                        <button type="button" class="btn btn-small btn-success" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="paid">
-                                            ✓ Mark Paid
-                                        </button>
-                                        <button type="button" class="btn btn-small btn-danger" data-order-action="verifyPayment" data-order-id="${order.id}" data-payment-status="rejected">
-                                            ✕ Reject Proof
-                                        </button>
-                                    </div>
-                                ` : paymentStatus === 'rejected' ? `
+                                ${hasReceipt ? '' : paymentActions}
+                                ${paymentStatus === 'rejected' ? `
                                     <div style="margin-top: 12px;">
                                         <small class="text-muted" style="display: block; font-size: 11px; color: var(--error);">Proof rejected. Waiting for customer to re-upload new payment proof.</small>
                                     </div>
@@ -180,6 +182,7 @@ const OrdersViewModal = {
                                 <img src="${escapeHtml(order.payment_receipt_url)}" alt="Payment proof" class="receipt-proof-img" />
                             </a>
                             <small class="receipt-proof-hint">Click to view full payment proof ↗</small>
+                            ${paymentActions}
                         </div>
                         ` : ''}
                     </div>

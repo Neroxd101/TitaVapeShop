@@ -130,9 +130,7 @@
 }
 
 .btn[data-order-action="markRefunded"],
-.btn[data-order-action="verifyPayment"][data-payment-status="paid"],
 #confirmVerifyPaymentBtn,
-#confirmCompleteOrderBtn,
 #closeOrderCompletedSuccessBtn {
   background: #16382c;
   color: var(--success);
@@ -140,9 +138,7 @@
 }
 
 .btn[data-order-action="markRefunded"]:hover,
-.btn[data-order-action="verifyPayment"][data-payment-status="paid"]:hover,
 #confirmVerifyPaymentBtn:hover,
-#confirmCompleteOrderBtn:hover,
 #closeOrderCompletedSuccessBtn:hover {
   background: #1b4637;
 }
@@ -187,7 +183,6 @@
   align-items: center;
   width: fit-content;
   padding: 2px 7px;
-  border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--bg-secondary);
   color: var(--text-secondary);

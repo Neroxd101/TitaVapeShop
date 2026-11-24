@@ -302,7 +302,7 @@ class OrdersController {
                                     ${orderType === 'pickup' 
                                         ? `<button type="button" class="btn btn-small btn-info" data-order-action="scanCustomerQR" data-order-id="${order.id}">Scan QR</button>`
                                         : ''}
-                                    <button type="button" class="btn btn-small btn-success" data-order-action="completeOrder" data-order-id="${order.id}">Complete</button>
+                                    <button type="button" class="btn btn-small btn-primary" data-order-action="completeOrder" data-order-id="${order.id}">Complete</button>
                                     <button type="button" class="btn btn-small btn-danger" data-order-action="cancelOrder" data-order-id="${order.id}">Cancel</button>
                                 `
                                 : ''}

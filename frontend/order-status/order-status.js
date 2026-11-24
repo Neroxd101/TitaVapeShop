@@ -487,9 +487,7 @@
     // Type Badge
     const isPickup = (order.order_type || 'pickup') === 'pickup';
     orderTypeBadge.textContent = isPickup ? 'PICKUP ORDER' : 'DELIVERY (3RD PARTY)';
-    orderTypeBadge.style.color = isPickup ? 'var(--accent)' : '#3b82f6';
-    orderTypeBadge.style.borderColor = isPickup ? 'rgba(0, 212, 170, 0.3)' : 'rgba(59, 130, 246, 0.3)';
-    orderTypeBadge.style.background = isPickup ? 'rgba(0, 212, 170, 0.12)' : 'rgba(59, 130, 246, 0.12)';
+    orderTypeBadge.classList.toggle('badge-info', !isPickup);
 
     // Status Badge & Stepper
     renderStatus(order.status, isPickup);

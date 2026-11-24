@@ -90,12 +90,13 @@ body {
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--accent);
-  background: rgba(0, 212, 170, 0.12);
-  border: 1px solid rgba(0, 212, 170, 0.25);
   padding: 4px 10px;
   border-radius: 6px;
   margin-bottom: 8px;
+}
+.order-type-tag:not(.badge-info) {
+  color: var(--accent);
+  background: rgba(0, 212, 170, 0.12);
 }
 .order-headline > div:first-child {
   min-width: 0;
@@ -391,7 +392,6 @@ body {
 }
 .gcash-account-info {
   background: var(--bg-surface, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 12px 14px;
   margin: 12px 0;

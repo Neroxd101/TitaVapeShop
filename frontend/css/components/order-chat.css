@@ -5,7 +5,7 @@
   max-height: calc(100dvh - 32px);
   margin: auto;
   padding: 20px;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 16px;
   color: var(--text-primary);
   background: var(--bg-card);
@@ -18,8 +18,15 @@
 .order-chat-header h2 { margin: 0; font-size: 20px; }
 .order-chat-header p { margin: 8px 0 0; color: var(--text-secondary); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 .order-chat-header button { flex-shrink: 0; padding: 8px 12px; min-height: 36px; font-size: 13px; border-radius: 8px; }
+.order-chat-modal .order-chat-header .btn-secondary {
+  border-color: transparent;
+}
+.order-chat-modal .order-chat-header .btn-secondary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .order-chat-history { display: flex; flex-direction: column; gap: 14px; padding: 20px 0; min-height: 80px; max-height: 40dvh; overflow-y: auto; flex: 1 1 auto; }
-.order-chat-bubble { box-sizing: border-box; max-width: 90%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 14px; }
+.order-chat-bubble { box-sizing: border-box; max-width: 90%; padding: 12px 14px; border-radius: 14px; }
 .order-chat-bubble strong { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
 .order-chat-bubble p { margin: 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
 .order-chat-bubble time { display: block; margin-top: 8px; color: var(--text-secondary); font-size: 11px; line-height: 1.4; }
@@ -37,17 +44,16 @@
   max-height: 200px;
   padding: 14px 16px;
   resize: vertical;
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   border-radius: 14px;
   background: var(--bg-secondary, #171923);
   color: var(--text-primary, #f3f4f6);
   font: inherit;
   font-size: 16px;
   line-height: 1.5;
-  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .order-chat-input::placeholder { color: var(--text-secondary); opacity: 1; }
-.order-chat-input:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.15); }
+.order-chat-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .order-chat-input:disabled { opacity: 0.65; cursor: not-allowed; }
 .order-chat-compose-footer { display: flex; align-items: center; gap: 10px; }
 .order-chat-compose-footer small { flex: 1; min-width: 0; color: var(--text-secondary); line-height: 1.5; }

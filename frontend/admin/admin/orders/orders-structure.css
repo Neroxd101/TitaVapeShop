@@ -386,7 +386,6 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .contact-number {
@@ -849,13 +848,16 @@
     white-space: nowrap;
   }
 
+  .orders-table td.col-contact .contact-icon {
+    fill: currentColor;
+    stroke: none;
+  }
   .orders-table td.col-contact .contact-number {
     color: var(--accent);
     text-decoration: none;
     background: rgba(0, 212, 170, 0.08);
     padding: 3px 8px;
     border-radius: 6px;
-    border: 1px solid rgba(0, 212, 170, 0.2);
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -977,14 +979,6 @@
     gap: 8px !important;
     width: 100% !important;
     overflow-x: visible !important;
-  }
-
-  .orders-table .order-actions:has([data-order-action="openChat"]) {
-    padding-right: 0;
-  }
-
-  .orders-table .order-actions [data-order-action="openChat"] {
-    margin-right: 0;
   }
 
   .orders-table .order-actions .btn {
@@ -1589,7 +1583,6 @@
   max-height: 250px;
   object-fit: contain;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--border);
   border-radius: 12px;
   display: block;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
@@ -1801,5 +1794,21 @@
     min-block-size: 38px;
     padding: 8px 12px;
     font-size: 14px;
+  }
+}
+
+.orders-table .order-actions:has([data-order-action="openChat"]) {
+  padding-right: 0;
+}
+.orders-table .order-actions [data-order-action="openChat"] {
+  margin-right: 0;
+}
+.orders-table .order-actions [data-order-action="openChat"] .order-chat-unread {
+  transform: translateY(-50%);
+}
+@media (min-width: 769px) {
+  .orders-table .order-actions :is([data-order-action="viewOrder"], [data-order-action="openChat"]) {
+    min-inline-size: 64px;
+    justify-content: center;
   }
 }

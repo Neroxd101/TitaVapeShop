@@ -162,7 +162,8 @@
   .inventory-confirm-modal .modal-actions {
     grid-template-columns: 1fr;
   }}
-#itemModal > .modal {
+#itemModal > .modal,
+#itemModal .edit-main-image {
   border: none;
 }
 #itemModal .modal-col-fields {
@@ -360,7 +361,6 @@
   height: 36px;
   padding: 0 12px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 20px;
   color: var(--text-secondary);
   font-family: inherit;
@@ -383,10 +383,6 @@
   font-weight: 700;
   font-size: 13.5px;
   color: var(--text-primary);
-}
-.header-counter-pill.counter-units {
-  background: transparent;
-  border-style: dashed;
 }
 @media (max-width: 600px) {
   .inventory-header {
@@ -979,6 +975,13 @@
   cursor: pointer;
   box-sizing: border-box;
 }
+.inventory-card .btn-edit {
+  border-color: transparent;
+}
+.inventory-card .btn-edit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 .inventory-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
@@ -1533,8 +1536,15 @@
   line-height: 18px !important;
 }/* Long variant names expand their chip instead of scrolling inside a capped input. */
 #variationControls .variation-row { max-width: none !important; }#variationControls .variation-row .variation-input { max-width: none !important; }
-#itemModal #variationControls .variation-row {
+#itemModal #variationControls .variation-row,
+#itemModal #variationControls .variation-row input,
+#itemModal #addVariationBtn,
+#itemModal #deleteVariationBtn {
   border: 0;
+}
+#itemModal :is(#addVariationBtn, #deleteVariationBtn):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 #variationControls .variation-row.is-selected {
   border-color: var(--primary-color, #8b5cf6);
@@ -2098,6 +2108,7 @@
 }
 
 #viewModal > .modal,
+#viewModal .view-main-image,
 #viewModal .view-category,
 #viewModal .view-stat,
 #viewModal .view-actions,
