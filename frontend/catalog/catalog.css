@@ -37,6 +37,9 @@
 #ordersModal :is(.modal-close, .order-lookup-box, #trackOrderIdInput, #ordersList > div, .btn) {
     border-color: transparent !important;
 }
+#ordersModal :is(.orders-modal-container, .modal-body, #ordersList) {
+    scrollbar-width: none;
+}
 #ordersModal :is(button, input, a.btn):focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
