@@ -125,12 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * View product details - use separated modal
      */
     document.addEventListener('viewProduct', (e) => {
-        const id = e.detail;
+        const { id, chooseVariation } = typeof e.detail === 'string' ? { id: e.detail } : e.detail;
         const product = allProducts.find(p => p.id === id);
         if (!product) return;
 
         if (window.CatalogProductModal) {
-            CatalogProductModal.show(product);
+            CatalogProductModal.show(product, { chooseVariation });
         } else {
             console.error('[Catalog] Product modal not initialized');
         }

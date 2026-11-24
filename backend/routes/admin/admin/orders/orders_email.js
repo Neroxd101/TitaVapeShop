@@ -5,6 +5,7 @@
 
 const nodemailer = require('nodemailer');
 const { supabaseAdmin } = require('../../../../database/supabase');
+const { getStoreProfile } = require('../../../../services/store-profile');
 
 /**
  * Send order notification email
@@ -68,20 +69,25 @@ async function sendOrderEmail(customerEmail, customerName, orderId, status, orde
             console.error('[Order Email] Error resolving product images:', err);
         }
 
+        const storeProfile = await getStoreProfile().catch(error => {
+            console.error('[Order Email] Could not load store profile:', error.message);
+            return {};
+        });
+        const footer = generateEmailFooter(storeProfile);
         let subject, htmlContent;
 
         switch (status) {
             case 'pending':
                 subject = `Order Confirmation - Tita\'s Vape Shop`;
-                htmlContent = generateOrderCreatedEmail(customerName, orderId, orderData);
+                htmlContent = generateOrderCreatedEmail(customerName, orderId, orderData, footer);
                 break;
             case 'confirmed':
                 subject = `Order Confirmed - Tita\'s Vape Shop`;
-                htmlContent = generateOrderConfirmedEmail(customerName, orderId, orderData);
+                htmlContent = generateOrderConfirmedEmail(customerName, orderId, orderData, footer);
                 break;
             case 'completed':
                 subject = `Order Completed - Tita\'s Vape Shop`;
-                htmlContent = generateOrderCompletedEmail(customerName, orderId, orderData);
+                htmlContent = generateOrderCompletedEmail(customerName, orderId, orderData, footer);
                 break;
             default:
                 return { success: false, error: 'Invalid status' };
@@ -128,7 +134,15 @@ function getGoogleDriveThumbnail(url) {
 /**
  * Generates the common footer with store information
  */
-function generateEmailFooter() {
+function generateEmailFooter({ label, location_url }) {
+    const location = typeof location_url === 'string' && /^https?:\/\/\S+$/i.test(location_url)
+        ? `📍 <strong>Location:</strong> <a href="${escapeHtml(location_url)}">View on Google Maps</a>`
+        : '';
+    const phone = process.env.STORE_CONTACT_NUMBER?.trim();
+    const phoneLink = phone?.replace(/[ ().-]/g, '');
+    const contact = /^\+?[0-9]{7,15}$/.test(phoneLink || '')
+        ? `📞 <strong>Contact:</strong> <a href="tel:${phoneLink}">${escapeHtml(phone)}</a>`
+        : '';
     const formattedTime = new Date().toLocaleString('en-PH', {
         timeZone: 'Asia/Manila',
         dateStyle: 'medium',
@@ -148,15 +162,15 @@ function generateEmailFooter() {
                 <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 12px; color: #8b8b9e; line-height: 1.6; border-top: 1px dashed #2a2a3a; padding-top: 16px; text-align: left;">
                     <tr>
                         <td style="padding-bottom: 4px; color: #8b8b9e;">
-                            📍 <strong>Location:</strong> Tita\'s Vape Shop Main Branch, Manila, Philippines
+                            ${location}
                         </td>
                         <td align="right" style="padding-bottom: 4px; color: #8b8b9e;">
-                            📞 <strong>Contact:</strong> +63 912 345 6789
+                            ${contact}
                         </td>
                     </tr>
                     <tr>
                         <td style="color: #8b8b9e;">
-                            🕒 <strong>Store Hours:</strong> Open Daily: 10:00 AM - 10:00 PM
+                            ${label ? `🕒 <strong>Store Hours:</strong> ${escapeHtml(label)}` : ''}
                         </td>
                         <td align="right" style="color: #8b8b9e;">
                             📧 <strong>Email:</strong> vshoptita@gmail.com
@@ -175,7 +189,7 @@ function generateEmailFooter() {
 /**
  * Generate HTML for order created email
  */
-function generateOrderCreatedEmail(customerName, orderId, orderData) {
+function generateOrderCreatedEmail(customerName, orderId, orderData, footer) {
     const itemsHtml = orderData.items.map(item => {
         const displayImg = getGoogleDriveThumbnail(item.imageUrl);
         return `
@@ -274,7 +288,7 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
                                 </td>
                             </tr>
                             
-                            ${generateEmailFooter()}
+                            ${footer}
                         </table>
                     </td>
                 </tr>
@@ -287,7 +301,7 @@ function generateOrderCreatedEmail(customerName, orderId, orderData) {
 /**
  * Generate HTML for order confirmed email
  */
-function generateOrderConfirmedEmail(customerName, orderId, orderData) {
+function generateOrderConfirmedEmail(customerName, orderId, orderData, footer) {
     const itemsHtml = orderData.items.map(item => {
         const displayImg = getGoogleDriveThumbnail(item.imageUrl);
         return `
@@ -386,7 +400,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
                                 </td>
                             </tr>
                             
-                            ${generateEmailFooter()}
+                            ${footer}
                         </table>
                     </td>
                 </tr>
@@ -399,7 +413,7 @@ function generateOrderConfirmedEmail(customerName, orderId, orderData) {
 /**
  * Generate HTML for order completed email
  */
-function generateOrderCompletedEmail(customerName, orderId, orderData) {
+function generateOrderCompletedEmail(customerName, orderId, orderData, footer) {
     const itemsHtml = orderData.items.map(item => {
         const displayImg = getGoogleDriveThumbnail(item.imageUrl);
         return `
@@ -494,7 +508,7 @@ function generateOrderCompletedEmail(customerName, orderId, orderData) {
                                 </td>
                             </tr>
                             
-                            ${generateEmailFooter()}
+                            ${footer}
                         </table>
                     </td>
                 </tr>

@@ -850,14 +850,14 @@ body .btn-secondary:hover:not(:disabled, .order-support-actions .btn, .order-nav
 .order-support-actions .facebook-support-btn {
   background: var(--bg-card);
 }
-.order-support-actions #openOrderChatBtn:hover:not(:disabled) {
+.order-support-actions #printOrderReceiptBtn:hover:not(:disabled) {
   background: #373b4e;
 }
 .order-support-actions #cancelOrderBtn {
   background: var(--error);
   color: #fff;
 }
-.order-support-actions a[href="/catalog"] {
+.order-support-actions #openOrderChatBtn {
   background: linear-gradient(135deg, var(--accent), #00b894);
   color: var(--bg-primary);
 }

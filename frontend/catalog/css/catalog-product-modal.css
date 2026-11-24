@@ -184,6 +184,9 @@
 #modalStockBadge.stock-low { color: #facc15; background: rgba(250, 204, 21, 0.15); }
 .modal-variation-selector { display: grid; gap: 8px; margin-top: 14px; }
 #modalVariationLabel { color: var(--accent); font-size: 14px; font-weight: 600; }
+.modal-variation-required, .modal-variation-error { color: var(--error); }
+.modal-variation-error { font-size: 13px; }
+.modal-variation-error:empty { position: absolute; }
 .modal-variation-options { display: flex; flex-wrap: wrap; gap: 8px; }
 .modal-variation-option {
     display: inline-flex;

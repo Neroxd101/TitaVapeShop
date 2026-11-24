@@ -162,7 +162,7 @@ BEGIN
             || CASE WHEN p_payment_method = 'online' THEN jsonb_strip_nulls(jsonb_build_object(
                 'payment_reference', p_payment_reference,
                 'payment_proof', p_payment_proof
-            )) ELSE '{}'::jsonb END,
+            )) ELSE jsonb_build_object('cash', p_cash, 'change', p_cash - sale_total) END,
         p_sale_total => sale_total,
         p_sale_items => sale_items,
         p_customer_name => COALESCE(NULLIF(BTRIM(p_customer_name), ''), 'Walk-in'),

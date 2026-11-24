@@ -171,7 +171,10 @@ const CatalogCard = {
     handleAddToCart(btn, productId) {
         const product = window.CatalogGetProducts?.getProductById?.(productId);
         if (!product) return;
-        if (Array.isArray(product.variations) && product.variations.length) { document.dispatchEvent(new CustomEvent('viewProduct', { detail: productId })); return; }
+        if (Array.isArray(product.variations) && product.variations.some(variation => variation?.name)) {
+            document.dispatchEvent(new CustomEvent('viewProduct', { detail: { id: productId, chooseVariation: true } }));
+            return;
+        }
 
         const available = this.getAvailableStock(product);
         if (available <= 0) return;

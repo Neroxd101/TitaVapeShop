@@ -10,6 +10,8 @@
 .pos-history-dialog textarea { resize: vertical; }
 .pos-history-dialog :is(input,textarea):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .pos-history-scroll { overflow-x: auto; }
+#posSalesHistoryDialog,
+#posSalesHistoryDialog .pos-history-scroll { scrollbar-width: none; }
 .pos-history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .pos-history-table th, .pos-history-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
 .pos-history-table th { color: var(--text-secondary); }

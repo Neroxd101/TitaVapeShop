@@ -370,6 +370,16 @@ const SalesCreate = {
         const confirmedTotal = Number(checkoutResult.total);
         const confirmedCash = Number(checkoutResult.cash);
         const confirmedChange = Number(checkoutResult.change);
+        const receiptSale = {
+            id: checkoutResult.sale_id,
+            created_at: new Date().toISOString(),
+            customer_name: customerName,
+            sale_items: confirmedItems,
+            sale_total: confirmedTotal,
+            cash: confirmedCash,
+            change: confirmedChange,
+            details: { payment_method: payment.online ? 'online' : 'cash', payment_reference: payment.reference }
+        };
 
         // 2. Send email receipt if email is provided
         let emailSent = false;
@@ -391,7 +401,7 @@ const SalesCreate = {
         }
 
         // Show success modal
-        this.showSuccessModal(customerName, confirmedTotal, confirmedCash, confirmedChange, customerEmail, emailSent, emailError, payment.online);
+        this.showSuccessModal(receiptSale, customerEmail, emailSent, emailError);
 
         // Reset pending sale
         window._pendingSale = null;
@@ -419,9 +429,20 @@ const SalesCreate = {
         this.isProcessing = false; // Reset lock on successful completion
     },
 
-    showSuccessModal(customerName, total, cash, change, email, emailSent, emailError, online) {
+    showSuccessModal(sale, email, emailSent, emailError) {
         const modal = document.getElementById('successModal');
         if (!modal) return;
+        const { customer_name: customerName, sale_total: total, cash, change } = sale;
+        const online = sale.details.payment_method === 'online';
+        const receiptStatus = document.getElementById('successReceiptStatus');
+        const printButton = document.getElementById('printSuccessReceiptBtn');
+        if (printButton && receiptStatus) {
+            receiptStatus.textContent = '';
+            printButton.onclick = () => {
+                receiptStatus.textContent = '';
+                window.PosSalesHistory.print(sale, receiptStatus);
+            };
+        }
 
         // Populate modal data
         document.getElementById('successCustomer').textContent = customerName || 'Walk-in';
