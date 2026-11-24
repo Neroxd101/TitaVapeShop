@@ -127,6 +127,12 @@
     }
 }
 
+.product-card :is(.product-image-container, .product-info) {
+    cursor: pointer;
+}
+.product-card .card-actions {
+    cursor: default;
+}
 .product-card .view-btn {
     background: #303647;
     border-color: transparent;

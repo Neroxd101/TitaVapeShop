@@ -34,6 +34,14 @@ const CatalogCard = {
     renderProducts(products = []) {
         if (!this.productGrid) {
             this.productGrid = document.getElementById('productGrid');
+            this.productGrid?.addEventListener('click', ({ target }) => {
+                const detailsButton = target.closest('.view-btn');
+                if (!detailsButton && target.closest('.card-actions')) return;
+
+                const trigger = detailsButton || target.closest('.product-image-container, .product-info');
+                const card = trigger?.closest('.product-card');
+                if (card) document.dispatchEvent(new CustomEvent('viewProduct', { detail: card.dataset.id }));
+            });
             this.productGrid?.addEventListener('error', ({ target }) => {
                 if (!target.matches('img.product-image')) return;
                 const card = target.closest('.product-card');
@@ -81,7 +89,7 @@ const CatalogCard = {
                             </div>
                         </div>
                         <div class="card-actions">
-                            <button class="btn-card btn-edit view-btn" data-product-id="${product.id}">
+                            <button type="button" class="btn-card btn-edit view-btn" aria-haspopup="dialog">
                                 <span>Details</span>
                             </button>
                             ${availableStock > 0 
@@ -94,16 +102,6 @@ const CatalogCard = {
                 </div>
             `;
             }).join('');
-
-            // Attach event listeners
-            this.productGrid.querySelectorAll('.view-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const productId = btn.getAttribute('data-product-id');
-                    document.dispatchEvent(new CustomEvent('viewProduct', { detail: productId }));
-                });
-            });
 
             this.productGrid.querySelectorAll('.add-cart-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
