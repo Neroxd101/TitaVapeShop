@@ -200,6 +200,32 @@
                     </form></div>
                 </div>
 
+                <div class="card-wrapper settings-section" id="orderPaymentSection" style="display: none;">
+                    <div class="section-header"><div class="section-title-group"><h2>Order Payment Details</h2><p class="section-subtitle">Manage the GCash or InstaPay details shown on the order status page.</p></div></div>
+                    <div class="section-content">
+                        <p id="orderPaymentSettingsStatus" role="status"></p>
+                        <form id="orderPaymentSettingsForm" class="profile-form" hidden>
+                            <div class="profile-form order-payment-account">
+                                <div class="form-group"><label for="orderPaymentAccountName">Account Name</label><input type="text" id="orderPaymentAccountName" maxlength="50" required></div>
+                                <div class="form-group">
+                                    <label for="orderPaymentAccountNumber">Account Number</label>
+                                    <input type="text" id="orderPaymentAccountNumber" maxlength="11" pattern="[0-9]{11}" inputmode="numeric" aria-describedby="orderPaymentNumberHelp" required>
+                                    <small id="orderPaymentNumberHelp" class="form-help-text">Enter 11 digits.</small>
+                                </div>
+                            </div>
+                            <div class="order-payment-preview">
+                                <img id="orderPaymentQrPreview" alt="Payment QR code preview" width="144">
+                            </div>
+                            <div class="form-group order-payment-upload">
+                                <label for="orderPaymentQrFile">Replace QR Code Image</label>
+                                <input type="file" id="orderPaymentQrFile" accept="image/png,image/jpeg,image/webp" aria-describedby="orderPaymentQrHelp">
+                                <small id="orderPaymentQrHelp" class="form-help-text">PNG, JPG, or WebP up to 512 KB.</small>
+                            </div>
+                            <button type="submit" class="btn btn-secondary" id="saveOrderPaymentBtn"><span class="btn-text">Save Payment Details</span><div class="spinner"></div></button>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- Notification Settings Section (Admin Only) -->
                 <div class="card-wrapper settings-section" id="notificationSettingsSection" style="display: none;">
                     <div class="section-header">
@@ -253,6 +279,7 @@
     <script src="/navigation/javascript/navigation.js"></script>
     <script src="/admin/admin/setting/setting_notification/setting_notification.js"></script>
     <script src="/admin/admin/setting/setting_store_link/setting_store_link.js"></script>
+    <script src="/admin/admin/setting/setting_order_payment.js"></script>
     <script src="/admin/admin/setting/setting_operating_hours/setting_operating_hours.js"></script>
     <script src="/admin/admin/setting/user_profile_generate_otp.js"></script>
     <script src="/admin/admin/setting/user_profile_verify_otp.js"></script>

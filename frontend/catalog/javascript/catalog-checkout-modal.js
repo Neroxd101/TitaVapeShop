@@ -149,6 +149,10 @@ const CatalogCheckoutModal = {
             quantity: item.quantity,
             selected_variation: item.selected_variation || null
         }));
+        if (!items.length) {
+            alert('Your cart is empty.');
+            return;
+        }
 
         const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -177,6 +181,24 @@ const CatalogCheckoutModal = {
                 } else {
                     alert(result.error || 'Please sign in with a verified account to place an order.');
                 }
+                return;
+            }
+
+            const unavailableItem = items.find(item => item.id === result.unavailableProductId);
+            if (!result.success && unavailableItem) {
+                this.close();
+                const name = unavailableItem.name || 'This product';
+                if (directItem) {
+                    alert(`${name} is no longer available. Please choose another product.`);
+                } else {
+                    const cart = window.CatalogCart;
+                    for (const item of cart.cart.filter(item => item.id === unavailableItem.id)) {
+                        cart.removeFromCart(item.id, item.selected_variation);
+                    }
+                    alert(`${name} is no longer available and was removed from your cart. Please review your cart.`);
+                    window.CatalogCartModal?.show();
+                }
+                document.dispatchEvent(new CustomEvent('catalogProductUnavailable'));
                 return;
             }
 

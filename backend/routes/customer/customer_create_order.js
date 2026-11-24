@@ -49,6 +49,14 @@ router.post(['/api/customer/orders/create', '/api/orders/create'], async (req, r
     });
 
     if (error) {
+      const missingProductId = /^Product ([\da-f-]{36}) was not found$/i.exec(error.message || '')?.[1];
+      if (missingProductId && requestedItems.some(item => item.id === missingProductId)) {
+        return res.status(409).json({
+          success: false,
+          error: 'A product in this order is no longer available.',
+          unavailableProductId: missingProductId
+        });
+      }
       console.error('[Customer Create Order] RPC Error:', error);
       return res.status(400).json({ success: false, error: error.message || 'Failed to create order' });
     }

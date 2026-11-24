@@ -95,6 +95,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (hoursSection) { hoursSection.style.display = 'flex'; window.settingOperatingHours.load(); window.settingOperatingHours.setup(); }
         const linksSection = document.getElementById('storeLinksSection');
         if (linksSection) { linksSection.style.display = 'flex'; window.settingStoreLink.load(); window.settingStoreLink.setup(); }
+        const orderPaymentSection = document.getElementById('orderPaymentSection');
+        if (orderPaymentSection) {
+            orderPaymentSection.style.display = 'flex';
+            window.settingOrderPayment.setup();
+        }
         if (notifSection) {
             notifSection.style.display = 'flex';
             window.settingNotification.load();

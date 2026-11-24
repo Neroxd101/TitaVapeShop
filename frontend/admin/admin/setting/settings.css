@@ -22,6 +22,25 @@
 .form-section-title { font-size: 16px; margin: 0 0 20px; color: var(--text-primary); }
 .user-selector-container { padding: 0; margin: 0 0 24px; background: transparent; border: 0; border-radius: 0; }
 .profile-form { display: grid; gap: 18px; }
+#orderPaymentSettingsForm {
+    grid-template-columns: minmax(0, 1fr) minmax(144px, 30%);
+    grid-template-areas:
+        "account preview"
+        "upload preview"
+        "save preview";
+}
+#orderPaymentSettingsForm[hidden] { display: none; }
+.order-payment-account { grid-area: account; }
+.order-payment-preview { grid-area: preview; display: grid; place-items: center; align-self: start; }
+.order-payment-preview img { display: block; max-width: 100%; height: auto; }
+.order-payment-upload { grid-area: upload; }
+#saveOrderPaymentBtn { grid-area: save; }
+@media (max-width: 600px) {
+    #orderPaymentSettingsForm {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "account" "preview" "upload" "save";
+    }
+}
 .settings-section .form-group { min-width: 0; margin: 0; }
 .settings-section label { text-transform: none; letter-spacing: 0; font-size: 13px; }
 .settings-section input:not([type="checkbox"]), .settings-section select { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 9px; height: 46px; }

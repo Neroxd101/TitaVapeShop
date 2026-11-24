@@ -19,7 +19,7 @@ const CatalogGetProducts = {
       if (search) params.append('search', search);
 
       const qs = params.toString() ? `?${params.toString()}` : '';
-      const res = await fetch(`/api/catalog/products${qs}`);
+      const res = await fetch(`/api/catalog/products${qs}`, { cache: 'no-store' });
       
 
       const result = await res.json();

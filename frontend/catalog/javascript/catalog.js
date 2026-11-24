@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const productId = e.detail;
         updateProductStock(productId);
     });
+    document.addEventListener('catalogProductUnavailable', fetchProducts);
 
     /**
      * Fetch products from CatalogGetProducts module

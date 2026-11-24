@@ -357,6 +357,16 @@
     border-color: transparent;
 }
 
+.nav .nav-links :is(#ordersBtn, #cartBtn, #customerSignInNavBtn):hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.nav .nav-links :is(#ordersBtn, #cartBtn):hover .cart-badge {
+    box-shadow: 0 0 0 1px var(--bg-primary);
+}
+
 .nav .nav-links :is(.social-link, .cart-button, .customer-nav-btn, .customer-profile-pill):focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;

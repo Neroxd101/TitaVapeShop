@@ -39,7 +39,8 @@ const CustomerCreateOrder = {
       if (!response.ok || !result.success) {
         return {
           success: false,
-          error: result.error || 'Failed to place order.'
+          error: result.error || 'Failed to place order.',
+          unavailableProductId: result.unavailableProductId
         };
       }
 

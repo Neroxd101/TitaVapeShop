@@ -225,35 +225,35 @@
 
 
 
-            <!-- GCash QR Display -->
-            <div class="gcash-qr-box">
-              <img src="/qr/qr_gcash.jpg" alt="GCash QR Code" class="gcash-qr-image" id="gcashQrImg">
-            </div>
-
-            <!-- GCash Account Details with 1-Click Copy -->
-            <div class="gcash-account-info">
-              <div class="account-field">
-                <span class="account-field-label">Account Name</span>
-                <div class="account-field-val">
-                  <strong id="gcashAccountName">RY*N CH********R S.</strong>
-                </div>
+            <p id="orderPaymentDetailsStatus" role="status">Loading payment details…</p>
+            <div id="orderPaymentDetails" hidden>
+              <div class="gcash-qr-box">
+                <img alt="GCash QR Code" class="gcash-qr-image" id="gcashQrImg">
               </div>
-              <div class="account-field account-number-field">
-                <span class="account-field-label">Account Number</span>
-                <div class="account-field-val">
-                  <strong id="gcashAccountNum">0938 066 9484</strong>
-                  <button type="button" class="copy-num-btn" id="copyGcashNumBtn" title="Copy Number">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                      <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                    </svg>
-                    <span>Copy</span>
-                  </button>
+              <div class="gcash-account-info">
+                <div class="account-field">
+                  <span class="account-field-label">Account Name</span>
+                  <div class="account-field-val">
+                    <strong id="gcashAccountName"></strong>
+                  </div>
                 </div>
-              </div>
-              <div class="account-field total-field">
-                <span class="account-field-label">Amount to Pay</span>
-                <div class="account-field-val">
-                  <strong class="text-accent" id="deliveryPayAmount">₱0.00</strong>
+                <div class="account-field account-number-field">
+                  <span class="account-field-label">Account Number</span>
+                  <div class="account-field-val">
+                    <strong id="gcashAccountNum"></strong>
+                    <button type="button" class="copy-num-btn" id="copyGcashNumBtn" title="Copy Number">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                      </svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="account-field total-field">
+                  <span class="account-field-label">Amount to Pay</span>
+                  <div class="account-field-val">
+                    <strong class="text-accent" id="deliveryPayAmount">₱0.00</strong>
+                  </div>
                 </div>
               </div>
             </div>

@@ -61,6 +61,7 @@
   let currentOrder = null;
   let pollInterval = null;
   let verifiedPhone = null;
+  let paymentDetailsRequested = false;
   const confirmDeliveredBtn = document.getElementById('confirmDeliveredBtn');
   const deliveryConfirmationSection = document.getElementById('deliveryConfirmationSection');
   const deliveryConfirmationMessage = document.getElementById('deliveryConfirmationMessage');
@@ -182,7 +183,8 @@
     const copyGcashNumBtn = document.getElementById('copyGcashNumBtn');
     if (copyGcashNumBtn) {
       copyGcashNumBtn.addEventListener('click', () => {
-        const num = '09380669484';
+        const num = document.getElementById('gcashAccountNum').textContent.replace(/[^0-9]/g, '');
+        if (!num) return;
         navigator.clipboard.writeText(num).then(() => {
           const originalHTML = copyGcashNumBtn.innerHTML;
           copyGcashNumBtn.innerHTML = '<span>Copied!</span>';
@@ -537,6 +539,7 @@
     } else {
       pickupQrCard.style.display = 'none';
       deliveryNoticeCard.style.display = 'flex';
+      loadOrderPaymentDetails();
       renderPaymentSection(order);
     }
 
@@ -573,6 +576,28 @@
         deliveryConfirmationMessage.hidden = false;
         deliveryConfirmationMessage.textContent = error.message;
       }
+    }
+  }
+
+  async function loadOrderPaymentDetails() {
+    if (paymentDetailsRequested) return;
+    paymentDetailsRequested = true;
+    const status = document.getElementById('orderPaymentDetailsStatus');
+
+    try {
+      const response = await fetch('/api/order-status/payment-details');
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error('Could not load payment details.');
+      const { account_name, account_number, qr_image } = result.data;
+      const image = document.getElementById('gcashQrImg');
+      image.src = qr_image;
+      await image.decode();
+      document.getElementById('gcashAccountName').textContent = account_name;
+      document.getElementById('gcashAccountNum').textContent = account_number;
+      document.getElementById('orderPaymentDetails').hidden = false;
+      status.hidden = true;
+    } catch {
+      status.textContent = 'Payment details are unavailable. Reload the page to try again.';
     }
   }
 
