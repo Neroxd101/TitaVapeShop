@@ -18,7 +18,7 @@ const OrdersGetAll = {
             }
             const params = new URLSearchParams(cleanFilters);
             const response = await fetch(`/api/orders/get_all?${params}`, {
-                method: 'GET'
+                cache: 'no-store'
             });
             const result = await response.json();
 

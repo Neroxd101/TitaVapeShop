@@ -41,6 +41,7 @@ const userAdminUpdatePasswordRoutes = require('./backend/routes/admin/admin/sett
 const settingsRoutes = require('./backend/routes/admin/admin/setting/settings');
 const settingNotificationRoutes = require('./backend/routes/admin/admin/setting/setting_notification');
 const settingStoreLinkRoutes = require('./backend/routes/admin/admin/setting/setting_store_link');
+const settingOrderPaymentRoutes = require('./backend/routes/admin/admin/setting/setting_order_payment');
 const settingOperatingHoursRoutes = require('./backend/routes/admin/admin/setting/setting_operating_hours');
 
 // Catalog routes
@@ -207,6 +208,7 @@ app.use('/', analyticsModalGrossSalesRoutes);
 app.use('/', settingsRoutes);
 app.use('/', settingNotificationRoutes);
 app.use('/', settingStoreLinkRoutes);
+app.use('/', settingOrderPaymentRoutes);
 app.use('/', settingOperatingHoursRoutes);
 // Staff routes
 app.use('/', staffPosRoutes);

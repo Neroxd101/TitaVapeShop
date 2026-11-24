@@ -23,7 +23,7 @@ class OrdersController {
             filterStatus: document.getElementById('filterStatus'),
             filterStartDate: document.getElementById('filterStartDate'),
             filterEndDate: document.getElementById('filterEndDate'),
-            resetFiltersBtn: document.getElementById('resetFiltersBtn'),
+            refreshOrdersBtn: document.getElementById('refreshOrdersBtn'),
             ordersList: document.getElementById('ordersList'),
             prevPageBtn: document.getElementById('prevPageBtn'),
             nextPageBtn: document.getElementById('nextPageBtn'),
@@ -133,6 +133,8 @@ class OrdersController {
             window.OrdersFilter.init(this);
         }
 
+        this.elements.refreshOrdersBtn?.addEventListener('click', () => window.OrdersFilter.resetFilters());
+
         if (this.elements.prevPageBtn) {
             this.elements.prevPageBtn.addEventListener('click', () => {
                 if (this.state.filters.offset >= this.state.filters.limit) {
@@ -159,13 +161,8 @@ class OrdersController {
         }
     }
 
-    resetFilters() {
-        if (window.OrdersFilter?.resetFilters) {
-            window.OrdersFilter.resetFilters();
-        }
-    }
-
     async loadOrders() {
+        const requestId = this.ordersRequestId = (this.ordersRequestId || 0) + 1;
         this.chatBadgeRequestId = (this.chatBadgeRequestId || 0) + 1;
         this.setLoading(true);
 
@@ -178,6 +175,7 @@ class OrdersController {
             }
 
             const result = await OrdersGetAll.get(fetchFilters);
+            if (requestId !== this.ordersRequestId) return;
 
             if (result.success) {
                 let orders = result.orders || [];
@@ -206,10 +204,11 @@ class OrdersController {
                 this.showError(result.error);
             }
         } catch (error) {
+            if (requestId !== this.ordersRequestId) return;
             console.error('Error loading orders:', error);
             this.showError(error.message);
         } finally {
-            this.setLoading(false);
+            if (requestId === this.ordersRequestId) this.setLoading(false);
         }
     }
 
@@ -472,7 +471,11 @@ class OrdersController {
 
     setLoading(loading) {
         this.state.loading = loading;
-        // You can add loading indicator here if needed
+        const button = this.elements.refreshOrdersBtn;
+        if (button) {
+            button.disabled = loading;
+            button.textContent = loading ? 'Refreshing…' : 'Refresh';
+        }
     }
 
     showError(error) {

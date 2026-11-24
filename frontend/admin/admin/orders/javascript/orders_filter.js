@@ -74,14 +74,6 @@ const OrdersFilter = {
             });
         }
 
-        // Reset filter button
-        if (c.elements.resetFiltersBtn) {
-            c.elements.resetFiltersBtn.addEventListener('click', (e) => {
-                if (e) e.preventDefault();
-                this.resetFilters();
-            });
-        }
-
         // KPI summary card click & keyboard bindings
         const kpiBindings = [
             { el: c.elements.kpiCardPending, action: () => this.filterByStatus('pending') },
@@ -192,10 +184,8 @@ const OrdersFilter = {
         const c = this.controller;
         if (!c) return;
 
-        if (this.searchDebounceTimer) {
-            clearTimeout(this.searchDebounceTimer);
-            this.searchDebounceTimer = null;
-        }
+        clearTimeout(this.searchDebounceTimer);
+        this.searchDebounceTimer = null;
 
         if (c.elements.orderSearchInput) c.elements.orderSearchInput.value = '';
         if (c.elements.filterStatus) c.elements.filterStatus.value = '';
@@ -206,18 +196,10 @@ const OrdersFilter = {
         }
         this.syncDateHints();
 
-        c.state.filters = {
-            status: '',
-            search: '',
-            start_date: '',
-            end_date: '',
-            limit: 20,
-            offset: 0
-        };
-
+        Object.assign(c.state.filters, { status: '', search: '', start_date: '', end_date: '', offset: 0 });
         this.activeKpi = null;
         this.updateActiveKpiCards();
-        c.loadOrders();
+        return c.loadOrders();
     }
 };
 

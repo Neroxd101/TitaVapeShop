@@ -21,6 +21,8 @@
   const orderStatusBadge = document.getElementById('orderStatusBadge');
   const copyOrderIdBtn = document.getElementById('copyOrderIdBtn');
   const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+  const printOrderReceiptBtn = document.getElementById('printOrderReceiptBtn');
+  const orderReceiptPrintStatus = document.getElementById('orderReceiptPrintStatus');
   const cancelOrderMessage = document.getElementById('cancelOrderMessage');
   const cancelOrderDialog = document.getElementById('cancelOrderDialog');
   const keepOrderBtn = document.getElementById('keepOrderBtn');
@@ -89,6 +91,7 @@
   }
 
   function setupEventListeners() {
+    printOrderReceiptBtn?.addEventListener('click', printOrderReceipt);
     openOrderChatBtn.addEventListener('click', () => {
       orderChatDialog.showModal();
       markCustomerChatRead();
@@ -271,6 +274,64 @@
       });
     }
 
+  }
+
+  function printOrderReceipt() {
+    const order = currentOrder;
+    if (order?.status !== 'completed') return;
+    const receipt = window.open('', '_blank');
+    orderReceiptPrintStatus.hidden = Boolean(receipt);
+    if (!receipt) {
+      orderReceiptPrintStatus.textContent = 'Allow pop-ups for this site to print the receipt.';
+      return;
+    }
+
+    const items = Array.isArray(order.items) ? order.items : [];
+    const rows = items.map(item => {
+      const variant = item.selected_variation || item.variation;
+      const unavailable = window.OrderAvailability.isUnavailable(item);
+      return `<tr>
+        <td>${escapeHtml(item.name || 'Item')}${variant ? `<br><small>${escapeHtml(variant)}</small>` : ''}
+          ${unavailable ? '<br><small>Unavailable · Excluded from total</small>' : ''}</td>
+        <td>${escapeHtml(item.quantity)}</td>
+        <td>${formatMoney(item.price)}</td>
+        <td>${formatMoney(window.OrderAvailability.lineTotal(item))}</td>
+      </tr>`;
+    }).join('');
+    const created = order.created_at ? new Date(order.created_at).toLocaleString('en-PH', {
+      dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Manila'
+    }) : '';
+
+    receipt.document.open();
+    receipt.document.write(`<!doctype html>
+      <html lang="en"><head><meta charset="utf-8"><title>Order Receipt</title>
+      <style>
+        @page { margin: 12mm; }
+        body { max-width: 600px; margin: 20px auto; color: #111; font: 14px Arial, sans-serif; overflow-wrap: anywhere; }
+        h1 { font-size: 20px; margin-bottom: 4px; }
+        p { margin: 6px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        th, td { padding: 6px; border-bottom: 1px solid #ccc; text-align: right; }
+        th:first-child, td:first-child { text-align: left; }
+        tr { break-inside: avoid; }
+        .total { text-align: right; }
+        @media print { button { display: none; } }
+      </style></head><body>
+      <button type="button" id="printReceipt">Print</button>
+      <h1>Tita's Vape Shop</h1>
+      <p><strong>Order Receipt</strong></p>
+      <p>Order ID: ${escapeHtml(order.id)}</p>
+      ${created ? `<p>Placed on: ${escapeHtml(created)}</p>` : ''}
+      <p>Customer: ${escapeHtml(order.customer_name || 'Guest')}</p>
+      <p>Order status: ${escapeHtml((order.status || 'pending').replace(/_/g, ' '))}</p>
+      ${order.payment_status ? `<p>Payment status: ${escapeHtml(order.payment_status.replace(/_/g, ' '))}</p>` : ''}
+      <table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table>
+      <p class="total"><strong>Total: ${escapeHtml(orderGrandTotalText.textContent)}</strong></p>
+      </body></html>`);
+    receipt.document.close();
+    receipt.document.getElementById('printReceipt').addEventListener('click', () => receipt.print());
+    receipt.focus();
+    receipt.print();
   }
 
   let selectedReceiptFile = null;
@@ -506,6 +567,8 @@
       deliveryConfirmationMessage.textContent = order.delivery_confirmed_at ? 'Delivery confirmed. Thank you!' : '';
     }
     cancelOrderBtn.hidden = order.status !== 'pending';
+    if (printOrderReceiptBtn) printOrderReceiptBtn.hidden = order.status !== 'completed';
+    if (orderReceiptPrintStatus && order.status !== 'completed') orderReceiptPrintStatus.hidden = true;
     document.querySelector('.order-layout-grid').classList.toggle('is-cancelled', ['cancelled', 'voided'].includes(order.status));
 
     const canViewNotes = !isPickup && ['confirmed', 'completed'].includes(order.status);
