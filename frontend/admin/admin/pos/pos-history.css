@@ -121,13 +121,13 @@
   #posHistoryRows .pos-history-actions .btn { flex: 1; }
 }
 
-:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog) {
+:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog, #posPaymentPhotoDialog) {
   border: 0;
 }
-:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog) :is(input, textarea, .btn) {
+:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog, #posPaymentPhotoDialog) :is(input, textarea, .btn) {
   border-color: transparent;
 }
-:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog) .btn:focus-visible {
+:is(#posSalesHistoryDialog, #posSaleDetailsDialog, #posVoidDialog, #posPaymentPhotoDialog) .btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
