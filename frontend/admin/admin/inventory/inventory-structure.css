@@ -394,37 +394,38 @@
     align-items: center !important;
     justify-content: space-between !important;
     flex-wrap: nowrap !important;
-    gap: 8px !important;
+    gap: 4px !important;
     margin-bottom: 16px !important;
   }
   .inventory-header .header-left {
     flex: 0 0 auto !important;
   }
   .inventory-header .header-left h1 {
-    font-size: 20px !important;
+    font-size: clamp(15px, 4.5vw, 20px) !important;
     margin: 0 !important;
     white-space: nowrap !important;
   }
-  .header-counters {
+  .inventory-header .header-right.header-counters {
     flex: 1 1 auto !important;
     justify-content: flex-end !important;
     gap: 4px !important;
     flex-wrap: nowrap !important;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    width: auto !important;
+    min-width: 0;
+    max-width: 100%;
   }
   .header-counter-pill {
     height: 30px;
-    padding: 0 8px;
+    padding: 0 clamp(2px, 1vw, 6px);
     font-size: 11px;
-    gap: 5px;
+    gap: 3px;
     flex-shrink: 0;
   }
   .header-counter-pill .counter-value {
-    font-size: 12px;
+    font-size: clamp(10px, 3vw, 12px);
   }
   .header-counter-pill .counter-label {
-    font-size: 10px;
+    font-size: clamp(8px, 2.4vw, 10px);
   }}
 /* Desktop Toolbar (>= 1025px): Single unified row matching POS page (height: 44px, border-radius: 10px) */
 @media (min-width: 1025px) {
