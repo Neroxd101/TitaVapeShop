@@ -1,18 +1,24 @@
 // Shared by customer forms and the backend; names with spaces remain intact.
+const invalidNameCharacter = /[^\p{L}\p{M} .'’\p{Pd}]/u;
+const invalidNameCharacters = new RegExp(invalidNameCharacter.source, 'gu');
+
 const CustomerName = {
   keys: ['last_name', 'first_name', 'middle_name', 'suffix'],
   ids: ['LastName', 'FirstName', 'MiddleName', 'Suffix'],
   registrationLimits: { first_name: 25, last_name: 25, middle_name: 25, suffix: 5 },
-  normalize(parts, limits = {}) {
+  normalize(parts, limits = {}, { validateCharacters = true } = {}) {
     if (!parts || typeof parts !== 'object' || Array.isArray(parts)) throw new Error('Please enter your last name and first name.');
     const result = {};
     this.keys.forEach((key, index) => {
       const value = parts[key] === undefined ? '' : parts[key];
       if (typeof value !== 'string') throw new Error('Name fields must be text.');
       result[key] = value.trim();
+      const label = this.ids[index].replace('Name', ' name');
+      if (validateCharacters && invalidNameCharacter.test(result[key])) {
+        throw new Error(`${label} can only contain letters, spaces, apostrophes, hyphens, and periods.`);
+      }
       const limit = limits[key] ?? (key === 'suffix' ? 20 : 100);
       if (result[key].length > limit) {
-        const label = this.ids[index].replace('Name', ' name');
         throw new Error(`${label} must be ${limit} characters or fewer.`);
       }
     });
@@ -23,12 +29,31 @@ const CustomerName = {
     return result;
   },
   format(parts) {
-    const clean = this.normalize(parts);
+    const clean = this.normalize(parts, {}, { validateCharacters: false });
     return `${clean.last_name}, ${[clean.first_name, clean.middle_name, clean.suffix].filter(Boolean).join(' ')}`;
   },
   read(prefix) {
     const parts = Object.fromEntries(this.keys.map((key, index) => [key, document.getElementById(prefix + this.ids[index])?.value || '']));
     return this.normalize(parts, prefix === 'customerReg' ? this.registrationLimits : undefined);
+  },
+  bindInputs(prefix) {
+    this.ids.forEach((id) => {
+      const input = document.getElementById(prefix + id);
+      if (!input) return;
+      const filter = () => {
+        const value = input.value;
+        const cleaned = value.replace(invalidNameCharacters, '');
+        if (value === cleaned) return;
+        const start = value.slice(0, input.selectionStart).replace(invalidNameCharacters, '').length;
+        const end = value.slice(0, input.selectionEnd).replace(invalidNameCharacters, '').length;
+        input.value = cleaned;
+        input.setSelectionRange(start, end);
+      };
+      input.addEventListener('input', (event) => {
+        if (!event.isComposing) filter();
+      });
+      input.addEventListener('compositionend', filter);
+    });
   },
   populate(prefix, user) {
     // Never guess how an older free-text name divides into first/middle/last names.

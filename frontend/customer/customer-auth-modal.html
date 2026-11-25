@@ -97,7 +97,7 @@
               <span>Contact <span style="color: var(--error);">*</span></span>
               <span class="label-hint">(11 digits)</span>
             </label>
-            <input type="tel" id="customerRegPhone" required maxlength="11" placeholder="09123456789" pattern="[0-9]{11}" autocomplete="tel">
+            <input type="tel" inputmode="numeric" id="customerRegPhone" required maxlength="11" placeholder="09123456789" pattern="09[0-9]{9}" autocomplete="tel">
           </div>
 
           <!-- Row 2: Email Address & Date of Birth -->
@@ -380,7 +380,7 @@
           <!-- Collapsible Edit Input for Mobile -->
           <form id="formEditProfilePhone" class="profile-setting-collapse" style="display: none;">
             <div class="profile-inline-edit-group">
-              <input type="tel" id="customerProfilePhone" required placeholder="09123456789" maxlength="11" pattern="^(09|\+639)\d{9}$" autocomplete="tel">
+              <input type="tel" inputmode="numeric" id="customerProfilePhone" required placeholder="09123456789" maxlength="11" pattern="09[0-9]{9}" autocomplete="tel">
               <div class="profile-inline-actions">
                 <button type="button" class="btn btn-secondary btn-sm" id="btnCancelEditPhone">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm" id="btnSaveProfilePhone">Save</button>

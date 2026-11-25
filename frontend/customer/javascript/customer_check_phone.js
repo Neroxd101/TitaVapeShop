@@ -57,6 +57,14 @@ const CustomerCheckPhone = {
     });
 
     inputEl.addEventListener('input', () => {
+      const value = inputEl.value;
+      const digits = value.replace(/\D/g, '');
+      if (value !== digits) {
+        const start = value.slice(0, inputEl.selectionStart).replace(/\D/g, '').length;
+        const end = value.slice(0, inputEl.selectionEnd).replace(/\D/g, '').length;
+        inputEl.value = digits;
+        inputEl.setSelectionRange(start, end);
+      }
       inputEl.style.borderColor = '';
       if (errorEl && errorEl.textContent.includes('mobile number already exists')) {
         errorEl.style.display = 'none';

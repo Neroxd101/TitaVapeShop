@@ -286,6 +286,9 @@ const CustomerAuth = {
    * Setup Event Listeners across modular actions
    */
   setupEventListeners() {
+    window.CustomerName.bindInputs('customerReg');
+    window.CustomerName.bindInputs('customerProfile');
+
     const modal = document.getElementById('customerAuthModal');
     const closeBtn = document.getElementById('closeCustomerAuthModal');
 
