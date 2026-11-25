@@ -574,9 +574,7 @@
     const canViewNotes = !isPickup && ['confirmed', 'completed'].includes(order.status);
     openOrderChatBtn.hidden = !canViewNotes;
     if (!canViewNotes && orderChatDialog.open) orderChatDialog.close();
-    document.getElementById('orderChatHelp').textContent = order.status === 'confirmed'
-      ? 'Up to 1,000 characters per message.'
-      : 'This order is completed. Messages are read-only.';
+    document.getElementById('orderChatHelp').textContent = window.OrderChat.composerHelp(order.status);
     orderChatInput.disabled = sendingMessage || order.status !== 'confirmed';
     orderChatPhoto.disabled = orderChatInput.disabled;
     document.getElementById('sendOrderChatBtn').hidden = order.status !== 'confirmed';
