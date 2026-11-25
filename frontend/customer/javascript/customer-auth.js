@@ -1027,7 +1027,7 @@ const CustomerAuth = {
       collapseForm = document.getElementById('formEditProfilePhone');
       toggleBtn = document.getElementById('btnToggleEditPhone');
       const val = input ? input.value.trim() : '';
-      const phonePattern = /^(09|\+639)\d{9}$/;
+      const phonePattern = /^09[0-9]{9}$/;
       if (!val || !phonePattern.test(val)) {
         this.showError('customerProfileError', 'Please enter a valid 11-digit mobile number (e.g. 09123456789).');
         if (input) input.focus();
@@ -1041,6 +1041,11 @@ const CustomerAuth = {
       toggleBtn = document.getElementById('btnToggleEditEmail');
       const val = input ? input.value.trim().toLowerCase() : '';
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (val.length > 50) {
+        this.showError('customerProfileError', 'Email must be 50 characters or fewer.');
+        if (input) input.focus();
+        return;
+      }
       if (!val || !emailPattern.test(val)) {
         this.showError('customerProfileError', 'Please enter a valid email address.');
         if (input) input.focus();

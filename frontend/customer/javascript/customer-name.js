@@ -34,7 +34,7 @@ const CustomerName = {
   },
   read(prefix) {
     const parts = Object.fromEntries(this.keys.map((key, index) => [key, document.getElementById(prefix + this.ids[index])?.value || '']));
-    return this.normalize(parts, prefix === 'customerReg' ? this.registrationLimits : undefined);
+    return this.normalize(parts, this.registrationLimits);
   },
   bindInputs(prefix) {
     this.ids.forEach((id) => {

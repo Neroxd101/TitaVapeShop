@@ -37,8 +37,12 @@ const CustomerRegister = {
       return { valid: false, error: 'Please enter your full name (minimum 2 characters).' };
     }
 
+    const email = typeof data.email === 'string' ? data.email.trim() : '';
+    if (email.length > 50) {
+      return { valid: false, error: 'Email must be 50 characters or fewer.' };
+    }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!data.email || !emailPattern.test(data.email.trim())) {
+    if (!emailPattern.test(email)) {
       return { valid: false, error: 'Please enter a valid email address.' };
     }
 

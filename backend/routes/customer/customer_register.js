@@ -34,7 +34,10 @@ router.post('/api/customer/register', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Please enter your full name (minimum 2 characters).' });
     }
 
-    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    if (cleanEmail.length > 50) {
+      return res.status(400).json({ success: false, error: 'Email must be 50 characters or fewer.' });
+    }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(cleanEmail)) {
       return res.status(400).json({ success: false, error: 'Please provide a valid email address.' });
