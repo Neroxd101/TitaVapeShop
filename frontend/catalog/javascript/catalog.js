@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.getElementById('productGrid');
 
     let currentPage = 1;
-    const largeScreen = window.matchMedia('(min-width: 1900px) and (min-height: 900px)');
+    const productsPerPage = 10;
     let allProducts = [];
 
     // Initialize
@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ? CatalogFilter.filterAndSort(allProducts) 
             : allProducts;
 
-        const productsPerPage = largeScreen.matches ? 10 : 12;
         const totalPages = Math.max(1, Math.ceil(filtered.length / productsPerPage));
         currentPage = Math.min(currentPage, totalPages);
         const start = (currentPage - 1) * productsPerPage;
@@ -136,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    largeScreen.addEventListener('change', filterAndRender);
 
     // Start initialization
     init();
