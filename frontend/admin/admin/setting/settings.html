@@ -89,7 +89,7 @@
                         </div>
                         <div class="section-title-group">
                             <h2>Profile Management</h2>
-                            <p class="section-subtitle">Update your username and password. OTP verification required for security.</p>
+                            <p class="section-subtitle">Verify profile changes with a one-time code.</p>
                         </div>
                     </div>
                     <div class="section-content">
@@ -171,6 +171,30 @@
                                     </div>
                                     <button type="submit" class="btn btn-secondary btn-full" id="changePasswordBtn">
                                         <span class="btn-text">Update Password</span>
+                                        <div class="spinner"></div>
+                                    </button>
+                                </form>
+                            </div>
+                            <div id="changeEmailSection" class="profile-form-section" hidden>
+                                <h3 class="form-section-title">Change Email</h3>
+                                <p class="form-help-text">Current email: <strong id="currentAdminEmail"></strong></p>
+                                <form id="changeAdminEmailForm" class="profile-form">
+                                    <div class="form-group">
+                                        <label for="newAdminEmail">New Email</label>
+                                        <div class="input-wrapper">
+                                            <input type="email" id="newAdminEmail" autocomplete="email" maxlength="50" required>
+                                        </div>
+                                        <p class="form-help-text">We’ll send a verification code to your current email.</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="adminEmailCurrentPassword">Current Password</label>
+                                        <div class="input-wrapper">
+                                            <input type="password" id="adminEmailCurrentPassword" autocomplete="current-password" required>
+                                        </div>
+                                        <div id="adminEmailPasswordError" class="form-error-text" style="display: none;" role="alert"></div>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary btn-full" id="changeAdminEmailBtn">
+                                        <span class="btn-text">Update Email</span>
                                         <div class="spinner"></div>
                                     </button>
                                 </form>

@@ -75,7 +75,7 @@ router.post('/api/user/profile/generate-otp', isAuthenticated, hasRole(['admin']
       await transporter.sendMail(mailOptions);
     } catch (emailError) {
       console.error('Error sending OTP email:', emailError);
-      // Still return success to prevent enumeration
+      return res.status(502).json({ success: false, error: 'Could not send the verification code. Please try again.' });
     }
 
     res.json({

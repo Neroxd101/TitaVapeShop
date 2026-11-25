@@ -114,6 +114,7 @@ window.UserProfileVerifyOtp = (() => {
      * Close OTP Modal
      */
     function closeOTPModal() {
+        currentVerify = undefined;
         const modal = document.getElementById('otpVerificationModal');
         if (modal) {
             modal.classList.remove('show');

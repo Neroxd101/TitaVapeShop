@@ -19,6 +19,7 @@
 .profile-forms-container { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 28px; }
 .profile-form-section { min-width: 0; }
 .profile-form-section + .profile-form-section { padding-left: 28px; border-left: 1px solid var(--border); }
+#changeEmailSection { grid-column: 1 / -1; padding: 24px 0 0; border-left: 0; border-top: 1px solid var(--border); }
 .form-section-title { font-size: 16px; margin: 0 0 20px; color: var(--text-primary); }
 .user-selector-container { padding: 0; margin: 0 0 24px; background: transparent; border: 0; border-radius: 0; }
 .profile-form { display: grid; gap: 18px; }

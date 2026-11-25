@@ -37,6 +37,7 @@ const usersGetAllRoutes = require('./backend/routes/admin/admin/setting/users_ge
 const userProfileGenerateOtpRoutes = require('./backend/routes/admin/admin/setting/user_profile_generate_otp');
 const userProfileVerifyOtpRoutes = require('./backend/routes/admin/admin/setting/user_profile_verify_otp');
 const userUpdateUsernameRoutes = require('./backend/routes/admin/admin/setting/user_update_username');
+const userUpdateEmailRoutes = require('./backend/routes/admin/admin/setting/user_update_email');
 const userAdminUpdatePasswordRoutes = require('./backend/routes/admin/admin/setting/user_admin_update_password');
 const settingsRoutes = require('./backend/routes/admin/admin/setting/settings');
 const settingNotificationRoutes = require('./backend/routes/admin/admin/setting/setting_notification');
@@ -157,6 +158,7 @@ app.use('/', usersGetAllRoutes); // User profile management (authenticated)
 app.use('/', userProfileGenerateOtpRoutes);
 app.use('/', userProfileVerifyOtpRoutes);
 app.use('/', userUpdateUsernameRoutes);
+app.use('/', userUpdateEmailRoutes);
 app.use('/', userAdminUpdatePasswordRoutes);
 
 // Admin / Staff Auth routes
