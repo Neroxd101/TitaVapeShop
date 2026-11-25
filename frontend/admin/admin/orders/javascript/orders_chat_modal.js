@@ -14,7 +14,7 @@ const OrdersChatModal = {
                 </div>
                 <div class="order-chat-compose-footer">
                     <label class="order-chat-attach" title="Attach photo"><input type="file" aria-label="Attach photo" id="adminOrderChatPhoto" accept="image/jpeg,image/png,image/webp,image/gif" ${order.status !== 'confirmed' ? 'disabled' : ''}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.2-9.19a4 4 0 0 1 5.65 5.66l-9.2 9.19a2 2 0 0 1-2.82-2.83l8.5-8.49"/></svg></label>
-                    <small id="adminOrderChatHelp">${order.status === 'confirmed' ? 'Photos up to 25 MB.' : 'This order is completed. Messages are read-only.'}</small>
+                    <small id="adminOrderChatHelp">${window.OrderChat.composerHelp(order.status)}</small>
                     <button type="submit" class="btn btn-primary order-chat-send" ${order.status !== 'confirmed' ? 'hidden' : ''}>Send</button>
                 </div>
                 <p id="adminOrderChatMessage" class="order-chat-status" role="status" aria-live="polite"></p>
@@ -52,8 +52,7 @@ const OrdersChatModal = {
                         document.getElementById('adminOrderChatPhoto').disabled = latest.status !== 'confirmed';
                         const send = document.getElementById('adminOrderChatForm')?.querySelector('button');
                         if (send) send.hidden = latest.status !== 'confirmed';
-                        document.getElementById('adminOrderChatHelp').textContent = latest.status === 'confirmed'
-                            ? 'Photos up to 25 MB.' : 'This order is completed. Messages are read-only.';
+                        document.getElementById('adminOrderChatHelp').textContent = window.OrderChat.composerHelp(latest.status);
                     }
                 } catch (_) { /* Keep messages and drafts visible during a temporary outage. */ }
                 finally { refreshing = false; }

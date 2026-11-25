@@ -1,5 +1,11 @@
 /** Shared rendering for customer and admin order conversations. */
 const OrderChat = {
+    composerHelp(status) {
+        return status === 'confirmed'
+            ? 'Photos up to 25 MB and up to 1,000 characters per message.'
+            : 'This order is completed. Messages are read-only.';
+    },
+
     messages(order) {
         return Array.isArray(order.chat_messages) ? order.chat_messages : [];
     },

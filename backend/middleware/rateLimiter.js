@@ -39,8 +39,6 @@ const RULES = [
   {
     name: 'public-orders',
     paths: [
-      '/api/customer/orders/track',
-      '/api/orders/track',
       '/api/customer/orders/batch',
       '/api/orders/track-batch',
       '/api/customer/orders/create',
