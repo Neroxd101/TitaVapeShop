@@ -25,6 +25,9 @@ router.post('/api/user/profile/update-username', isAuthenticated, hasRole(['admi
     if (!new_username || !otp) {
       return res.status(400).json({ success: false, error: 'New username and OTP are required' });
     }
+    if (typeof new_username !== 'string' || new_username.trim().length > 50) {
+      return res.status(400).json({ success: false, error: 'Username must be 50 characters or fewer.' });
+    }
 
     // Determine target user: admin can update others, regular users update themselves
     const targetUserId = target_user_id || adminUserId;

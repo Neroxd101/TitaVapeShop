@@ -555,6 +555,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Please enter a new username');
             return;
         }
+        if (newUsername.length > 50) {
+            alert('Username must be 50 characters or fewer.');
+            return;
+        }
 
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
