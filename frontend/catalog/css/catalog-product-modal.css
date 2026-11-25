@@ -15,36 +15,8 @@
     padding: 20px 24px 0;
 }
 @media (min-width: 1025px) and (min-height: 700px) {
-    #productModal {
-        --product-gallery-height: 480px;
-    }
     #productModal .modal-product-details {
         max-width: 1040px;
-    }
-    #productModal .modal-product-view {
-        display: block;
-        position: relative;
-    }
-    #productModal .modal-image-container {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: calc((100% - 28px) * 0.4762);
-        height: auto;
-    }
-    #productModal .modal-details {
-        width: calc(100% - ((100% - 28px) * 0.4762) - 28px);
-        margin-left: calc((100% - 28px) * 0.4762 + 28px);
-    }
-    #productModal .modal-image-container.with-thumbnails {
-        padding-bottom: 84px;
-    }
-    #productModal .modal-image-container .modal-thumbnails {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
     }
 }
 
@@ -589,44 +561,6 @@
         padding: 8px 12px !important;
         font-size: 12px !important;
     }}
-/* Keep gallery and actions aligned on larger tablet layouts. */
-@media (min-width: 769px) and (max-width: 1024px) {
-    #productModal .modal-product-details,
-    #productModal .modal-product-details .modal-body,
-    #productModal .modal-product-view {
-        height: auto !important;
-        min-height: 0 !important;
-        box-sizing: border-box !important;
-    }
-    #productModal .modal-product-view {
-        display: block;
-        position: relative;
-    }
-    #productModal .modal-image-container {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: calc((100% - 14px) * 0.4545);
-        height: auto !important;
-        min-height: 0 !important;
-    }
-    #productModal .modal-details {
-        width: calc(100% - ((100% - 14px) * 0.4545) - 14px);
-        margin-left: calc((100% - 14px) * 0.4545 + 14px);
-        height: auto !important;
-        overflow: visible !important;
-    }
-    #productModal .modal-image-container.with-thumbnails {
-        padding-bottom: 70px !important;
-    }
-    #productModal .modal-image-container .modal-thumbnails {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-}
 /* Landscape mode on small devices (e.g. phones rotated sideways) */
 @media (max-height: 520px) and (min-width: 481px) and (max-width: 768px) {
     #productModal {
@@ -683,15 +617,32 @@
         flex: 1 !important;
         padding: 6px 10px !important;
     }}
-/* The anchored tablet gallery follows the details, including variation rows.
-   Reset both dimensions after all portrait and landscape height limits. */
-@media (min-width: 769px) and (max-width: 1024px) {
+/* Let the details set the height of the side-by-side gallery. */
+@media (min-width: 769px) {
+    #productModal .modal-product-view {
+        --gallery-gap: 28px;
+        --gallery-width: calc((100% - var(--gallery-gap)) * 0.4762);
+        display: block;
+        position: relative;
+    }
     #productModal .modal-image-container {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--gallery-width);
         height: auto !important;
         max-height: none !important;
-        bottom: 0;
         box-sizing: border-box;
-    }}
+    }
+    #productModal .modal-details {
+        margin-left: calc(var(--gallery-width) + var(--gallery-gap));
+    }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+    #productModal .modal-product-view {
+        --gallery-gap: 14px;
+        --gallery-width: calc((100% - var(--gallery-gap)) * 0.4545);
+    }
+}
 .modal-product-details .modal-body {
     max-height: calc(96vh - 76px);
     overflow-y: auto;
