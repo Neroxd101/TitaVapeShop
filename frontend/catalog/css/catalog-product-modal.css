@@ -158,22 +158,16 @@
     max-height: 4.8em;
     overflow-y: auto;
     padding-right: 8px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
 }
-.modal-details .description::-webkit-scrollbar {
-    width: 5px;
+#productModal .modal-body,
+#productModal .modal-details,
+#productModal .modal-details .description {
+    scrollbar-width: none;
 }
-.modal-details .description::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 3px;
-}
-.modal-details .description::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
-}
-.modal-details .description::-webkit-scrollbar-thumb:hover {
-    background: var(--accent);
+#productModal .modal-body::-webkit-scrollbar,
+#productModal .modal-details::-webkit-scrollbar,
+#productModal .modal-details .description::-webkit-scrollbar {
+    display: none;
 }
 .stock-info {
     display: flex;
