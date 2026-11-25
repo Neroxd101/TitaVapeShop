@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(userStr || '{}');
     // Roles are stored as TEXT string (e.g., "admin,staff")
     const rolesStr = Array.isArray(user.roles) ? user.roles.join(',') : (user.roles || '');
-    const isAdmin = rolesStr.includes('admin');
+    const isAdmin = rolesStr.split(',').some(role => role.trim() === 'admin');
     
     // Selected user ID (for admin updates)
     let selectedUserId = null;
@@ -368,6 +368,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const option = document.createElement('option');
                     option.value = u.id;
                     option.dataset.username = u.username;
+                    option.dataset.email = u.email || '';
                     option.dataset.roles = Array.isArray(u.roles) ? u.roles.join(',') : (u.roles || '');
                     option.textContent = `${u.username}${u.email ? ` (${u.email})` : ''}`;
                     userSelector.appendChild(option);
@@ -430,6 +431,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Toggle Current Password visibility and required status
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         const selectedOption = userSelector.options[userSelector.selectedIndex];
+        const emailSection = document.getElementById('changeEmailSection');
+        emailSection.hidden = !isAdmin || String(selectedUserId) !== String(user.id);
+        document.getElementById('changeAdminEmailForm').reset();
+        document.getElementById('adminEmailPasswordError').style.display = 'none';
+        document.getElementById('currentAdminEmail').textContent = selectedOption?.dataset.email || '—';
         const selectedUsername = selectedOption ? selectedOption.dataset.username : null;
         const isSelf = !isAdmin || (selectedUsername === currentUser.username);
 
@@ -465,6 +471,10 @@ document.addEventListener('DOMContentLoaded', async () => {
      * Setup Profile Form Handlers
      */
     function setupProfileForms() {
+        if (isAdmin) {
+            document.getElementById('changeAdminEmailForm').addEventListener('submit', handleChangeAdminEmail);
+        }
+
         // Change Username Form
         const changeUsernameForm = document.getElementById('changeUsernameForm');
         if (changeUsernameForm) {
@@ -482,6 +492,58 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await handleChangePassword();
             });
         }
+    }
+
+    async function handleChangeAdminEmail(event) {
+        event.preventDefault();
+        if (String(selectedUserId) !== String(user.id)) return;
+
+        const form = event.currentTarget;
+        const selectedOption = userSelector.options[userSelector.selectedIndex];
+        const newEmail = document.getElementById('newAdminEmail').value.trim();
+        const passwordInput = document.getElementById('adminEmailCurrentPassword');
+        const currentPassword = passwordInput.value;
+        const errorMessage = document.getElementById('adminEmailPasswordError');
+        const button = document.getElementById('changeAdminEmailBtn');
+        errorMessage.style.display = 'none';
+        setLoading(button, true);
+
+        try {
+            await window.UserProfileGenerateOtp.generate({ current_password: currentPassword });
+        } catch (error) {
+            errorMessage.textContent = error.message || 'Failed to send the verification code.';
+            errorMessage.style.display = 'flex';
+            passwordInput.focus();
+            return;
+        } finally {
+            setLoading(button, false);
+        }
+
+        passwordInput.value = '';
+        window.UserProfileVerifyOtp.show('Change Email', async (otp) => {
+            const response = await fetch('/api/user/profile/update-email', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify({ new_email: newEmail, current_password: currentPassword, otp })
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || 'Failed to update email.');
+            }
+
+            const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+            currentUser.email = data.email;
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            selectedOption.dataset.email = data.email;
+            selectedOption.textContent = `${selectedOption.dataset.username} (${data.email})`;
+            document.getElementById('currentAdminEmail').textContent = data.email;
+            form.reset();
+            window.UserProfileVerifyOtp.close();
+            showSuccessModal('Success', 'Your email has been updated.');
+        });
+
+        window.UserProfileVerifyOtp.showSuccess('A verification code was sent to your current email.');
     }
 
     /**
