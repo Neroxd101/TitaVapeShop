@@ -1750,6 +1750,35 @@
   overflow-wrap: anywhere;
 }
 
+html:has(#orderDetailsModal.show),
+body:has(#orderDetailsModal.show) {
+  overflow: hidden;
+}
+
+#orderDetailsModal > .modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh !important;
+  max-height: min(90dvh, calc(100dvh - 40px)) !important;
+  overflow: hidden !important;
+}
+
+#orderDetailsModal .modal-header {
+  flex-shrink: 0;
+}
+
+#orderDetailsModal .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+
+#orderDetailsModal .modal-body::-webkit-scrollbar {
+  display: none;
+}
+
 .orders-page-header .header-counter-pill,
 .orders-container :is(.orders-table-card, .pagination-controls, .orders-filter-tabs input, .orders-filter-tabs select, .btn, .badge),
 .modal-overlay > .modal,

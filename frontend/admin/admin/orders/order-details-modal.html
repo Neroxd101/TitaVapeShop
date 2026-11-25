@@ -2,7 +2,7 @@
 <div id="orderDetailsModal" class="modal-overlay">
     <div class="modal modal-wide">
         <div class="modal-header">
-            <h3>Order Details</h3>
+            <h3 id="orderDetailsTitle">Order Details</h3>
             <button class="modal-close" id="closeOrderDetailsModal">
                 <svg viewBox="0 0 24 24">
                     <path
@@ -10,7 +10,7 @@
                 </svg>
             </button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" tabindex="0" role="region" aria-labelledby="orderDetailsTitle">
             <div id="orderDetailsContent">
                 <!-- Order details will be rendered here -->
             </div>
